@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator automator.xsd ">
+
+	<!-- This configuration file is suitable for file sharing simulations -->
+	<!-- unit of time is 1 csec [thus 100 means 1 sec, 360000 means 1 hour, etc.] -->
+	
+
+	<!-- *** EVENTS *** -->
+
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent">
+		<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="connection" />
+		    <aut:reference id="publication" />
+		    <aut:reference id="discovery" />
+		    <aut:reference id="disconnection" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:event>
+
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.impl.event.ConnectionEvent" oneShot="true" >
+		<aut:params>
+			<aut:param name="isBidirectional" value="true" />
+		</aut:params>
+	</aut:event>
+	
+	<aut:event id="publication" handler="PublicationEvent" oneShot="true" />
+	
+	<aut:event id="discovery" handler="DiscoveryEvent" />
+	
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent" oneShot="true" />
+	
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
+	
+	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.deus.impl.event.LogNetworkSizeEvent" />
+
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.impl.event.LogNodeDegreeEvent" />
+	
+	
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node id="supernode" handler="it.unipr.ce.dsg.deus.impl.node.SuperNode">
+		<aut:params>
+			<aut:param name="maxPeerview" value="100" />
+			<aut:param name="downloadBandwidth" value="10" /><!-- Mbps -->
+			<aut:param name="uploadBandwidth" value="2" /><!-- Mbps -->
+			<aut:param name="CPU" value="2" /><!-- GHz -->
+			<aut:param name="RAM" value="2048" /><!-- MB -->
+		</aut:params>
+	</aut:node>
+
+
+	<!-- *** PROCESSES *** -->
+
+	<!-- with 1/lambda = 100 and 1/lambda' = 360000, we have E[N] = lambda/lambda' = 3600 -->
+
+	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="100" /> <!-- other values: 3, 20, 50 [ref. Gnutella] -->
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="supernode" /><!-- this is to associate the process to a specific type of nodes -->
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="5" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="supernode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="connection" />
+			<aut:reference id="publication" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="360000" /> <!-- the mean lifetime of a node is 1 hour -->
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="supernode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="disconnection" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="60000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="supernode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="discovery" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="120000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="supernode" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="logNetworkSize" />
+			<aut:reference id="logNodeDegree" />
+		</aut:events>
+	</aut:process>
+
+
+	<!-- *** SIMULATION *** -->
+
+	<aut:engine maxvt="1080001" seed="123456789">
+		<aut:processes>
+			<aut:reference id="poisson1" />
+			<aut:reference id="periodic2" />	
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>
