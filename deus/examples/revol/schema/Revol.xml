@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <aut:automator
-	xmlns:aut="http://dsg.ce.unipr.it/software/vulcan/schema/automator"
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://dsg.ce.unipr.it/software/vulcan/schema/automator automator.xsd ">
 
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="birth" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolBirthEvent" >
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.revol.RevolBirthEvent" >
 		<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		    <!-- aut:reference id="adaptation" / -->
@@ -16,13 +16,13 @@
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolConnectionEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.example.revol.RevolConnectionEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="adaptation" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolAdaptationEvent" > 
+	<aut:event id="adaptation" handler="it.unipr.ce.dsg.deus.example.revol.RevolAdaptationEvent" > 
 		<aut:params>
 			<aut:param name="a0" value="2" />
 			<aut:param name="a1" value="2" />
@@ -31,11 +31,11 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.vulcan.impl.event.DisconnectionEvent" oneShot="true" />
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent" oneShot="true" />
 	
-	<aut:event id="death" handler="it.unipr.ce.dsg.vulcan.impl.event.DeathEvent" oneShot="true" />
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 
-	<aut:event id="discovery" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolDiscoveryEvent" >
+	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
 		<aut:params>
 			<aut:param name="cpu" value="1" /><!-- *1000 MHz -->
 			<aut:param name="ram" value="3" /><!-- *512 MB -->
@@ -43,16 +43,16 @@
 		</aut:params>
 	</aut:event>
 	 
-	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.vulcan.impl.event.LogNetworkSizeEvent" />
+	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.deus.impl.event.LogNetworkSizeEvent" />
 
-	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.vulcan.impl.event.LogNodeDegreeEvent" />
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.impl.event.LogNodeDegreeEvent" />
 	
-	<aut:event id="logRevolNodeStats" handler="it.unipr.ce.dsg.vulcan.example.revol.LogRevolNodeStatsEvent" />
+	<aut:event id="logRevolNodeStats" handler="it.unipr.ce.dsg.deus.example.revol.LogRevolNodeStatsEvent" />
 	
 	
 	<!-- *** NODE SPECIES *** -->
 
-	<aut:node id="revolNode" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolNode">
+	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolNode">
 		<aut:params>
 			<!-- the following are factors used to compute avg values -->
 			<aut:param name="cpu" value="2" /><!-- *1000 MHz -->
@@ -66,7 +66,7 @@
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 360000, we have E[N] = lambda/lambda' = 360 -->
 
-	<aut:process id="poisson1" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
@@ -78,7 +78,7 @@
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson2" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="5" />
 		</aut:params>
@@ -91,7 +91,7 @@
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson3" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="1080000" /> 
 		</aut:params>
@@ -103,7 +103,7 @@
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson4" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="6000" />
 		</aut:params>
@@ -115,7 +115,7 @@
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="periodic1" handler="it.unipr.ce.dsg.vulcan.impl.process.PeriodicProcess">
+	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="24000" />
 		</aut:params>
@@ -127,7 +127,7 @@
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="periodic2" handler="it.unipr.ce.dsg.vulcan.impl.process.PeriodicProcess">
+	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="12000" /> 
 		</aut:params>
