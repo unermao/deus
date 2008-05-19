@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator xmlns:aut="http://dsg.ce.unipr.it/software/p2pam/schema/automator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/p2pam/schema/automator automator.xsd ">
+
+
+	<!-- *** PROTOCOLS *** -->
+    <aut:definition id="nodeBirth" handler="NodeConstructor" /> <!-- when scheduled, creates a new node -->
+	
+	<aut:definition id="nodeDeath" handler="NodeDestructor" />
+	
+	<aut:definition id="baNodeSelection" handler="BarabasiAlbertNodeSelector">
+    	<aut:params>
+			<aut:param name="m" value="3" />
+		</aut:params>
+	</aut:definition>
+	
+	<aut:definition id="nodeDisconnection" handler="NodeDisconnector" />
+		
+	<aut:definition id="kadBucketUpdate" handler="KademliaBucketUpdater" />	
+		
+	<aut:definition id="kadBucketUpdateMsgConstruction" handler="KademliaMessageConstructor">
+    	<aut:references>
+    		<aut:reference id="kadBucketUpdate"/> <!-- protocol to be scheduled on addressee node -->
+    	</aut:references>
+	</aut:definition>
+	
+	<aut:definition id="transport" handler="Transport">
+		<aut:params>
+			<aut:param name="meanDelay" value="3"/>
+		</aut:params>  
+	</aut:definition>	
+			
+	<aut:definition id="jobCreation" handler="JobCreator">
+    	<aut:params>
+			<aut:param name="meanDuration" value="10" />
+			<aut:param name="meanMemoryRequirements" value="100MB" />
+			<aut:param name="meanProcessorUsage" value="0.3" />
+		</aut:params>			
+	</aut:definition>	
+					
+	<aut:definition id="jobDestinationSelection" handler="JobDestinationSelector" />
+	
+	<aut:definition id="workloadExecution" handler="WorkloadExecutor"/>
+
+	<aut:definition id="jobDistributionMsgConstruction" handler="LoadBalancingMessageConstructor">
+    	<aut:references>
+    		<aut:reference id="workloadExecution"/>
+    	</aut:references>		
+	</aut:definition>			
+		
+					
+	<!-- *** NODE SPECIES *** -->
+						
+	<aut:definition id="supernode" handler="NodeSettingsDeclaration">
+		<aut:params>
+			<aut:param name="maxPeerview" value="100" />
+			<aut:param name="downloadBandwidth" value="10Mbps" />
+			<aut:param name="uploadBandwidth" value="2Mbps" />
+			<aut:param name="CPU" value="2GHz" />
+			<aut:param name="RAM" value="2000MB" />
+		</aut:params>	
+		<aut:references>
+    		<aut:reference id="nodeBirth"/>
+    		<aut:reference id="nodeDeath"/>
+    		<aut:reference id="baNodeSelection"/>
+    		<aut:reference id="nodeDisconnection"/>
+    		<aut:reference id="kadBucketUpdate"/>
+    		<aut:reference id="kadBucketUpdateMsgConstruction"/>     		
+    		<aut:reference id="jobCreation"/>
+    		<aut:reference id="jobDestinationSelection"/>
+    		<aut:reference id="workloadExecution"/>
+    		<aut:reference id="jobDistributionMsgConstruction"/>
+    		<aut:reference id="transport"/>
+    	</aut:references>	
+	</aut:definition>
+
+
+	<!-- *** PROCESSES *** -->
+	
+	<aut:process id="growth" handler="PoissonProcess">
+		<aut:params>
+			<aut:param name="meanInterval" value="8" />
+			<aut:param name="nodeSelectionMode" value="random" />
+		</aut:params>
+    	<aut:references>
+			<aut:reference id="supernode"/> <!-- this is to associate the process to a specific type of nodes -->
+		</aut:references>		
+		<aut:events> 
+<<<<<<< .mine
+    		<aut:event id="birth" reference="nodeBirth"/>
+=======
+    		<aut:event id="birth"> 
+    			<aut:references>
+    				<aut:reference id="nodeBirth"/>
+    			</aut:references>
+>>>>>>> .r173
+			</aut:event>	
+    		<aut:event id="neighbourSelection">
+    			<aut:references>
+    				<aut:reference id="baNodeSelection"/> 
+    			</aut:references>   			
+			</aut:event>	
+			<aut:event id="connectionMessaging">
+				<aut:references>
+					<aut:reference id="kadBucketUpdateMsgConstruction"/>
+				</aut:references> 
+			</aut:event>
+			<aut:event id="msgDelivering">
+				<aut:references>
+					<aut:reference id="transport"/>  
+				</aut:references>
+			</aut:event>					
+    	</aut:events>
+	</aut:process>	
+
+	<aut:process id="nodeFailure" handler="PoissonProcess"/>
+		<aut:params>
+			<aut:param name="startTime" value="40000" />
+			<aut:param name="meanInterval" value="4000" />
+			<aut:param name="nodeSelectionMode" value="random" />
+		</aut:params>
+		<aut:references>
+			<aut:reference id="supernode"/>
+		</aut:references>
+		<aut:events> 
+    		<aut:event id="disconnection">
+    			<aut:references>
+    				<aut:reference id="nodeDisconnection"/> <!-- se fosse expected, il nodo dovrebbe mandare messaggi ai vicini -->
+    			</aut:references>
+			</aut:event>					
+    		<aut:event id="death">
+    			<aut:handler id="nodeDeath"/>
+			</aut:event>				
+    	</aut:events>
+	</aut:process>	
+
+	<aut:process id="loadBalancing">
+		<aut:handler class="DeterministicProcess"/>
+		<aut:params>
+			<aut:param name="startTime" value="20000" />
+			<aut:param name="endTime" value="60000" />
+			<aut:param name="interval" value="500" />
+		</aut:params>
+		<aut:references>
+			<aut:reference id="supernode"/>
+		</aut:references>
+		<aut:events>
+    		<aut:event id="newJob">
+    			<aut:handler id="jobCreation"/>	
+			</aut:event>	
+			<aut:event id="jobDestination">
+				<aut:references>
+    				<aut:reference id="jobDestinationSelection"/>
+    			</aut:references>
+			</aut:event>	
+		    <aut:event id="loadBalancingMessaging">
+		    	<aut:references>
+					<aut:reference id="jobDistributionMsgConstruction"/>
+				</aut:references> 
+			</aut:event>
+			<aut:event id="msgDelivering">
+				<aut:references>
+					<aut:reference id="transport"/>  
+				</aut:references>
+			</aut:event>	
+    	</aut:events>
+	</aut:process>
+
+
+	<!-- *** SIMULATION *** -->
+
+ 	<aut:simulator>
+ 		<aut:handler class="DeterministicProcess"/>
+    	<aut:params>
+      		<aut:param name="maxVT" value="100000"/>
+    	</aut:params>
+    	<aut:references>
+    		<aut:reference id="growth" />
+    		<aut:reference id="nodeFailure" /> 
+    		<aut:reference id="loadBalancing" />
+    	</aut:references>
+  	</aut:simulator>
+
+</aut:automator>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/vulcan/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/vulcan/schema/automator automator.xsd ">
+
+
+	<!-- *** EVENTS *** -->
+
+	<aut:event id="birth" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolBirthEvent" >
+		<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="connection" />
+		    <!-- aut:reference id="adaptation" / -->
+		    <aut:reference id="disconnection" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:event>
+
+	<aut:event id="connection" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolConnectionEvent" oneShot="true" >
+		<aut:params>
+			<aut:param name="isBidirectional" value="true" />
+		</aut:params>
+	</aut:event>
+	
+	<aut:event id="adaptation" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolAdaptationEvent" > 
+		<aut:params>
+			<aut:param name="a0" value="2" />
+			<aut:param name="a1" value="2" />
+			<aut:param name="a2" value="4" />
+			<aut:param name="a3" value="1" />
+		</aut:params>
+	</aut:event>
+	
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.vulcan.impl.event.DisconnectionEvent" oneShot="true" />
+	
+	<aut:event id="death" handler="it.unipr.ce.dsg.vulcan.impl.event.DeathEvent" oneShot="true" />
+
+	<aut:event id="discovery" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolDiscoveryEvent" >
+		<aut:params>
+			<aut:param name="cpu" value="1" /><!-- *1000 MHz -->
+			<aut:param name="ram" value="3" /><!-- *512 MB -->
+			<aut:param name="disk" value="3" /><!-- *512 MB -->
+		</aut:params>
+	</aut:event>
+	 
+	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.vulcan.impl.event.LogNetworkSizeEvent" />
+
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.vulcan.impl.event.LogNodeDegreeEvent" />
+	
+	<aut:event id="logRevolNodeStats" handler="it.unipr.ce.dsg.vulcan.example.revol.LogRevolNodeStatsEvent" />
+	
+	
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node id="revolNode" handler="it.unipr.ce.dsg.vulcan.example.revol.RevolNode">
+		<aut:params>
+			<!-- the following are factors used to compute avg values -->
+			<aut:param name="cpu" value="2" /><!-- *1000 MHz -->
+			<aut:param name="ram" value="4" /><!-- *512 MB -->
+			<aut:param name="disk" value="4" /><!-- *512 MB -->
+		</aut:params>
+	</aut:node>
+
+
+	<!-- *** PROCESSES *** -->
+
+	<!-- with 1/lambda = 1000 and 1/lambda' = 360000, we have E[N] = lambda/lambda' = 360 -->
+
+	<aut:process id="poisson1" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="1000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" /><!-- this is to associate the process to a specific type of nodes -->
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson2" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="5" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="connection" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson3" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="1080000" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="disconnection" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson4" handler="it.unipr.ce.dsg.vulcan.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="6000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="discovery" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodic1" handler="it.unipr.ce.dsg.vulcan.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="24000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="adaptation" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodic2" handler="it.unipr.ce.dsg.vulcan.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="12000" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="logNetworkSize" />
+			<aut:reference id="logNodeDegree" />
+			<aut:reference id="logRevolNodeStats" />
+		</aut:events>
+	</aut:process>
+
+
+	<!-- *** SIMULATION *** -->
+
+	<aut:engine maxvt="54001" seed="123456789"> <!-- 5400001 -->
+		<aut:processes>
+			<aut:reference id="poisson1" />
+			<aut:reference id="poisson4" />
+			<aut:reference id="periodic2" />	
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>
