@@ -13,7 +13,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 public class PoissonProcess extends Process {
 	private static final String MEAN_ARRIVAL = "meanArrival";
 
-	private float meanArrival = 120;
+	private float meanArrival = 0;
 
 	public PoissonProcess(String id, Properties params,
 			ArrayList<Node> referencedNodes, ArrayList<Event> referencedEvents)
