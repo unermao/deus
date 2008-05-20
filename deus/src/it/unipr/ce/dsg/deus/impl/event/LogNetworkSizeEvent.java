@@ -23,7 +23,7 @@ public class LogNetworkSizeEvent extends Event {
 
 	@Override
 	public void run() throws RunException {
-		getLogger().info(Integer.toString(Engine.getDefault().getNodes().size()));
+		getLogger().info("## Network size: " + Integer.toString(Engine.getDefault().getNodes().size()));
 	}
 
 }
