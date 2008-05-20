@@ -37,9 +37,9 @@
 
 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
 		<aut:params>
-			<aut:param name="cpu" value="1024" /><!-- MHz -->
-			<aut:param name="ram" value="1024" /><!-- MB -->
-			<aut:param name="disk" value="4096" /><!-- MB -->
+			<aut:param name="cpu" value="2048" /><!-- MHz -->
+			<aut:param name="ram" value="2048" /><!-- MB -->
+			<aut:param name="disk" value="81920" /><!-- MB -->
 		</aut:params>
 	</aut:event>
 	 
@@ -57,7 +57,7 @@
 			<!-- the following are factors used to compute avg values -->
 			<aut:param name="cpuFactor" value="8" /><!-- *256 MHz -->
 			<aut:param name="ramFactor" value="8" /><!-- *256 MB -->
-			<aut:param name="diskFactor" value="32" /><!-- *256 MB -->
+			<aut:param name="diskFactor" value="320" /><!-- *256 MB -->
 		</aut:params>
 	</aut:node>
 
@@ -105,7 +105,7 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="6000" />
+			<aut:param name="meanArrival" value="3000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -129,22 +129,22 @@
 	
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="12000" /> 
+			<aut:param name="period" value="60000" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
 		</aut:nodes>
 		<aut:events>
 		    <aut:reference id="logNetworkSize" />
-			<aut:reference id="logNodeDegree" />
-			<aut:reference id="logRevolNodeStats" />
+			<aut:reference id="logNodeDegree" /> 
+			<aut:reference id="logRevolNodeStats" /> 
 		</aut:events>
 	</aut:process>
 
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="270001" seed="123456789"> <!-- 5400001 -->
+	<aut:engine maxvt="5400001" seed="123456789"> <!-- 5400001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="poisson4" />

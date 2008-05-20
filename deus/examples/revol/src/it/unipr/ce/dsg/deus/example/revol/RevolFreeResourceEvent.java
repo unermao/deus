@@ -47,27 +47,33 @@ public class RevolFreeResourceEvent extends Event {
 
 	@Override
 	public void run() throws RunException {
-		System.out.println("## free resource");
+		//System.out.println("## free resource");
 		if (this.resOwner == null)
 			return;
-		System.out.println("res owner: " + resOwner.getId());
-		System.out.println("res to be set free: " + resName);
+		//System.out.println("res owner: " + resOwner.getId());
+		//System.out.println("res to be set free: " + resName);
 		if (this.resName.equals("cpu")) {
-			System.out.println("cpu amount before freedom: " + ((RevolNode) resOwner).getCpu());
+			//System.out.println("cpu amount before freedom: " + ((RevolNode) resOwner).getCpu());
 			((RevolNode) this.resOwner).setCpu(((RevolNode) this.resOwner)
 					.getCpu()
 					+ this.resAmount);
-			System.out.println("cpu amount after freedom: " + ((RevolNode) resOwner).getCpu());
+			//System.out.println("cpu amount after freedom: " + ((RevolNode) resOwner).getCpu());
 		}
-		else if (this.resName.equals("ram"))
+		else if (this.resName.equals("ram")) {
+			//System.out.println("ram amount before freedom: " + ((RevolNode) resOwner).getRam());
 			((RevolNode) this.resOwner).setRam(((RevolNode) this.resOwner)
 					.getRam()
 					+ this.resAmount);
-		else if (this.resName.equals("disk"))
+			//System.out.println("ram amount after freedom: " + ((RevolNode) resOwner).getRam());
+		}
+		else if (this.resName.equals("disk")) {
+			//System.out.println("disk amount before freedom: " + ((RevolNode) resOwner).getDisk());
 			((RevolNode) this.resOwner).setDisk(((RevolNode) this.resOwner)
 					.getDisk()
 					+ this.resAmount);
-		System.out.println("end free resource ##");
+			//System.out.println("disk amount after freedom: " + ((RevolNode) resOwner).getDisk());
+		}
+		//System.out.println("end free resource ##");
 	}
 
 }
