@@ -21,6 +21,7 @@ public class RevolDiscoveryEvent extends Event {
 	private int disk = 0;
 	
 	private boolean firstDiscoveryEvent = true;
+	private RevolNode senderNode = null;
 	private RevolNode associatedNode = null;
 	private ResourceAdv res = null;
 	private int ttl = 0;
@@ -48,6 +49,10 @@ public class RevolDiscoveryEvent extends Event {
 		this.associatedNode = associatedNode;
 	}
 
+	public void setSenderNode(RevolNode senderNode) {
+		this.senderNode = senderNode;
+	}
+	
 	public void setResourceToSearchFor(ResourceAdv res) {
 		this.res = res;
 	}
@@ -192,7 +197,7 @@ public class RevolDiscoveryEvent extends Event {
 				e.printStackTrace();
 			}
 		}
-		// altrimenti cerco in cache e se TTL >0 propaga la query a fk*k vicini
+		// altrimenti cerco in cache e se TTL > 0 propago la query a fk*k vicini escluso il mittente
 		else {
 			Iterator<ResourceAdv> it = associatedNode.getCache().iterator();
 			ResourceAdv resInCache = null;
@@ -201,6 +206,7 @@ public class RevolDiscoveryEvent extends Event {
 				if ((resInCache.getName().equals(res.getName()))
 						&& (res.getAmount() <= resInCache.getAmount())
 						&& (resInCache.getOwner() != null)
+						&& (resInCache.getOwner() != senderNode)
 						&& (resInCache.getOwner().isReachable())) {
 					resFound = true;
 				}
@@ -214,6 +220,7 @@ public class RevolDiscoveryEvent extends Event {
 						.createInstance(triggeringTime + expRandom(5)); //FIXME 5 dovrebbe essere un param di RevolDiscoveryEvent
 					discEv.setFirstDiscoveryEvent(false);
 					discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
+					discEv.setSenderNode(associatedNode);
 					discEv.setResourceToSearchFor(res);
 					discEv.setTtl(0);
 					Engine.getDefault().insertIntoEventsList(discEv);
@@ -233,6 +240,10 @@ public class RevolDiscoveryEvent extends Event {
 
 				if (associatedNode.getNeighbors().size() == 0)
 					return;
+				
+				if (associatedNode.getNeighbors().size() == 1)
+					if (associatedNode.getNeighbors().get(0) == senderNode)
+						return;
 				
 				int numDestinations = (int) associatedNode.getFk()
 						* associatedNode.getNeighbors().size();
@@ -254,6 +265,9 @@ public class RevolDiscoveryEvent extends Event {
 						for (int j = 0; j < i; j++)
 							if (destinations[i] == destinations[j])
 								controlPassed = false;
+						if (senderNode != null)
+							if (associatedNode.getNeighbors().get(destinations[i]) == senderNode)
+								controlPassed = false;
 					} while (!controlPassed);
 					try {
 						Properties discEvParams = new Properties();
@@ -264,6 +278,7 @@ public class RevolDiscoveryEvent extends Event {
 								.getNeighbors().get(destinations[i])).getId());
 						discEv.setAssociatedNode((RevolNode) associatedNode
 							.getNeighbors().get(destinations[i]));
+						discEv.setSenderNode(associatedNode);
 						discEv.setResourceToSearchFor(res);
 						discEv.setTtl(ttl - 1);
 						Engine.getDefault().insertIntoEventsList(discEv);
