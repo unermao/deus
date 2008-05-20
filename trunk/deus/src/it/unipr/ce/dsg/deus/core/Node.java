@@ -39,8 +39,15 @@ public abstract class Node extends SimulationObject implements
 	}
 
 	public void addNeighbor(Node newNeighbor) {
-		neighbors.add(newNeighbor);
-		Collections.sort(neighbors); // sort by node id
+		// check if newNeighbor is already in the neighbors list
+		boolean isAlreadyNeighbor = false;
+		for (Iterator<Node> it = neighbors.iterator(); it.hasNext(); ) 
+			if (((Node)it.next()).id.equals(newNeighbor.id))
+				isAlreadyNeighbor = true;
+		if (!isAlreadyNeighbor) {	
+			neighbors.add(newNeighbor);
+			Collections.sort(neighbors); // sort by node id
+		}
 	}
 
 	public void removeNeighbor(Node neighbor) {
