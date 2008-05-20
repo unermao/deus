@@ -24,7 +24,7 @@ public class RevolFreeResourceEvent extends Event {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 	public void setResOwner(Node resOwner) {
 		this.resOwner = resOwner;
 	}
