@@ -10,9 +10,12 @@ import java.util.Random;
 
 
 public class RevolNode extends Node {
-	private static final String CPU = "cpu";
-	private static final String RAM = "ram";
-	private static final String DISK = "disk";
+	private static final String CPU_FACTOR = "cpuFactor";
+	private static final String RAM_FACTOR = "ramFactor";
+	private static final String DISK_FACTOR = "diskFactor";
+	private int cpuFactor = 0;
+	private int ramFactor = 0;
+	private int diskFactor = 0;	
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;	
@@ -35,12 +38,12 @@ public class RevolNode extends Node {
 
 	@Override
 	public void initialize() throws InvalidParamsException {
-		if (params.containsKey(CPU))
-			cpu = Integer.parseInt(params.getProperty(CPU));
-		if (params.containsKey(RAM))
-			ram = Integer.parseInt(params.getProperty(RAM));
-		if (params.containsKey(DISK))
-			disk = Integer.parseInt(params.getProperty(DISK));
+		if (params.containsKey(CPU_FACTOR))
+			cpuFactor = Integer.parseInt(params.getProperty(CPU_FACTOR));
+		if (params.containsKey(RAM_FACTOR))
+			ramFactor = Integer.parseInt(params.getProperty(RAM_FACTOR));
+		if (params.containsKey(DISK_FACTOR))
+			diskFactor = Integer.parseInt(params.getProperty(DISK_FACTOR));
 	}
 	
 	public Object clone() {
@@ -50,9 +53,9 @@ public class RevolNode extends Node {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 4; i++)
 			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
-		clone.setCpu((random.nextInt(cpu)+1)*1000);
-		clone.setRam((random.nextInt(ram)+1)*512);
-		clone.setDisk((random.nextInt(disk)+1)*512);
+		clone.setCpu((random.nextInt(cpuFactor)+1)*256);
+		clone.setRam((random.nextInt(ramFactor)+1)*256);
+		clone.setDisk((random.nextInt(diskFactor)+1)*256);
 		clone.q = 0;
 		clone.qh = 0;
 		clone.qhr = 0;
@@ -61,11 +64,11 @@ public class RevolNode extends Node {
 	}
 	
 	public int getKMax() {
-		return c[0]*2;
+		return ((int) c[0]/2 + 1);
 	}
 
 	public double getFk() {
-		return c[1]/10;
+		return (double) c[1]/10;
 	}
 
 	public int getTtlMax() {
@@ -158,14 +161,18 @@ public class RevolNode extends Node {
 	}
 	
 	public void dropExceedingNeighbors() {
+		//System.out.println("number of nodes: " + Engine.getDefault().getNodes().size());
+		//System.out.println("pre drop: k = " + neighbors.size());
 		int kMax = this.getKMax();
-		int numNeighbors = this.neighbors.size();
+		//System.out.println("kMax = " + kMax);
+		int numNeighbors = neighbors.size();
 		if (numNeighbors <= kMax)
 			return;
 		ArrayList<Node> newNeighborsList = new ArrayList<Node>();
 		for (int i = (numNeighbors - kMax); i < numNeighbors; i++)
-			newNeighborsList.add((RevolNode) this.neighbors.get(i));
-		this.neighbors = newNeighborsList;
+			newNeighborsList.add((RevolNode) neighbors.get(i));
+		neighbors = newNeighborsList;
+		//System.out.println("post drop: k = " + neighbors.size());
 	}
 	
 	public void dropExceedingResourceAdvs() {

@@ -24,6 +24,9 @@ public class LogRevolNodeStatsEvent extends Event {
 
 	@Override
 	public void run() throws RunException {
+		
+		getLogger().info("##### RevolNode stats:");
+		
 		int numNodes = Engine.getDefault().getNodes().size();
 		int numSearchers = 0;
 		int[] cTot = new int[4]; 
@@ -43,7 +46,7 @@ public class LogRevolNodeStatsEvent extends Event {
 		double[] cMean = new double[4];
 		for (int i = 0; i < 4; i++) {
 			cMean[i] = (double) cTot[i]/numNodes;
-			System.out.println("mean value of c " + i + " is " + cMean[i]);
+			getLogger().info("mean value of c" + i + " is " + cMean[i]);
 		}
 		
 		int[] cTotBiased = new int[4]; 
@@ -57,10 +60,10 @@ public class LogRevolNodeStatsEvent extends Event {
 		double[] cVariance = new double[4];
 		for (int i = 0; i < 4; i++) {
 			cVariance[i] = (double) cTotBiased[i]/(numNodes - 1);
-			System.out.println("variance of c " + i + " is " + cVariance[i]);
+			getLogger().info("variance of c" + i + " is " + cVariance[i]);
 		}
 			
-		System.out.println("mean QHR value: " + qhrTot/numSearchers);
+		getLogger().info("mean QHR value: " + qhrTot/numSearchers);
 	}
 
 }

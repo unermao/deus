@@ -47,13 +47,18 @@ public class RevolFreeResourceEvent extends Event {
 
 	@Override
 	public void run() throws RunException {
-		//System.out.println("## \n free");
+		System.out.println("## free resource");
 		if (this.resOwner == null)
 			return;
-		if (this.resName.equals("cpu"))
+		System.out.println("res owner: " + resOwner.getId());
+		System.out.println("res to be set free: " + resName);
+		if (this.resName.equals("cpu")) {
+			System.out.println("cpu amount before freedom: " + ((RevolNode) resOwner).getCpu());
 			((RevolNode) this.resOwner).setCpu(((RevolNode) this.resOwner)
 					.getCpu()
 					+ this.resAmount);
+			System.out.println("cpu amount after freedom: " + ((RevolNode) resOwner).getCpu());
+		}
 		else if (this.resName.equals("ram"))
 			((RevolNode) this.resOwner).setRam(((RevolNode) this.resOwner)
 					.getRam()
@@ -62,7 +67,7 @@ public class RevolFreeResourceEvent extends Event {
 			((RevolNode) this.resOwner).setDisk(((RevolNode) this.resOwner)
 					.getDisk()
 					+ this.resAmount);
-		//System.out.println("asd ##");
+		System.out.println("end free resource ##");
 	}
 
 }
