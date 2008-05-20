@@ -39,6 +39,7 @@ public class RevolBirthEvent extends Event {
 		Engine.getDefault().getNodes().add(n);
 		
 		//System.out.println(n.getC()[0] + " " + n.getC()[1] + " " + n.getC()[2] + " " + n.getC()[3]);
+		//System.out.println(n.getFk());
 		
 		addSchedulerListener(new SchedulerListener() {
 
