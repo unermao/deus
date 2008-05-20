@@ -42,6 +42,7 @@ public class LogNodeDegreeEvent extends Event {
 		for (int i = 0; i < nodeDegree.length; i++)
 			kValues[nodeDegree[i]]++;
 
+		getLogger().info("## Node degree distribution:");
 		for (int i = 0; i < kValues.length; i++)
 			getLogger().info(i + " " + kValues[i]);
 	}
