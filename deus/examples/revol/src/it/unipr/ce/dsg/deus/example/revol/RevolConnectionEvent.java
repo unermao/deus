@@ -35,6 +35,7 @@ public class RevolConnectionEvent extends Event {
 
 	public Object clone() {
 		RevolConnectionEvent clone = (RevolConnectionEvent) super.clone();
+		clone.initiator = null;
 		clone.target = null;
 		return clone;
 	}
