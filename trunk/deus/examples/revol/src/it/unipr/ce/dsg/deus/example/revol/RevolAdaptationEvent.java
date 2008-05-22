@@ -17,6 +17,7 @@ public class RevolAdaptationEvent extends Event {
 	private static final String A_3 = "a3";
 	
 	private RevolNode associatedNode = null;
+	private boolean hasSameAssociatedNode = false;
 	private double currentFitness = 0;
 	private int a0 = 0;
 	private int a1 = 0;
@@ -41,13 +42,22 @@ public class RevolAdaptationEvent extends Event {
 			a3 = Integer.parseInt(params.getProperty(A_3));
 	}
 
-	public void setNodeToAdapt(RevolNode associatedNode) {
+	public void setAssociatedNode(RevolNode associatedNode) {
 		this.associatedNode = associatedNode;
+	}
+	
+	public boolean hasSameAssociatedNode() {
+		return hasSameAssociatedNode;
+	}
+
+	public void setHasSameAssociatedNode(boolean hasSameAssociatedNode) {
+		this.hasSameAssociatedNode = hasSameAssociatedNode;
 	}
 
 	public Object clone() {
 		RevolAdaptationEvent clone = (RevolAdaptationEvent) super.clone();
-		//clone.associatedNode = null; // attenzione! in questo modo l'evento eredita l'associated node dell'evento clonato
+		if (!hasSameAssociatedNode)
+			clone.associatedNode = null; 
 		return clone;
 	}
 
@@ -84,7 +94,7 @@ public class RevolAdaptationEvent extends Event {
 		if (associatedNode.getNeighbors().size() == 0)
 			return;
 		
-		//System.out.println("### \n adaptation: go!");
+		getLogger().info("### adaptation! for node " + associatedNode.getId());
 		// valuta la fitness della configurazione corrente
 		currentFitness = computeFitness(associatedNode);
 		
