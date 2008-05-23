@@ -160,6 +160,8 @@ public class RevolNode extends Node {
 		this.g = g;
 	}
 	
+	
+	// FIXME deve buttare via quelli con fitness più bassa!
 	public void dropExceedingNeighbors() {
 		//System.out.println("number of nodes: " + Engine.getDefault().getNodes().size());
 		//System.out.println("pre drop: k = " + neighbors.size());
@@ -175,6 +177,7 @@ public class RevolNode extends Node {
 		//System.out.println("post drop: k = " + neighbors.size());
 	}
 	
+	// FIXME buttare via anzitutto quelli i cui associated nodes sono null!
 	public void dropExceedingResourceAdvs() {
 		int dMax = this.getKMax();
 		int numResourceAdvs = this.cache.size();

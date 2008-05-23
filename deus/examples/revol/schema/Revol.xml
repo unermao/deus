@@ -10,7 +10,8 @@
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.revol.RevolBirthEvent" >
 		<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" /> 
+		    <aut:reference id="adaptation" />
+		    <aut:reference id="discovery" />
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
 		</aut:events>
@@ -22,28 +23,30 @@
 		</aut:params>
 	</aut:event>
 	
+ 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
+		<aut:params>
+			<aut:param name="cpu" value="256" /><!-- MHz -->
+			<aut:param name="ram" value="256" /><!-- MB -->
+			<aut:param name="disk" value="512" /><!-- MB -->
+			<aut:param name="meanArrivalTriggeredDiscovery" value="5" />
+			<aut:param name="meanArrivalFreeResource" value="120000" />
+		</aut:params>
+	</aut:event>
+	
 	<aut:event id="adaptation" handler="it.unipr.ce.dsg.deus.example.revol.RevolAdaptationEvent" > 
 		<aut:params>
 			<aut:param name="a0" value="2" />
 			<aut:param name="a1" value="2" />
 			<aut:param name="a2" value="4" />
 			<aut:param name="a3" value="1" />
+			<aut:param name="selectionStrategy" value="proportional" /> 
+			<!-- other selection strategies: bestFitness, random, tournament, rank-based -->
 		</aut:params>
 	</aut:event>
 	
 	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent" oneShot="true" />
 	
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
-
-	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
-		<aut:params>
-			<aut:param name="cpu" value="2048" /><!-- MHz -->
-			<aut:param name="ram" value="2048" /><!-- MB -->
-			<aut:param name="disk" value="81920" /><!-- MB -->
-			<aut:param name="meanArrivalTriggeredDiscovery" value="5" />
-			<aut:param name="meanArrivalFreeResource" value="120000" />
-		</aut:params>
-	</aut:event>
 	 
 	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.deus.impl.event.LogNetworkSizeEvent" />
 
@@ -107,7 +110,7 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="6000" />
+			<aut:param name="meanArrival" value="60000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -131,7 +134,7 @@
 	
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="60000" /> 
+			<aut:param name="period" value="300000" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -146,10 +149,9 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="240001" seed="123456789"> <!-- 5400001 -->
+	<aut:engine maxvt="5400001" seed="123456789"> <!-- 5400001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
-			<aut:reference id="poisson4" />
 			<aut:reference id="periodic2" />	
 		</aut:processes>
 	</aut:engine>

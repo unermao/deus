@@ -15,6 +15,7 @@ public class RevolAdaptationEvent extends Event {
 	private static final String A_1 = "a1";
 	private static final String A_2 = "a2";
 	private static final String A_3 = "a3";
+	private static final String SELECTION_STRATEGY = "selectionStrategy";
 	
 	private RevolNode associatedNode = null;
 	private boolean hasSameAssociatedNode = false;
@@ -23,6 +24,7 @@ public class RevolAdaptationEvent extends Event {
 	private int a1 = 0;
 	private int a2 = 0;
 	private int a3 = 0;
+	private String selectionStrategy = null;
 	private double delta = 0.001;
 
 	public RevolAdaptationEvent(String id, Properties params,
@@ -40,6 +42,8 @@ public class RevolAdaptationEvent extends Event {
 			a2 = Integer.parseInt(params.getProperty(A_2));
 		if (params.containsKey(A_3))
 			a3 = Integer.parseInt(params.getProperty(A_3));
+		if (params.containsKey(SELECTION_STRATEGY))
+			selectionStrategy = params.getProperty(SELECTION_STRATEGY);		
 	}
 
 	public void setAssociatedNode(RevolNode associatedNode) {
@@ -69,6 +73,36 @@ public class RevolAdaptationEvent extends Event {
 		return ((a0*c[0]*2 + a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
 	}
 	
+	private RevolNode selection() {
+		RevolNode bestNeighbor = null;
+		if (selectionStrategy.equals("bestFitness")) {	
+			double bestNeighborFitness = 0;
+			RevolNode temp = null;
+			double tempFitness = 0;
+		    for (Iterator<Node> it = associatedNode.getNeighbors().iterator(); it.hasNext(); ) {
+		    	temp = (RevolNode) it.next(); 
+		    	tempFitness = computeFitness(temp);
+		    	if (tempFitness > bestNeighborFitness) {
+		    		bestNeighbor = temp;
+		    		bestNeighborFitness = tempFitness;
+		    	}
+		    }
+		}
+		else if (selectionStrategy.equals("random")) {
+			
+		}
+		else if (selectionStrategy.equals("proportional")) {
+			// TODO
+		}
+		else if (selectionStrategy.equals("tournament")) {
+			
+		}
+		else if (selectionStrategy.equals("rank-based")) {
+			
+		}
+	    return bestNeighbor;
+	}
+	
 	private int[][] crossover(int[] c1, int[] c2) {
 		int[][] offspring = new int[2][4];
 		// the crosspoint may be 1,2, or 3
@@ -84,7 +118,7 @@ public class RevolAdaptationEvent extends Event {
 		return offspring;
 	}
 	
-	private int[][] mutate(int[][] offspring) {
+	private int[][] mutation(int[][] offspring) {
 		return offspring;  // FIXME implementare la mutazione!
 	}
 	
@@ -99,38 +133,26 @@ public class RevolAdaptationEvent extends Event {
 		currentFitness = computeFitness(associatedNode);
 		
 		// valuta la fitness delle configurazioni dei vicini
-		RevolNode bestNeighbor = null;
-		double bestNeighborFitness = 0;
-		RevolNode temp = null;
-		double tempFitness = 0;
-	    for (Iterator<Node> it = associatedNode.getNeighbors().iterator(); it.hasNext(); ) {
-	    	temp = (RevolNode) it.next(); 
-	    	tempFitness = computeFitness(temp);
-	    	if (tempFitness > bestNeighborFitness) {
-	    		bestNeighbor = temp;
-	    		bestNeighborFitness = tempFitness;
-	    	}
-	    }
+		RevolNode bestNeighbor = selection();
 				
 		// se la fitness dei vicini è peggiore di quella del nodo, mantieni la config attuale
-	    if (currentFitness >= bestNeighborFitness)
+	    if (currentFitness >= computeFitness(bestNeighbor))
 	    	return;
 	    else {		
 			int g = ((RevolNode)associatedNode).getG();
 			((RevolNode)associatedNode).setG(g+1);
 			/*
-			System.out.println(((RevolNode)associatedNode).getG() + " adaptation of node " + associatedNode);
-			System.out.println("adaptation: previous gen: " + associatedNode.getC()[0] + 
+			getLogger().info("Generation: " + ((RevolNode)associatedNode).getG());
+			getLogger().info("adaptation: previous gen: " + associatedNode.getC()[0] + 
 								" " + associatedNode.getC()[1] +
 								" " + associatedNode.getC()[2] +
 								" " + associatedNode.getC()[3]);
 			*/
 			// cross-over tra miglior config vicina e locale 
-			//(in futuro la selez. deve essere probabilistica)
 			int[][] offspring = crossover(associatedNode.getC(), bestNeighbor.getC());
 			
 			// mutazione casuale dei due individui ottenuti
-			int[][] mutatedOffspring = mutate(offspring);
+			int[][] mutatedOffspring = mutation(offspring);
 			
 			// cfr i due individui con la config locale vecchia
 			// la migliore delle 3 config. viene settata come nuova config	
@@ -146,7 +168,7 @@ public class RevolAdaptationEvent extends Event {
 				return;
 			
 			/*
-			System.out.println("adaptation: new gen: " + associatedNode.getC()[0] + 
+			getLogger().info("adaptation: new gen: " + associatedNode.getC()[0] + 
 					" " + associatedNode.getC()[1] +
 					" " + associatedNode.getC()[2] +
 					" " + associatedNode.getC()[3]);
