@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
-public abstract class Node extends SimulationObject implements
-		Comparable<Node>, Cloneable {
+public abstract class Node extends SimulationObject implements Comparable<Node>, Cloneable {
 	protected String id = null;
 
 	protected ArrayList<Node> neighbors = null;
@@ -37,7 +36,7 @@ public abstract class Node extends SimulationObject implements
 			result = 1;
 		return result;
 	}
-
+	
 	public void addNeighbor(Node newNeighbor) {
 		// check if newNeighbor is already in the neighbors list
 		boolean isAlreadyNeighbor = false;
