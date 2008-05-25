@@ -5,7 +5,7 @@ import it.unipr.ce.dsg.deus.core.Node;
 
 import java.util.Properties;
 
-public class SuperNode extends Node {
+public class SuperNode extends Node  {
 
 	private int kMax = 0;
 	private float downloadBandwidth = 0;
