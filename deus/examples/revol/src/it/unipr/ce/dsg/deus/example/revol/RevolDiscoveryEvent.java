@@ -281,6 +281,7 @@ public class RevolDiscoveryEvent extends Event {
 		// altrimenti cerco in cache e se TTL > 0 propago la query a fk*k vicini
 		// escluso il mittente
 		else {
+			associatedNode.dropExceedingResourceAdvs(); // pulizia che non guasta
 			Iterator<ResourceAdv> it = associatedNode.getCache().iterator();
 			ResourceAdv resInCache = null;
 			while (it.hasNext() && (resFound == false)) {
@@ -315,7 +316,7 @@ public class RevolDiscoveryEvent extends Event {
 				} catch (InvalidParamsException e) {
 					e.printStackTrace();
 				}
-				//return; NON VA BENE perchè spesso capita che il nodo in cache non è più raggiungibile e quindi non trovo la risorsa
+				//return; // FIXME NON SO SE VA BENE perchè spesso capita che il nodo in cache non è più raggiungibile e quindi non trovo la risorsa
 			}
 			if (this.ttl > 0) {
 				// controlla che tutti i neighbor siano vivi e rimuovi quelli
