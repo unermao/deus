@@ -5,6 +5,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Random;
 
@@ -25,7 +26,7 @@ public class RevolNode extends Node {
 	
 	private int g = 0;
 	// chromosome
-	private int[] c = new int[4]; 
+	private int[] c = new int[3]; 
 	// query log
 	private int q = 0;
 	private int qh = 0;
@@ -54,7 +55,7 @@ public class RevolNode extends Node {
 		clone.g = 0;
 		clone.c = new int[4];
 		Random random = Engine.getDefault().getSimulationRandom(); 
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 3; i++)
 			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
 		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*256);
 		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
@@ -65,21 +66,17 @@ public class RevolNode extends Node {
 		clone.cache = new ArrayList<ResourceAdv>();
 		return clone;
 	}
-	
-	public int getKMax() {
-		return ((int) c[0]/2 + 1);
-	}
 
 	public double getFk() {
-		return (double) c[1]/10;
+		return (double) c[0]/10;
 	}
 
 	public int getTtlMax() {
-		return c[2];
+		return c[1];
 	}
 
 	public int getDMax() {
-		return c[3]*2;
+		return c[2]*2;
 	}
 
 	public int getInitialCpu() {
@@ -194,34 +191,34 @@ public class RevolNode extends Node {
 		this.g = g;
 	}
 	
-	
-	public void dropExceedingNeighbors() {
-		//System.out.println("number of nodes: " + Engine.getDefault().getNodes().size());
-		//System.out.println("pre drop: k = " + neighbors.size());
-		int kMax = this.getKMax();
-		//System.out.println("kMax = " + kMax);
-		int numNeighbors = neighbors.size();
-		if (numNeighbors <= kMax)
-			return;
-		ArrayList<Node> newNeighborsList = new ArrayList<Node>();
-		// conservo i kMax vicini aggiunti più di recente
-		for (int i = (numNeighbors - kMax); i < numNeighbors; i++)
-			newNeighborsList.add((RevolNode) neighbors.get(i));
-		neighbors = newNeighborsList;
-		//System.out.println("post drop: k = " + neighbors.size());
-	}
-	
-	// FIXME buttare via anzitutto quelli i cui associated nodes sono null!
 	public void dropExceedingResourceAdvs() {
-		int dMax = this.getKMax();
-		int numResourceAdvs = this.cache.size();
+		// pulizia della cache: via gli adv. associati a nodi morti
+		for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
+			ResourceAdv currentResourceAdv = it.next();
+			Node currentNode = currentResourceAdv.getOwner();
+			if ((currentNode == null) || (!currentNode.isReachable()))
+				this.removeResourceAdvFromCache(currentResourceAdv);
+		}
+		
+		int dMax = this.getDMax();
+		int numResourceAdvs = cache.size();
 		if (numResourceAdvs <= dMax)
 			return;
 		ArrayList<ResourceAdv> newResourceAdvsList = new ArrayList<ResourceAdv>();
 		// mantengo solo le più recenti
 		for (int i = (numResourceAdvs - dMax); i < numResourceAdvs; i++)
-			newResourceAdvsList.add((ResourceAdv) this.cache.get(i));
-		this.cache = newResourceAdvsList;
+			newResourceAdvsList.add((ResourceAdv) cache.get(i));
+		cache = newResourceAdvsList;
+	}
+	
+	public void removeResourceAdvFromCache(ResourceAdv currentResourceAdv) {
+		ArrayList<ResourceAdv> newCache = new ArrayList<ResourceAdv>();
+		for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
+			ResourceAdv r = it.next();
+			if (!r.equals(currentResourceAdv))
+				newCache.add(r);
+		}
+		cache = newCache;
 	}
 	
 }

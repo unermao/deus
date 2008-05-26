@@ -14,7 +14,6 @@ public class RevolAdaptationEvent extends Event {
 	private static final String A_0 = "a0";
 	private static final String A_1 = "a1";
 	private static final String A_2 = "a2";
-	private static final String A_3 = "a3";
 	private static final String SELECTION_STRATEGY = "selectionStrategy";
 	
 	private RevolNode associatedNode = null;
@@ -23,7 +22,6 @@ public class RevolAdaptationEvent extends Event {
 	private int a0 = 0;
 	private int a1 = 0;
 	private int a2 = 0;
-	private int a3 = 0;
 	private String selectionStrategy = null;
 	private double delta = 0.001;
 
@@ -40,8 +38,6 @@ public class RevolAdaptationEvent extends Event {
 			a1 = Integer.parseInt(params.getProperty(A_1));
 		if (params.containsKey(A_2))
 			a2 = Integer.parseInt(params.getProperty(A_2));
-		if (params.containsKey(A_3))
-			a3 = Integer.parseInt(params.getProperty(A_3));
 		if (params.containsKey(SELECTION_STRATEGY))
 			selectionStrategy = params.getProperty(SELECTION_STRATEGY);		
 	}
@@ -66,18 +62,23 @@ public class RevolAdaptationEvent extends Event {
 	}
 
 	private double computeFitness(RevolNode node) {
-		//return ((a0*node.getKMax() + a1*node.getFk() + a2*node.getTtlMax() + a3*node.getDMax()) / (node.getQhr() + delta));
-		return ((a1*node.getFk() + a2*node.getTtlMax() + a3*node.getDMax()) / (node.getQhr() + delta));
+		//return ((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQhr() + delta));
+		//return (node.getQhr() / (a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()));
+		return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) 
+				+ 1000 * ((node.getQ()) / (node.getQh() + delta)));
 	}
 	
-	private double computeFitness(int[] c, double qhr) {
-		//return ((a0*((int) c[0]/2 + 1) + a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
-		return ((a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
+	private double computeFitness(int[] c, double q, double qh) {
+		//return ((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qhr + delta));
+		//return (qhr / a0*c[0]/10 + a1*c[1] + a2*c[2]*2);
+		return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) 
+				+ 1000 * ((q) / (qh + delta)));
 	}
 	
 	private RevolNode selection() {
 		RevolNode bestNeighbor = null;
 		if (selectionStrategy.equals("bestFitness")) {	
+			/* vecchia soluzione
 			double bestNeighborFitness = 0;
 			RevolNode temp = null;
 			double tempFitness = 0;
@@ -89,6 +90,21 @@ public class RevolAdaptationEvent extends Event {
 		    		bestNeighborFitness = tempFitness;
 		    	}
 		    }
+		    */
+			RevolNode currentNeighbor = null;
+			double currentNeighborFitness = 0;
+			double bestNeighborFitness = 0;
+			for (int i = 0; i < associatedNode.getNeighbors().size(); i++) {
+				currentNeighborFitness = computeFitness(currentNeighbor);
+				if (i == 0)
+					bestNeighborFitness = currentNeighborFitness;
+				else {
+					if (currentNeighborFitness < bestNeighborFitness) {
+						bestNeighborFitness = currentNeighborFitness;
+						bestNeighbor = currentNeighbor;
+					}
+				}					
+			}
 		}
 		else if (selectionStrategy.equals("random")) {
 			// TODO
@@ -97,14 +113,16 @@ public class RevolAdaptationEvent extends Event {
 			// sommo le fitness di tutti i cromosomi
 			int numNeighbors = associatedNode.getNeighbors().size();
 			double sumOfFitnesses = 0;
-			for (int i = 0; i < numNeighbors; i++)
-				sumOfFitnesses += computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
+			for (int i = 0; i < numNeighbors; i++) {
+				getLogger().info(i + " 's fitness is: " + computeFitness((RevolNode) associatedNode.getNeighbors().get(i)));
+				sumOfFitnesses += 1 / computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
+			}
 			double fitnessCDF[] = new double[numNeighbors];
-			fitnessCDF[0] = computeFitness((RevolNode) associatedNode.getNeighbors().get(0)) / sumOfFitnesses;
-			//getLogger().info("0 " + fitnessCDF[0]);
+			fitnessCDF[0] = 1 / (computeFitness((RevolNode) associatedNode.getNeighbors().get(0)) * sumOfFitnesses);
+			getLogger().info("0 " + fitnessCDF[0]);
 			for (int i = 1; i < numNeighbors; i++) {
-				fitnessCDF[i] = fitnessCDF[i-1] + computeFitness((RevolNode) associatedNode.getNeighbors().get(i)) / sumOfFitnesses;
-				//getLogger().info(i + " " + fitnessCDF[i]);
+				fitnessCDF[i] = fitnessCDF[i-1] + 1 / (computeFitness((RevolNode) associatedNode.getNeighbors().get(i)) * sumOfFitnesses);
+				getLogger().info(i + " " + fitnessCDF[i]);
 			}
 			double randomDouble = Engine.getDefault().getSimulationRandom().nextDouble();
 			int i = 0;
@@ -113,7 +131,7 @@ public class RevolAdaptationEvent extends Event {
 					i++;
 				} while (randomDouble > fitnessCDF[i]);
 			}
-			//getLogger().info("random = " + randomDouble + ", thus selected neighbor is " + i);
+			getLogger().info("random = " + randomDouble + ", thus selected neighbor is " + i);
 			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
 		}
 		else if (selectionStrategy.equals("tournament")) {
@@ -178,8 +196,8 @@ public class RevolAdaptationEvent extends Event {
 			
 			// cfr i due individui con la config locale vecchia
 			// la migliore delle 3 config. viene settata come nuova config	
-			double firstFitness = computeFitness(mutatedOffspring[0], associatedNode.getQhr());
-			double secondFitness = computeFitness(mutatedOffspring[1], associatedNode.getQhr());
+			double firstFitness = computeFitness(mutatedOffspring[0], associatedNode.getQ(), associatedNode.getQh());
+			double secondFitness = computeFitness(mutatedOffspring[1], associatedNode.getQ(), associatedNode.getQh());
 			if ((firstFitness > secondFitness) && (currentFitness < firstFitness))
 				associatedNode.setC(mutatedOffspring[0]);
 			else if ((firstFitness < secondFitness) && (currentFitness < secondFitness))
