@@ -37,7 +37,7 @@ public abstract class Node extends SimulationObject implements Comparable<Node>,
 		return result;
 	}
 	
-	public void addNeighbor(Node newNeighbor) {
+	public boolean addNeighbor(Node newNeighbor) {
 		// check if newNeighbor is already in the neighbors list
 		boolean isAlreadyNeighbor = false;
 		for (Iterator<Node> it = neighbors.iterator(); it.hasNext(); ) 
@@ -46,7 +46,10 @@ public abstract class Node extends SimulationObject implements Comparable<Node>,
 		if (!isAlreadyNeighbor) {	
 			neighbors.add(newNeighbor);
 			Collections.sort(neighbors); // sort by node id
+			return true;
 		}
+		else
+			return false;
 	}
 
 	public void removeNeighbor(Node neighbor) {
