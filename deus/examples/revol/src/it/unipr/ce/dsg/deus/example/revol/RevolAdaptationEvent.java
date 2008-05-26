@@ -1,12 +1,10 @@
 package it.unipr.ce.dsg.deus.example.revol;
 
-import java.util.Iterator;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
@@ -95,9 +93,12 @@ public class RevolAdaptationEvent extends Event {
 			double currentNeighborFitness = 0;
 			double bestNeighborFitness = 0;
 			for (int i = 0; i < associatedNode.getNeighbors().size(); i++) {
+				currentNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
 				currentNeighborFitness = computeFitness(currentNeighbor);
-				if (i == 0)
+				if (i == 0) {
+					bestNeighbor = currentNeighbor;
 					bestNeighborFitness = currentNeighborFitness;
+				}
 				else {
 					if (currentNeighborFitness < bestNeighborFitness) {
 						bestNeighborFitness = currentNeighborFitness;
@@ -159,7 +160,7 @@ public class RevolAdaptationEvent extends Event {
 	}
 	
 	private int[][] mutation(int[][] offspring) {
-		return offspring;  // FIXME implementare la mutazione!
+		return offspring;  // TODO implementare la mutazione!
 	}
 	
 	@Override
