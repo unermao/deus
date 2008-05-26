@@ -340,7 +340,8 @@ public class RevolDiscoveryEvent extends Event {
 				if (numDestinations == associatedNode.getNeighbors().size())
 					numDestinations--; // to exclude senderNode
 				if (numDestinations == 0)
-					getLogger().info("node = " + associatedNode.getId());
+					numDestinations++;
+				getLogger().info("node = " + associatedNode.getId());
 				getLogger().info("ttl = " + ttl);
 				getLogger().info(
 						"Discovery: res " + res + " not found, send to "
