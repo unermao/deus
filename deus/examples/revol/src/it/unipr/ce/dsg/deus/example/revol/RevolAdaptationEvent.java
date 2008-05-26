@@ -66,11 +66,13 @@ public class RevolAdaptationEvent extends Event {
 	}
 
 	private double computeFitness(RevolNode node) {
-		return ((a0*node.getKMax() + a1*node.getFk() + a2*node.getTtlMax() + a3*node.getDMax()) / (node.getQhr() + delta));
+		//return ((a0*node.getKMax() + a1*node.getFk() + a2*node.getTtlMax() + a3*node.getDMax()) / (node.getQhr() + delta));
+		return ((a1*node.getFk() + a2*node.getTtlMax() + a3*node.getDMax()) / (node.getQhr() + delta));
 	}
 	
 	private double computeFitness(int[] c, double qhr) {
-		return ((a0*c[0]*2 + a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
+		//return ((a0*((int) c[0]/2 + 1) + a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
+		return ((a1*c[1]/10 + a2*c[2] + a3*c[3]*2) / (qhr + delta));
 	}
 	
 	private RevolNode selection() {
@@ -89,16 +91,36 @@ public class RevolAdaptationEvent extends Event {
 		    }
 		}
 		else if (selectionStrategy.equals("random")) {
-			
-		}
-		else if (selectionStrategy.equals("proportional")) {
 			// TODO
 		}
+		else if (selectionStrategy.equals("proportional")) {
+			// sommo le fitness di tutti i cromosomi
+			int numNeighbors = associatedNode.getNeighbors().size();
+			double sumOfFitnesses = 0;
+			for (int i = 0; i < numNeighbors; i++)
+				sumOfFitnesses += computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
+			double fitnessCDF[] = new double[numNeighbors];
+			fitnessCDF[0] = computeFitness((RevolNode) associatedNode.getNeighbors().get(0)) / sumOfFitnesses;
+			//getLogger().info("0 " + fitnessCDF[0]);
+			for (int i = 1; i < numNeighbors; i++) {
+				fitnessCDF[i] = fitnessCDF[i-1] + computeFitness((RevolNode) associatedNode.getNeighbors().get(i)) / sumOfFitnesses;
+				//getLogger().info(i + " " + fitnessCDF[i]);
+			}
+			double randomDouble = Engine.getDefault().getSimulationRandom().nextDouble();
+			int i = 0;
+			if (randomDouble > fitnessCDF[0]) {
+				do {
+					i++;
+				} while (randomDouble > fitnessCDF[i]);
+			}
+			//getLogger().info("random = " + randomDouble + ", thus selected neighbor is " + i);
+			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
+		}
 		else if (selectionStrategy.equals("tournament")) {
-			
+			// TODO
 		}
 		else if (selectionStrategy.equals("rank-based")) {
-			
+			// TODO
 		}
 	    return bestNeighbor;
 	}
@@ -141,13 +163,13 @@ public class RevolAdaptationEvent extends Event {
 	    else {		
 			int g = ((RevolNode)associatedNode).getG();
 			((RevolNode)associatedNode).setG(g+1);
-			/*
+			
 			getLogger().info("Generation: " + ((RevolNode)associatedNode).getG());
 			getLogger().info("adaptation: previous gen: " + associatedNode.getC()[0] + 
 								" " + associatedNode.getC()[1] +
 								" " + associatedNode.getC()[2] +
 								" " + associatedNode.getC()[3]);
-			*/
+			
 			// cross-over tra miglior config vicina e locale 
 			int[][] offspring = crossover(associatedNode.getC(), bestNeighbor.getC());
 			
@@ -167,13 +189,12 @@ public class RevolAdaptationEvent extends Event {
 			else
 				return;
 			
-			/*
 			getLogger().info("adaptation: new gen: " + associatedNode.getC()[0] + 
 					" " + associatedNode.getC()[1] +
 					" " + associatedNode.getC()[2] +
 					" " + associatedNode.getC()[3]);
-			*/
-			associatedNode.dropExceedingNeighbors();
+			
+			//associatedNode.dropExceedingNeighbors();
 			associatedNode.dropExceedingResourceAdvs();
 	    }		
 	}

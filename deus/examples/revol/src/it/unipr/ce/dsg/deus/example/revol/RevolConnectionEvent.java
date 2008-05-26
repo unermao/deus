@@ -40,9 +40,9 @@ public class RevolConnectionEvent extends Event {
 		return clone;
 	}
 
-	@Override
+	// TODO il numero di vicini iniziali deve essere un parametro 
 	public void run() throws RunException {
-		if (initiator.getNeighbors().size() < initiator.getKMax()) {
+		//if (initiator.getNeighbors().size() < initiator.getKMax()) {
 			if (target == null) {
 				if (Engine.getDefault().getNodes().size() > 1) {
 					//System.out.println("target is null and nodes are " + Engine.getDefault().getNodes().size());			
@@ -63,6 +63,6 @@ public class RevolConnectionEvent extends Event {
 			if (isBidirectional)
 				target.addNeighbor(initiator);
 		}
-	}
+	//}
 
 }

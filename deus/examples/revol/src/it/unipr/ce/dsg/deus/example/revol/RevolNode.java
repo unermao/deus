@@ -15,7 +15,10 @@ public class RevolNode extends Node {
 	private static final String DISK_FACTOR = "diskFactor";
 	private int cpuFactor = 0;
 	private int ramFactor = 0;
-	private int diskFactor = 0;	
+	private int diskFactor = 0;
+	private int initialCpu = 0;
+	private int initialRam = 0;
+	private int initialDisk = 0;
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;	
@@ -53,9 +56,9 @@ public class RevolNode extends Node {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 4; i++)
 			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
-		clone.setCpu((random.nextInt(cpuFactor)+1)*256);
-		clone.setRam((random.nextInt(ramFactor)+1)*256);
-		clone.setDisk((random.nextInt(diskFactor)+1)*256);
+		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*256);
+		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
+		clone.setInitialDisk((random.nextInt(diskFactor)+1)*256);
 		clone.q = 0;
 		clone.qh = 0;
 		clone.qhr = 0;
@@ -79,10 +82,37 @@ public class RevolNode extends Node {
 		return c[3]*2;
 	}
 
+	public int getInitialCpu() {
+		return initialCpu;
+	}
+
+	public void setInitialCpu(int initialCpu) {
+		this.initialCpu = initialCpu;
+		this.cpu = initialCpu;
+	}
+
+	public int getInitialRam() {
+		return initialRam;
+	}
+
+	public void setInitialRam(int initialRam) {
+		this.initialRam = initialRam;
+		this.ram = initialRam;
+	}
+
+	public int getInitialDisk() {
+		return initialDisk;
+	}
+
+	public void setInitialDisk(int initialDisk) {
+		this.initialDisk = initialDisk;
+		this.disk = initialDisk;
+	}
+
 	public int getCpu() {
 		return cpu;
 	}
-
+	
 	public void setCpu(int cpu) {
 		this.cpu = cpu;
 	}
@@ -143,6 +173,10 @@ public class RevolNode extends Node {
 		return cache;
 	}
 
+	public void setCache(ArrayList<ResourceAdv> cache) {
+		this.cache = cache;
+	}
+	
 	public void addToCache(ResourceAdv res) {
 		if (cache.size() < getDMax()) 
 			cache.add(res);
@@ -161,7 +195,6 @@ public class RevolNode extends Node {
 	}
 	
 	
-	// FIXME deve buttare via quelli con fitness più bassa!
 	public void dropExceedingNeighbors() {
 		//System.out.println("number of nodes: " + Engine.getDefault().getNodes().size());
 		//System.out.println("pre drop: k = " + neighbors.size());
@@ -171,6 +204,7 @@ public class RevolNode extends Node {
 		if (numNeighbors <= kMax)
 			return;
 		ArrayList<Node> newNeighborsList = new ArrayList<Node>();
+		// conservo i kMax vicini aggiunti più di recente
 		for (int i = (numNeighbors - kMax); i < numNeighbors; i++)
 			newNeighborsList.add((RevolNode) neighbors.get(i));
 		neighbors = newNeighborsList;
@@ -184,13 +218,10 @@ public class RevolNode extends Node {
 		if (numResourceAdvs <= dMax)
 			return;
 		ArrayList<ResourceAdv> newResourceAdvsList = new ArrayList<ResourceAdv>();
+		// mantengo solo le più recenti
 		for (int i = (numResourceAdvs - dMax); i < numResourceAdvs; i++)
 			newResourceAdvsList.add((ResourceAdv) this.cache.get(i));
 		this.cache = newResourceAdvsList;
 	}
-
-	public void setCache(ArrayList<ResourceAdv> cache) {
-		this.cache = cache;
-	}
-
+	
 }

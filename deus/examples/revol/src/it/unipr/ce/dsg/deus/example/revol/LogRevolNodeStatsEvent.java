@@ -33,6 +33,12 @@ public class LogRevolNodeStatsEvent extends Event {
 		for (int i = 0; i < 4; i++)
 			cTot[i] = 0;
 		double qhrTot = 0;
+		int initialCpuTot = 0;
+		int cpuTot = 0;
+		int initialRamTot = 0;
+		int ramTot = 0;
+		int initialDiskTot = 0;
+		int diskTot = 0;
 		RevolNode currentNode = null;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
 			currentNode = (RevolNode) it.next();
@@ -42,6 +48,12 @@ public class LogRevolNodeStatsEvent extends Event {
 				qhrTot += currentNode.getQhr();
 				numSearchers++;
 			}
+			initialCpuTot += currentNode.getInitialCpu();
+			cpuTot += currentNode.getCpu();
+			initialRamTot += currentNode.getInitialRam();
+			ramTot += currentNode.getRam();
+			initialDiskTot += currentNode.getInitialDisk();
+			diskTot += currentNode.getDisk();
 		}
 		double[] cMean = new double[4];
 		for (int i = 0; i < 4; i++) {
@@ -63,7 +75,14 @@ public class LogRevolNodeStatsEvent extends Event {
 			getLogger().info("variance of c" + i + " is " + cVariance[i]);
 		}
 			
-		getLogger().info("mean QHR value: " + qhrTot/numSearchers);
+		getLogger().info("mean QHR value: " + qhrTot / numSearchers);
+		
+		getLogger().info("mean initial CPU value: " + (double) initialCpuTot / numNodes);
+		getLogger().info("mean CPU value: " + (double) cpuTot / numNodes);
+		getLogger().info("mean initial RAM value: " + (double) initialRamTot / numNodes);
+		getLogger().info("mean RAM value: " + (double) ramTot / numNodes);
+		getLogger().info("mean initial DISK value: " + (double) initialDiskTot / numNodes);
+		getLogger().info("mean DISK value: " + (double) diskTot / numNodes);
 	}
 
 }
