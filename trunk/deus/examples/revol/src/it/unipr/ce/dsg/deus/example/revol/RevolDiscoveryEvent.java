@@ -246,19 +246,25 @@ public class RevolDiscoveryEvent extends Event {
 				associatedNode
 						.setRam(associatedNode.getRam() - res.getAmount());
 			else if (res.getName().equals("disk"))
-				associatedNode.setRam(associatedNode.getDisk()
+				associatedNode.setDisk(associatedNode.getDisk()
 						- res.getAmount());
 
 			// aggiungo owner alla lista dei vicini del nodo associato a questo
 			// evento
 			// n.b. se owner è già nella lista, non viene aggiunto
+			/*
 			if ((!associatedNode.getId().equals(interestedNode.getId()))
 					&& (interestedNode.getNeighbors().size() < interestedNode
 							.getKMax()))
+			*/
+			if (!associatedNode.getId().equals(interestedNode.getId())) {
 				interestedNode.addNeighbor(associatedNode);
+				associatedNode.addNeighbor(interestedNode);
+			}
 
 			// creo e metto in coda un evento che libererà la risorsa impegnata
 			try {
+				getLogger().info("set freeRes for " + res.getName() + " = " + res.getAmount());
 				Properties freeResEvParams = new Properties();
 				RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) 
 				new RevolFreeResourceEvent("freeResource", freeResEvParams, null)
@@ -314,6 +320,7 @@ public class RevolDiscoveryEvent extends Event {
 			if (this.ttl > 0) {
 				// controlla che tutti i neighbor siano vivi e rimuovi quelli
 				// null
+				getLogger().info("num neighbors: " + associatedNode.getNeighbors().size());
 				for (Iterator<Node> it2 = associatedNode.getNeighbors()
 						.iterator(); it2.hasNext();) {
 					Node currentNode = it2.next();
