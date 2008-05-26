@@ -315,7 +315,7 @@ public class RevolDiscoveryEvent extends Event {
 				} catch (InvalidParamsException e) {
 					e.printStackTrace();
 				}
-				return;
+				//return; NON VA BENE perchè spesso capita che il nodo in cache non è più raggiungibile e quindi non trovo la risorsa
 			}
 			if (this.ttl > 0) {
 				// controlla che tutti i neighbor siano vivi e rimuovi quelli
