@@ -167,7 +167,7 @@ public class RevolDiscoveryEvent extends Event {
 		if ((associatedNode.getNeighbors().size() == 0) || (!isNeighborAlive)) {
 			try {
 				Properties connEvParams = new Properties();
-				RevolConnectionEvent connEv = (RevolConnectionEvent) new RevolConnectionEvent(
+				RevolERConnectionEvent connEv = (RevolERConnectionEvent) new RevolERConnectionEvent(
 						"connection", connEvParams, null)
 						.createInstance(triggeringTime
 								+ expRandom(meanArrivalTriggeredDiscovery));
