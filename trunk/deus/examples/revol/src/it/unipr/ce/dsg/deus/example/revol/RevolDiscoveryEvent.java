@@ -172,7 +172,7 @@ public class RevolDiscoveryEvent extends Event {
 						.createInstance(triggeringTime
 								+ expRandom(meanArrivalTriggeredDiscovery));
 				connEv.setOneShot(true);
-				connEv.setNodesToConnect(associatedNode, null);
+				connEv.setNodeToConnect(associatedNode);
 				Engine.getDefault().insertIntoEventsList(connEv);
 			} catch (InvalidParamsException e) {
 				e.printStackTrace();

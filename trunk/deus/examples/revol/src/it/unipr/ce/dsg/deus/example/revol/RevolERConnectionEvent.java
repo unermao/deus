@@ -11,10 +11,11 @@ import java.util.Properties;
 
 public class RevolERConnectionEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
+	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
 	
 	private boolean isBidirectional = false;
+	private int numInitialConnections = 0;
 	private RevolNode initiator = null;
-	private RevolNode target = null;
 	
 	public RevolERConnectionEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -26,43 +27,54 @@ public class RevolERConnectionEvent extends Event {
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(IS_BIDIRECTIONAL))
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
+		if (params.containsKey(NUM_INITIAL_CONNECTIONS))
+			numInitialConnections = Integer.parseInt(params.getProperty(NUM_INITIAL_CONNECTIONS));
 	}
 
-	public void setNodesToConnect(RevolNode initiator, RevolNode target) {
+	public void setNodeToConnect(RevolNode initiator) {
 		this.initiator = initiator;
-		this.target = target;
 	}
 
 	public Object clone() {
 		RevolERConnectionEvent clone = (RevolERConnectionEvent) super.clone();
 		clone.initiator = null;
-		clone.target = null;
 		return clone;
 	}
-
-	// TODO il numero di vicini iniziali deve essere un parametro 
+ 
 	public void run() throws RunException {
-		//if (initiator.getNeighbors().size() < initiator.getKMax()) {
-			if (target == null) {
-				if (Engine.getDefault().getNodes().size() > 1) {
-					//System.out.println("target is null and nodes are " + Engine.getDefault().getNodes().size());			
-					do {
-						int randomInt = Engine.getDefault().getSimulationRandom().nextInt(
-								Engine.getDefault().getNodes().size());
-						Node randomNode = (RevolNode) Engine.getDefault().getNodes().get(randomInt);
-						// qui sotto dovrei fare un controllo: non è detto che tutti i nodi siano di tipo RevolNode
-						if (randomNode instanceof RevolNode)
-							target = (RevolNode) randomNode; 
+		if (Engine.getDefault().getNodes().size() > numInitialConnections) {
+			//System.out.println("N = " + Engine.getDefault().getNodes().size());
+			//System.out.println("initiator: " + initiator);
+			int m = 0;
+			if (Engine.getDefault().getNodes().size() < numInitialConnections)
+				m = Engine.getDefault().getNodes().size();
+			else
+				m = numInitialConnections;
+			//System.out.println("m = " + m);
+			int numConnectedNodes = 0;
+			do {
+				RevolNode target = null;			
+				do {
+					int randomInt = Engine.getDefault().getSimulationRandom().nextInt(
+					Engine.getDefault().getNodes().size());
+					Node randomNode = (RevolNode) Engine.getDefault().getNodes().get(randomInt);
+					if (randomNode instanceof RevolNode)
+						target = (RevolNode) randomNode; 
 					} while ((target == null) || (target.getId().equals(initiator.getId())));
+					//System.out.println("target: " + target);
+					if (initiator.addNeighbor(target)) {
+						initiator.setReachable(true);
+					if (isBidirectional) {
+						target.addNeighbor(initiator);
+						target.setReachable(true);
+					}
+					numConnectedNodes++;
 				}
-				else
-					return;
-			}
-			initiator.addNeighbor(target);
-			initiator.setReachable(true);
-			if (isBidirectional)
-				target.addNeighbor(initiator);
+				//System.out.println("numConnectedNodes: " + numConnectedNodes);
+			} while (numConnectedNodes < m);
 		}
-	//}
+		else
+			return;	
+	}
 
 }

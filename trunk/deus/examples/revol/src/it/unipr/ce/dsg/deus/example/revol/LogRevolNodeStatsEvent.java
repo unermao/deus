@@ -29,8 +29,8 @@ public class LogRevolNodeStatsEvent extends Event {
 		
 		int numNodes = Engine.getDefault().getNodes().size();
 		int numSearchers = 0;
-		int[] cTot = new int[4]; 
-		for (int i = 0; i < 4; i++)
+		int[] cTot = new int[3]; 
+		for (int i = 0; i < 3; i++)
 			cTot[i] = 0;
 		double qhrTot = 0;
 		int initialCpuTot = 0;
@@ -42,7 +42,7 @@ public class LogRevolNodeStatsEvent extends Event {
 		RevolNode currentNode = null;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
 			currentNode = (RevolNode) it.next();
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 3; i++)
 				cTot[i] += currentNode.getC()[i];
 			if (currentNode.getQ() > 0) {
 				qhrTot += currentNode.getQhr();
@@ -55,22 +55,22 @@ public class LogRevolNodeStatsEvent extends Event {
 			initialDiskTot += currentNode.getInitialDisk();
 			diskTot += currentNode.getDisk();
 		}
-		double[] cMean = new double[4];
-		for (int i = 0; i < 4; i++) {
+		double[] cMean = new double[3];
+		for (int i = 0; i < 3; i++) {
 			cMean[i] = (double) cTot[i]/numNodes;
 			getLogger().info("mean value of c" + i + " is " + cMean[i]);
 		}
 		
-		int[] cTotBiased = new int[4]; 
-		for (int i = 0; i < 4; i++)
+		int[] cTotBiased = new int[3]; 
+		for (int i = 0; i < 3; i++)
 			cTotBiased[i] = 0;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
 			currentNode = (RevolNode) it.next();
-			for (int i = 0; i < 4; i++)
+			for (int i = 0; i < 3; i++)
 				cTotBiased[i] += (currentNode.getC()[i] - cMean[i])*(currentNode.getC()[i] - cMean[i]);
 		}
-		double[] cVariance = new double[4];
-		for (int i = 0; i < 4; i++) {
+		double[] cVariance = new double[3];
+		for (int i = 0; i < 3; i++) {
 			cVariance[i] = (double) cTotBiased[i]/(numNodes - 1);
 			getLogger().info("variance of c" + i + " is " + cVariance[i]);
 		}
