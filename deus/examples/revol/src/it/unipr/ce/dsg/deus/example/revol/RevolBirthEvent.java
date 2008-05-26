@@ -44,8 +44,10 @@ public class RevolBirthEvent extends Event {
 		addSchedulerListener(new SchedulerListener() {
 
 			public void newEventScheduled(Event e) {
-				if (e instanceof RevolConnectionEvent) {
-					((RevolConnectionEvent) e).setNodesToConnect(n, null);
+				if (e instanceof RevolERConnectionEvent) {
+					((RevolERConnectionEvent) e).setNodesToConnect(n, null);
+				} else if (e instanceof RevolBAConnectionEvent) {
+					((RevolBAConnectionEvent) e).setNodesToConnect(n, null);
 				} else if (e instanceof DisconnectionEvent) {
 					((DisconnectionEvent) e).setNodesToDisconnect(n, null);
 				} else if (e instanceof DeathEvent) {
