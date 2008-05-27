@@ -10,14 +10,14 @@
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.revol.RevolBirthEvent" >
 		<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		   	<!-- aut:reference id="adaptation" / -->
+		   	<!-- <aut:reference id="adaptation" /> -->
 		    <aut:reference id="discovery" />
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.example.revol.RevolConnectionEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.example.revol.RevolERConnectionEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 			<aut:param name="numInitialConnections" value="3" />
@@ -26,6 +26,7 @@
 	
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
 		<aut:params>
+			<aut:param name="hasSameAssociatedNode" value="true" />
 			<aut:param name="cpu" value="1024" /><!-- MHz -->
 			<aut:param name="ram" value="1024" /><!-- MB -->
 			<aut:param name="disk" value="4096" /><!-- MB -->
@@ -36,10 +37,10 @@
 	
 	<aut:event id="adaptation" handler="it.unipr.ce.dsg.deus.example.revol.RevolAdaptationEvent" > 
 		<aut:params>
+			<aut:param name="hasSameAssociatedNode" value="true" />
 			<aut:param name="a0" value="1" />
 			<aut:param name="a1" value="4" />
 			<aut:param name="a2" value="3" />
-			<aut:param name="a3" value="4" />
 			<aut:param name="selectionStrategy" value="proportional" /> 
 			<!-- other selection strategies: bestFitness, random, tournament, rank-based -->
 		</aut:params>
@@ -123,7 +124,7 @@
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="60000" />
+			<aut:param name="period" value="90000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -135,7 +136,7 @@
 	
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="240000" /> 
+			<aut:param name="period" value="300000" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -150,7 +151,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="7200001" seed="123456789"> <!-- 7200001 -->
+	<aut:engine maxvt="5400001" seed="123456789"> <!-- 7200001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />	
