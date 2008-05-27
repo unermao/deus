@@ -12,6 +12,8 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 public class RevolDiscoveryEvent extends Event {
+	private static final String HAS_SAME_ASSOCIATED_NODE = "hasSameAssociatedNode";
+	private boolean hasSameAssociatedNode = false;
 	private static final String CPU = "cpu";
 	private static final String RAM = "ram";
 	private static final String DISK = "disk";
@@ -26,7 +28,7 @@ public class RevolDiscoveryEvent extends Event {
 	private boolean firstDiscoveryEvent = true;
 	private RevolNode senderNode = null;
 	private RevolNode associatedNode = null;
-	private boolean hasSameAssociatedNode = false;
+	
 	private ResourceAdv res = null;
 	private int ttl = 0;
 
@@ -37,6 +39,8 @@ public class RevolDiscoveryEvent extends Event {
 	}
 
 	public void initialize() throws InvalidParamsException {
+		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
+			hasSameAssociatedNode = Boolean.parseBoolean(HAS_SAME_ASSOCIATED_NODE);
 		if (params.containsKey(CPU))
 			cpu = Integer.parseInt(params.getProperty(CPU));
 		if (params.containsKey(RAM))
@@ -305,6 +309,7 @@ public class RevolDiscoveryEvent extends Event {
 							"discovery", discEvParams, null)
 							.createInstance(triggeringTime
 									+ expRandom(meanArrivalTriggeredDiscovery));
+					discEv.setHasSameAssociatedNode(false);
 					discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 					discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 					discEv.setFirstDiscoveryEvent(false);
@@ -371,6 +376,7 @@ public class RevolDiscoveryEvent extends Event {
 								"discovery", discEvParams, null)
 								.createInstance(triggeringTime
 										+ expRandom(meanArrivalTriggeredDiscovery));
+						discEv.setHasSameAssociatedNode(false);
 						discEv
 								.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 						discEv

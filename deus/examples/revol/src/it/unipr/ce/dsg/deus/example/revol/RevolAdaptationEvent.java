@@ -9,13 +9,14 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 public class RevolAdaptationEvent extends Event {
+	private static final String HAS_SAME_ASSOCIATED_NODE = "hasSameAssociatedNode";
+	private boolean hasSameAssociatedNode = false;
 	private static final String A_0 = "a0";
 	private static final String A_1 = "a1";
 	private static final String A_2 = "a2";
 	private static final String SELECTION_STRATEGY = "selectionStrategy";
 	
 	private RevolNode associatedNode = null;
-	private boolean hasSameAssociatedNode = false;
 	private double currentFitness = 0;
 	private int a0 = 0;
 	private int a1 = 0;
@@ -30,6 +31,8 @@ public class RevolAdaptationEvent extends Event {
 	}
 
 	public void initialize() throws InvalidParamsException {
+		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
+			hasSameAssociatedNode = Boolean.parseBoolean(HAS_SAME_ASSOCIATED_NODE);
 		if (params.containsKey(A_0))
 			a0 = Integer.parseInt(params.getProperty(A_0));
 		if (params.containsKey(A_1))
