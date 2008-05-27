@@ -151,7 +151,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="5400001" seed="123456789"> <!-- 7200001 -->
+	<aut:engine maxvt="7200001" seed="123456789"> <!-- 7200001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />	
