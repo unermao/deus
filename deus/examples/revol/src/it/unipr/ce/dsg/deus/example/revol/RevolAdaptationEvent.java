@@ -118,15 +118,15 @@ public class RevolAdaptationEvent extends Event {
 			int numNeighbors = associatedNode.getNeighbors().size();
 			double sumOfFitnesses = 0;
 			for (int i = 0; i < numNeighbors; i++) {
-				getLogger().info(i + " 's fitness is: " + computeFitness((RevolNode) associatedNode.getNeighbors().get(i)));
+				getLogger().fine(i + " 's fitness is: " + computeFitness((RevolNode) associatedNode.getNeighbors().get(i)));
 				sumOfFitnesses += 1 / computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
 			}
 			double fitnessCDF[] = new double[numNeighbors];
 			fitnessCDF[0] = 1 / (computeFitness((RevolNode) associatedNode.getNeighbors().get(0)) * sumOfFitnesses);
-			getLogger().info("0 " + fitnessCDF[0]);
+			getLogger().fine("0 " + fitnessCDF[0]);
 			for (int i = 1; i < numNeighbors; i++) {
 				fitnessCDF[i] = fitnessCDF[i-1] + 1 / (computeFitness((RevolNode) associatedNode.getNeighbors().get(i)) * sumOfFitnesses);
-				getLogger().info(i + " " + fitnessCDF[i]);
+				getLogger().fine(i + " " + fitnessCDF[i]);
 			}
 			double randomDouble = Engine.getDefault().getSimulationRandom().nextDouble();
 			int i = 0;
@@ -135,7 +135,7 @@ public class RevolAdaptationEvent extends Event {
 					i++;
 				} while (randomDouble > fitnessCDF[i]);
 			}
-			getLogger().info("random = " + randomDouble + ", thus selected neighbor is " + i);
+			getLogger().fine("random = " + randomDouble + ", thus selected neighbor is " + i);
 			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
 		}
 		else if (selectionStrategy.equals("tournament")) {
@@ -148,14 +148,14 @@ public class RevolAdaptationEvent extends Event {
 	}
 	
 	private int[][] crossover(int[] c1, int[] c2) {
-		int[][] offspring = new int[2][4];
-		// the crosspoint may be 1,2, or 3
-		int crosspoint = Engine.getDefault().getSimulationRandom().nextInt(3) + 1; 
+		int[][] offspring = new int[2][3];
+		// the crosspoint may be 1 or 2
+		int crosspoint = Engine.getDefault().getSimulationRandom().nextInt(2) + 1; 
 		for (int i = 0; i < crosspoint; i++) {
 			offspring[0][i] = c1[i];
 			offspring[1][i] = c2[i];
 		}
-		for (int i = crosspoint; i < 4; i++) {
+		for (int i = crosspoint; i < 3; i++) {
 			offspring[1][i] = c1[i];
 			offspring[0][i] = c2[i];
 		}
@@ -172,7 +172,7 @@ public class RevolAdaptationEvent extends Event {
 		if (associatedNode.getNeighbors().size() == 0)
 			return;
 		
-		getLogger().info("### adaptation! for node " + associatedNode.getId());
+		getLogger().fine("### adaptation! for node " + associatedNode.getId());
 		// valuta la fitness della configurazione corrente
 		currentFitness = computeFitness(associatedNode);
 		
@@ -186,11 +186,10 @@ public class RevolAdaptationEvent extends Event {
 			int g = ((RevolNode)associatedNode).getG();
 			((RevolNode)associatedNode).setG(g+1);
 			
-			getLogger().info("Generation: " + ((RevolNode)associatedNode).getG());
-			getLogger().info("adaptation: previous gen: " + associatedNode.getC()[0] + 
+			getLogger().fine("Generation: " + ((RevolNode)associatedNode).getG());
+			getLogger().fine("adaptation: previous gen: " + associatedNode.getC()[0] + 
 								" " + associatedNode.getC()[1] +
-								" " + associatedNode.getC()[2] +
-								" " + associatedNode.getC()[3]);
+								" " + associatedNode.getC()[2]);
 			
 			// cross-over tra miglior config vicina e locale 
 			int[][] offspring = crossover(associatedNode.getC(), bestNeighbor.getC());
@@ -211,10 +210,9 @@ public class RevolAdaptationEvent extends Event {
 			else
 				return;
 			
-			getLogger().info("adaptation: new gen: " + associatedNode.getC()[0] + 
+			getLogger().fine("adaptation: new gen: " + associatedNode.getC()[0] + 
 					" " + associatedNode.getC()[1] +
-					" " + associatedNode.getC()[2] +
-					" " + associatedNode.getC()[3]);
+					" " + associatedNode.getC()[2]);
 			
 			//associatedNode.dropExceedingNeighbors();
 			associatedNode.dropExceedingResourceAdvs();

@@ -53,7 +53,7 @@ public class RevolNode extends Node {
 	public Object clone() {
 		RevolNode clone = (RevolNode) super.clone();
 		clone.g = 0;
-		clone.c = new int[4];
+		clone.c = new int[3];
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
