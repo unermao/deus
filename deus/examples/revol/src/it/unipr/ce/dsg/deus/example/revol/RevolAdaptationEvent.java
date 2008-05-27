@@ -31,8 +31,8 @@ public class RevolAdaptationEvent extends Event {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
-			hasSameAssociatedNode = Boolean.parseBoolean(HAS_SAME_ASSOCIATED_NODE);
+		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE)) 
+			hasSameAssociatedNode = Boolean.parseBoolean(params.getProperty(HAS_SAME_ASSOCIATED_NODE));
 		if (params.containsKey(A_0))
 			a0 = Integer.parseInt(params.getProperty(A_0));
 		if (params.containsKey(A_1))
@@ -57,7 +57,7 @@ public class RevolAdaptationEvent extends Event {
 
 	public Object clone() {
 		RevolAdaptationEvent clone = (RevolAdaptationEvent) super.clone();
-		if (!hasSameAssociatedNode)
+		if (!hasSameAssociatedNode) 
 			clone.associatedNode = null; 
 		return clone;
 	}

@@ -40,7 +40,7 @@ public class RevolDiscoveryEvent extends Event {
 
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
-			hasSameAssociatedNode = Boolean.parseBoolean(HAS_SAME_ASSOCIATED_NODE);
+			hasSameAssociatedNode = Boolean.parseBoolean(params.getProperty(HAS_SAME_ASSOCIATED_NODE));
 		if (params.containsKey(CPU))
 			cpu = Integer.parseInt(params.getProperty(CPU));
 		if (params.containsKey(RAM))
