@@ -26,6 +26,7 @@ public class LogRevolNodeStatsEvent extends Event {
 	public void run() throws RunException {
 		
 		getLogger().info("##### RevolNode stats:");
+		getLogger().info("VT = " + Engine.getDefault().getVirtualTime());
 		
 		int numNodes = Engine.getDefault().getNodes().size();
 		int numSearchers = 0;
@@ -74,8 +75,6 @@ public class LogRevolNodeStatsEvent extends Event {
 			cVariance[i] = (double) cTotBiased[i]/(numNodes - 1);
 			getLogger().info("variance of c" + i + " is " + cVariance[i]);
 		}
-			
-		getLogger().info("mean QHR value: " + qhrTot / numSearchers);
 		
 		getLogger().info("mean initial CPU value: " + (double) initialCpuTot / numNodes);
 		getLogger().info("mean CPU value: " + (double) cpuTot / numNodes);
@@ -83,6 +82,7 @@ public class LogRevolNodeStatsEvent extends Event {
 		getLogger().info("mean RAM value: " + (double) ramTot / numNodes);
 		getLogger().info("mean initial DISK value: " + (double) initialDiskTot / numNodes);
 		getLogger().info("mean DISK value: " + (double) diskTot / numNodes);
+		getLogger().info("mean QHR value: " + qhrTot / numSearchers);
 	}
 
 }
