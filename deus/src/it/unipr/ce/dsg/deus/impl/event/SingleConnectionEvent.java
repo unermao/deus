@@ -9,14 +9,14 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
 
-public class ConnectionEvent extends Event {
+public class SingleConnectionEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	
 	private boolean isBidirectional = false;
 	private Node initiator = null;
 	private Node target = null;
 	
-	public ConnectionEvent(String id, Properties params, Process parentProcess)
+	public SingleConnectionEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,7 +34,7 @@ public class ConnectionEvent extends Event {
 	}
 
 	public Object clone() {
-		ConnectionEvent clone = (ConnectionEvent) super.clone();
+		SingleConnectionEvent clone = (SingleConnectionEvent) super.clone();
 		clone.target = null;
 		return clone;
 	}
