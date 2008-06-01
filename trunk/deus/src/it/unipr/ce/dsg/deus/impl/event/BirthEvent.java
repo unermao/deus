@@ -38,8 +38,8 @@ public class BirthEvent extends Event {
 		addSchedulerListener(new SchedulerListener() {
 
 			public void newEventScheduled(Event e) {
-				if (e instanceof ConnectionEvent) {
-					((ConnectionEvent) e).setNodesToConnect(n, null);
+				if (e instanceof SingleConnectionEvent) {
+					((SingleConnectionEvent) e).setNodesToConnect(n, null);
 				} else if (e instanceof DisconnectionEvent) {
 					((DisconnectionEvent) e).setNodesToDisconnect(n, null);
 				} else if (e instanceof DeathEvent) {
