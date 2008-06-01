@@ -20,7 +20,7 @@
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.impl.event.ConnectionEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.impl.event.SingleConnectionEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 		</aut:params>
