@@ -10,6 +10,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
 
 public class RevolDiscoveryEvent extends Event {
 	private static final String HAS_SAME_ASSOCIATED_NODE = "hasSameAssociatedNode";
@@ -171,7 +172,8 @@ public class RevolDiscoveryEvent extends Event {
 		if ((associatedNode.getNeighbors().size() == 0) || (!isNeighborAlive)) {
 			try {
 				Properties connEvParams = new Properties();
-				RevolERConnectionEvent connEv = (RevolERConnectionEvent) new RevolERConnectionEvent(
+				// FIXME the re-connection event should be set according to the value of a param
+				MultipleRandomConnectionsEvent connEv = (MultipleRandomConnectionsEvent) new MultipleRandomConnectionsEvent(
 						"connection", connEvParams, null)
 						.createInstance(triggeringTime
 								+ expRandom(meanArrivalTriggeredDiscovery));

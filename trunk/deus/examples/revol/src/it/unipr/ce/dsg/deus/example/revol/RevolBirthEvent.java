@@ -8,6 +8,7 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
 import it.unipr.ce.dsg.deus.impl.event.DeathEvent;
 import it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent;
+import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
 
 import java.util.Properties;
 
@@ -44,10 +45,8 @@ public class RevolBirthEvent extends Event {
 		addSchedulerListener(new SchedulerListener() {
 
 			public void newEventScheduled(Event e) {
-				if (e instanceof RevolERConnectionEvent) {
-					((RevolERConnectionEvent) e).setNodeToConnect(n);
-				} else if (e instanceof RevolBAConnectionEvent) {
-					((RevolBAConnectionEvent) e).setNodesToConnect(n, null);
+				if (e instanceof MultipleRandomConnectionsEvent) {
+					((MultipleRandomConnectionsEvent) e).setNodeToConnect(n);
 				} else if (e instanceof DisconnectionEvent) {
 					((DisconnectionEvent) e).setNodesToDisconnect(n, null);
 				} else if (e instanceof DeathEvent) {
