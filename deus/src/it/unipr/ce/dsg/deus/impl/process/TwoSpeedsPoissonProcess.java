@@ -34,15 +34,6 @@ public class TwoSpeedsPoissonProcess extends Process {
 		return secondMeanArrival;
 	}
 	
-	@Override
-	public float getNextTriggeringTime(float virtualTime) {
-		if (Engine.getDefault().getVirtualTime() < vtThreshold)
-			return virtualTime + expRandom((float) 1 / firstMeanArrival);
-		else
-			return virtualTime + expRandom((float) 1 / secondMeanArrival);
-	}
-
-	@Override
 	public void initialize() throws InvalidParamsException {
 		if (params.getProperty(FIRST_MEAN_ARRIVAL) == null)
 			throw new InvalidParamsException(FIRST_MEAN_ARRIVAL
@@ -76,6 +67,13 @@ public class TwoSpeedsPoissonProcess extends Process {
 		}
 	}
 
+	public float getNextTriggeringTime(float virtualTime) {
+		if (Engine.getDefault().getVirtualTime() < vtThreshold)
+			return virtualTime + expRandom((float) 1 / firstMeanArrival);
+		else
+			return virtualTime + expRandom((float) 1 / secondMeanArrival);
+	}
+	
 	// returns exponentially distributed random variable
 	private float expRandom(float lambda) {
 		float myRandom = (float) (-Math.log(Engine.getDefault().getSimulationRandom()
