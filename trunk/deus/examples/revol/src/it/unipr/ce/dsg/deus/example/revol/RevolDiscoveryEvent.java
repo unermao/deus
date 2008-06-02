@@ -194,6 +194,7 @@ public class RevolDiscoveryEvent extends Event {
 			associatedNode.setQ(associatedNode.getQ() + 1);
 			res = new ResourceAdv();
 			res.setInterestedNode(associatedNode);
+			senderNode = associatedNode;
 			int resourceType = random.nextInt(3);
 			switch (resourceType) {
 			case 0:
@@ -258,11 +259,6 @@ public class RevolDiscoveryEvent extends Event {
 			// aggiungo owner alla lista dei vicini del nodo associato a questo
 			// evento
 			// n.b. se owner è già nella lista, non viene aggiunto
-			/*
-			if ((!associatedNode.getId().equals(interestedNode.getId()))
-					&& (interestedNode.getNeighbors().size() < interestedNode
-							.getKMax()))
-			*/
 			if (!associatedNode.getId().equals(interestedNode.getId())) {
 				interestedNode.addNeighbor(associatedNode);
 				associatedNode.addNeighbor(interestedNode);
@@ -287,10 +283,13 @@ public class RevolDiscoveryEvent extends Event {
 		// altrimenti cerco in cache e se TTL > 0 propago la query a fk*k vicini
 		// escluso il mittente
 		else {
+			if (senderNode != associatedNode)
+				getLogger().fine("sender node = " + senderNode);
 			associatedNode.dropExceedingResourceAdvs(); // pulizia che non guasta
 			Iterator<ResourceAdv> it = associatedNode.getCache().iterator();
 			ResourceAdv resInCache = null;
 			while (it.hasNext() && (resFound == false)) {
+				getLogger().fine("search in cache");
 				resInCache = (ResourceAdv) it.next();
 				if ((resInCache.getName().equals(res.getName()))
 						&& (res.getAmount() <= resInCache.getAmount())
@@ -298,13 +297,14 @@ public class RevolDiscoveryEvent extends Event {
 						&& (resInCache.getOwner() != senderNode)
 						&& (resInCache.getOwner().isReachable())) {
 					resFound = true;
+					getLogger().fine("found in cache, owner is " + resInCache.getOwner().getId());
 				}
 			}
 			// manda discovery a resInCache.getOwner()
 			if (resFound == true) {
 				getLogger().fine(
 						"res " + res + " found in cache, owner = "
-								+ resInCache.getOwner());
+								+ resInCache.getOwner().getId());
 				try {
 					Properties discEvParams = new Properties();
 					RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
@@ -323,7 +323,7 @@ public class RevolDiscoveryEvent extends Event {
 				} catch (InvalidParamsException e) {
 					e.printStackTrace();
 				}
-				//return; // FIXME NON SO SE VA BENE perchè spesso capita che il nodo in cache non è più raggiungibile e quindi non trovo la risorsa
+				return; 
 			}
 			if (this.ttl > 0) {
 				// controlla che tutti i neighbor siano vivi e rimuovi quelli
