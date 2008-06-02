@@ -63,17 +63,15 @@ public class RevolAdaptationEvent extends Event {
 	}
 
 	private double computeFitness(RevolNode node) {
-		//return ((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQhr() + delta));
-		//return (node.getQhr() / (a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()));
-		return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) 
-				+ 1000 * ((node.getQ()) / (node.getQh() + delta)));
+		// la prima formula fa pesare molto il QHR
+		//return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) + (1/delta) * ((node.getQ()) / (node.getQh() + delta)));
+		return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) + ((node.getQ()) / (node.getQh() + delta)));
 	}
 	
 	private double computeFitness(int[] c, double q, double qh) {
-		//return ((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qhr + delta));
-		//return (qhr / a0*c[0]/10 + a1*c[1] + a2*c[2]*2);
-		return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) 
-				+ 1000 * ((q) / (qh + delta)));
+		// la prima formula fa pesare molto il QHR
+		//return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) + (1/delta) * ((q) / (qh + delta)));
+		return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) + ((q) / (qh + delta)));
 	}
 	
 	private RevolNode selection() {
