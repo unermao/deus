@@ -5,16 +5,14 @@ import java.util.Properties;
 import java.util.Random;
 
 import it.unipr.ce.dsg.deus.core.Engine;
-import it.unipr.ce.dsg.deus.core.Event;
+import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
 
-public class RevolDiscoveryEvent extends Event {
-	private static final String HAS_SAME_ASSOCIATED_NODE = "hasSameAssociatedNode";
-	private boolean hasSameAssociatedNode = false;
+public class RevolDiscoveryEvent extends NodeEvent {
 	private static final String CPU = "cpu";
 	private static final String RAM = "ram";
 	private static final String DISK = "disk";
@@ -28,7 +26,6 @@ public class RevolDiscoveryEvent extends Event {
 
 	private boolean firstDiscoveryEvent = true;
 	private RevolNode senderNode = null;
-	private RevolNode associatedNode = null;
 	
 	private ResourceAdv res = null;
 	private int ttl = 0;
@@ -40,8 +37,7 @@ public class RevolDiscoveryEvent extends Event {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
-			hasSameAssociatedNode = Boolean.parseBoolean(params.getProperty(HAS_SAME_ASSOCIATED_NODE));
+		super.initialize();
 		if (params.containsKey(CPU))
 			cpu = Integer.parseInt(params.getProperty(CPU));
 		if (params.containsKey(RAM))
@@ -89,18 +85,6 @@ public class RevolDiscoveryEvent extends Event {
 	public void setFirstDiscoveryEvent(boolean firstDiscoveryEvent) {
 		this.firstDiscoveryEvent = firstDiscoveryEvent;
 	}
-
-	public void setAssociatedNode(RevolNode associatedNode) {
-		this.associatedNode = associatedNode;
-	}
-
-	public boolean hasSameAssociatedNode() {
-		return hasSameAssociatedNode;
-	}
-
-	public void setHasSameAssociatedNode(boolean hasSameAssociatedNode) {
-		this.hasSameAssociatedNode = hasSameAssociatedNode;
-	}
 	
 	public void setSenderNode(RevolNode senderNode) {
 		this.senderNode = senderNode;
@@ -117,8 +101,6 @@ public class RevolDiscoveryEvent extends Event {
 	public Object clone() {
 		RevolDiscoveryEvent clone = (RevolDiscoveryEvent) super.clone();
 		clone.firstDiscoveryEvent = true;
-		if (!hasSameAssociatedNode)
-			clone.associatedNode = null;
 		clone.res = null;
 		clone.ttl = 0;
 		return clone;
@@ -132,6 +114,8 @@ public class RevolDiscoveryEvent extends Event {
 	}
 
 	public void run() throws RunException {
+		
+		RevolNode associatedRevolNode = (RevolNode) associatedNode;
 
 		getLogger().fine("######## Discovery ");
 		// System.out.println(cpuFactor + " " + ramFactor + " " + diskFactor);
@@ -140,15 +124,15 @@ public class RevolDiscoveryEvent extends Event {
 			if (res.isFound()) { // dovrebbe evitare l'occupazione di risorse
 									// che non servono piu' perche'
 									// l'interesetdNode ha gia' trovato
-				getLogger().fine("node: " + associatedNode.getId());
+				getLogger().fine("node: " + associatedRevolNode.getId());
 				getLogger().fine("res already found: " + res);
 				return;
 			}
 
-		if (associatedNode == null) {
+		if (associatedRevolNode == null) {
 			if (hasSameAssociatedNode == false) {
 				getLogger().fine("generating associated node ");
-				associatedNode = (RevolNode) Engine.getDefault().getNodes().get(
+				associatedRevolNode = (RevolNode) Engine.getDefault().getNodes().get(
 						Engine.getDefault().getSimulationRandom().nextInt(
 								Engine.getDefault().getNodes().size()));
 			}
@@ -156,20 +140,20 @@ public class RevolDiscoveryEvent extends Event {
 				return;
 		}
 
-		if (!associatedNode.isReachable()) {
+		if (!associatedRevolNode.isReachable()) {
 			getLogger().fine("associated node not reachable ");
 			return;
 		}
 
 		boolean isNeighborAlive = false;
-		if (associatedNode.getNeighbors().size() > 0) {
-			for (Iterator<Node> it = associatedNode.getNeighbors().iterator(); it
+		if (associatedRevolNode.getNeighbors().size() > 0) {
+			for (Iterator<Node> it = associatedRevolNode.getNeighbors().iterator(); it
 					.hasNext();)
 				if (it.next() != null)
 					isNeighborAlive = true;
 		}
 
-		if ((associatedNode.getNeighbors().size() == 0) || (!isNeighborAlive)) {
+		if ((associatedRevolNode.getNeighbors().size() == 0) || (!isNeighborAlive)) {
 			try {
 				Properties connEvParams = new Properties();
 				// FIXME the re-connection event should be set according to the value of a param
@@ -178,7 +162,7 @@ public class RevolDiscoveryEvent extends Event {
 						.createInstance(triggeringTime
 								+ expRandom(meanArrivalTriggeredDiscovery));
 				connEv.setOneShot(true);
-				connEv.setNodeToConnect(associatedNode);
+				connEv.setNodeToConnect(associatedRevolNode);
 				Engine.getDefault().insertIntoEventsList(connEv);
 			} catch (InvalidParamsException e) {
 				e.printStackTrace();
@@ -189,12 +173,12 @@ public class RevolDiscoveryEvent extends Event {
 		Random random = Engine.getDefault().getSimulationRandom();
 
 		if (firstDiscoveryEvent) {
-			getLogger().fine("First discovery from node " + associatedNode.getId());
-			ttl = associatedNode.getTtlMax();
-			associatedNode.setQ(associatedNode.getQ() + 1);
+			getLogger().fine("First discovery from node " + associatedRevolNode.getId());
+			ttl = associatedRevolNode.getTtlMax();
+			associatedRevolNode.setQ(associatedRevolNode.getQ() + 1);
 			res = new ResourceAdv();
-			res.setInterestedNode(associatedNode);
-			senderNode = associatedNode;
+			res.setInterestedNode(associatedRevolNode);
+			senderNode = associatedRevolNode;
 			int resourceType = random.nextInt(3);
 			switch (resourceType) {
 			case 0:
@@ -224,15 +208,15 @@ public class RevolDiscoveryEvent extends Event {
 		// non faccio distinzioni tra nodo generatore della query e nodi
 		// intermedi
 		boolean resFound = false;
-		// cerca risorsa tra quelle dell'associatedNode
-		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedNode
+		// cerca risorsa tra quelle dell'associatedRevolNode
+		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedRevolNode
 				.getCpu()))
-				|| ((res.getName().equals("ram")) && (res.getAmount() <= associatedNode
+				|| ((res.getName().equals("ram")) && (res.getAmount() <= associatedRevolNode
 						.getRam()))
-				|| ((res.getName().equals("disk")) && (res.getAmount() <= associatedNode
+				|| ((res.getName().equals("disk")) && (res.getAmount() <= associatedRevolNode
 						.getDisk()))) {
 			resFound = true;
-			res.setOwner(this.associatedNode);
+			res.setOwner(associatedRevolNode);
 
 			// se la risorsa viene trovata, notifica il nodo iniziatore
 			// (res.getInterestedNode())
@@ -242,26 +226,26 @@ public class RevolDiscoveryEvent extends Event {
 			// e gli aggiorno qh e qhr)
 
 			res.setFound(true);
-			getLogger().fine("Res " + res + " found in node " + associatedNode.getId());
+			getLogger().fine("Res " + res + " found in node " + associatedRevolNode.getId());
 			interestedNode.setQh(interestedNode.getQh() + 1);
 			interestedNode.updateQhr();
 			interestedNode.addToCache(res);
 			if (res.getName().equals("cpu"))
-				associatedNode
-						.setCpu(associatedNode.getCpu() - res.getAmount());
+				associatedRevolNode
+						.setCpu(associatedRevolNode.getCpu() - res.getAmount());
 			else if (res.getName().equals("ram"))
-				associatedNode
-						.setRam(associatedNode.getRam() - res.getAmount());
+				associatedRevolNode
+						.setRam(associatedRevolNode.getRam() - res.getAmount());
 			else if (res.getName().equals("disk"))
-				associatedNode.setDisk(associatedNode.getDisk()
+				associatedRevolNode.setDisk(associatedRevolNode.getDisk()
 						- res.getAmount());
 
 			// aggiungo owner alla lista dei vicini del nodo associato a questo
 			// evento
 			// n.b. se owner è già nella lista, non viene aggiunto
-			if (!associatedNode.getId().equals(interestedNode.getId())) {
-				interestedNode.addNeighbor(associatedNode);
-				associatedNode.addNeighbor(interestedNode);
+			if (!associatedRevolNode.getId().equals(interestedNode.getId())) {
+				interestedNode.addNeighbor(associatedRevolNode);
+				associatedRevolNode.addNeighbor(interestedNode);
 			}
 
 			// creo e metto in coda un evento che libererà la risorsa impegnata
@@ -272,7 +256,7 @@ public class RevolDiscoveryEvent extends Event {
 				new RevolFreeResourceEvent("freeResource", freeResEvParams, null)
 						.createInstance(triggeringTime
 								+ expRandom(meanArrivalFreeResource));
-				freeResEv.setResOwner(associatedNode);
+				freeResEv.setResOwner(associatedRevolNode);
 				freeResEv.setResName(res.getName());
 				freeResEv.setResAmount(res.getAmount());
 				Engine.getDefault().insertIntoEventsList(freeResEv);
@@ -283,10 +267,10 @@ public class RevolDiscoveryEvent extends Event {
 		// altrimenti cerco in cache e se TTL > 0 propago la query a fk*k vicini
 		// escluso il mittente
 		else {
-			if (senderNode != associatedNode)
+			if (senderNode != associatedRevolNode)
 				getLogger().fine("sender node = " + senderNode);
-			associatedNode.dropExceedingResourceAdvs(); // pulizia che non guasta
-			Iterator<ResourceAdv> it = associatedNode.getCache().iterator();
+			associatedRevolNode.dropExceedingResourceAdvs(); // pulizia che non guasta
+			Iterator<ResourceAdv> it = associatedRevolNode.getCache().iterator();
 			ResourceAdv resInCache = null;
 			while (it.hasNext() && (resFound == false)) {
 				getLogger().fine("search in cache");
@@ -316,7 +300,7 @@ public class RevolDiscoveryEvent extends Event {
 					discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 					discEv.setFirstDiscoveryEvent(false);
 					discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
-					discEv.setSenderNode(associatedNode);
+					discEv.setSenderNode(associatedRevolNode);
 					discEv.setResourceToSearchFor(res);
 					discEv.setTtl(0);
 					Engine.getDefault().insertIntoEventsList(discEv);
@@ -328,28 +312,28 @@ public class RevolDiscoveryEvent extends Event {
 			if (this.ttl > 0) {
 				// controlla che tutti i neighbor siano vivi e rimuovi quelli
 				// null
-				getLogger().fine("num neighbors: " + associatedNode.getNeighbors().size());
-				for (Iterator<Node> it2 = associatedNode.getNeighbors()
+				getLogger().fine("num neighbors: " + associatedRevolNode.getNeighbors().size());
+				for (Iterator<Node> it2 = associatedRevolNode.getNeighbors()
 						.iterator(); it2.hasNext();) {
 					Node currentNode = it2.next();
 					if ((currentNode == null) || (!currentNode.isReachable()))
-						associatedNode.removeNeighbor(currentNode);
+						associatedRevolNode.removeNeighbor(currentNode);
 				}
 
-				if (associatedNode.getNeighbors().size() == 0)
+				if (associatedRevolNode.getNeighbors().size() == 0)
 					return;
 
-				if (associatedNode.getNeighbors().size() == 1)
-					if (associatedNode.getNeighbors().get(0) == senderNode)
+				if (associatedRevolNode.getNeighbors().size() == 1)
+					if (associatedRevolNode.getNeighbors().get(0) == senderNode)
 						return;
 
-				int numDestinations = (int) associatedNode.getFk()
-						* associatedNode.getNeighbors().size();
-				if (numDestinations == associatedNode.getNeighbors().size())
+				int numDestinations = (int) associatedRevolNode.getFk()
+						* associatedRevolNode.getNeighbors().size();
+				if (numDestinations == associatedRevolNode.getNeighbors().size())
 					numDestinations--; // to exclude senderNode
 				if (numDestinations == 0)
 					numDestinations++;
-				getLogger().fine("node = " + associatedNode.getId());
+				getLogger().fine("node = " + associatedRevolNode.getId());
 				getLogger().fine("ttl = " + ttl);
 				getLogger().fine(
 						"Discovery: res " + res + " not found, send to "
@@ -357,16 +341,16 @@ public class RevolDiscoveryEvent extends Event {
 				// prendi numDestinations neighbors a caso (escludendo il
 				// mittente di questa query) e
 				// metti in coda un evento RevolDiscovery x ciascuno
-				// settando res, associatedNode, e ttl aggiornato
+				// settando res, associatedRevolNode, e ttl aggiornato
 				int[] destinations = new int[numDestinations];
 				for (int i = 0; i < numDestinations; i++) {
 					boolean controlPassed;
 					do {
 						controlPassed = true;
 						do {
-							destinations[i] = random.nextInt(associatedNode
+							destinations[i] = random.nextInt(associatedRevolNode
 									.getNeighbors().size());
-						} while (associatedNode.getNeighbors().get(
+						} while (associatedRevolNode.getNeighbors().get(
 								destinations[i]) == senderNode);
 						for (int j = 0; j < i; j++)
 							if (destinations[i] == destinations[j])
@@ -386,13 +370,13 @@ public class RevolDiscoveryEvent extends Event {
 						discEv.setFirstDiscoveryEvent(false);
 						getLogger().fine(
 								"Dest node: "
-										+ ((RevolNode) associatedNode
+										+ ((RevolNode) associatedRevolNode
 												.getNeighbors().get(
 														destinations[i]))
 												.getId());
-						discEv.setAssociatedNode((RevolNode) associatedNode
+						discEv.setAssociatedNode((RevolNode) associatedRevolNode
 								.getNeighbors().get(destinations[i]));
-						discEv.setSenderNode(associatedNode);
+						discEv.setSenderNode(associatedRevolNode);
 						discEv.setResourceToSearchFor(res);
 						discEv.setTtl(ttl - 1);
 						Engine.getDefault().insertIntoEventsList(discEv);
