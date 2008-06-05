@@ -106,24 +106,17 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		return clone;
 	}
 
-	// returns exponentially distributed random variable
-	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) * meanValue);
-		return myRandom;
-	}
-
+	
 	public void run() throws RunException {
 		
-		RevolNode associatedRevolNode = (RevolNode) associatedNode;
-
 		getLogger().fine("######## Discovery ");
-		// System.out.println(cpuFactor + " " + ramFactor + " " + diskFactor);
-
+		
+		RevolNode associatedRevolNode = (RevolNode) associatedNode;
+		
+		// the following if statement should avoid to search for resources
+		// which have been already found by the intersted node
 		if (res != null)
-			if (res.isFound()) { // dovrebbe evitare l'occupazione di risorse
-									// che non servono piu' perche'
-									// l'interesetdNode ha gia' trovato
+			if (res.isFound()) { 
 				getLogger().fine("node: " + associatedRevolNode.getId());
 				getLogger().fine("res already found: " + res);
 				return;
@@ -145,15 +138,17 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			return;
 		}
 
-		boolean isNeighborAlive = false;
+		// if the node associated to this discovery event has no neighbors
+		// or if they are not reachable, reconnect it and stop this discovery event sequence
+		boolean atLeastOneNeighborIsAlive = false;
 		if (associatedRevolNode.getNeighbors().size() > 0) {
-			for (Iterator<Node> it = associatedRevolNode.getNeighbors().iterator(); it
-					.hasNext();)
-				if (it.next() != null)
-					isNeighborAlive = true;
+			for (Iterator<Node> it = associatedRevolNode.getNeighbors().iterator(); it.hasNext();) {
+				Node currentNeighbor = it.next();
+				if ((currentNeighbor != null) && (currentNeighbor.isReachable()))
+					atLeastOneNeighborIsAlive = true;
+			}
 		}
-
-		if ((associatedRevolNode.getNeighbors().size() == 0) || (!isNeighborAlive)) {
+		if ((associatedRevolNode.getNeighbors().size() == 0) || (!atLeastOneNeighborIsAlive)) {
 			try {
 				Properties connEvParams = new Properties();
 				// FIXME the re-connection event should be set according to the value of a param
@@ -171,7 +166,32 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		}
 
 		Random random = Engine.getDefault().getSimulationRandom();
+		
+		firstDiscoveryCheck(associatedRevolNode, random);
 
+		RevolNode interestedNode = (RevolNode) res.getInterestedNode();
+		if ((interestedNode == null) || (!interestedNode.isReachable()))
+			return;
+			
+		if (isRequestedResourceLocallyAvailable(associatedRevolNode, interestedNode))
+			return;
+		else {
+			if (isResourceAdvInCache(associatedRevolNode))
+				return;
+			if (ttl > 0) 
+				propagateRequestToNeighbors(associatedRevolNode, random);
+		}
+	}
+	
+	
+	/**
+	 * Checks if this discovery event is the first of a discovery event sequence.
+	 * If it is, creates a random resource request and sets the associatedRevolNode as
+	 * the interestedNode for the requested resource 
+	 * @param associatedRevolNode
+	 * @param random
+	 */
+	public void firstDiscoveryCheck(RevolNode associatedRevolNode, Random random) {
 		if (firstDiscoveryEvent) {
 			getLogger().fine("First discovery from node " + associatedRevolNode.getId());
 			ttl = associatedRevolNode.getTtlMax();
@@ -198,33 +218,30 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			getLogger().fine("res name = " + res.getName());
 			getLogger().fine("res amount = " + res.getAmount());
 		}
-
-		RevolNode interestedNode = (RevolNode) res.getInterestedNode();
-		if ((interestedNode == null) || (!interestedNode.isReachable()))
-			return;
-
-		// NOTA: anche il nodo che genera la query cerca nelle sue risorse e
-		// nella propria cache!
-		// non faccio distinzioni tra nodo generatore della query e nodi
-		// intermedi
-		boolean resFound = false;
-		// cerca risorsa tra quelle dell'associatedRevolNode
+	}
+	
+	
+	/**
+	 * Searches locally for the resource associated to this discovery event. 
+	 * If the requested resource is locally available, updates the resource 
+	 * advertisement adding the resource owner (i.e. the node associated to 
+	 * this event), notifies the interested node (QH++, update QHR), 
+	 * connects the interested node and the resource owner,
+	 * stores the resource adv. in the cache of the interested node,
+	 * occupies the resource and puts a free resource event in the event queue.
+	 * @param associatedRevolNode
+	 * @param interestedNode
+	 * @return
+	 */
+	public boolean isRequestedResourceLocallyAvailable(RevolNode associatedRevolNode, 
+													   RevolNode interestedNode) {
 		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedRevolNode
 				.getCpu()))
 				|| ((res.getName().equals("ram")) && (res.getAmount() <= associatedRevolNode
 						.getRam()))
 				|| ((res.getName().equals("disk")) && (res.getAmount() <= associatedRevolNode
 						.getDisk()))) {
-			resFound = true;
 			res.setOwner(associatedRevolNode);
-
-			// se la risorsa viene trovata, notifica il nodo iniziatore
-			// (res.getInterestedNode())
-			// (gli metto la local resource nella cache (eventualmente
-			// eliminando
-			// l'item + vecchio),
-			// e gli aggiorno qh e qhr)
-
 			res.setFound(true);
 			getLogger().fine("Res " + res + " found in node " + associatedRevolNode.getId());
 			interestedNode.setQh(interestedNode.getQh() + 1);
@@ -240,9 +257,6 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				associatedRevolNode.setDisk(associatedRevolNode.getDisk()
 						- res.getAmount());
 
-			// aggiungo owner alla lista dei vicini del nodo associato a questo
-			// evento
-			// n.b. se owner è già nella lista, non viene aggiunto
 			if (!associatedRevolNode.getId().equals(interestedNode.getId())) {
 				interestedNode.addNeighbor(associatedRevolNode);
 				associatedRevolNode.addNeighbor(interestedNode);
@@ -263,128 +277,158 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			} catch (InvalidParamsException e) {
 				e.printStackTrace();
 			}
+			return true;
 		}
+		else
+			return false;
+	}
+	
+	
+	/**
+	 * If the cache of the peer contains the advertisement 
+	 * of a resource which match the needed one,
+	 * try to contact the owner.
+	 * @param associatedRevolNode
+	 * @return
+	 */
+	public boolean isResourceAdvInCache(RevolNode associatedRevolNode) {
 		// altrimenti cerco in cache e se TTL > 0 propago la query a fk*k vicini
 		// escluso il mittente
-		else {
-			if (senderNode != associatedRevolNode)
-				getLogger().fine("sender node = " + senderNode);
-			associatedRevolNode.dropExceedingResourceAdvs(); // pulizia che non guasta
-			Iterator<ResourceAdv> it = associatedRevolNode.getCache().iterator();
-			ResourceAdv resInCache = null;
-			while (it.hasNext() && (resFound == false)) {
-				getLogger().fine("search in cache");
-				resInCache = (ResourceAdv) it.next();
-				if ((resInCache.getName().equals(res.getName()))
-						&& (res.getAmount() <= resInCache.getAmount())
-						&& (resInCache.getOwner() != null)
-						&& (resInCache.getOwner() != senderNode)
-						&& (resInCache.getOwner().isReachable())) {
-					resFound = true;
-					getLogger().fine("found in cache, owner is " + resInCache.getOwner().getId());
-				}
+		boolean resFound = false;
+		if (senderNode != associatedRevolNode)
+			getLogger().fine("sender node = " + senderNode);
+		associatedRevolNode.dropExceedingResourceAdvs(); // clean the cache
+		Iterator<ResourceAdv> it = associatedRevolNode.getCache().iterator();
+		ResourceAdv resInCache = null;
+		while (it.hasNext() && (resFound == false)) {
+			getLogger().fine("search in cache");
+			resInCache = (ResourceAdv) it.next();
+			if ((resInCache.getName().equals(res.getName()))
+					&& (res.getAmount() <= resInCache.getAmount())
+					&& (resInCache.getOwner() != null)
+					&& (resInCache.getOwner() != senderNode)
+					&& (resInCache.getOwner().isReachable())) {
+				resFound = true;
+				getLogger().fine("found in cache, owner is " + resInCache.getOwner().getId());
 			}
-			// manda discovery a resInCache.getOwner()
-			if (resFound == true) {
-				getLogger().fine(
-						"res " + res + " found in cache, owner = "
-								+ resInCache.getOwner().getId());
-				try {
-					Properties discEvParams = new Properties();
-					RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
-							"discovery", discEvParams, null)
-							.createInstance(triggeringTime
-									+ expRandom(meanArrivalTriggeredDiscovery));
-					discEv.setHasSameAssociatedNode(false);
-					discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
-					discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
-					discEv.setFirstDiscoveryEvent(false);
-					discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
-					discEv.setSenderNode(associatedRevolNode);
-					discEv.setResourceToSearchFor(res);
-					discEv.setTtl(0);
-					Engine.getDefault().insertIntoEventsList(discEv);
-				} catch (InvalidParamsException e) {
-					e.printStackTrace();
-				}
-				return; 
+		}
+		if (resFound == true) {
+			getLogger().fine(
+					"res " + res + " found in cache, owner = "
+							+ resInCache.getOwner().getId());
+			try {
+				Properties discEvParams = new Properties();
+				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
+						"discovery", discEvParams, null)
+						.createInstance(triggeringTime
+								+ expRandom(meanArrivalTriggeredDiscovery));
+				discEv.setHasSameAssociatedNode(false);
+				discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
+				discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
+				discEv.setFirstDiscoveryEvent(false);
+				discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
+				discEv.setSenderNode(associatedRevolNode);
+				discEv.setResourceToSearchFor(res);
+				discEv.setTtl(0);
+				Engine.getDefault().insertIntoEventsList(discEv);
+			} catch (InvalidParamsException e) {
+				e.printStackTrace();
 			}
-			if (this.ttl > 0) {
-				// controlla che tutti i neighbor siano vivi e rimuovi quelli
-				// null
-				getLogger().fine("num neighbors: " + associatedRevolNode.getNeighbors().size());
-				for (Iterator<Node> it2 = associatedRevolNode.getNeighbors()
-						.iterator(); it2.hasNext();) {
-					Node currentNode = it2.next();
-					if ((currentNode == null) || (!currentNode.isReachable()))
-						associatedRevolNode.removeNeighbor(currentNode);
-				}
+			return true; 
+		}
+		else
+			return false;
+	}
+	
+	
+	/**
+	 * Propagates the resource request to fk*k neighbors.
+	 * @param associatedRevolNode
+	 * @param random
+	 */
+	public void propagateRequestToNeighbors(RevolNode associatedRevolNode, Random random) {
+		// check if neighbors are alive and remove those which are null from the neighbor list
+		getLogger().fine("num neighbors: " + associatedRevolNode.getNeighbors().size());
+		for (Iterator<Node> it2 = associatedRevolNode.getNeighbors()
+				.iterator(); it2.hasNext();) {
+			Node currentNode = it2.next();
+			if ((currentNode == null) || (!currentNode.isReachable()))
+				associatedRevolNode.removeNeighbor(currentNode);
+		}
 
-				if (associatedRevolNode.getNeighbors().size() == 0)
-					return;
+		if (associatedRevolNode.getNeighbors().size() == 0)
+			return;
 
-				if (associatedRevolNode.getNeighbors().size() == 1)
-					if (associatedRevolNode.getNeighbors().get(0) == senderNode)
-						return;
+		if (associatedRevolNode.getNeighbors().size() == 1)
+			if (associatedRevolNode.getNeighbors().get(0) == senderNode)
+				return;
 
-				int numDestinations = (int) associatedRevolNode.getFk()
-						* associatedRevolNode.getNeighbors().size();
-				if (numDestinations == associatedRevolNode.getNeighbors().size())
-					numDestinations--; // to exclude senderNode
-				if (numDestinations == 0)
-					numDestinations++;
-				getLogger().fine("node = " + associatedRevolNode.getId());
-				getLogger().fine("ttl = " + ttl);
+		int numDestinations = (int) associatedRevolNode.getFk()
+				* associatedRevolNode.getNeighbors().size();
+		if (numDestinations == associatedRevolNode.getNeighbors().size())
+			numDestinations--; // to exclude senderNode
+		if (numDestinations == 0)
+			numDestinations++;
+		getLogger().fine("node = " + associatedRevolNode.getId());
+		getLogger().fine("ttl = " + ttl);
+		getLogger().fine(
+				"Discovery: res " + res + " not found, send to "
+						+ numDestinations + " neighbors");
+		/**
+		 * take numDestinations neighbors randomly (excluding the sender of this query)
+		 * and put in the event queue a RevolDiscoveryEvent associated to each destination
+		 */ 
+		int[] destinations = new int[numDestinations];
+		for (int i = 0; i < numDestinations; i++) {
+			boolean controlPassed;
+			do {
+				controlPassed = true;
+				do {
+					destinations[i] = random.nextInt(associatedRevolNode
+							.getNeighbors().size());
+				} while (associatedRevolNode.getNeighbors().get(
+						destinations[i]) == senderNode);
+				for (int j = 0; j < i; j++)
+					if (destinations[i] == destinations[j])
+						controlPassed = false;
+			} while (!controlPassed);
+			try {
+				Properties discEvParams = new Properties();
+				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
+						"discovery", discEvParams, null)
+						.createInstance(triggeringTime
+								+ expRandom(meanArrivalTriggeredDiscovery));
+				discEv.setHasSameAssociatedNode(false);
+				discEv
+						.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
+				discEv
+						.setMeanArrivalFreeResource(meanArrivalFreeResource);
+				discEv.setFirstDiscoveryEvent(false);
 				getLogger().fine(
-						"Discovery: res " + res + " not found, send to "
-								+ numDestinations + " neighbors");
-				// prendi numDestinations neighbors a caso (escludendo il
-				// mittente di questa query) e
-				// metti in coda un evento RevolDiscovery x ciascuno
-				// settando res, associatedRevolNode, e ttl aggiornato
-				int[] destinations = new int[numDestinations];
-				for (int i = 0; i < numDestinations; i++) {
-					boolean controlPassed;
-					do {
-						controlPassed = true;
-						do {
-							destinations[i] = random.nextInt(associatedRevolNode
-									.getNeighbors().size());
-						} while (associatedRevolNode.getNeighbors().get(
-								destinations[i]) == senderNode);
-						for (int j = 0; j < i; j++)
-							if (destinations[i] == destinations[j])
-								controlPassed = false;
-					} while (!controlPassed);
-					try {
-						Properties discEvParams = new Properties();
-						RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
-								"discovery", discEvParams, null)
-								.createInstance(triggeringTime
-										+ expRandom(meanArrivalTriggeredDiscovery));
-						discEv.setHasSameAssociatedNode(false);
-						discEv
-								.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
-						discEv
-								.setMeanArrivalFreeResource(meanArrivalFreeResource);
-						discEv.setFirstDiscoveryEvent(false);
-						getLogger().fine(
-								"Dest node: "
-										+ ((RevolNode) associatedRevolNode
-												.getNeighbors().get(
-														destinations[i]))
-												.getId());
-						discEv.setAssociatedNode((RevolNode) associatedRevolNode
-								.getNeighbors().get(destinations[i]));
-						discEv.setSenderNode(associatedRevolNode);
-						discEv.setResourceToSearchFor(res);
-						discEv.setTtl(ttl - 1);
-						Engine.getDefault().insertIntoEventsList(discEv);
-					} catch (InvalidParamsException e) {
-						e.printStackTrace();
-					}
-				}
+						"Dest node: "
+								+ ((RevolNode) associatedRevolNode
+										.getNeighbors().get(
+												destinations[i]))
+										.getId());
+				discEv.setAssociatedNode((RevolNode) associatedRevolNode
+						.getNeighbors().get(destinations[i]));
+				discEv.setSenderNode(associatedRevolNode);
+				discEv.setResourceToSearchFor(res);
+				discEv.setTtl(ttl - 1);
+				Engine.getDefault().insertIntoEventsList(discEv);
+			} catch (InvalidParamsException e) {
+				e.printStackTrace();
 			}
 		}
 	}
+	
+	/** 
+	 * returns exponentially distributed random variable
+	 */
+	private float expRandom(float meanValue) {
+		float myRandom = (float) (-Math.log(Engine.getDefault()
+				.getSimulationRandom().nextFloat()) * meanValue);
+		return myRandom;
+	}
+
 }
