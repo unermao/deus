@@ -123,7 +123,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			}
 
 		if (associatedRevolNode == null) {
-			if (hasSameAssociatedNode == false) {
+			if ((hasSameAssociatedNode == false) && (Engine.getDefault().getNodes().size() > 0)) {
 				getLogger().fine("generating associated node ");
 				associatedRevolNode = (RevolNode) Engine.getDefault().getNodes().get(
 						Engine.getDefault().getSimulationRandom().nextInt(
