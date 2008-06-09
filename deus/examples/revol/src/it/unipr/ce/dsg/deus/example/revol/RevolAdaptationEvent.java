@@ -48,7 +48,8 @@ public class RevolAdaptationEvent extends NodeEvent {
 		double q = node.getQ();
 		double qh = node.getQh();
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
-		return ((1/(delta*delta*delta)) * (q/(qh + delta) - 1) / A  + A * qh / (q + delta));
+		return ((1 - qh/(q + delta)) / A + (qh /(q + delta)) * A);
+		//return ((1/(delta*delta)) * (q/(qh + delta) - 1) / A  + A * (qh / (q + delta)));
 		//return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) + (1/delta) * ((node.getQ()) / (node.getQh() + delta)));
 		//return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta)) + ((node.getQ()) / (node.getQh() + delta)));
 		//return ((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax()) / (node.getQh() + delta));
@@ -56,7 +57,8 @@ public class RevolAdaptationEvent extends NodeEvent {
 	
 	private double computeFitness(int[] c, double q, double qh) {
 		double A = a0*c[0]/10 + a1*c[1] + a2*c[2]*2;
-		return ((1/(delta*delta*delta)) * (q/(qh + delta) - 1) / A  + A * qh / (q + delta));
+		return ((1 - qh/(q + delta)) / A + (qh /(q + delta)) * A);
+		//return ((1/(delta*delta)) * (q/(qh + delta) - 1) / A  + A * (qh / (q + delta)));
 		//return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) + (1/delta) * ((q) / (qh + delta)));
 		//return (((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta)) + ((q) / (qh + delta)));
 		//return ((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta));
@@ -145,7 +147,9 @@ public class RevolAdaptationEvent extends NodeEvent {
 	}
 	
 	private int[][] mutation(int[][] offspring) {
-		return offspring;  // TODO implementare la mutazione!
+		int[][] mutatedOffspring = new int[2][3];
+		
+		return mutatedOffspring;  // TODO implementare la mutazione!
 	}
 	
 	@Override

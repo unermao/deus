@@ -82,6 +82,7 @@ public class LogRevolNodeStatsEvent extends Event {
 		getLogger().info("mean RAM value: " + (double) ramTot / numNodes);
 		getLogger().info("mean initial DISK value: " + (double) initialDiskTot / numNodes);
 		getLogger().info("mean DISK value: " + (double) diskTot / numNodes);
+		getLogger().info("num searchers = " + numSearchers);
 		getLogger().info("mean QHR value: " + qhrTot / numSearchers);
 	}
 
