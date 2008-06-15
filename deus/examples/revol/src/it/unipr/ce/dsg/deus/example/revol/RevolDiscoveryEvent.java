@@ -245,7 +245,6 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			res.setFound(true);
 			getLogger().fine("Res " + res + " found in node " + associatedRevolNode.getId());
 			interestedNode.setQh(interestedNode.getQh() + 1);
-			interestedNode.updateQhr();
 			interestedNode.addToCache(res);
 			if (res.getName().equals("cpu"))
 				associatedRevolNode

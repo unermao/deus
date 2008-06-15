@@ -30,7 +30,6 @@ public class RevolNode extends Node {
 	// query log
 	private int q = 0;
 	private int qh = 0;
-	private double qhr = 0;
 	
 	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>(); 
 	
@@ -62,7 +61,6 @@ public class RevolNode extends Node {
 		clone.setInitialDisk((random.nextInt(diskFactor)+1)*256);
 		clone.q = 0;
 		clone.qh = 0;
-		clone.qhr = 0;
 		clone.cache = new ArrayList<ResourceAdv>();
 		return clone;
 	}
@@ -155,17 +153,12 @@ public class RevolNode extends Node {
 	}
 
 	public double getQhr() {
-		return qhr;
+		if (this.q == 0)
+			return 0;
+		else
+			return this.qh / this.q;
 	}
 
-	public void setQhr(double qhr) {
-		this.qhr = qhr;
-	}
-
-	public void updateQhr() {
-		this.qhr = this.qh / this.q;
-	}
-	
 	public ArrayList<ResourceAdv> getCache() {
 		return cache;
 	}
