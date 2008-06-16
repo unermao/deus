@@ -25,6 +25,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	private float meanArrivalFreeResource = 0;
 
 	private boolean firstDiscoveryEvent = true;
+	private boolean isPropagation = false;
 	private RevolNode senderNode = null;
 	
 	private ResourceAdv res = null;
@@ -101,6 +102,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	public Object clone() {
 		RevolDiscoveryEvent clone = (RevolDiscoveryEvent) super.clone();
 		clone.firstDiscoveryEvent = true;
+		clone.isPropagation = false;
 		clone.res = null;
 		clone.ttl = 0;
 		return clone;
@@ -121,15 +123,22 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				getLogger().fine("res already found: " + res);
 				return;
 			}
-
+		
+		// FIXME e se il nodo non esiste perche' e' andato via???
 		if (associatedRevolNode == null) {
-			if ((hasSameAssociatedNode == false) && (Engine.getDefault().getNodes().size() > 0)) {
+			if ( (!isPropagation) && (hasSameAssociatedNode == false) && (Engine.getDefault().getNodes().size() > 0)) {
 				getLogger().fine("generating associated node ");
 				associatedRevolNode = (RevolNode) Engine.getDefault().getNodes().get(
 						Engine.getDefault().getSimulationRandom().nextInt(
 								Engine.getDefault().getNodes().size()));
 			}
-			else
+			else if (isPropagation) { // associate this discovery to a neighbor of the interested node
+				do {
+					associatedRevolNode = (RevolNode) res.getInterestedNode().getNeighbors().get(
+							Engine.getDefault().getSimulationRandom().nextInt(res.getInterestedNode().getNeighbors().size()));
+				} while (associatedRevolNode == null);
+			}
+			else	
 				return;
 		}
 
@@ -325,10 +334,11 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 				discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 				discEv.setFirstDiscoveryEvent(false);
+				discEv.setPropagation(true);
 				discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
 				discEv.setSenderNode(associatedRevolNode);
 				discEv.setResourceToSearchFor(res);
-				discEv.setTtl(0);
+				discEv.setTtl(ttl-1);
 				Engine.getDefault().insertIntoEventsList(discEv);
 			} catch (InvalidParamsException e) {
 				e.printStackTrace();
@@ -403,6 +413,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv
 						.setMeanArrivalFreeResource(meanArrivalFreeResource);
 				discEv.setFirstDiscoveryEvent(false);
+				discEv.setPropagation(true);
 				getLogger().fine(
 						"Dest node: "
 								+ ((RevolNode) associatedRevolNode
@@ -428,6 +439,14 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		float myRandom = (float) (-Math.log(Engine.getDefault()
 				.getSimulationRandom().nextFloat()) * meanValue);
 		return myRandom;
+	}
+
+	public boolean isPropagation() {
+		return isPropagation;
+	}
+
+	public void setPropagation(boolean isPropagation) {
+		this.isPropagation = isPropagation;
 	}
 
 }
