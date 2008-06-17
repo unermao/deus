@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.revol;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -49,7 +50,10 @@ public class RevolAdaptationEvent extends NodeEvent {
 		//double qh = node.getQh();
 		double qhr = node.getQhr();
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
-		return ((1 - qhr) / A + delta * qhr * A);
+		if (qhr < 0.95)
+			return (1 - qhr) / A;
+		else
+			return ((1 - qhr) / A + delta * qhr * A);
 		//return (1 - qh/(q + delta));
 		//return (1 - qh/(q + delta)) / A;
 		//return ((1 - qh/(q + delta)) / A + delta * (qh /(q + delta)) * A);
@@ -62,7 +66,10 @@ public class RevolAdaptationEvent extends NodeEvent {
 	
 	private double computeFitness(int[] c, double qhr) {
 		double A = a0*c[0]/10 + a1*c[1] + a2*c[2]*2;
-		return ((1 - qhr) / A + delta * qhr * A);
+		if (qhr < 0.95)
+			return (1 - qhr) / A;
+		else
+			return ((1 - qhr) / A + delta * qhr * A);
 		//return (1 - qh/(q + delta));
 		//return (1 - qh/(q + delta)) / A;
 		//return ((1 - qh/(q + delta)) / A + delta * (qh /(q + delta)) * A);
@@ -98,38 +105,11 @@ public class RevolAdaptationEvent extends NodeEvent {
 			// TODO
 		}
 		else if (selectionStrategy.equals("proportional")) {
-			// sommo le fitness di tutti i cromosomi
-			int numNeighbors = associatedNode.getNeighbors().size();
-			double fitness[] = new double[numNeighbors];
-			double sumFitnesses = 0;
-			for (int i = 0; i < numNeighbors; i++) {
-				fitness[i] = computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
-				getLogger().fine(i + " 's fitness is: " + fitness[i]);
-				sumFitnesses += fitness[i];
-			}
-			double inverseFitness[] = new double[numNeighbors];
-			double sumInverseFitnesses = 0;
-			for (int i = 0; i < numNeighbors; i++) {
-				inverseFitness[i] = sumFitnesses / fitness[i];
-				sumInverseFitnesses += inverseFitness[i];
-			}
-			
-			double inverseFitnessCDF[] = new double[numNeighbors];
-			inverseFitnessCDF[0] = inverseFitness[0] / sumInverseFitnesses;
-			getLogger().fine("0 " + inverseFitnessCDF[0]);
-			for (int i = 1; i < numNeighbors; i++) {
-				inverseFitnessCDF[i] = inverseFitnessCDF[i-1] + inverseFitness[i] / sumInverseFitnesses;
-				getLogger().fine(i + " " + inverseFitnessCDF[i]);
-			}
-			double randomDouble = Engine.getDefault().getSimulationRandom().nextDouble();
-			int i = 0;
-			if (randomDouble > inverseFitnessCDF[0]) {
-				do {
-					i++;
-				} while (randomDouble > inverseFitnessCDF[i]);
-			}
-			getLogger().fine("random = " + randomDouble + ", thus selected neighbor is " + i);
-			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
+			double[] fitnesses = new double[associatedNode.getNeighbors().size()];
+			for (int i = 0; i < associatedNode.getNeighbors().size(); i++)
+				fitnesses[i] = computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
+			int s = getRandomElementWithInverseProbability(fitnesses);
+			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(s);
 		}
 		else if (selectionStrategy.equals("tournament")) {
 			// TODO
@@ -138,6 +118,37 @@ public class RevolAdaptationEvent extends NodeEvent {
 			// TODO
 		}
 	    return bestNeighbor;
+	}
+	
+	private int getRandomElementWithInverseProbability(double[] values) {
+		int numElements = values.length;
+		double sumValues = 0;
+		for (int i = 0; i < numElements; i++) 
+			sumValues += values[i];
+		
+		double inverseValues[] = new double[numElements];
+		double sumInverseValues = 0;
+		for (int i = 0; i < numElements; i++) {
+			inverseValues[i] = sumValues / values[i];
+			sumInverseValues += inverseValues[i];
+		}
+		
+		double inverseValuesCDF[] = new double[numElements];
+		inverseValuesCDF[0] = inverseValues[0] / sumInverseValues;
+		getLogger().fine("0 " + inverseValuesCDF[0]);
+		for (int i = 1; i < numElements; i++) {
+			inverseValuesCDF[i] = inverseValuesCDF[i-1] + inverseValues[i] / sumInverseValues;
+			getLogger().fine(i + " " + inverseValuesCDF[i]);
+		}
+		double randomDouble = Engine.getDefault().getSimulationRandom().nextDouble();
+		int i = 0;
+		if (randomDouble > inverseValuesCDF[0]) {
+			do {
+				i++;
+			} while (randomDouble > inverseValuesCDF[i]);
+		}
+		getLogger().fine("random = " + randomDouble + ", thus selected element is " + i);
+		return i;
 	}
 	
 	private int[][] crossover(int[] c1, int[] c2) {
@@ -214,9 +225,16 @@ public class RevolAdaptationEvent extends NodeEvent {
 			double firstFitness = computeFitness(mutatedOffspring[0], associatedRevolNode.getQhr());
 			double secondFitness = computeFitness(mutatedOffspring[1], associatedRevolNode.getQhr());
 			
-			double sumFitnesses = currentFitness + firstFitness + secondFitness;
+			double[] fitnesses = new double[3];
+			fitnesses[0] = currentFitness;
+			fitnesses[1] = firstFitness;
+			fitnesses[2] = secondFitness;
 			
-			// TODO completare!! la selezione deve essere probabilistica
+			int s = getRandomElementWithInverseProbability(fitnesses);
+			if (s == 0)
+				return;
+			else 
+				associatedRevolNode.setC(mutatedOffspring[s - 1]);
 			
 			/*
 			if ((currentFitness <= firstFitness) && (firstFitness <= secondFitness))
@@ -228,6 +246,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 					|| ((secondFitness < firstFitness) && (firstFitness <= currentFitness)) )
 				associatedRevolNode.setC(mutatedOffspring[1]);			
 			*/
+			
 			getLogger().fine("new genotype: " + associatedRevolNode.getC()[0] + 
 					" " + associatedRevolNode.getC()[1] +
 					" " + associatedRevolNode.getC()[2]);
