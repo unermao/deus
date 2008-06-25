@@ -18,7 +18,7 @@
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 			<aut:param name="numInitialConnections" value="4" />
@@ -49,13 +49,13 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent" oneShot="true" />
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true" />
 	
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 	 
-	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.deus.impl.event.LogNetworkSizeEvent" />
+	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
-	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.impl.event.LogNodeDegreeEvent" />
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 	
 	<aut:event id="logRevolNodeStats" handler="it.unipr.ce.dsg.deus.example.revol.LogRevolNodeStatsEvent" />
 	
@@ -143,11 +143,8 @@
 		<aut:params>
 			<aut:param name="period" value="100000" /> 
 		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
 		<aut:events>
-		    <aut:reference id="logNetworkSize" />
+		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" /> 
 			<aut:reference id="logRevolNodeStats" /> 
 		</aut:events>

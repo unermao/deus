@@ -10,7 +10,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
+import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
 
 public class RevolDiscoveryEvent extends NodeEvent {
 	private static final String CPU = "cpu";

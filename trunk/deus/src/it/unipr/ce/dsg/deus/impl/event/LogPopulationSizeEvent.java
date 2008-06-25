@@ -8,9 +8,9 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class LogNetworkSizeEvent extends Event {
+public class LogPopulationSizeEvent extends Event {
 
-	public LogNetworkSizeEvent(String id, Properties params,
+	public LogPopulationSizeEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();

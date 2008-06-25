@@ -16,25 +16,25 @@
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.impl.event.SingleConnectionEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.SingleConnectionEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 		</aut:params>
 	</aut:event>
 
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent" oneShot="true" />
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true" />
 
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" />
 
 	<aut:event id="immediateDeath" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 
-	<aut:event id="logNetworkSize" handler="it.unipr.ce.dsg.deus.impl.event.LogNetworkSizeEvent" />
+	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
-	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.impl.event.LogNodeDegreeEvent" />
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 
 	<!-- *** NODE SPECIES *** -->
 
-	<aut:node id="supernode" handler="it.unipr.ce.dsg.deus.impl.node.SuperNode">
+	<aut:node id="supernode" handler="it.unipr.ce.dsg.deus.p2p.node.SuperNode">
 		<aut:params>
 			<aut:param name="maxPeerview" value="100" />
 			<aut:param name="downloadBandwidth" value="10" /><!-- Mbps -->
@@ -106,7 +106,7 @@
 			<aut:reference id="supernode" />
 		</aut:nodes>
 		<aut:events>
-		    <aut:reference id="logNetworkSize" />
+		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" />
 		</aut:events>
 	</aut:process>
