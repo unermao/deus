@@ -53,10 +53,8 @@ public class RevolBirthEvent extends Event {
 					((DeathEvent) e).setNodeToKill(n);
 				} else if (e instanceof RevolAdaptationEvent) {
 					((RevolAdaptationEvent) e).setAssociatedNode(n);
-					//((RevolAdaptationEvent) e).setHasSameAssociatedNode(true);
 				} else if (e instanceof RevolDiscoveryEvent) {
 					((RevolDiscoveryEvent) e).setAssociatedNode(n);
-					//((RevolDiscoveryEvent) e).setHasSameAssociatedNode(true);
 				}
 			}
 
