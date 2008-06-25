@@ -28,8 +28,28 @@
 			<element name="params" type="tns:params" minOccurs="0"
 				maxOccurs="1">
 			</element>
+			<element name="resources" type="tns:resources" minOccurs="0"
+				maxOccurs="1">
+			</element>
 		</sequence>
 		<attribute name="id" type="string" use="required"></attribute>
+		<attribute name="handler" type="string" use="required"></attribute>
+	</complexType>
+
+	<complexType name="resources">
+		<sequence>
+			<element name="resource" type="tns:resource" maxOccurs="unbounded"
+				minOccurs="1">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="resource">
+		<sequence>
+			<element name="params" type="tns:params" minOccurs="0"
+				maxOccurs="1">
+			</element>
+		</sequence>
 		<attribute name="handler" type="string" use="required"></attribute>
 	</complexType>
 
@@ -40,7 +60,7 @@
 			<element name="params" type="tns:params" minOccurs="0"
 				maxOccurs="1">
 			</element>
-			<element name="nodes" type="tns:references" minOccurs="1"
+			<element name="nodes" type="tns:references" minOccurs="0"
 				maxOccurs="1">
 			</element>
 			<element name="events" type="tns:references" minOccurs="1"

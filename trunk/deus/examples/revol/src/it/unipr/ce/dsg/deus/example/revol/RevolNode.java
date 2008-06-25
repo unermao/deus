@@ -11,6 +11,7 @@ import java.util.Random;
 
 
 public class RevolNode extends Node {
+	/*
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
@@ -23,6 +24,7 @@ public class RevolNode extends Node {
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;	
+	*/
 	
 	private int g = 0;
 	// chromosome
@@ -41,12 +43,14 @@ public class RevolNode extends Node {
 
 	@Override
 	public void initialize() throws InvalidParamsException {
+		/*
 		if (params.containsKey(CPU_FACTOR))
 			cpuFactor = Integer.parseInt(params.getProperty(CPU_FACTOR));
 		if (params.containsKey(RAM_FACTOR))
 			ramFactor = Integer.parseInt(params.getProperty(RAM_FACTOR));
 		if (params.containsKey(DISK_FACTOR))
 			diskFactor = Integer.parseInt(params.getProperty(DISK_FACTOR));
+			*/
 	}
 	
 	public Object clone() {
