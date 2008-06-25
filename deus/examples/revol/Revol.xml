@@ -10,7 +10,7 @@
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.revol.RevolBirthEvent" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		   	<aut:reference id="adaptation" /> 
+		   	<!--  aut:reference id="adaptation" />  -->
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -31,7 +31,7 @@
 			<aut:param name="ram" value="1024" /><!-- MB -->
 			<aut:param name="disk" value="40960" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
-			<aut:param name="meanArrivalFreeResource" value="360000" />
+			<aut:param name="meanArrivalFreeResource" value="100000" />
 		</aut:params>
 	</aut:event>
 	
@@ -77,7 +77,7 @@
 
 	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="1000" />
+			<aut:param name="meanArrival" value="2000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" /><!-- this is to associate the process to a specific type of nodes -->
@@ -114,9 +114,9 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="200000" />
-			<aut:param name="secondMeanArrival" value="100000" />
-			<aut:param name="vtThreshold" value="1000000" />
+			<aut:param name="firstMeanArrival" value="150000" />
+			<aut:param name="secondMeanArrival" value="200000" />
+			<aut:param name="vtThreshold" value="1800000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -155,7 +155,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3000001" seed="123456789"> <!-- 3600001 -->
+	<aut:engine maxvt="3600001" seed="123456789"> <!-- 3600001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />	
