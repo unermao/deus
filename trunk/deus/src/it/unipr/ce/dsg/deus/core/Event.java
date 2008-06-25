@@ -35,7 +35,16 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 
 	public Event createInstance(float triggeringTime) {
 		Event clone = (Event) clone();
-		clone.schedulerListener = schedulerListener;
+		if (schedulerListener != null)
+			try {
+				clone.schedulerListener = schedulerListener.getClass().newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		clone.triggeringTime = triggeringTime;
 		return clone;
 	}

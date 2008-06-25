@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.core;
 
-import it.unipr.ce.dsg.deus.example.revol.RevolNode;
 
 import java.util.Properties;
 
