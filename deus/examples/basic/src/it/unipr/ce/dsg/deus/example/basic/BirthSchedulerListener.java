@@ -12,7 +12,6 @@ public class BirthSchedulerListener implements SchedulerListener {
 	@Override
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		BirthEvent be = (BirthEvent) parentEvent; 
-		System.out.println(be.getAssociatedNode());
 		if (newEvent instanceof SingleConnectionEvent) {
 			((SingleConnectionEvent) newEvent).setNodesToConnect(be.getAssociatedNode(), null);
 		} else if (newEvent instanceof DisconnectionEvent) {
