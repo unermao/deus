@@ -7,7 +7,8 @@
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent"><!-- when scheduled, creates a new node -->
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent"
+	 schedulerListener="it.unipr.ce.dsg.deus.example.basic.BirthSchedulerListener"><!-- when scheduled, creates a new node -->
 		<aut:events><!-- events to be scheduled on created node --><!-- come garantisco l'ordine? -->
 		    <aut:reference id="connection" />
 		    <aut:reference id="disconnection" />

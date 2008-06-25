@@ -11,7 +11,7 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 	protected ArrayList<Event> referencedEvents = null;
 	protected float triggeringTime = 0;
 	protected Process parentProcess = null;
-	private ArrayList<SchedulerListener> schedulerListeners = null;
+	private SchedulerListener schedulerListener = null;
 	
 	public Event(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -19,7 +19,6 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 		this.params = params;
 		this.parentProcess = parentProcess;
 		this.referencedEvents = new ArrayList<Event>();
-		this.schedulerListeners = new ArrayList<SchedulerListener>();
 	}
 
 	public Properties getParams() {
@@ -36,7 +35,7 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 
 	public Event createInstance(float triggeringTime) {
 		Event clone = (Event) clone();
-		clone.schedulerListeners= new ArrayList<SchedulerListener>();
+		clone.schedulerListener = schedulerListener;
 		clone.triggeringTime = triggeringTime;
 		return clone;
 	}
@@ -70,9 +69,7 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 				continue;
 			nextTriggeringTime = event.getParentProcess().getNextTriggeringTime(nextTriggeringTime);
 			Event eventToSchedule = event.createInstance(nextTriggeringTime);
-			for(Iterator<SchedulerListener> it2 = schedulerListeners.iterator(); it2.hasNext(); ) {
-				it2.next().newEventScheduled(eventToSchedule);
-			}
+			schedulerListener.newEventScheduled(this, eventToSchedule);
 			Engine.getDefault().insertIntoEventsList(eventToSchedule);
 		}
 	}
@@ -96,8 +93,8 @@ public abstract class Event  extends SimulationObject implements Comparable<Even
 		return parentProcess;
 	}
 
-	public void addSchedulerListener(SchedulerListener l) {
-		schedulerListeners.add(l);
+	public void setSchedulerListener(SchedulerListener l) {
+		schedulerListener = l;
 	}
 	
 	public void setOneShot(boolean isOneShot) {

@@ -28,7 +28,7 @@ public abstract class NodeEvent extends Event {
 		return associatedNode;
 	}
 	
-	public void setAssociatedNode(RevolNode associatedNode) {
+	public void setAssociatedNode(Node associatedNode) {
 		this.associatedNode = associatedNode;
 	}
 	
