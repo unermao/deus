@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.impl.event;
+package it.unipr.ce.dsg.deus.p2p.event;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;

@@ -3,8 +3,8 @@ package it.unipr.ce.dsg.deus.example.revol;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
 import it.unipr.ce.dsg.deus.impl.event.DeathEvent;
-import it.unipr.ce.dsg.deus.impl.event.DisconnectionEvent;
-import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
+import it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent;
+import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
 
 public class RevolBirthSchedulerListener implements SchedulerListener {
 

@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.impl.node;
+package it.unipr.ce.dsg.deus.p2p.node;
 
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
