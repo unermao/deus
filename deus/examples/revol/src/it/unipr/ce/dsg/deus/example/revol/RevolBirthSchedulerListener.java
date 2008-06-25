@@ -8,7 +8,6 @@ import it.unipr.ce.dsg.deus.impl.event.MultipleRandomConnectionsEvent;
 
 public class RevolBirthSchedulerListener implements SchedulerListener {
 
-	@Override
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		RevolBirthEvent be = (RevolBirthEvent) parentEvent; 
 		if (newEvent instanceof MultipleRandomConnectionsEvent) {

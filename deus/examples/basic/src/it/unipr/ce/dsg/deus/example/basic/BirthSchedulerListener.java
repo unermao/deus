@@ -9,7 +9,6 @@ import it.unipr.ce.dsg.deus.impl.event.SingleConnectionEvent;
 
 public class BirthSchedulerListener implements SchedulerListener {
 
-	@Override
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		BirthEvent be = (BirthEvent) parentEvent; 
 		if (newEvent instanceof SingleConnectionEvent) {
