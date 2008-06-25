@@ -49,6 +49,25 @@ public class AutomatorParser {
 			if (node.getParams() != null)
 				params = parseParams(node.getParams().getParam().iterator());
 
+			ArrayList<Resource> resources = new ArrayList<Resource>();
+			if (node.getResources() != null) {
+				for (Iterator<it.unipr.ce.dsg.deus.schema.Resource> it2 = node.getResources().getResource().iterator();
+					 it2.hasNext(); ) {
+					it.unipr.ce.dsg.deus.schema.Resource resource = it2.next();
+					Class<Resource> resourceHandler = (Class<Resource>) this.getClass()
+					.getClassLoader().loadClass(resource.getHandler());
+
+					Properties resourceParams = new Properties();
+					if (resource.getParams() != null)
+						resourceParams = parseParams(resource.getParams().getParam().iterator());
+					
+					Resource configResource = resourceHandler.getConstructor(
+							new Class[] { Properties.class })
+							.newInstance(new Object[] { resourceParams });
+					resources.add(configResource);
+				}
+			}
+			
 			Node configNode = nodeHandler.getConstructor(
 					new Class[] { String.class, Properties.class })
 					.newInstance(new Object[] { node.getId(), params });
@@ -57,6 +76,7 @@ public class AutomatorParser {
 				configNode
 						.setLoggerPathPrefix(node.getLogger().getPathPrefix());
 			}
+			configNode.getResources().addAll(resources);
 			nodes.add(configNode);
 		}
 
