@@ -7,7 +7,7 @@
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.revol.RevolBirthEvent" 
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />

@@ -17,6 +17,8 @@ public class BirthEvent extends NodeEvent {
 		initialize();
 	}
 
+	// TODO implement params to establish the policy of node type initialization 
+	// (now choose one type only - randomly - from the parent process)
 	public void initialize() throws InvalidParamsException {
 	}
 
