@@ -33,8 +33,7 @@ public class AutomatorParser {
 		events = new ArrayList<Event>();
 		processes = new ArrayList<Process>();
 
-		JAXBContext jc = JAXBContext
-				.newInstance("it.unipr.ce.dsg.deus.schema");
+		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema");
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		Automator automator = (Automator) ((JAXBElement) unmarshaller
 				.unmarshal(new File(fileName))).getValue();
@@ -53,9 +52,10 @@ public class AutomatorParser {
 			Node configNode = nodeHandler.getConstructor(
 					new Class[] { String.class, Properties.class })
 					.newInstance(new Object[] { node.getId(), params });
-			if(node.getLogger() != null) {
+			if (node.getLogger() != null) {
 				configNode.setLoggerLevel(node.getLogger().getLevel());
-				configNode.setLoggerPathPrefix(node.getLogger().getPathPrefix());
+				configNode
+						.setLoggerPathPrefix(node.getLogger().getPathPrefix());
 			}
 			nodes.add(configNode);
 		}
@@ -78,11 +78,21 @@ public class AutomatorParser {
 							new Object[] { event.getId(), params, null });
 			if (event.isOneShot() != null)
 				configEvent.setOneShot(event.isOneShot().booleanValue());
-			
-			if(event.getLogger() != null) {
+
+			if (event.getLogger() != null) {
 				configEvent.setLoggerLevel(event.getLogger().getLevel());
-				configEvent.setLoggerPathPrefix(event.getLogger().getPathPrefix());
+				configEvent.setLoggerPathPrefix(event.getLogger()
+						.getPathPrefix());
 			}
+			
+			if (event.getSchedulerListener() != null) {
+				SchedulerListener schedulerListener = (SchedulerListener) this
+						.getClass().getClassLoader().loadClass(
+								event.getSchedulerListener()).newInstance();
+				
+				configEvent.setSchedulerListener(schedulerListener);
+			}
+			
 			events.add(configEvent);
 
 		}
@@ -131,9 +141,10 @@ public class AutomatorParser {
 							ArrayList.class, ArrayList.class }).newInstance(
 					new Object[] { process.getId(), params, referencedNodes,
 							referencedEvents });
-			if(process.getLogger() != null) {
+			if (process.getLogger() != null) {
 				configProcess.setLoggerLevel(process.getLogger().getLevel());
-				configProcess.setLoggerPathPrefix(process.getLogger().getPathPrefix());
+				configProcess.setLoggerPathPrefix(process.getLogger()
+						.getPathPrefix());
 			}
 			processes.add(configProcess);
 
@@ -156,10 +167,11 @@ public class AutomatorParser {
 		engine = new Engine(automator.getEngine().getMaxvt(), automator
 				.getEngine().getSeed(), nodes, events, processes,
 				referencedProcesses);
-		
-		if(automator.getEngine().getLogger() != null) {
+
+		if (automator.getEngine().getLogger() != null) {
 			engine.setLoggerLevel(automator.getEngine().getLogger().getLevel());
-			engine.setLoggerPathPrefix(automator.getEngine().getLogger().getPathPrefix());
+			engine.setLoggerPathPrefix(automator.getEngine().getLogger()
+					.getPathPrefix());
 		}
 	}
 

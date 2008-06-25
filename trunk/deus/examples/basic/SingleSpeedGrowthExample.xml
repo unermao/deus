@@ -10,7 +10,7 @@
 	<aut:event id="nodeDeath" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 	<!-- when scheduled, deletes a node -->
 
-	<aut:event id="nodeBirth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent"><!-- when scheduled, creates a new node -->
+	<aut:event id="nodeBirth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" schedulerListener="it.unipr.ce.dsg.deus.examples.basic.BirthSchedulerListener"><!-- when scheduled, creates a new node -->
 		<aut:events>
 			<aut:reference id="nodeDeath" /><!-- event to be scheduled on created node -->
 		</aut:events>

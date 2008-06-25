@@ -17,6 +17,7 @@
 		</sequence>
 		<attribute name="id" type="string" use="required"></attribute>
 		<attribute name="handler" type="string" use="required"></attribute>
+		<attribute name="schedulerListener" type="string" use="optional"></attribute>
 		<attribute name="oneShot" type="boolean" use="optional"></attribute>
 	</complexType>
 
