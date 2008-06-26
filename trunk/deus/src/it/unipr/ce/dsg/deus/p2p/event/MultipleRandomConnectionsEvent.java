@@ -6,6 +6,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
@@ -15,7 +16,7 @@ public class MultipleRandomConnectionsEvent extends Event {
 	
 	private boolean isBidirectional = false;
 	private int numInitialConnections = 0;
-	private Node initiator = null;
+	private Peer initiator = null;
 	
 	public MultipleRandomConnectionsEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -31,7 +32,7 @@ public class MultipleRandomConnectionsEvent extends Event {
 			numInitialConnections = Integer.parseInt(params.getProperty(NUM_INITIAL_CONNECTIONS));
 	}
 
-	public void setNodeToConnect(Node initiator) {
+	public void setNodeToConnect(Peer initiator) {
 		this.initiator = initiator;
 	}
 
@@ -53,12 +54,16 @@ public class MultipleRandomConnectionsEvent extends Event {
 			//System.out.println("m = " + m);
 			int numConnectedNodes = 0;
 			do {
-				Node target = null;			
+				Peer target = null;			
 				do {
 					int randomInt = Engine.getDefault().getSimulationRandom().nextInt(
 					Engine.getDefault().getNodes().size());
 					Node randomNode = Engine.getDefault().getNodes().get(randomInt);
-					target = randomNode; 
+					if (!(randomNode instanceof Peer)) {
+						target = null;
+						continue;
+					}
+					target = (Peer) randomNode; 
 				} while ((target == null) || (target.getId().equals(initiator.getId())));
 				//System.out.println("target: " + target);
 				if (initiator.addNeighbor(target)) {

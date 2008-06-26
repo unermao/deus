@@ -5,6 +5,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Resource;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +13,7 @@ import java.util.Properties;
 import java.util.Random;
 
 
-public class RevolNode extends Node {
+public class RevolNode extends Peer {
 
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";

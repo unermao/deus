@@ -11,6 +11,7 @@ import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 public class RevolDiscoveryEvent extends NodeEvent {
 	private static final String CPU = "cpu";
@@ -151,7 +152,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		// or if they are not reachable, reconnect it and stop this discovery event sequence
 		boolean atLeastOneNeighborIsAlive = false;
 		if (associatedRevolNode.getNeighbors().size() > 0) {
-			for (Iterator<Node> it = associatedRevolNode.getNeighbors().iterator(); it.hasNext();) {
+			for (Iterator<Peer> it = associatedRevolNode.getNeighbors().iterator(); it.hasNext();) {
 				Node currentNeighbor = it.next();
 				if ((currentNeighbor != null) && (currentNeighbor.isReachable()))
 					atLeastOneNeighborIsAlive = true;
@@ -358,9 +359,9 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	public void propagateRequestToNeighbors(RevolNode associatedRevolNode, Random random) {
 		// check if neighbors are alive and remove those which are null from the neighbor list
 		getLogger().fine("num neighbors: " + associatedRevolNode.getNeighbors().size());
-		for (Iterator<Node> it2 = associatedRevolNode.getNeighbors()
+		for (Iterator<Peer> it2 = associatedRevolNode.getNeighbors()
 				.iterator(); it2.hasNext();) {
-			Node currentNode = it2.next();
+			Peer currentNode = it2.next();
 			if ((currentNode == null) || (!currentNode.isReachable()))
 				associatedRevolNode.removeNeighbor(currentNode);
 		}

@@ -2,16 +2,16 @@ package it.unipr.ce.dsg.deus.p2p.event;
 
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
 public class DisconnectionEvent extends Event {
 
-	private Node initiator = null;
-	private Node target = null;
+	private Peer initiator = null;
+	private Peer target = null;
 
 	public DisconnectionEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -24,7 +24,7 @@ public class DisconnectionEvent extends Event {
 
 	}
 
-	public void setNodesToDisconnect(Node initiator, Node target) {
+	public void setNodesToDisconnect(Peer initiator, Peer target) {
 		this.initiator = initiator;
 		this.target = target;
 	}

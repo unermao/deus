@@ -6,6 +6,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
@@ -13,8 +14,8 @@ public class SingleConnectionEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	
 	private boolean isBidirectional = false;
-	private Node initiator = null;
-	private Node target = null;
+	private Peer initiator = null;
+	private Peer target = null;
 	
 	public SingleConnectionEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -28,7 +29,7 @@ public class SingleConnectionEvent extends Event {
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
 	}
 
-	public void setNodesToConnect(Node initiator, Node target) {
+	public void setNodesToConnect(Peer initiator, Peer target) {
 		this.initiator = initiator;
 		this.target = target;
 	}
@@ -48,8 +49,13 @@ public class SingleConnectionEvent extends Event {
 					int randomInt = Engine.getDefault().getSimulationRandom().nextInt(
 							Engine.getDefault().getNodes().size());
 					//System.out.println("this id " + this.initiator.getId() + "\t randomInt = " + randomInt);
-					target = (Node) Engine.getDefault().getNodes().get(randomInt);
-				} while (target.getId().equals(initiator.getId()));
+					Node n = Engine.getDefault().getNodes().get(randomInt);
+					if (!(n instanceof Peer)) {
+						target = null;
+						continue;
+					}
+					target = (Peer) n; 
+				} while ( (target == null) || target.getId().equals(initiator.getId()));
 			}
 			else
 				return;

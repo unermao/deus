@@ -6,6 +6,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Iterator;
 import java.util.Properties;
@@ -31,7 +32,10 @@ public class LogNodeDegreeEvent extends Event {
 		int kMax = 0;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
-			int k = it.next().getNeighbors().size();
+			Node n = it.next();
+			if (!(n instanceof Peer))
+				continue;
+			int k = ((Peer) n).getNeighbors().size();
 			if (k > kMax)
 				kMax = k;
 			nodeDegree[nodeIndex++] = k;
