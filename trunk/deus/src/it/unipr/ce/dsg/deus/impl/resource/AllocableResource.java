@@ -5,23 +5,23 @@ import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
 
-public class ConsumableResource extends Resource {
+public class AllocableResource extends Resource {
 	private static final String TYPE_PARAM = "type";
 	private static final String AMOUNT_PARAM = "amount";
 	
 	private String type = null;
 	private double amount = 0;
 	
-	public ConsumableResource(Properties params)
+	public AllocableResource(Properties params)
 			throws InvalidParamsException {
 		super(params);
 		initialize();
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof ConsumableResource))
+		if (!(o instanceof AllocableResource))
 			return false;
-		return type.equals(((ConsumableResource) o).getType());
+		return type.equals(((AllocableResource) o).getType());
 	}
 
 	public void initialize() throws InvalidParamsException {
