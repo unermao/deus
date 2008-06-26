@@ -2,7 +2,9 @@ package it.unipr.ce.dsg.deus.p2p.node;
 
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.core.Resource;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class SuperNode extends Node  {
@@ -13,9 +15,9 @@ public class SuperNode extends Node  {
 	private float cpu = 0;
 	private float ram = 0;
 	
-	public SuperNode(String id, Properties params)
+	public SuperNode(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
-		super(id, params);
+		super(id, params, resources);
 		initialize();
 	}
 

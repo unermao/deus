@@ -3,6 +3,8 @@ package it.unipr.ce.dsg.deus.example.revol;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.core.Resource;
+import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,7 +13,7 @@ import java.util.Random;
 
 
 public class RevolNode extends Node {
-	/*
+
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
@@ -24,7 +26,6 @@ public class RevolNode extends Node {
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;	
-	*/
 	
 	private int g = 0;
 	// chromosome
@@ -35,22 +36,26 @@ public class RevolNode extends Node {
 	
 	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>(); 
 	
-	public RevolNode(String id, Properties params)
+	public RevolNode(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
-		super(id, params);
+		super(id, params, resources);
 		initialize();
 	}
 
-	@Override
 	public void initialize() throws InvalidParamsException {
-		/*
-		if (params.containsKey(CPU_FACTOR))
-			cpuFactor = Integer.parseInt(params.getProperty(CPU_FACTOR));
-		if (params.containsKey(RAM_FACTOR))
-			ramFactor = Integer.parseInt(params.getProperty(RAM_FACTOR));
-		if (params.containsKey(DISK_FACTOR))
-			diskFactor = Integer.parseInt(params.getProperty(DISK_FACTOR));
-			*/
+		System.out.println(getResources().size());
+		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
+			Resource r = it.next();
+			if (!(r instanceof AllocableResource))
+				continue;
+			if ( ((AllocableResource) r).getType().equals(CPU_FACTOR) )
+				cpuFactor = (int) ((AllocableResource) r).getAmount();
+			else if ( ((AllocableResource) r).getType().equals(RAM_FACTOR) )
+				ramFactor = (int) ((AllocableResource) r).getAmount();
+			else if ( ((AllocableResource) r).getType().equals(DISK_FACTOR) )
+				diskFactor = (int) ((AllocableResource) r).getAmount();
+			System.out.println("cpuFactor = " + ((AllocableResource) r).getAmount());
+		}	
 	}
 	
 	public Object clone() {

@@ -1,15 +1,17 @@
 package it.unipr.ce.dsg.deus.impl.node;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.core.Resource;
 
 public class BasicNode extends Node {
 
-	public BasicNode(String id, Properties params)
+	public BasicNode(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
-		super(id, params);
+		super(id, params, resources);
 		initialize();
 	}
 

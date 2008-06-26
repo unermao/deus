@@ -63,26 +63,20 @@
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolNode">
-		<aut:params>
-			<!-- the following are factors used to compute avg values -->
-			<aut:param name="cpuFactor" value="8" /><!-- *256 MHz = 2GHz -->
-			<aut:param name="ramFactor" value="8" /><!-- *256 MB = 2GB -->
-			<aut:param name="diskFactor" value="320" /><!-- *256 MB = 81GB -->
-		</aut:params>
 		<aut:resources>
-			<aut:resource handler="ConsumableResource">
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="cpuFactor" />
 					<aut:param name="amount" value="8" /><!-- *256 MHz = 2GHz -->
 				</aut:params>	
 			</aut:resource>
-			<aut:resource handler="ConsumableResource">
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="ramFactor" />
 					<aut:param name="amount" value="8" /><!-- *256 MB = 2GB -->
 				</aut:params>	
 			</aut:resource>
-			<aut:resource handler="ConsumableResource">
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="diskFactor" />
 					<aut:param name="amount" value="320" /><!-- *256 MB = 81GB -->

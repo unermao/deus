@@ -69,14 +69,13 @@ public class AutomatorParser {
 			}
 			
 			Node configNode = nodeHandler.getConstructor(
-					new Class[] { String.class, Properties.class })
-					.newInstance(new Object[] { node.getId(), params });
+					new Class[] { String.class, Properties.class, ArrayList.class})
+					.newInstance(new Object[] { node.getId(), params, resources });
 			if (node.getLogger() != null) {
 				configNode.setLoggerLevel(node.getLogger().getLevel());
 				configNode
 						.setLoggerPathPrefix(node.getLogger().getPathPrefix());
 			}
-			configNode.getResources().addAll(resources);
 			nodes.add(configNode);
 		}
 
