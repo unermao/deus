@@ -7,6 +7,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 public class RevolAdaptationEvent extends NodeEvent {
 	private static final String A_0 = "a0";
@@ -85,8 +86,8 @@ public class RevolAdaptationEvent extends NodeEvent {
 			RevolNode currentNeighbor = null;
 			double currentNeighborFitness = 0;
 			double bestNeighborFitness = 0;
-			for (int i = 0; i < associatedNode.getNeighbors().size(); i++) {
-				currentNeighbor = (RevolNode) associatedNode.getNeighbors().get(i);
+			for (int i = 0; i < ((Peer) associatedNode).getNeighbors().size(); i++) {
+				currentNeighbor = (RevolNode) ((Peer) associatedNode).getNeighbors().get(i);
 				currentNeighborFitness = computeFitness(currentNeighbor);
 				if (i == 0) {
 					bestNeighbor = currentNeighbor;
@@ -104,11 +105,11 @@ public class RevolAdaptationEvent extends NodeEvent {
 			// TODO
 		}
 		else if (selectionStrategy.equals("proportional")) {
-			double[] fitnesses = new double[associatedNode.getNeighbors().size()];
-			for (int i = 0; i < associatedNode.getNeighbors().size(); i++)
-				fitnesses[i] = computeFitness((RevolNode) associatedNode.getNeighbors().get(i));
+			double[] fitnesses = new double[((Peer) associatedNode).getNeighbors().size()];
+			for (int i = 0; i < ((Peer) associatedNode).getNeighbors().size(); i++)
+				fitnesses[i] = computeFitness((RevolNode) ((Peer) associatedNode).getNeighbors().get(i));
 			int s = getRandomElementWithInverseProbability(fitnesses);
-			bestNeighbor = (RevolNode) associatedNode.getNeighbors().get(s);
+			bestNeighbor = (RevolNode) ((Peer) associatedNode).getNeighbors().get(s);
 		}
 		else if (selectionStrategy.equals("tournament")) {
 			// TODO

@@ -1,12 +1,12 @@
 package it.unipr.ce.dsg.deus.example.revol;
 
-import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 
 public class ResourceAdv {
 
-	private Node owner = null;
-	private Node interestedNode = null;
+	private Peer owner = null;
+	private Peer interestedNode = null;
 	private String name = null;
 	private int amount = 0;
 	private boolean found = false;
@@ -19,11 +19,11 @@ public class ResourceAdv {
 		this.found = found;
 	}
 
-	public Node getInterestedNode() {
+	public Peer getInterestedNode() {
 		return interestedNode;
 	}
 
-	public void setInterestedNode(Node interestedNode) {
+	public void setInterestedNode(Peer interestedNode) {
 		this.interestedNode = interestedNode;
 	}
 
@@ -43,11 +43,11 @@ public class ResourceAdv {
 		this.amount = amount;
 	}
 
-	public Node getOwner() {
+	public Peer getOwner() {
 		return owner;
 	}
 
-	public void setOwner(Node owner) {
+	public void setOwner(Peer owner) {
 		this.owner = owner;
 	}
 	
