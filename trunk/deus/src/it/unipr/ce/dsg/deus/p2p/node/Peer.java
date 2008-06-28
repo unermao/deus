@@ -12,6 +12,7 @@ import java.util.Properties;
 public class Peer extends Node  {
 
 	protected ArrayList<Peer> neighbors = null;
+	//protected boolean isReachable = false;
 	
 	public Peer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -28,6 +29,7 @@ public class Peer extends Node  {
 	public Object clone() {
 		Peer clone = (Peer) super.clone();
 		clone.neighbors = new ArrayList<Peer>();
+		//clone.isReachable = false;
 		return clone;
 	}
 
@@ -66,4 +68,14 @@ public class Peer extends Node  {
 	public void resetNeighbors() {
 		neighbors = new ArrayList<Peer>();
 	}
+	
+	/*
+	public boolean isReachable() {
+		return isReachable;
+	}
+
+	public void setReachable(boolean isReachable) {
+		this.isReachable = isReachable;
+	}
+	*/
 }
