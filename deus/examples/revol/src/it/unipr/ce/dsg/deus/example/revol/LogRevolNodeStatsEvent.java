@@ -18,11 +18,9 @@ public class LogRevolNodeStatsEvent extends Event {
 		initialize();
 	}
 	
-	@Override
 	public void initialize() throws InvalidParamsException {
 	}
-
-	@Override
+	
 	public void run() throws RunException {
 		
 		getLogger().info("##### RevolNode stats:");

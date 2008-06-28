@@ -2,7 +2,6 @@ package it.unipr.ce.dsg.deus.example.revol;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Resource;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -198,8 +197,9 @@ public class RevolNode extends Peer {
 		// pulizia della cache: via gli adv. associati a nodi morti
 		for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
 			ResourceAdv currentResourceAdv = it.next();
-			Node currentNode = currentResourceAdv.getOwner();
-			if ((currentNode == null) || (!currentNode.isReachable()))
+			RevolNode currentNode = (RevolNode) currentResourceAdv.getOwner();
+			//if ((currentNode == null) || (!currentNode.isReachable()))
+			if (currentNode == null)
 				this.removeResourceAdvFromCache(currentResourceAdv);
 		}
 		
