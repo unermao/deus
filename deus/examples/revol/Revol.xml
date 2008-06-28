@@ -26,6 +26,7 @@
 	</aut:event>
 	
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
+		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
 			<aut:param name="cpu" value="1024" /><!-- MHz -->
@@ -34,6 +35,10 @@
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="100000" />
 		</aut:params>
+	</aut:event>
+	
+	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.revol.RevolFreeResourceEvent" >
+		<aut:logger level="FINE" />
 	</aut:event>
 	
 	<aut:event id="adaptation" handler="it.unipr.ce.dsg.deus.example.revol.RevolAdaptationEvent" > 
@@ -92,7 +97,7 @@
 
 	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="2000" />
+			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" /><!-- this is to associate the process to a specific type of nodes -->
@@ -129,8 +134,8 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="150000" />
-			<aut:param name="secondMeanArrival" value="200000" />
+			<aut:param name="firstMeanArrival" value="200000" />
+			<aut:param name="secondMeanArrival" value="100000" />
 			<aut:param name="vtThreshold" value="1800000" />
 		</aut:params>
 		<aut:nodes>
@@ -138,6 +143,18 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="discovery" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="poisson5" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="100000" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="freeres" />
 		</aut:events>
 	</aut:process>
 	
@@ -155,7 +172,7 @@
 	
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="100000" /> 
+			<aut:param name="period" value="10000" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
@@ -167,7 +184,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3600001" seed="123456789"> <!-- 3600001 -->
+	<aut:engine maxvt="560001" seed="123456789"> <!-- 3600001 -->
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />	
