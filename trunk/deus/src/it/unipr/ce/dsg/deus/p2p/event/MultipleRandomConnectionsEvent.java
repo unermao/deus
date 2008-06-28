@@ -67,10 +67,10 @@ public class MultipleRandomConnectionsEvent extends Event {
 				} while ((target == null) || (target.getId().equals(initiator.getId())));
 				//System.out.println("target: " + target);
 				if (initiator.addNeighbor(target)) {
-					initiator.setReachable(true);
+					//initiator.setReachable(true);
 					if (isBidirectional) {
 						target.addNeighbor(initiator);
-						target.setReachable(true);
+						//target.setReachable(true);
 					}
 					numConnectedNodes++;
 				}

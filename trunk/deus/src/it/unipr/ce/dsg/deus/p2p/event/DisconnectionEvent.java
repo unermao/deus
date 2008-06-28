@@ -41,7 +41,7 @@ public class DisconnectionEvent extends Event {
 			initiator.removeNeighbor(this.target);
 		else { // disconnect from all neighbors
 			initiator.resetNeighbors();
-			initiator.setReachable(false);
+			//initiator.setReachable(false);
 		}
 	}
 

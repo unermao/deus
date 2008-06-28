@@ -61,7 +61,7 @@ public class SingleConnectionEvent extends Event {
 				return;
 		}
 		initiator.addNeighbor(target);
-		initiator.setReachable(true);
+		//initiator.setReachable(true);
 		if (isBidirectional)
 			target.addNeighbor(initiator);
 	}

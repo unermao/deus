@@ -19,13 +19,9 @@ public class LogNodeDegreeEvent extends Event {
 		initialize();
 	}
 
-	@Override
 	public void initialize() throws InvalidParamsException {
-		// TODO Auto-generated method stub
-
 	}
 
-	@Override
 	public void run() throws RunException {
 		int nodeDegree[] = new int[Engine.getDefault().getNodes().size()];
 		int nodeIndex = 0;
