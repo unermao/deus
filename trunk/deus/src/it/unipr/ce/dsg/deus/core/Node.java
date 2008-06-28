@@ -7,12 +7,9 @@ public abstract class Node extends SimulationObject implements Comparable<Node>,
 	protected String id = null;
 
 	protected ArrayList<Resource> resources = null;
-
-	protected boolean isReachable = false;
 	
 	protected Properties params = null;
 
-	// TODO generic node should not have neighbors
 	public Node(String id, Properties params, ArrayList<Resource> resources) throws InvalidParamsException {
 		this.id = id;
 		this.resources = resources;
@@ -36,10 +33,6 @@ public abstract class Node extends SimulationObject implements Comparable<Node>,
 		return result;
 	}
 	
-
-
-
-	
 	public ArrayList<Resource> getResources() {
 		return resources;
 	}
@@ -61,14 +54,6 @@ public abstract class Node extends SimulationObject implements Comparable<Node>,
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e.toString());
 		}
-	}
-
-	public boolean isReachable() {
-		return isReachable;
-	}
-
-	public void setReachable(boolean isReachable) {
-		this.isReachable = isReachable;
 	}
 
 }
