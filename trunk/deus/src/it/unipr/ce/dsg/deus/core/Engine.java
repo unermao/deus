@@ -44,6 +44,27 @@ public final class Engine extends SimulationObject {
 
 	private ArrayList<Node> nodes = null;
 
+	/**
+	 * Class constructor that initializes the simulation engine according to the
+	 * parameters extracted from the configuration file.
+	 * 
+	 * @param maxVirtualTime
+	 *            the maximum virtual time of the simulation.
+	 * @param seed
+	 *            the seed used as the only source of randomness in all the
+	 *            simulation.
+	 * @param configNodes
+	 *            the list of Node classes defined in the configuration file.
+	 * @param configEvents
+	 *            the list of Event classes defined in the configuration file.
+	 * @param configProcesses
+	 *            the list of Process classes defined in the configuration file.
+	 * @param referencedProcesses
+	 *            the list of Process classes associated to the simulation's
+	 *            main cycle.
+	 * 
+	 * @see it.unipr.ce.dsg.deus.core.AutomatorParser
+	 */
 	public Engine(float maxVirtualTime, int seed, ArrayList<Node> configNodes,
 			ArrayList<Event> configEvents, ArrayList<Process> configProcesses,
 			ArrayList<Process> referencedProcesses) {
@@ -60,7 +81,11 @@ public final class Engine extends SimulationObject {
 		parseReferencedProcesses();
 	}
 
-	public void parseReferencedProcesses() {
+	/**
+	 * Insert into the events queue all the events in each process associated to
+	 * the simulation's main cycle.
+	 */
+	private void parseReferencedProcesses() {
 		for (Iterator<Process> it = referencedProcesses.iterator(); it
 				.hasNext();) {
 			Process p = it.next();
@@ -75,45 +100,77 @@ public final class Engine extends SimulationObject {
 		}
 	}
 
+	/**
+	 * Insert an event into the simulation events queue. This method must be
+	 * called all the time an event should be inserted into a queue, since it
+	 * provides the automatically sorting of the queue by using the events'
+	 * triggering time as criteria.
+	 * 
+	 * @param e
+	 *            the event to insert into the queue.
+	 */
 	public void insertIntoEventsList(Event e) {
 		eventsList.add(e);
 		Collections.sort(eventsList);
 	}
 
-	public ArrayList<Node> getConfigNodes() {
-		return configNodes;
-	}
-
-	public ArrayList<Event> getConfigEvents() {
-		return configEvents;
-	}
-
+	/**
+	 * Create a new instance of the event with the given class extracted from
+	 * the list of events defined into the simulation configuration. The event
+	 * triggering time will be set according to the given parameter.
+	 * 
+	 * @param eventClass
+	 *            the class of the event whose instance should be created.
+	 * @param triggeringTime
+	 *            the triggering time of the event.
+	 * @return a new instance of the event with the given class, obtained
+	 *         through cloning.
+	 */
 	public Event createEvent(Class<?> eventClass, float triggeringTime) {
-		for (Iterator<Event> it = configEvents.iterator(); it.hasNext(); ) {
+		for (Iterator<Event> it = configEvents.iterator(); it.hasNext();) {
 			Event e = it.next();
 			if (e.getClass().equals(eventClass))
 				return e.createInstance(triggeringTime);
 		}
 		return null;
 	}
-	
+
+	/**
+	 * Create a new instance of the event with the given id extracted from the
+	 * list of events defined into the simulation configuration. The event
+	 * triggering time will be set according to the given parameter.
+	 * 
+	 * @param eventId
+	 *            the id of the event whose instance should be created.
+	 * @param triggeringTime
+	 *            the triggering time of the event.
+	 * @return a new instance of the event with the given id, obtained through
+	 *         cloning.
+	 */
 	public Event createEvent(String eventId, float triggeringTime) {
-		for (Iterator<Event> it = configEvents.iterator(); it.hasNext(); ) {
+		for (Iterator<Event> it = configEvents.iterator(); it.hasNext();) {
 			Event e = it.next();
 			if (e.getId().equals(eventId))
 				return e.createInstance(triggeringTime);
 		}
 		return null;
 	}
-	
-	public ArrayList<Process> getConfigProcesses() {
-		return configProcesses;
-	}
 
+	/**
+	 * Returns the current simulation virtual time.
+	 * 
+	 * @return the current simulation virtual time.
+	 */
 	public float getVirtualTime() {
 		return virtualTime;
 	}
 
+	/**
+	 * Runs the simulation.
+	 * 
+	 * @throws SimulationException
+	 *             in case an event encounter an exception while running.
+	 */
 	public void run() throws SimulationException {
 		getLogger().info(
 				"Starting simulation with maxVirtualTime = " + maxVirtualTime);
@@ -134,6 +191,7 @@ public final class Engine extends SimulationObject {
 										virtualTime)));
 				} catch (RunException ex) {
 					getLogger().severe(ex.getMessage());
+					throw new SimulationException(ex.getMessage());
 				}
 			}
 		}
@@ -144,16 +202,31 @@ public final class Engine extends SimulationObject {
 						+ ") with numOfQueueEvents=" + eventsList.size());
 	}
 
+	/**
+	 * Returns the current instance of the simulation engine class.
+	 * 
+	 * @return the current instance of the simulation engine class.
+	 */
 	public static Engine getDefault() {
 		return engine;
 	}
 
+	/**
+	 * Returns the source of randomness used in the simulation.
+	 * 
+	 * @return the source of randomness used in the simulation.
+	 */
 	public Random getSimulationRandom() {
 		return simulationRandom;
 	}
 
+	/**
+	 * Generate a random Universally Unique Identifier (UUID).
+	 * 
+	 * @return a random UUID.
+	 */
 	public String generateUUID() {
-		// TODO Verificare che non sia gi stato generato?
+		// TODO check that it hasn't been generated yet.
 		try {
 			MessageDigest digest = java.security.MessageDigest
 					.getInstance("MD5");
@@ -166,6 +239,13 @@ public final class Engine extends SimulationObject {
 		return null;
 	}
 
+	/**
+	 * Convert a byte array into an hex string.
+	 * 
+	 * @param hash
+	 *            the byte array to convert.
+	 * @return the hex string representation of the given byte array.
+	 */
 	private String bytesToHex(byte hash[]) {
 		char buf[] = new char[hash.length * 2];
 		for (int i = 0, x = 0; i < hash.length; i++) {
@@ -175,10 +255,32 @@ public final class Engine extends SimulationObject {
 		return new String(buf);
 	}
 
+	/**
+	 * Returns the list of all instantiated simulation nodes. This should not be
+	 * mixed-up with the list of nodes defined into the simulation configuration
+	 * file; this list contains the nodes effectively instantiated by starting
+	 * from the configuration file.
+	 * 
+	 * @return the list of instantiated simulation nodes.
+	 */
 	public ArrayList<Node> getNodes() {
 		return nodes;
 	}
 
+	/**
+	 * Initialize a java file logger that will store log messages, with the
+	 * given logging level, into the given logger path prefix and using as log
+	 * file name the class name of the given object.
+	 * 
+	 * @param o
+	 *            the object whose class name will be used to create the log
+	 *            file name.
+	 * @param loggerPathPrefix
+	 *            the base path in which log file will be stored.
+	 * @param loggerLevel
+	 *            the logging level used for filtering.
+	 * @return the instance of the java file logger.
+	 */
 	public Logger getLogger(Object o, String loggerPathPrefix, Level loggerLevel) {
 		Logger l = Logger.getLogger(o.getClass().getCanonicalName());
 		l.setLevel(loggerLevel);
@@ -197,4 +299,32 @@ public final class Engine extends SimulationObject {
 		}
 		return l;
 	}
+
+	/**
+	 * Return the list of Node classes defined in the configuration file.
+	 * 
+	 * @return the list of Node classes defined in the configuration file.
+	 */
+	public ArrayList<Node> getConfigNodes() {
+		return configNodes;
+	}
+
+	/**
+	 * Return the list of Event classes defined in the configuration file.
+	 * 
+	 * @return the list of Event classes defined in the configuration file.
+	 */
+	public ArrayList<Event> getConfigEvents() {
+		return configEvents;
+	}
+
+	/**
+	 * Return the list of Process classes defined in the configuration file.
+	 * 
+	 * @return the list of Process classes defined in the configuration file.
+	 */
+	public ArrayList<Process> getConfigProcesses() {
+		return configProcesses;
+	}
+
 }
