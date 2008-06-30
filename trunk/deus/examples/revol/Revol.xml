@@ -185,6 +185,7 @@
 	<!-- *** SIMULATION *** -->
 
 	<aut:engine maxvt="560001" seed="123456789"> <!-- 3600001 -->
+		<aut:logger level="FINE" />
 		<aut:processes>
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />	

@@ -280,20 +280,14 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			}
 
 			// creo e metto in coda un evento che libererà la risorsa impegnata
-			try {
 				getLogger().fine("set freeRes for " + res.getName() + " = " + res.getAmount());
-				Properties freeResEvParams = new Properties();
-				RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) 
-				new RevolFreeResourceEvent("freeResource", freeResEvParams, null)
-						.createInstance(triggeringTime
+				RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) Engine.getDefault().createEvent(RevolFreeResourceEvent.class, triggeringTime
 								+ expRandom(meanArrivalFreeResource));
 				freeResEv.setResOwner(associatedRevolNode);
 				freeResEv.setResName(res.getName());
 				freeResEv.setResAmount(res.getAmount());
 				Engine.getDefault().insertIntoEventsList(freeResEv);
-			} catch (InvalidParamsException e) {
-				e.printStackTrace();
-			}
+		
 			return true;
 		}
 		else
@@ -332,12 +326,10 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			getLogger().fine(
 					"res " + res + " found in cache, owner = "
 							+ resInCache.getOwner().getId());
-			try {
-				Properties discEvParams = new Properties();
-				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
-						"discovery", discEvParams, null)
-						.createInstance(triggeringTime
-								+ expRandom(meanArrivalTriggeredDiscovery));
+		
+				//Properties discEvParams = new Properties();
+				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) Engine.getDefault().createEvent(RevolDiscoveryEvent.class, 
+						triggeringTime + expRandom(meanArrivalTriggeredDiscovery));
 				getLogger().fine("disc event: " + discEv);
 				discEv.setHasSameAssociatedNode(false);
 				discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
@@ -348,9 +340,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv.setResourceToSearchFor(res);
 				discEv.setTtl(ttl-1);
 				Engine.getDefault().insertIntoEventsList(discEv);
-			} catch (InvalidParamsException e) {
-				e.printStackTrace();
-			}
+
 			return true; 
 		}
 		else
@@ -410,14 +400,13 @@ public class RevolDiscoveryEvent extends NodeEvent {
 					if (destinations[i] == destinations[j])
 						controlPassed = false;
 			} while (!controlPassed);
-			try {
-				Properties discEvParams = new Properties();
-				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) new RevolDiscoveryEvent(
-						"discovery", discEvParams, null)
-						.createInstance(triggeringTime
+			
+				//Properties discEvParams = new Properties();
+				RevolDiscoveryEvent discEv = (RevolDiscoveryEvent) Engine.getDefault().createEvent(RevolDiscoveryEvent.class, triggeringTime
 								+ expRandom(meanArrivalTriggeredDiscovery));
 				getLogger().fine("disc event: " + discEv);
 				getLogger().fine("disc event time: " + discEv.triggeringTime);
+				
 				discEv.setHasSameAssociatedNode(false);
 				discEv
 						.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
@@ -436,9 +425,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv.setResourceToSearchFor(res);
 				discEv.setTtl(ttl - 1);
 				Engine.getDefault().insertIntoEventsList(discEv);
-			} catch (InvalidParamsException e) {
-				e.printStackTrace();
-			}
+				getLogger().fine("sim. virtual time: " + Engine.getDefault().getVirtualTime());
 		}
 	}
 	
