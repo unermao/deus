@@ -185,15 +185,16 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			initializeDiscoveryProcess(associatedRevolNode, random);
 
 		RevolNode interestedNode = (RevolNode) res.getInterestedNode();
-		//if ((interestedNode == null) || (!interestedNode.isReachable()))
 		if (interestedNode == null)
 			return;
 			
+		getLogger().fine("interested node = " + interestedNode);
 		if (isRequestedResourceLocallyAvailable(associatedRevolNode, interestedNode))
 			return;
 		else {
 			if (isResourceAdvInCache(associatedRevolNode))
 				return;
+			getLogger().fine("ttl = " + ttl);
 			if (ttl > 0) 
 				propagateRequestToNeighbors(associatedRevolNode, random);
 		}
@@ -208,7 +209,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * @param random
 	 */
 	public void initializeDiscoveryProcess(RevolNode associatedRevolNode, Random random) {
-			getLogger().fine("First discovery from node " + associatedRevolNode.getId());
+			getLogger().fine("First discovery from node " + associatedRevolNode);
 			ttl = associatedRevolNode.getTtlMax();
 			getLogger().fine("q = " + associatedRevolNode.getQ());
 			associatedRevolNode.setQ(associatedRevolNode.getQ() + 1);
@@ -251,18 +252,18 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 */
 	public boolean isRequestedResourceLocallyAvailable(RevolNode associatedRevolNode, 
 													   RevolNode interestedNode) {
-		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedRevolNode
-				.getCpu()))
+		getLogger().fine("local search for res = " + res.getName() + " amount: " + res.getAmount());
+		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedRevolNode.getCpu()))
 				|| ((res.getName().equals("ram")) && (res.getAmount() <= associatedRevolNode
 						.getRam()))
 				|| ((res.getName().equals("disk")) && (res.getAmount() <= associatedRevolNode
 						.getDisk()))) {
 			res.setOwner(associatedRevolNode);
 			res.setFound(true);
-			getLogger().fine("Res " + res + " found in node " + associatedRevolNode.getId());
-			getLogger().fine("qh = " + associatedRevolNode.getQh());
+			getLogger().fine("Res " + res + " found in node " + associatedRevolNode);
+			getLogger().fine("qh = " + interestedNode.getQh());
 			interestedNode.setQh(interestedNode.getQh() + 1);
-			getLogger().fine("qh = " + associatedRevolNode.getQh());
+			getLogger().fine("qh = " + interestedNode.getQh());
 			interestedNode.addToCache(res);
 			if (res.getName().equals("cpu"))
 				associatedRevolNode
@@ -283,6 +284,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				getLogger().fine("set freeRes for " + res.getName() + " = " + res.getAmount());
 				RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) Engine.getDefault().createEvent(RevolFreeResourceEvent.class, triggeringTime
 								+ expRandom(meanArrivalFreeResource));
+				freeResEv.setOneShot(true);
 				freeResEv.setResOwner(associatedRevolNode);
 				freeResEv.setResName(res.getName());
 				freeResEv.setResAmount(res.getAmount());
@@ -306,6 +308,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		boolean resFound = false;
 		if (senderNode != associatedRevolNode)
 			getLogger().fine("sender node = " + senderNode);
+		getLogger().fine("associatedRevolNode = " + associatedRevolNode);
 		associatedRevolNode.dropExceedingResourceAdvs(); // clean the cache
 		Iterator<ResourceAdv> it = associatedRevolNode.getCache().iterator();
 		ResourceAdv resInCache = null;
@@ -332,6 +335,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 						triggeringTime + expRandom(meanArrivalTriggeredDiscovery));
 				getLogger().fine("disc event: " + discEv);
 				discEv.setHasSameAssociatedNode(false);
+				discEv.setOneShot(true);
 				discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 				discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 				discEv.setPropagation(true);
@@ -343,8 +347,10 @@ public class RevolDiscoveryEvent extends NodeEvent {
 
 			return true; 
 		}
-		else
+		else {
+			getLogger().fine("res not found in cache");
 			return false;
+		}
 	}
 	
 	
@@ -408,6 +414,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				getLogger().fine("disc event time: " + discEv.triggeringTime);
 				
 				discEv.setHasSameAssociatedNode(false);
+				discEv.setOneShot(true);
 				discEv
 						.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 				discEv
@@ -417,8 +424,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 						"Dest node: "
 								+ ((RevolNode) associatedRevolNode
 										.getNeighbors().get(
-												destinations[i]))
-										.getId());
+												destinations[i])));
 				discEv.setAssociatedNode((RevolNode) associatedRevolNode
 						.getNeighbors().get(destinations[i]));
 				discEv.setSenderNode(associatedRevolNode);
