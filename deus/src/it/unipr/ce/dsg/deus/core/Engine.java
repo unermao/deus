@@ -14,6 +14,37 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * <p>
+ * This class represents the simulation engine of Deus. After the configuration
+ * file is parsed, the obtained configured simulation objects (Nodes, Events and
+ * Processes) are passed to the Engine that will properly initialize the queue
+ * of events to be run.
+ * </p>
+ * 
+ * <p>
+ * The simulation is a standard discrete event simulation where each event has
+ * an associated triggering time, used as a sorting criteria. The events
+ * inserted into the simulation queue are processed singularly one after each
+ * other, each time updating the current simulation virtual time.
+ * </p>
+ * 
+ * <p>
+ * The run method of the engine will process each event in the events queue
+ * until a maximum virtual time is reached or the queue is empty. In each cycle
+ * the first event of the queue is removed (the one with the lowest triggering
+ * time), the virtual time of the simulation is updated and the event is
+ * executed. If the event has some referenced events, those will be scheduled
+ * right after the event execution, in the same order used to define them in the
+ * configuration file. If the event is not oneshot and it has a parent process,
+ * than it will be scheduled for a next execution with a triggering time
+ * calculated according to the parent process strategy.
+ * </p>
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (amoretti@ce.unipr.it)
+ * 
+ */
 public final class Engine extends SimulationObject {
 	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5',
 			'6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
