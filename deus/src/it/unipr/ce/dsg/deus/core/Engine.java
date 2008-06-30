@@ -88,6 +88,24 @@ public final class Engine extends SimulationObject {
 		return configEvents;
 	}
 
+	public Event createEvent(Class<?> eventClass, float triggeringTime) {
+		for (Iterator<Event> it = configEvents.iterator(); it.hasNext(); ) {
+			Event e = it.next();
+			if (e.getClass().equals(eventClass))
+				return e.createInstance(triggeringTime);
+		}
+		return null;
+	}
+	
+	public Event createEvent(String eventId, float triggeringTime) {
+		for (Iterator<Event> it = configEvents.iterator(); it.hasNext(); ) {
+			Event e = it.next();
+			if (e.getId().equals(eventId))
+				return e.createInstance(triggeringTime);
+		}
+		return null;
+	}
+	
 	public ArrayList<Process> getConfigProcesses() {
 		return configProcesses;
 	}
