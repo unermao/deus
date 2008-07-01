@@ -40,7 +40,7 @@ import javax.xml.bind.Unmarshaller;
  * @author Matteo Agosti (agosti@ce.unipr.it)
  * @author Michele Amoretti (amoretti@ce.unipr.it)
  * 
- * @see it.unipr.ce.dsg.deus.core.Engine}
+ * @see it.unipr.ce.dsg.deus.core.Engine
  */
 public class AutomatorParser {
 
