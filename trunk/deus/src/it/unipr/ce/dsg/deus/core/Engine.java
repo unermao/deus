@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  * <p>
- * This class represents the simulation engine of Deus. After the configuration
+ * This class represents the simulation engine of DEUS. After the configuration
  * file is parsed, the obtained configured simulation objects (Nodes, Events and
  * Processes) are passed to the Engine that will properly initialize the queue
  * of events to be run.
@@ -200,7 +200,7 @@ public final class Engine extends SimulationObject {
 	 * Runs the simulation.
 	 * 
 	 * @throws SimulationException
-	 *             in case an event encounter an exception while running.
+	 *             if the event fails during its execution.
 	 */
 	public void run() throws SimulationException {
 		getLogger().info(
