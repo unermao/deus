@@ -132,9 +132,9 @@ public abstract class Event extends SimulationObject implements
 	}
 
 	/**
-	 * Returns the list of referenced events of the current node.
+	 * Returns the list of referenced events of the current event.
 	 * 
-	 * @return the list of referenced events of the current node.
+	 * @return the list of referenced events of the current event.
 	 */
 	public ArrayList<Event> getReferencedEvents() {
 		return referencedEvents;
