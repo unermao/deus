@@ -194,6 +194,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		else {
 			if (isResourceAdvInCache(associatedRevolNode))
 				return;
+				//getLogger().fine("res found in cache");
 			getLogger().fine("ttl = " + ttl);
 			if (ttl > 0) 
 				propagateRequestToNeighbors(associatedRevolNode, random);
