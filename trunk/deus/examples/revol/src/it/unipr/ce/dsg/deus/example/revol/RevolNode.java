@@ -43,7 +43,7 @@ public class RevolNode extends Peer {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		System.out.println(getResources().size());
+		//System.out.println(getResources().size());
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
@@ -54,7 +54,7 @@ public class RevolNode extends Peer {
 				ramFactor = (int) ((AllocableResource) r).getAmount();
 			else if ( ((AllocableResource) r).getType().equals(DISK_FACTOR) )
 				diskFactor = (int) ((AllocableResource) r).getAmount();
-			System.out.println("cpuFactor = " + ((AllocableResource) r).getAmount());
+			//System.out.println("cpuFactor = " + ((AllocableResource) r).getAmount());
 		}	
 	}
 	
@@ -65,9 +65,11 @@ public class RevolNode extends Peer {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
-		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*256);
+
+		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*512);
 		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
-		clone.setInitialDisk((random.nextInt(diskFactor)+1)*256);
+		clone.setInitialDisk((random.nextInt(diskFactor)+1)*10000);
+		
 		clone.q = 0;
 		clone.qh = 0;
 		clone.cache = new ArrayList<ResourceAdv>();
