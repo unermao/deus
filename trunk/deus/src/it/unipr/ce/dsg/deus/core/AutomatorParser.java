@@ -40,7 +40,7 @@ import javax.xml.bind.Unmarshaller;
  * @author Matteo Agosti (agosti@ce.unipr.it)
  * @author Michele Amoretti (amoretti@ce.unipr.it)
  * 
- * @see {it.unipr.ce.dsg.deus.core.Engine}
+ * @see it.unipr.ce.dsg.deus.core.Engine}
  */
 public class AutomatorParser {
 
@@ -299,7 +299,7 @@ public class AutomatorParser {
 	}
 
 	/**
-	 * Returns a Properties object 
+	 * Returns a Properties object
 	 * 
 	 * @param id
 	 *            the id of the node to extract.
@@ -314,6 +314,12 @@ public class AutomatorParser {
 		return params;
 	}
 
+	/**
+	 * Returns the instance of the simulation engine, initialized by the class
+	 * constructor.
+	 * 
+	 * @return the instance of the simulation engine.
+	 */
 	public Engine getEngine() {
 		return engine;
 	}
