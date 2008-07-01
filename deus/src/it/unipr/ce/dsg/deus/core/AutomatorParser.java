@@ -14,6 +14,34 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+/**
+ * <p>
+ * This class is responsible for handling the simulation configuration file
+ * according to the DEUS xml schema.
+ * </p>
+ * 
+ * <p>
+ * The configuration can be seen as a set of nodes, resources, events, processes
+ * and engine parameters. This class handles the configuration of each
+ * simulation object and stores them in a set of array data structures.
+ * </p>
+ * 
+ * <p>
+ * Each simulation object have a set of base features plus references to other
+ * simulation objects: nodes can have a set of resources, events can have a set
+ * of referenced events, processes can have references both to nodes and events.
+ * </p>
+ * 
+ * <p>
+ * At the end of the configuration file parsing process, this class will
+ * initialize an Engine object enabling the simulation execution.
+ * </p>
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (amoretti@ce.unipr.it)
+ * 
+ * @see {it.unipr.ce.dsg.deus.core.Engine}
+ */
 public class AutomatorParser {
 
 	private ArrayList<Node> nodes = null;
@@ -24,6 +52,30 @@ public class AutomatorParser {
 
 	private Engine engine = null;
 
+	/**
+	 * Class constructor responsible for configuration file handling and engine
+	 * initialization.
+	 * 
+	 * @param fileName
+	 *            the configuration file to open.
+	 * @throws JAXBException
+	 *             if the configuration file format is wrong.
+	 * @throws ClassNotFoundException
+	 *             if the configuration file contains handlers (fully qualified
+	 *             class names) not existing in the classpath.
+	 * @throws IllegalArgumentException
+	 *             if the handler class cannot be instantiated.
+	 * @throws SecurityException
+	 *             if the handler class cannot be instantiated.
+	 * @throws InstantiationException
+	 *             if the handler class cannot be instantiated.
+	 * @throws IllegalAccessException
+	 *             if the handler class cannot be instantiated.
+	 * @throws InvocationTargetException
+	 *             if the handler class cannot be instantiated.
+	 * @throws NoSuchMethodException
+	 *             if the handler class cannot be instantiated.
+	 */
 	@SuppressWarnings("unchecked")
 	public AutomatorParser(String fileName) throws JAXBException,
 			ClassNotFoundException, IllegalArgumentException,
@@ -51,26 +103,29 @@ public class AutomatorParser {
 
 			ArrayList<Resource> resources = new ArrayList<Resource>();
 			if (node.getResources() != null) {
-				for (Iterator<it.unipr.ce.dsg.deus.schema.Resource> it2 = node.getResources().getResource().iterator();
-					 it2.hasNext(); ) {
+				for (Iterator<it.unipr.ce.dsg.deus.schema.Resource> it2 = node
+						.getResources().getResource().iterator(); it2.hasNext();) {
 					it.unipr.ce.dsg.deus.schema.Resource resource = it2.next();
-					Class<Resource> resourceHandler = (Class<Resource>) this.getClass()
-					.getClassLoader().loadClass(resource.getHandler());
+					Class<Resource> resourceHandler = (Class<Resource>) this
+							.getClass().getClassLoader().loadClass(
+									resource.getHandler());
 
 					Properties resourceParams = new Properties();
 					if (resource.getParams() != null)
-						resourceParams = parseParams(resource.getParams().getParam().iterator());
-					
+						resourceParams = parseParams(resource.getParams()
+								.getParam().iterator());
+
 					Resource configResource = resourceHandler.getConstructor(
-							new Class[] { Properties.class })
-							.newInstance(new Object[] { resourceParams });
+							new Class[] { Properties.class }).newInstance(
+							new Object[] { resourceParams });
 					resources.add(configResource);
 				}
 			}
-			
+
 			Node configNode = nodeHandler.getConstructor(
-					new Class[] { String.class, Properties.class, ArrayList.class})
-					.newInstance(new Object[] { node.getId(), params, resources });
+					new Class[] { String.class, Properties.class,
+							ArrayList.class }).newInstance(
+					new Object[] { node.getId(), params, resources });
 			if (node.getLogger() != null) {
 				configNode.setLoggerLevel(node.getLogger().getLevel());
 				configNode
@@ -103,15 +158,15 @@ public class AutomatorParser {
 				configEvent.setLoggerPathPrefix(event.getLogger()
 						.getPathPrefix());
 			}
-			
+
 			if (event.getSchedulerListener() != null) {
 				SchedulerListener schedulerListener = (SchedulerListener) this
 						.getClass().getClassLoader().loadClass(
 								event.getSchedulerListener()).newInstance();
-				
+
 				configEvent.setSchedulerListener(schedulerListener);
 			}
-			
+
 			events.add(configEvent);
 
 		}
@@ -132,7 +187,7 @@ public class AutomatorParser {
 			}
 		}
 
-		// Parase all the processes in order to initialize Process objects
+		// Parse all the processes in order to initialize Process objects
 		for (Iterator<it.unipr.ce.dsg.deus.schema.Process> it = automator
 				.getProcess().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Process process = it.next();
@@ -167,8 +222,7 @@ public class AutomatorParser {
 			}
 			processes.add(configProcess);
 
-			// TODO sistemare evitare di scorrere due volte i referenced events
-			// di un process
+			// TODO try to avoid scrolling the event list twice
 			for (Iterator<it.unipr.ce.dsg.deus.schema.Reference> it2 = process
 					.getEvents().getReference().iterator(); it2.hasNext();)
 				getEventById(it2.next().getId())
@@ -194,6 +248,13 @@ public class AutomatorParser {
 		}
 	}
 
+	/**
+	 * Returns the configured node with the given id.
+	 * 
+	 * @param id
+	 *            the id of the node to extract.
+	 * @return the configured node with the given id.
+	 */
 	private Node getNodeById(String id) {
 		for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
 			Node n = it.next();
@@ -204,6 +265,13 @@ public class AutomatorParser {
 		return null;
 	}
 
+	/**
+	 * Returns the configured event with the given id.
+	 * 
+	 * @param id
+	 *            the id of the event to extract.
+	 * @return the configured event with the given id.
+	 */
 	private Event getEventById(String id) {
 		for (Iterator<Event> it = events.iterator(); it.hasNext();) {
 			Event e = it.next();
@@ -214,6 +282,13 @@ public class AutomatorParser {
 		return null;
 	}
 
+	/**
+	 * Returns the configured process with the given id.
+	 * 
+	 * @param id
+	 *            the id of the process to extract.
+	 * @return the configured process with the given id.
+	 */
 	private Process getProcessById(String id) {
 		for (Iterator<Process> it = processes.iterator(); it.hasNext();) {
 			Process p = it.next();
@@ -223,6 +298,13 @@ public class AutomatorParser {
 		return null;
 	}
 
+	/**
+	 * Returns a Properties object 
+	 * 
+	 * @param id
+	 *            the id of the node to extract.
+	 * @return the configured node with the given id.
+	 */
 	private Properties parseParams(Iterator<Param> it) {
 		Properties params = new Properties();
 		while (it.hasNext()) {
