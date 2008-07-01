@@ -1,14 +1,13 @@
 package it.unipr.ce.dsg.deus.impl.process;
 
-import java.util.ArrayList;
-import java.util.Properties;
-
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.InvalidReferencesException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
+
+import java.util.ArrayList;
+import java.util.Properties;
 
 public class TwoSpeedsPoissonProcess extends Process {
 	private static final String FIRST_MEAN_ARRIVAL = "firstMeanArrival";
@@ -21,7 +20,7 @@ public class TwoSpeedsPoissonProcess extends Process {
 
 	public TwoSpeedsPoissonProcess(String id, Properties params,
 			ArrayList<Node> referencedNodes, ArrayList<Event> referencedEvents)
-			throws InvalidParamsException, InvalidReferencesException {
+			throws InvalidParamsException {
 		super(id, params, referencedNodes, referencedEvents);
 		initialize();
 	}
