@@ -14,7 +14,7 @@ import java.util.Properties;
  * </p>
  * 
  * @author Matteo Agosti (agosti@ce.unipr.it)
- * @author Michele Amoretti (amoretti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
 public abstract class Process extends SimulationObject {
