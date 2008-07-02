@@ -38,7 +38,7 @@ import javax.xml.bind.Unmarshaller;
  * </p>
  * 
  * @author Matteo Agosti (agosti@ce.unipr.it)
- * @author Michele Amoretti (amoretti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  * @see it.unipr.ce.dsg.deus.core.Engine
  */
