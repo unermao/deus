@@ -19,8 +19,8 @@ import java.util.Properties;
  * are created only if the initiator has less than "numInitialConnections". 
  * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
  * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
 
