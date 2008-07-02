@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * </p>
  * 
  * @author Matteo Agosti (agosti@ce.unipr.it)
- * @author Michele Amoretti (amoretti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
 public final class Engine extends SimulationObject {
