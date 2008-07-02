@@ -10,6 +10,20 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
+/**
+ * <p>
+ * This Event connects a initiator Peer to "numInitialConnections" 
+ * other Peers, randomly chosen.
+ * If this event is executed by the Engine after the initiator Peer
+ * has been the target of connections from other Peers, new connections 
+ * are created only if the initiator has less than "numInitialConnections". 
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ *
+ */
+
 public class MultipleRandomConnectionsEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
@@ -24,7 +38,6 @@ public class MultipleRandomConnectionsEvent extends Event {
 		initialize();
 	}
 
-	@Override
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(IS_BIDIRECTIONAL))
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
