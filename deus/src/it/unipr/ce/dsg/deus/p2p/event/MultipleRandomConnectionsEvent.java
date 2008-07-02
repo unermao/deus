@@ -43,42 +43,35 @@ public class MultipleRandomConnectionsEvent extends Event {
 	}
  
 	public void run() throws RunException {
-		if (Engine.getDefault().getNodes().size() > numInitialConnections) {
-			//System.out.println("N = " + Engine.getDefault().getNodes().size());
-			//System.out.println("initiator: " + initiator);
-			int m = 0;
-			if (Engine.getDefault().getNodes().size() < numInitialConnections)
-				m = Engine.getDefault().getNodes().size();
-			else
-				m = numInitialConnections;
-			//System.out.println("m = " + m);
-			int numConnectedNodes = 0;
-			do {
-				Peer target = null;			
-				do {
-					int randomInt = Engine.getDefault().getSimulationRandom().nextInt(
-					Engine.getDefault().getNodes().size());
-					Node randomNode = Engine.getDefault().getNodes().get(randomInt);
-					if (!(randomNode instanceof Peer)) {
-						target = null;
-						continue;
-					}
-					target = (Peer) randomNode; 
-				} while ((target == null) || (target.getId().equals(initiator.getId())));
-				//System.out.println("target: " + target);
-				if (initiator.addNeighbor(target)) {
-					//initiator.setReachable(true);
-					if (isBidirectional) {
-						target.addNeighbor(initiator);
-						//target.setReachable(true);
-					}
-					numConnectedNodes++;
-				}
-				//System.out.println("numConnectedNodes: " + numConnectedNodes);
-			} while (numConnectedNodes < m);
-		}
+		int n = Engine.getDefault().getNodes().size();
+		//System.out.println("N = " + n);
+		if (n == 1)
+			return;
+		//System.out.println("initiator: " + initiator);
+		int m = 0;
+		if (n <= numInitialConnections)
+			m = Engine.getDefault().getNodes().size() - 1;
 		else
-			return;	
+			m = numInitialConnections;
+		//System.out.println("m = " + m);
+		do {
+			Peer target = null;			
+			do {
+				int randomInt = Engine.getDefault().getSimulationRandom().nextInt(n);
+				Node randomNode = Engine.getDefault().getNodes().get(randomInt);
+				if (!(randomNode instanceof Peer)) {
+					target = null;
+					continue;
+				}
+				target = (Peer) randomNode; 
+			} while ((target == null) || (target.getId().equals(initiator.getId())));
+			//System.out.println("target: " + target);
+			if (initiator.addNeighbor(target)) {
+				if (isBidirectional)
+					target.addNeighbor(initiator);
+			}
+			//System.out.println("num neighbors: " + initiator.getNeighbors().size());
+		} while (initiator.getNeighbors().size() < m);
 	}
 
 }
