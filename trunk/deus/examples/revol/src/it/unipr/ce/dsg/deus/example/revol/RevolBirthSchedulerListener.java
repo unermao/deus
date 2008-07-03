@@ -13,9 +13,9 @@ public class RevolBirthSchedulerListener implements SchedulerListener {
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		BirthEvent be = (BirthEvent) parentEvent; 
 		if (newEvent instanceof MultipleRandomConnectionsEvent) {
-			((MultipleRandomConnectionsEvent) newEvent).setNodeToConnect((Peer) be.getAssociatedNode());
+			((MultipleRandomConnectionsEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
 		} else if (newEvent instanceof DisconnectionEvent) {
-			((DisconnectionEvent) newEvent).setNodesToDisconnect((Peer) be.getAssociatedNode(), null);
+			((DisconnectionEvent) newEvent).setNodeToDisconnectFrom(null);
 		} else if (newEvent instanceof DeathEvent) {
 			((DeathEvent) newEvent).setNodeToKill(be.getAssociatedNode());
 		} else if (newEvent instanceof RevolAdaptationEvent) {
