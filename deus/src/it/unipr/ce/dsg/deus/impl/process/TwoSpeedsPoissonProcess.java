@@ -9,6 +9,22 @@ import it.unipr.ce.dsg.deus.core.Process;
 import java.util.ArrayList;
 import java.util.Properties;
 
+/**
+ * This class represents a generic Poisson process with two speed. The process
+ * start with the first speed and after the current simulation virtual time
+ * reached a defined threshold the process will change to the second speed. It
+ * accept parameters called "firstMeanArrival" (float) that is used to generate
+ * the first speed, "secondMeanArrival" (float) that is used to generate the
+ * second speed, "vtThreshold" (float) that is used to determine when change
+ * from first to second speed. Each time the process receives a request for
+ * generating a new triggering time, it will compute it by adding the current
+ * simulation virtual the value of an Homogeneous Poisson Process with the rate
+ * parameter calculated as 1/[first|second]meanArrival time.
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class TwoSpeedsPoissonProcess extends Process {
 	private static final String FIRST_MEAN_ARRIVAL = "firstMeanArrival";
 	private static final String SECOND_MEAN_ARRIVAL = "secondMeanArrival";
@@ -32,14 +48,15 @@ public class TwoSpeedsPoissonProcess extends Process {
 	public float getSecondMeanArrival() {
 		return secondMeanArrival;
 	}
-	
+
 	public void initialize() throws InvalidParamsException {
 		if (params.getProperty(FIRST_MEAN_ARRIVAL) == null)
 			throw new InvalidParamsException(FIRST_MEAN_ARRIVAL
 					+ " param is expected.");
 
 		try {
-			firstMeanArrival = Float.parseFloat(params.getProperty(FIRST_MEAN_ARRIVAL));
+			firstMeanArrival = Float.parseFloat(params
+					.getProperty(FIRST_MEAN_ARRIVAL));
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(FIRST_MEAN_ARRIVAL
 					+ " must be a valid float value.");
@@ -49,7 +66,8 @@ public class TwoSpeedsPoissonProcess extends Process {
 					+ " param is expected.");
 
 		try {
-			secondMeanArrival = Float.parseFloat(params.getProperty(SECOND_MEAN_ARRIVAL));
+			secondMeanArrival = Float.parseFloat(params
+					.getProperty(SECOND_MEAN_ARRIVAL));
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(SECOND_MEAN_ARRIVAL
 					+ " must be a valid float value.");
@@ -72,11 +90,11 @@ public class TwoSpeedsPoissonProcess extends Process {
 		else
 			return virtualTime + expRandom((float) 1 / secondMeanArrival);
 	}
-	
+
 	// returns exponentially distributed random variable
 	private float expRandom(float lambda) {
-		float myRandom = (float) (-Math.log(Engine.getDefault().getSimulationRandom()
-				.nextFloat()) / lambda);
+		float myRandom = (float) (-Math.log(Engine.getDefault()
+				.getSimulationRandom().nextFloat()) / lambda);
 		return myRandom;
 	}
 }

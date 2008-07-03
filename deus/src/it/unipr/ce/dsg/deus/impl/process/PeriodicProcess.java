@@ -11,7 +11,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 /**
  * This class represents a generic periodic process. It accept one parameter
  * called "period" (float) that is used to generate the triggering time. Each
- * time the process receive a request for generating an new triggering time, it
+ * time the process receives a request for generating a new triggering time, it
  * will compute it by adding the period value to the current simulation virtual
  * time.
  * 
