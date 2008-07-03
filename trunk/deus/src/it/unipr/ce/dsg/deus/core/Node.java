@@ -39,6 +39,9 @@ public abstract class Node extends SimulationObject implements
 	 *            the properties that will be handled by the node.
 	 * @param resources
 	 *            the set of resources associated to the node.
+	 * 
+	 * @throws InvalidParamsException
+	 *             if the given parameter are wrong.
 	 */
 	public Node(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {

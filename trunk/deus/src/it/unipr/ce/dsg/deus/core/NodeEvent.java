@@ -39,6 +39,8 @@ public abstract class NodeEvent extends Event {
 	 *            the properties that will be handled by the event.
 	 * @param parentProcess
 	 *            the parent process of the event.
+	 * @throws InvalidParamsException
+	 *             if the given parameter are wrong.
 	 */
 	public NodeEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {

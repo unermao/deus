@@ -51,8 +51,11 @@ public abstract class Event extends SimulationObject implements
 	 *            the properties that will be handled by the event.
 	 * @param parentProcess
 	 *            the parent process of the event.
+	 * @throws InvalidParamsException
+	 *             if the given parameter are wrong.
 	 */
-	public Event(String id, Properties params, Process parentProcess) {
+	public Event(String id, Properties params, Process parentProcess)
+			throws InvalidParamsException {
 		this.id = id;
 		this.params = params;
 		this.parentProcess = parentProcess;
