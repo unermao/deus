@@ -9,6 +9,14 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
 
+/**
+ * This event represents the birth of a simulation node. During its execution an
+ * instance of the node associated to the event will be created.
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class BirthEvent extends NodeEvent {
 
 	public BirthEvent(String id, Properties params, Process parentProcess)
@@ -17,13 +25,14 @@ public class BirthEvent extends NodeEvent {
 		initialize();
 	}
 
-	// TODO implement params to establish the policy of node type initialization 
-	// (now choose one type only - randomly - from the parent process)
 	public void initialize() throws InvalidParamsException {
+		// TODO implement params to establish the policy of node type initialization
+		// (now choose one type only - randomly - from the parent process)
 	}
 
 	public void run() throws RunException {
-		//System.out.println("birth -- N = " + Engine.getDefault().getNodes().size());
+		// System.out.println("birth -- N = " +
+		// Engine.getDefault().getNodes().size());
 		if (getParentProcess() == null)
 			throw new RunException(
 					"A parent process must be set in order to run "
