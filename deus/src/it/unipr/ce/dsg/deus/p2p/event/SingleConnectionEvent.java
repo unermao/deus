@@ -38,7 +38,7 @@ public class SingleConnectionEvent extends NodeEvent {
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
 	}
 
-	public void setNodeToConnect(Peer target) {
+	public void setNodeToConnectTo(Peer target) {
 		this.target = target;
 	}
 
