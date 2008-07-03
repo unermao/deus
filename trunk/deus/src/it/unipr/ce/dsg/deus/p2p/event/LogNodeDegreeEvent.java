@@ -11,6 +11,16 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 import java.util.Iterator;
 import java.util.Properties;
 
+/**
+ * This class represents a logger that works out on Peer nodes. It calculates
+ * the node degree distribution for each peer of the network. The results is a
+ * list of degree starting from 1 up to the maximum degree inside the netowkr.
+ * For each degree is computed the number of nodes that has it.
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class LogNodeDegreeEvent extends Event {
 
 	public LogNodeDegreeEvent(String id, Properties params,
