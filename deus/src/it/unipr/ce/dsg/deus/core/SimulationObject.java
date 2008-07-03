@@ -3,17 +3,36 @@ package it.unipr.ce.dsg.deus.core;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class used to abstract each simulation object, adding the member and methods
+ * to support the logging process.
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class SimulationObject {
 
 	private String loggerPathPrefix = Engine.DEFAULT_LOGGER_PATH_PREFIX;
 
 	private Level loggerLevel = Engine.DEFAULT_LOGGER_LEVEL;
 
+	/**
+	 * Returns an instance of the logger.
+	 * 
+	 * @return an instance of the logger.
+	 */
 	public Logger getLogger() {
 		return Engine.getDefault().getLogger(this, loggerPathPrefix,
 				loggerLevel);
 	}
 
+	/**
+	 * Sets the logger base path in which store log files.
+	 * 
+	 * @param loggerPathPrefix
+	 *            the logger base path in which store files.
+	 */
 	public void setLoggerPathPrefix(String loggerPathPrefix) {
 		if (loggerPathPrefix == null)
 			return;
@@ -21,6 +40,13 @@ public class SimulationObject {
 		this.loggerPathPrefix = loggerPathPrefix;
 	}
 
+	/**
+	 * Sets the logger level of logging. String value passed corresponds to the
+	 * logging level of the default Java Logger.
+	 * 
+	 * @param loggerLevel
+	 *            the string representing the logging level.
+	 */
 	public void setLoggerLevel(String loggerLevel) {
 		if (loggerLevel == null)
 			return;
