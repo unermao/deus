@@ -39,9 +39,11 @@ public abstract class Process extends SimulationObject {
 	 * @param referencedEvents
 	 *            the set of referenced events.
 	 * @throws InvalidParamsException
+	 *             if the given parameter are wrong.
 	 */
 	public Process(String id, Properties params,
-			ArrayList<Node> referencedNodes, ArrayList<Event> referencedEvents) {
+			ArrayList<Node> referencedNodes, ArrayList<Event> referencedEvents)
+			throws InvalidParamsException {
 		this.id = id;
 		this.params = params;
 		this.referencedNodes = referencedNodes;
