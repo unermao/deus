@@ -28,8 +28,19 @@ public abstract class Resource {
 		this.params = params;
 	}
 
+	/**
+	 * Provides the initialization of the resource according to the given
+	 * parameters. This method should also perform a check on the parameters
+	 * values.
+	 * 
+	 * @throws InvalidParamsException
+	 *             if the parameters passed to the resource are wrong.
+	 */
 	public abstract void initialize() throws InvalidParamsException;
 
+	/**
+	 * Each extending class must implement the equals method.
+	 */
 	public abstract boolean equals(Object o);
 
 }
