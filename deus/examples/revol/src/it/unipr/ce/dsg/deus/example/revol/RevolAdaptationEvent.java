@@ -48,10 +48,12 @@ public class RevolAdaptationEvent extends NodeEvent {
 	private double computeFitness(RevolNode node) {
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
 		double qhr = node.getQhr();
-		if ( 1/A < qhr*A)
+		
+		if ( qhr < 0.999 )
 			return 1/A;
-		else
-			return qhr*A;
+		else 
+			return (1 - qhr)*A;
+		
 		//return (1 - qhr);
 		//return 1 / A;
 		//return (1 - qhr + delta) / A;
@@ -67,10 +69,12 @@ public class RevolAdaptationEvent extends NodeEvent {
 	
 	private double computeFitness(int[] c, double qhr) {
 		double A = a0*c[0]/10 + a1*c[1] + a2*c[2]*2;
-		if ( 1/A < qhr*A)
+		
+		if ( qhr < 0.999 )
 			return 1/A;
-		else
-			return qhr*A;
+		else 
+			return (1 - qhr)*A;
+		
 		//return (1 - qhr);
 		//return 1 / A;
 		//return (1 - qhr + delta) / A;
