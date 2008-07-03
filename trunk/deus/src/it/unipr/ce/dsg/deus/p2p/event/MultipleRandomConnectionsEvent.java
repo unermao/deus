@@ -78,4 +78,12 @@ public class MultipleRandomConnectionsEvent extends NodeEvent {
 		} while (((Peer) associatedNode).getNeighbors().size() < m);
 	}
 
+	public int getNumInitialConnections() {
+		return numInitialConnections;
+	}
+
+	public void setNumInitialConnections(int numInitialConnections) {
+		this.numInitialConnections = numInitialConnections;
+	}
+
 }
