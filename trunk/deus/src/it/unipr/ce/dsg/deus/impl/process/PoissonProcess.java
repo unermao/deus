@@ -9,6 +9,18 @@ import it.unipr.ce.dsg.deus.core.Process;
 import java.util.ArrayList;
 import java.util.Properties;
 
+/**
+ * This class represents a generic Poisson process. It accept one parameter
+ * called "meanArrival" (float) that is used to generate the triggering time.
+ * Each time the process receives a request for generating a new triggering
+ * time, it will compute it by adding the current simulation virtual the value
+ * of an Homogeneous Poisson Process with the rate parameter calculated as
+ * 1/meanArrival time.
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class PoissonProcess extends Process {
 	private static final String MEAN_ARRIVAL = "meanArrival";
 
@@ -46,8 +58,8 @@ public class PoissonProcess extends Process {
 
 	// returns exponentially distributed random variable
 	private float expRandom(float lambda) {
-		float myRandom = (float) (-Math.log(Engine.getDefault().getSimulationRandom()
-				.nextFloat()) / lambda);
+		float myRandom = (float) (-Math.log(Engine.getDefault()
+				.getSimulationRandom().nextFloat()) / lambda);
 		return myRandom;
 	}
 }
