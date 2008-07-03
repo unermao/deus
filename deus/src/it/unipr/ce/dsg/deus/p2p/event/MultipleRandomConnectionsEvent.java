@@ -1,9 +1,9 @@
 package it.unipr.ce.dsg.deus.p2p.event;
 
 import it.unipr.ce.dsg.deus.core.Engine;
-import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -12,8 +12,8 @@ import java.util.Properties;
 
 /**
  * <p>
- * This Event connects a initiator Peer to "numInitialConnections" 
- * other Peers, randomly chosen.
+ * This NodeEvent connects the associatedNode (which must be a Peer) 
+ * to "numInitialConnections" other Peers, randomly chosen.
  * If this event is executed by the Engine after the initiator Peer
  * has been the target of connections from other Peers, new connections 
  * are created only if the initiator has less than "numInitialConnections". 
@@ -24,13 +24,12 @@ import java.util.Properties;
  *
  */
 
-public class MultipleRandomConnectionsEvent extends Event {
+public class MultipleRandomConnectionsEvent extends NodeEvent {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
 	
 	private boolean isBidirectional = false;
 	private int numInitialConnections = 0;
-	private Peer initiator = null;
 	
 	public MultipleRandomConnectionsEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -45,28 +44,22 @@ public class MultipleRandomConnectionsEvent extends Event {
 			numInitialConnections = Integer.parseInt(params.getProperty(NUM_INITIAL_CONNECTIONS));
 	}
 
-	public void setNodeToConnect(Peer initiator) {
-		this.initiator = initiator;
-	}
-
 	public Object clone() {
 		MultipleRandomConnectionsEvent clone = (MultipleRandomConnectionsEvent) super.clone();
-		clone.initiator = null;
 		return clone;
 	}
  
 	public void run() throws RunException {
+		if (!(associatedNode instanceof Peer))
+			throw new RunException("The associated node is not a Peer!");
 		int n = Engine.getDefault().getNodes().size();
-		//System.out.println("N = " + n);
 		if (n == 1)
 			return;
-		//System.out.println("initiator: " + initiator);
 		int m = 0;
 		if (n <= numInitialConnections)
 			m = Engine.getDefault().getNodes().size() - 1;
 		else
 			m = numInitialConnections;
-		//System.out.println("m = " + m);
 		do {
 			Peer target = null;			
 			do {
@@ -77,14 +70,12 @@ public class MultipleRandomConnectionsEvent extends Event {
 					continue;
 				}
 				target = (Peer) randomNode; 
-			} while ((target == null) || (target.getId().equals(initiator.getId())));
-			//System.out.println("target: " + target);
-			if (initiator.addNeighbor(target)) {
+			} while ((target == null) || (target.getId().equals(((Peer) associatedNode).getId())));
+			if (((Peer) associatedNode).addNeighbor(target)) {
 				if (isBidirectional)
-					target.addNeighbor(initiator);
+					target.addNeighbor(((Peer) associatedNode));
 			}
-			//System.out.println("num neighbors: " + initiator.getNeighbors().size());
-		} while (initiator.getNeighbors().size() < m);
+		} while (((Peer) associatedNode).getNeighbors().size() < m);
 	}
 
 }

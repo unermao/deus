@@ -10,6 +10,17 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
+
+/**
+ * <p>
+ * This NodeEvent connects the associatedNode (which must be a Peer) 
+ * to a specified target Peer (if target is null, the Peer is randomly chosen). 
+ * </p>
+ * 
+ * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class SingleConnectionEvent extends NodeEvent {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	
