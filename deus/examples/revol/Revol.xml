@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" />
+		    <aut:reference id="adaptation" /> 
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -29,8 +29,8 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="cpu" value="256" /><!-- MHz -->
-			<aut:param name="ram" value="256" /><!-- MB -->
+			<aut:param name="cpu" value="1000" /><!-- MHz -->
+			<aut:param name="ram" value="1000" /><!-- MB -->
 			<aut:param name="disk" value="10000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
@@ -47,7 +47,7 @@
 			<aut:param name="hasSameAssociatedNode" value="true" />
 			<!-- a0=100, a1=10, a2=5 are the values which give all genes he same weight -->
 			<aut:param name="a0" value="300" />
-			<aut:param name="a1" value="10" />
+			<aut:param name="a1" value="50" />
 			<aut:param name="a2" value="5" />
 			<aut:param name="selectionStrategy" value="proportional" /> 
 			<!-- selection strategies: bestFitness, proportional, random, tournament, rank-based -->
@@ -124,7 +124,7 @@
 
 	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10000000" /> 
+			<aut:param name="meanArrival" value="40000000" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -138,7 +138,7 @@
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="500000" />
 			<aut:param name="secondMeanArrival" value="250000" />
-			<aut:param name="vtThreshold" value="2000000" />
+			<aut:param name="vtThreshold" value="1000000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -174,11 +174,11 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="5000001" seed="123456789"> <!-- 3600001 -->
+	<aut:engine maxvt="3000001" seed="123456789"> <!-- 3600001 -->
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="poisson1" />
-			<aut:reference id="periodic2" />	
+			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
 
