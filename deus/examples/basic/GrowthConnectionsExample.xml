@@ -34,15 +34,7 @@
 
 	<!-- *** NODE SPECIES *** -->
 
-	<aut:node id="supernode" handler="it.unipr.ce.dsg.deus.p2p.node.SuperNode">
-		<aut:params>
-			<aut:param name="maxPeerview" value="100" />
-			<aut:param name="downloadBandwidth" value="10" /><!-- Mbps -->
-			<aut:param name="uploadBandwidth" value="2" /><!-- Mbps -->
-			<aut:param name="CPU" value="2" /><!-- GHz -->
-			<aut:param name="RAM" value="2048" /><!-- MB -->
-		</aut:params>
-	</aut:node>
+	<aut:node id="supernode" handler="it.unipr.ce.dsg.deus.p2p.node.Peer" />
 
 
 	<!-- *** PROCESSES *** -->
