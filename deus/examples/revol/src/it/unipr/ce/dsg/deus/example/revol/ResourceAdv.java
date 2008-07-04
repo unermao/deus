@@ -2,7 +2,23 @@ package it.unipr.ce.dsg.deus.example.revol;
 
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
-
+/**
+ * <p>
+ * This class represents a resource advertisement, i.e. a document that
+ * describes a ConsumableResource (with a name and an amount), and the
+ * interested Peer.
+ * </p>
+ * <p>
+ * Once the resource described by a ResourceAdv has been discovered,
+ * the owner of the resource should be registered into the ResourceAdv,
+ * and the found flag set to true. This flag is checked, for example, 
+ * at the beginning of each RevolDiscoveryEvent in order to avoid propagation
+ * of discovery events associated to an already discovered and consumed resource.
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class ResourceAdv {
 
 	private Peer owner = null;
