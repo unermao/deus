@@ -11,7 +11,18 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Random;
 
-
+/**
+ * <p>
+ * RevolPeers are characterized by three kinds of consumable resources:
+ * CPU, RAM, DISK. Moreover, each RevolPeer has a chromosome, i.e.
+ * a set of parameters whose values are randomly initialized when the
+ * RevolPeer is instantiated, and may change during its lifetime, depending
+ * on external events.
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class RevolPeer extends Peer {
 
 	private static final String CPU_FACTOR = "cpuFactor";
