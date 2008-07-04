@@ -8,6 +8,15 @@ import it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent;
 import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
+
+/**
+ * <p>
+ * This class is used to initialize the events associated to RevolBirthEvent.
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class RevolBirthSchedulerListener implements SchedulerListener {
 
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
@@ -20,9 +29,9 @@ public class RevolBirthSchedulerListener implements SchedulerListener {
 		} else if (newEvent instanceof DeathEvent) {
 			((DeathEvent) newEvent).setNodeToKill(be.getAssociatedNode());
 		} else if (newEvent instanceof RevolAdaptationEvent) {
-			((RevolAdaptationEvent) newEvent).setAssociatedNode((RevolNode) be.getAssociatedNode());
+			((RevolAdaptationEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		} else if (newEvent instanceof RevolDiscoveryEvent) {
-			((RevolDiscoveryEvent) newEvent).setAssociatedNode((RevolNode) be.getAssociatedNode());
+			((RevolDiscoveryEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		}
 	}
 
