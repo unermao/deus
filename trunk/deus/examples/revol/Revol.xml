@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" /> 
+		    <!-- aut:reference id="adaptation" />  -->
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -95,11 +95,23 @@
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 
-	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
+	<aut:process id="twospeedpoisson" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="10" />
 			<aut:param name="secondMeanArrival" value="100000" />
 			<aut:param name="vtThreshold" value="10000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -177,6 +189,7 @@
 	<aut:engine maxvt="3000001" seed="123456789"> <!-- 3600001 -->
 		<aut:logger level="INFO" />
 		<aut:processes>
+			<!-- <aut:reference id="twospeedpoisson" /> -->
 			<aut:reference id="poisson1" />
 			<aut:reference id="periodic2" />
 		</aut:processes>
