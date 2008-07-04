@@ -17,7 +17,9 @@ import java.util.Random;
  * CPU, RAM, DISK. Moreover, each RevolPeer has a chromosome, i.e.
  * a set of parameters whose values are randomly initialized when the
  * RevolPeer is instantiated, and may change during its lifetime, depending
- * on external events.
+ * on external events. The RevolPeer keeps track of the number of sent queries (Q)
+ * and of the number of query hits (QH). The query hit ratio (QHR = QH/Q) is 
+ * initialized to 0.
  * </p>
  * 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
