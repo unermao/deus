@@ -20,7 +20,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 	private int a1 = 0;
 	private int a2 = 0;
 	private String selectionStrategy = null;
-	private double delta = 0.001;
+	//private double delta = 0.001;
 
 	public RevolAdaptationEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -45,7 +45,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 		return clone;
 	}
 
-	private double computeFitness(RevolNode node) {
+	private double computeFitness(RevolPeer node) {
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
 		double qhr = node.getQhr();
 		
@@ -88,15 +88,15 @@ public class RevolAdaptationEvent extends NodeEvent {
 		//return ((a0*c[0]/10 + a1*c[1] + a2*c[2]*2) / (qh + delta));
 	}
 	
-	private RevolNode selectBestNeighbor() {  
-		RevolNode bestNeighbor = null;
+	private RevolPeer selectBestNeighbor() {  
+		RevolPeer bestNeighbor = null;
 		
 		if (selectionStrategy.equals("bestFitness")) {	
-			RevolNode currentNeighbor = null;
+			RevolPeer currentNeighbor = null;
 			double currentNeighborFitness = 0;
 			double bestNeighborFitness = 0;
 			for (int i = 0; i < ((Peer) associatedNode).getNeighbors().size(); i++) {
-				currentNeighbor = (RevolNode) ((Peer) associatedNode).getNeighbors().get(i);
+				currentNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(i);
 				currentNeighborFitness = computeFitness(currentNeighbor);
 				if (i == 0) {
 					bestNeighbor = currentNeighbor;
@@ -117,12 +117,12 @@ public class RevolAdaptationEvent extends NodeEvent {
 			int size = ((Peer) associatedNode).getNeighbors().size();
 			double[] fitnesses = new double[size];
 			for (int j = 0; j < size; j++) {
-				fitnesses[j] = computeFitness((RevolNode) ((Peer) associatedNode).getNeighbors().get(j));
+				fitnesses[j] = computeFitness((RevolPeer) ((Peer) associatedNode).getNeighbors().get(j));
 				getLogger().fine("fitness of selected neighbor: " + fitnesses[j]);
 			}
 							
 			int s = getRandomElementWithInverseProbability(fitnesses);
-			bestNeighbor = (RevolNode) ((Peer) associatedNode).getNeighbors().get(s);
+			bestNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(s);
 		}
 		else if (selectionStrategy.equals("tournament")) {
 			// TODO
@@ -203,7 +203,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 	
 	
 	public void run() throws RunException {	
-		RevolNode associatedRevolNode = (RevolNode) associatedNode;
+		RevolPeer associatedRevolNode = (RevolPeer) associatedNode;
 		
 		// la initial population è data dalla config locale e da quelle dei nodi vicini
 		if (associatedRevolNode.getNeighbors().size() == 0)
@@ -219,7 +219,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine("currentFitness = " + currentFitness);
 		
 		// select best neighbor
-		RevolNode bestNeighbor = selectBestNeighbor();
+		RevolPeer bestNeighbor = selectBestNeighbor();
 		
 		getLogger().fine("best neighbor config: " + bestNeighbor.getC()[0] + 
 						 " " + bestNeighbor.getC()[1] +
