@@ -7,6 +7,17 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
 
+
+/**
+ * <p>
+ * This event is related to the release of a previously 
+ * consumed resource, by updating the corresponding value 
+ * on the resource owner.
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class RevolFreeResourceEvent extends Event {
 
 	private Node resOwner = null;
@@ -49,25 +60,25 @@ public class RevolFreeResourceEvent extends Event {
 		getLogger().fine("res owner: " + resOwner.getId());
 		getLogger().fine("res to be set free: " + resName);
 		if (this.resName.equals("cpu")) {
-			getLogger().fine("cpu amount before freedom: " + ((RevolNode) resOwner).getCpu());
-			((RevolNode) this.resOwner).setCpu(((RevolNode) this.resOwner)
+			getLogger().fine("cpu amount before freedom: " + ((RevolPeer) resOwner).getCpu());
+			((RevolPeer) this.resOwner).setCpu(((RevolPeer) this.resOwner)
 					.getCpu()
 					+ this.resAmount);
-			getLogger().fine("cpu amount after freedom: " + ((RevolNode) resOwner).getCpu());
+			getLogger().fine("cpu amount after freedom: " + ((RevolPeer) resOwner).getCpu());
 		}
 		else if (this.resName.equals("ram")) {
-			getLogger().fine("ram amount before freedom: " + ((RevolNode) resOwner).getRam());
-			((RevolNode) this.resOwner).setRam(((RevolNode) this.resOwner)
+			getLogger().fine("ram amount before freedom: " + ((RevolPeer) resOwner).getRam());
+			((RevolPeer) this.resOwner).setRam(((RevolPeer) this.resOwner)
 					.getRam()
 					+ this.resAmount);
-			getLogger().fine("ram amount after freedom: " + ((RevolNode) resOwner).getRam());
+			getLogger().fine("ram amount after freedom: " + ((RevolPeer) resOwner).getRam());
 		}
 		else if (this.resName.equals("disk")) {
-			getLogger().fine("disk amount before freedom: " + ((RevolNode) resOwner).getDisk());
-			((RevolNode) this.resOwner).setDisk(((RevolNode) this.resOwner)
+			getLogger().fine("disk amount before freedom: " + ((RevolPeer) resOwner).getDisk());
+			((RevolPeer) this.resOwner).setDisk(((RevolPeer) this.resOwner)
 					.getDisk()
 					+ this.resAmount);
-			getLogger().fine("disk amount after freedom: " + ((RevolNode) resOwner).getDisk());
+			getLogger().fine("disk amount after freedom: " + ((RevolPeer) resOwner).getDisk());
 		}
 		getLogger().fine("end free resource ##");
 	}
