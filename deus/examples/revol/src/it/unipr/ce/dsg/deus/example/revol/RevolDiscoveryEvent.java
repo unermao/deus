@@ -12,6 +12,26 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
+
+/**
+ * <p>
+ * Each RevolDiscoveryEvent must be associated to a RevolPeer and to
+ * a ResourceAdv. If the latter has not been set previously it is set
+ * by the RevolDiscoveryEvent itself, with randomly generated 
+ * resource name and amount, meaning that it is the first
+ * discovery attempt for that resource.
+ * </p>
+ * <p>
+ * The discovery algorithm is flooding-based (like Gnutella), but the
+ * propagation range and the TTL are not the same for each node: they
+ * depend on the current value of the chromosome of the associated RevolPeer.
+ * The discovery process also takes into account the ResourceAdv cache of
+ * the associated RevolPeer.
+ * </p>
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ *
+ */
 public class RevolDiscoveryEvent extends NodeEvent {
 	private static final String CPU = "cpu";
 	private static final String RAM = "ram";
@@ -25,7 +45,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	private float meanArrivalFreeResource = 0;
 
 	private boolean isPropagation = false;
-	private RevolNode senderNode = null;
+	private RevolPeer senderNode = null;
 	
 	private ResourceAdv res = null;
 	private int ttl = 0;
@@ -82,7 +102,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		this.meanArrivalFreeResource = meanArrivalFreeResource;
 	}
 	
-	public void setSenderNode(RevolNode senderNode) {
+	public void setSenderNode(RevolPeer senderNode) {
 		this.senderNode = senderNode;
 	}
 
@@ -111,12 +131,45 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	}
 
 	
+	/**
+	 * <ol>
+	 * <li>
+	 * check if the ResourceAdv is null; if not, 
+	 * check if it has been already found (in that case do not go on)
+	 * </li>
+ 	 * <li>
+ 	 * check if the associated RevolPeer is null
+ 	 * </li>
+ 	 * <li>
+ 	 * check if the associated RevolPeer is isolated; 
+ 	 * if it is, put a MultipleConnectionsEvent in the event queue 
+ 	 * and do not go on
+ 	 * </li>
+ 	 * <li>
+ 	 * check if this event is an intermediate step of a query propagation process; 
+ 	 * if not, initialize a new search by generating and filling 
+ 	 * (with random resource info) a ResourceAdv
+ 	 * </li>
+ 	 * <li>
+ 	 * check if the interested node of the search is null 
+ 	 * (it may have left the network); if it is, do not go on 
+ 	 * </li>
+ 	 * <li>
+ 	 * check if the requested resource is locally available; 
+ 	 * if it is, consume it, put a future RevolFreeResourceEvent 
+ 	 * in the event queue; otherwise, search the local ResourceAdv cache, 
+ 	 * then propagate the query to neighbors (i.e. put new 
+ 	 * RevolDiscoveryEvents in the event queue) 
+ 	 * </li>
+	 * </ol>
+	 *
+	 */
 	public void run() throws RunException {
 		
 		getLogger().fine("####### disc event: " + this);
 		getLogger().fine("####### disc event time: " + this.triggeringTime);
 		
-		RevolNode associatedRevolNode = (RevolNode) associatedNode;
+		RevolPeer associatedRevolNode = (RevolPeer) associatedNode;
 		
 		// the following if statement should avoid to search for resources
 		// which have been already found by the intersted node
@@ -130,13 +183,13 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		if (associatedRevolNode == null) {
 			if ( (!isPropagation) && (hasSameAssociatedNode == false) && (Engine.getDefault().getNodes().size() > 0)) {
 				getLogger().fine("generating associated node ");
-				associatedRevolNode = (RevolNode) Engine.getDefault().getNodes().get(
+				associatedRevolNode = (RevolPeer) Engine.getDefault().getNodes().get(
 						Engine.getDefault().getSimulationRandom().nextInt(
 								Engine.getDefault().getNodes().size()));
 			}
 			else if (isPropagation) { // associate this discovery to a neighbor of the interested node
 				do {
-					associatedRevolNode = (RevolNode) res.getInterestedNode().getNeighbors().get(
+					associatedRevolNode = (RevolPeer) res.getInterestedNode().getNeighbors().get(
 							Engine.getDefault().getSimulationRandom().nextInt(res.getInterestedNode().getNeighbors().size()));
 				} while (associatedRevolNode == null); // FIXME we should choose a neighbor which has not already received this query
 			}
@@ -144,20 +197,12 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				return;
 		}
 
-		/*
-		if (!associatedRevolNode.isReachable()) {
-			getLogger().fine("associated node not reachable ");
-			return;
-		}
-		*/
-
 		// if the node associated to this discovery event has no neighbors
 		// or if they are not reachable, reconnect it and stop this discovery event sequence
 		boolean atLeastOneNeighborIsAlive = false;
 		if (associatedRevolNode.getNeighbors().size() > 0) {
 			for (Iterator<Peer> it = associatedRevolNode.getNeighbors().iterator(); it.hasNext();) {
-				RevolNode currentNeighbor = (RevolNode) it.next();
-				//if ((currentNeighbor != null) && (currentNeighbor.isReachable()))
+				RevolPeer currentNeighbor = (RevolPeer) it.next();
 				if (currentNeighbor != null)
 					atLeastOneNeighborIsAlive = true;
 			}
@@ -185,7 +230,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		if (!isPropagation)
 			initializeDiscoveryProcess(associatedRevolNode, random);
 
-		RevolNode interestedNode = (RevolNode) res.getInterestedNode();
+		RevolPeer interestedNode = (RevolPeer) res.getInterestedNode();
 		if (interestedNode == null)
 			return;
 			
@@ -210,7 +255,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * @param associatedRevolNode
 	 * @param random
 	 */
-	public void initializeDiscoveryProcess(RevolNode associatedRevolNode, Random random) {
+	public void initializeDiscoveryProcess(RevolPeer associatedRevolNode, Random random) {
 			getLogger().fine("First discovery from node " + associatedRevolNode);
 			ttl = associatedRevolNode.getTtlMax();
 			getLogger().fine("q = " + associatedRevolNode.getQ());
@@ -252,8 +297,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * @param interestedNode
 	 * @return
 	 */
-	public boolean isRequestedResourceLocallyAvailable(RevolNode associatedRevolNode, 
-													   RevolNode interestedNode) {
+	public boolean isRequestedResourceLocallyAvailable(RevolPeer associatedRevolNode, 
+													   RevolPeer interestedNode) {
 		getLogger().fine("local search for res = " + res.getName() + " amount: " + res.getAmount());
 		if (((res.getName().equals("cpu")) && (res.getAmount() <= associatedRevolNode.getCpu()))
 				|| ((res.getName().equals("ram")) && (res.getAmount() <= associatedRevolNode
@@ -306,7 +351,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * @param associatedRevolNode
 	 * @return
 	 */
-	public boolean isResourceAdvInCache(RevolNode associatedRevolNode) {
+	public boolean isResourceAdvInCache(RevolPeer associatedRevolNode) {
 		boolean resFound = false;
 		if (senderNode != associatedRevolNode)
 			getLogger().fine("sender node = " + senderNode);
@@ -341,7 +386,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 				discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 				discEv.setPropagation(true);
-				discEv.setAssociatedNode((RevolNode) resInCache.getOwner());
+				discEv.setAssociatedNode((RevolPeer) resInCache.getOwner());
 				discEv.setSenderNode(associatedRevolNode);
 				discEv.setResourceToSearchFor(res);
 				discEv.setTtl(ttl-1);
@@ -361,7 +406,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * @param associatedRevolNode
 	 * @param random
 	 */
-	public void propagateRequestToNeighbors(RevolNode associatedRevolNode, Random random) {
+	public void propagateRequestToNeighbors(RevolPeer associatedRevolNode, Random random) {
 		// check if neighbors are alive and remove those which are null from the neighbor list
 		getLogger().fine("num neighbors: " + associatedRevolNode.getNeighbors().size());
 		for (Iterator<Peer> it2 = associatedRevolNode.getNeighbors()
@@ -424,10 +469,10 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				discEv.setPropagation(true);
 				getLogger().fine(
 						"Dest node: "
-								+ ((RevolNode) associatedRevolNode
+								+ ((RevolPeer) associatedRevolNode
 										.getNeighbors().get(
 												destinations[i])));
-				discEv.setAssociatedNode((RevolNode) associatedRevolNode
+				discEv.setAssociatedNode((RevolPeer) associatedRevolNode
 						.getNeighbors().get(destinations[i]));
 				discEv.setSenderNode(associatedRevolNode);
 				discEv.setResourceToSearchFor(res);
