@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <!-- aut:reference id="adaptation" />  -->
+		    <aut:reference id="adaptation" /> 
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -46,8 +46,8 @@
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
 			<!-- a0=100, a1=10, a2=5 are the values which give all genes he same weight -->
-			<aut:param name="a0" value="300" />
-			<aut:param name="a1" value="50" />
+			<aut:param name="a0" value="100" />
+			<aut:param name="a1" value="10" />
 			<aut:param name="a2" value="5" />
 			<aut:param name="selectionStrategy" value="proportional" /> 
 			<!-- selection strategies: bestFitness, proportional, random, tournament, rank-based -->
@@ -186,11 +186,11 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3000001" seed="123456789"> <!-- 3600001 -->
+	<aut:engine maxvt="3000001" seed="456789123"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<!-- <aut:reference id="twospeedpoisson" /> -->
-			<aut:reference id="poisson1" />
+			<aut:reference id="twospeedpoisson" /> 
+			<!-- aut:reference id="poisson1" /> -->
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
