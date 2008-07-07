@@ -183,6 +183,13 @@ public class RevolPeer extends Peer {
 			return this.qh / this.q;
 	}
 
+	public double getAvgNeighborsQhr() {
+		double sumQhr = this.getQhr();;
+		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) 
+			sumQhr += ((RevolPeer) it.next()).getQhr();
+		return sumQhr / (this.getNeighbors().size() + 1);
+	}
+	
 	public ArrayList<ResourceAdv> getCache() {
 		return cache;
 	}

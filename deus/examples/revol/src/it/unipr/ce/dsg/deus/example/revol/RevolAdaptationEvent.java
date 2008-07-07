@@ -47,7 +47,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 
 	private double computeFitness(RevolPeer node) {
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
-		double qhr = node.getQhr();
+		double qhr = node.getAvgNeighborsQhr();
 		
 		if ( qhr < 0.999 )
 			return 1/A;
@@ -69,6 +69,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 	
 	private double computeFitness(int[] c, double qhr) {
 		double A = a0*c[0]/10 + a1*c[1] + a2*c[2]*2;
+		
 		
 		if ( qhr < 0.999 )
 			return 1/A;
@@ -237,14 +238,14 @@ public class RevolAdaptationEvent extends NodeEvent {
 		int[][] offspring = crossover(associatedRevolNode.getC(), bestNeighbor.getC());
 						
 		// mutazione casuale dei due individui ottenuti
-		int[][] mutatedOffspring = mutation(offspring, 1 - associatedRevolNode.getQhr()); 
+		int[][] mutatedOffspring = mutation(offspring, 1 - associatedRevolNode.getAvgNeighborsQhr()); 
 			
 		// cfr i due individui con la config locale vecchia			
 		double[] fitnesses = new double[3];
 		fitnesses[0] = currentFitness;
-		fitnesses[1] = computeFitness(mutatedOffspring[0], associatedRevolNode.getQhr());
+		fitnesses[1] = computeFitness(mutatedOffspring[0], associatedRevolNode.getAvgNeighborsQhr());
 		getLogger().fine("fitness of mutated offspring 1: " + fitnesses[1]);
-		fitnesses[2] = computeFitness(mutatedOffspring[1], associatedRevolNode.getQhr());
+		fitnesses[2] = computeFitness(mutatedOffspring[1], associatedRevolNode.getAvgNeighborsQhr());
 		getLogger().fine("fitness of mutated offspring 2: " + fitnesses[2]);
 			
 		int s = getRandomElementWithInverseProbability(fitnesses);
