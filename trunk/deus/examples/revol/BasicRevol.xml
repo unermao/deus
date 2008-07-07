@@ -158,7 +158,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3000001" seed="123456789"> <!-- 3600001 -->
+	<aut:engine maxvt="2000001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<!-- <aut:reference id="twospeedpoisson" /> -->
