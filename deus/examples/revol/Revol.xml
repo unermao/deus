@@ -11,7 +11,18 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" /> 
+		    <aut:reference id="adaptation" />  
+		   	<aut:reference id="discovery" /> 
+		    <aut:reference id="disconnection" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:event>
+	
+	<aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+	 	<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="connection" />
+		    <aut:reference id="adaptation" />  
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -95,7 +106,7 @@
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 
-	<aut:process id="twospeedpoisson" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
+	<aut:process id="twospeedspoisson" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="10" />
 			<aut:param name="secondMeanArrival" value="100000" />
@@ -108,7 +119,7 @@
 			<aut:reference id="birth" />
 		</aut:events>
 	</aut:process>
-
+	
 	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="1000" />
@@ -117,7 +128,7 @@
 			<aut:reference id="revolNode" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="birth" />
+			<aut:reference id="birth2" />
 		</aut:events>
 	</aut:process>
 
@@ -186,11 +197,10 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3000001" seed="456789123"> 
+	<aut:engine maxvt="3000001" seed="567891234"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<aut:reference id="twospeedpoisson" /> 
-			<!-- aut:reference id="poisson1" /> -->
+			<aut:reference id="twospeedspoisson" /> 
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
