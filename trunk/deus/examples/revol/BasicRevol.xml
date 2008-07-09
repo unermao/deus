@@ -162,7 +162,7 @@
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<!-- <aut:reference id="twospeedpoisson" /> -->
-			<aut:reference id="poisson1" />
+			<aut:reference id="twospeedspoisson" />
 			<aut:reference id="periodic" />
 		</aut:processes>
 	</aut:engine>
