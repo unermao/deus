@@ -13,6 +13,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.ValidationEventLocator;
 
 /**
  * <p>
@@ -87,6 +90,24 @@ public class AutomatorParser {
 
 		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema");
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		unmarshaller.setEventHandler(new ValidationEventHandler() {
+
+			public boolean handleEvent(ValidationEvent ve) {
+				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
+						|| ve.getSeverity() == ValidationEvent.ERROR) {
+					ValidationEventLocator locator = ve.getLocator();
+					System.out.println("Invalid configuration file: "
+							+ locator.getURL());
+					System.out.println("Error: " + ve.getMessage());
+					System.out.println("Error at column "
+							+ locator.getColumnNumber() + ", line "
+							+ locator.getLineNumber());
+					return false;
+				}
+				return true;
+			}
+
+		});
 		Automator automator = (Automator) ((JAXBElement) unmarshaller
 				.unmarshal(new File(fileName))).getValue();
 
@@ -224,9 +245,15 @@ public class AutomatorParser {
 
 			// TODO try to avoid scrolling the event list twice
 			for (Iterator<it.unipr.ce.dsg.deus.schema.Reference> it2 = process
-					.getEvents().getReference().iterator(); it2.hasNext();)
-				getEventById(it2.next().getId())
-						.setParentProcess(configProcess);
+					.getEvents().getReference().iterator(); it2.hasNext();) {
+				Event e = getEventById(it2.next().getId());
+				if (e.getParentProcess() == null)
+					e.setParentProcess(configProcess);
+				else
+					throw new JAXBException("Event " + e.getId()
+							+ " is already associated to the process "
+							+ e.getParentProcess().getId());
+			}
 
 		}
 
