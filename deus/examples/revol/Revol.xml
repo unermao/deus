@@ -110,7 +110,7 @@
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="10" />
 			<aut:param name="secondMeanArrival" value="100000" />
-			<aut:param name="vtThreshold" value="10000" />
+			<aut:param name="vtThreshold" value="100000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -197,7 +197,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="3000001" seed="567891234"> 
+	<aut:engine maxvt="2000001" seed="567891234"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="twospeedspoisson" /> 
