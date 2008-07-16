@@ -23,13 +23,18 @@ The schema.. The configuration XML..
 
 = Basic examples =
 
-GrowthConnectionsExample.xml
-etc.
+  * GrowthConnectionsExample
+  * SingleSpeedGrowthExample
+  * TwoSpeedsGrowthExample
 
 
 = REVOL example =
 
-Revol etc.
+REVOL is a P2P system for sharing consumable resources, i.e. resources that cannot be acquired (by replication) once discovered, but may only be directly used upon contracting with their hosts. An example of consumable resource is disk space, which can be partitioned and allocated to requestors for the duration of a task, or in general for an arranged time. 
+
+REVOL networks are unstructured, and can be represented as undirected graphs whose arcs stand for mutual knowledge among peers. The node degree k is the number of neighbors of each node. Its statistical distribution depends on the history and on the dynamics of the network, and may affect the performance of the distributed algorithms which are executed.
+
+
 
 
 = Chord example =
