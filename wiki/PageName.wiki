@@ -1,13 +1,36 @@
-#summary One-sentence summary of this page.
+#summary This is a brief tutorial on DEUS.
 
 = Introduction =
 
-This is a brief tutorial on DEUS.
+Each release contains sources (in the src/ folder), docs and examples.
+Sources include the following packages:
+
+* it.unipr.ce.dsg.deus.core (core interfaces and classes, such as Event, Node, Process)
+* it.unipr.ce.dsg.deus.impl.event (implementation of common events, such as node birth)
+* it.unipr.ce.dsg.deus.impl.node (implementation of basic node classes)
+* it.unipr.ce.dsg.deus.impl.process (implementation of common processes, such as Poisson)
+* it.unipr.ce.dsg.deus.impl.resource (implementation of basic resource classes)
+* it.unipr.ce.dsg.deus.p2p.event (P2P-specific events, such as connection)
+* it.unipr.ce.dsg.deus.p2p.node (P2P-specific node types, such as Peer)
+* it.unipr.ce.dsg.deus.schema (classes that map DEUS' schema)
+* it.unipr.ce.dsg.deus.util (utility classes)
 
 
-= Details =
+= Configuring simulations =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+The schema.. The configuration XML..
+
+
+= Basic examples =
+
+GrowthConnectionsExample.xml
+etc.
+
+
+= REVOL example =
+
+Revol etc.
+
+
+= Chord example =
+ 
