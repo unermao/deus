@@ -23,9 +23,11 @@ The schema.. The configuration XML..
 
 = Basic examples =
 
-== GrowthConnections ==
-== SingleSpeedGrowthExample ==
-== TwoSpeedsGrowthExample ==
+== Growth Connections ==
+
+== Single Speed Growth ==
+
+== Two Speeds Growth ==
 
 
 = REVOL example =
@@ -44,6 +46,13 @@ The resource discovery process is affected by the following parameters, represen
 
 These parameters are randomly initialized when a peer is created and joins the network.
 
+The configuration file is BasicRevol.xml, in which are defined:
+
+  * birth events (each one creating a node and instantiating a one-shot connection event, many discovery events with Poisson scheduling, a one-shot disconnection event and a one-shot death event)
+  * REVOL nodes (with 3 kinds of consumable resources: CPU, RAM, disk)
+  * Poisson processes regulating the scheduling of events characterizing the behavior of REVOL nodes
+  * periodic processes regulating the scheduling of log events (population size, node degree distribution, performance statistics)
+  
 
 = Chord example =
  
