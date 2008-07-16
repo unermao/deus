@@ -46,7 +46,7 @@ The resource discovery process is affected by the following parameters, represen
 
 These parameters are randomly initialized when a peer is created and joins the network.
 
-The configuration file is BasicRevol.xml, in which are defined:
+The configuration file for the Basic Revol example defines:
 
   * birth events (each one creating a node and instantiating a one-shot connection event, many discovery events with Poisson scheduling, a one-shot disconnection event and a one-shot death event)
   * REVOL nodes (with 3 kinds of consumable resources: CPU, RAM, disk)
@@ -56,3 +56,4 @@ The configuration file is BasicRevol.xml, in which are defined:
 
 = Chord example =
  
+Matteo is working on this.
