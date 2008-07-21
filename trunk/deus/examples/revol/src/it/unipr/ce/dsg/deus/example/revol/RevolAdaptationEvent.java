@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.example.revol;
 
-import java.util.ArrayList;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
