@@ -173,12 +173,17 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		
 		// the following if statement should avoid to search for resources
 		// which have been already found by the intersted node
-		if (res != null)
+		if (res != null) {
+			if (isPropagation)
+				getLogger().fine("is propagation");
+			else
+				getLogger().fine("Strange! res != null but it is not propagation");
 			if (res.isFound()) { 
 				getLogger().fine("node: " + associatedRevolNode.getId());
 				getLogger().fine("res already found: " + res);
 				return;
 			}
+		}
 		
 		if (associatedRevolNode == null) {
 			if ( (!isPropagation) && (hasSameAssociatedNode == false) && (Engine.getDefault().getNodes().size() > 0)) {
@@ -311,7 +316,10 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			getLogger().fine("qh = " + interestedNode.getQh());
 			interestedNode.setQh(interestedNode.getQh() + 1);
 			getLogger().fine("qh = " + interestedNode.getQh());
+			getLogger().fine("q = " + interestedNode.getQ());
+			getLogger().fine("qhr = " + interestedNode.getQhr());
 			interestedNode.addToCache(res);
+			
 			if (res.getName().equals("cpu"))
 				associatedRevolNode
 						.setCpu(associatedRevolNode.getCpu() - res.getAmount());
@@ -327,16 +335,16 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				associatedRevolNode.addNeighbor(interestedNode);
 			}
 
-			// creo e metto in coda un evento che libererà la risorsa impegnata
-				getLogger().fine("set freeRes for " + res.getName() + " = " + res.getAmount());
-				RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) Engine.getDefault().createEvent(RevolFreeResourceEvent.class, triggeringTime
+			// create and enqueue an event that will free the resource
+			getLogger().fine("set freeRes for " + res.getName() + " = " + res.getAmount());
+			RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) Engine.getDefault().createEvent(RevolFreeResourceEvent.class, triggeringTime
 								+ expRandom(meanArrivalFreeResource));
-				freeResEv.setOneShot(true);
-				freeResEv.setResOwner(associatedRevolNode);
-				freeResEv.setResName(res.getName());
-				freeResEv.setResAmount(res.getAmount());
-				Engine.getDefault().insertIntoEventsList(freeResEv);
-		
+			freeResEv.setOneShot(true);
+			freeResEv.setResOwner(associatedRevolNode);
+			freeResEv.setResName(res.getName());
+			freeResEv.setResAmount(res.getAmount());
+			Engine.getDefault().insertIntoEventsList(freeResEv);
+				
 			return true;
 		}
 		else

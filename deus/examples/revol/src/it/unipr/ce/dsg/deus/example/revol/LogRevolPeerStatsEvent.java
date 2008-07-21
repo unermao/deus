@@ -61,6 +61,7 @@ public class LogRevolPeerStatsEvent extends Event {
 			for (int i = 0; i < 3; i++)
 				cTot[i] += currentNode.getC()[i];
 			if (currentNode.getQ() > 0) {
+				//getLogger().info("qhr = " + currentNode.getQhr());
 				qhrTot += currentNode.getQhr();
 				numSearchers++;
 			}

@@ -44,8 +44,8 @@ public class RevolPeer extends Peer {
 	// chromosome
 	private int[] c = new int[3]; 
 	// query log
-	private int q = 0;
-	private int qh = 0;
+	private double q = 0;
+	private double qh = 0;
 	
 	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>(); 
 	
@@ -90,7 +90,7 @@ public class RevolPeer extends Peer {
 	}
 
 	public double getFk() {
-		return (double) c[0]/10;
+		return ((double) c[0])/10;
 	}
 
 	public int getTtlMax() {
@@ -160,34 +160,41 @@ public class RevolPeer extends Peer {
 		this.c = c;
 	}
 
-	public int getQ() {
+	public double getQ() {
 		return q;
 	}
 
-	public void setQ(int q) {
+	public void setQ(double q) {
 		this.q = q;
 	}
 
-	public int getQh() {
+	public double getQh() {
 		return qh;
 	}
 
-	public void setQh(int qh) {
+	public void setQh(double qh) {
 		this.qh = qh;
 	}
 
 	public double getQhr() {
 		if (this.q == 0)
-			return 0;
+			return -1;
 		else
 			return this.qh / this.q;
 	}
 
 	public double getAvgNeighborsQhr() {
-		double sumQhr = this.getQhr();;
-		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) 
-			sumQhr += ((RevolPeer) it.next()).getQhr();
-		return sumQhr / (this.getNeighbors().size() + 1);
+		double sumQhr = this.getQhr();
+		int numNeighborsWithQPositive = 0;
+		RevolPeer currentNeighbor = null;
+		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) {
+			currentNeighbor = (RevolPeer) it.next();
+			if (currentNeighbor.getQ() > 0) {
+				sumQhr += currentNeighbor.getQhr();
+				numNeighborsWithQPositive++;
+			}
+		}
+		return sumQhr / (numNeighborsWithQPositive + 1);
 	}
 	
 	public ArrayList<ResourceAdv> getCache() {

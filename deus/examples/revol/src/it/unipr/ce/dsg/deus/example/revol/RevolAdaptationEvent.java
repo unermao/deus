@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.revol;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -49,10 +50,10 @@ public class RevolAdaptationEvent extends NodeEvent {
 		double A = a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax();
 		double qhr = node.getAvgNeighborsQhr();
 		
-		if ( qhr < 0.999 )
+		if ( qhr < 0.9 )
 			return 1/A;
 		else 
-			return (1 - qhr)*A;
+			return qhr*A;
 		
 		//return (1 - qhr);
 		//return 1 / A;
@@ -68,13 +69,12 @@ public class RevolAdaptationEvent extends NodeEvent {
 	}
 	
 	private double computeFitness(int[] c, double qhr) {
-		double A = a0*c[0]/10 + a1*c[1] + a2*c[2]*2;
+		double A = a0*((double) c[0])/10 + a1*c[1] + a2*c[2]*2;
 		
-		
-		if ( qhr < 0.999 )
+		if ( qhr < 0.9 )
 			return 1/A;
 		else 
-			return (1 - qhr)*A;
+			return qhr*A;
 		
 		//return (1 - qhr);
 		//return 1 / A;
@@ -98,17 +98,21 @@ public class RevolAdaptationEvent extends NodeEvent {
 			double bestNeighborFitness = 0;
 			for (int i = 0; i < ((Peer) associatedNode).getNeighbors().size(); i++) {
 				currentNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(i);
-				currentNeighborFitness = computeFitness(currentNeighbor);
-				if (i == 0) {
-					bestNeighbor = currentNeighbor;
-					bestNeighborFitness = currentNeighborFitness;
-				}
-				else {
-					if (currentNeighborFitness < bestNeighborFitness) {
-						bestNeighborFitness = currentNeighborFitness;
+				if (currentNeighbor.getQ() > 0) {
+					currentNeighborFitness = computeFitness(currentNeighbor);
+					if (i == 0) {
 						bestNeighbor = currentNeighbor;
+						bestNeighborFitness = currentNeighborFitness;
 					}
-				}					
+					else {
+						if (currentNeighborFitness < bestNeighborFitness) {
+							bestNeighborFitness = currentNeighborFitness;
+							bestNeighbor = currentNeighbor;
+						}
+					}					
+				}
+				else 
+					bestNeighbor = (RevolPeer) associatedNode;
 			}
 		}
 		else if (selectionStrategy.equals("random")) {
@@ -116,14 +120,41 @@ public class RevolAdaptationEvent extends NodeEvent {
 		}
 		else if (selectionStrategy.equals("proportional")) {
 			int size = ((Peer) associatedNode).getNeighbors().size();
-			double[] fitnesses = new double[size];
+			int realSize = 0;
+			int positions[] = new int[size];
 			for (int j = 0; j < size; j++) {
-				fitnesses[j] = computeFitness((RevolPeer) ((Peer) associatedNode).getNeighbors().get(j));
-				getLogger().fine("fitness of selected neighbor: " + fitnesses[j]);
+				if (((RevolPeer) ((Peer) associatedNode).getNeighbors().get(j)).getQ() > 0) {
+					positions[j] = 1;
+					realSize++;
+				}
+				else
+					positions[j] = 0;
 			}
-							
-			int s = getRandomElementWithInverseProbability(fitnesses);
-			bestNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(s);
+			if (realSize == 0)
+				bestNeighbor = (RevolPeer) associatedNode;
+			else {
+				getLogger().fine("real size = " + realSize);
+				double fitnesses[] = new double[realSize];
+				int i = 0;
+				RevolPeer currentNeighbor = null;
+				for (int j = 0; j < size; j++) {
+					currentNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(j);
+					if (currentNeighbor.getQ() > 0) {
+						fitnesses[i] = computeFitness(currentNeighbor);
+						getLogger().fine("fitness of current neighbor: " + fitnesses[i]);
+						i++;
+					}
+				}						
+				int pos1 = getRandomElementWithInverseProbability(fitnesses);
+				int pos2 = -1;
+				while (pos1 >= 0) {
+					pos2++;
+					if (positions[pos2] == 1) 
+						pos1--;
+				} 
+				bestNeighbor = (RevolPeer) ((Peer) associatedNode).getNeighbors().get(pos2);
+				getLogger().fine("best neighbor = " + pos2);
+			}
 		}
 		else if (selectionStrategy.equals("tournament")) {
 			// TODO
@@ -221,6 +252,8 @@ public class RevolAdaptationEvent extends NodeEvent {
 		
 		// select best neighbor
 		RevolPeer bestNeighbor = selectBestNeighbor();
+		if (bestNeighbor.getId().equals(associatedNode.getId()))
+			return;
 		
 		getLogger().fine("best neighbor config: " + bestNeighbor.getC()[0] + 
 						 " " + bestNeighbor.getC()[1] +
