@@ -27,9 +27,11 @@ import java.util.Random;
  */
 public class RevolPeer extends Peer {
 
+	private static final String MAX_INIT_CHROMOSOME = "maxInitChromosome";
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
+	private int maxInitChromosome = 0;
 	private int cpuFactor = 0;
 	private int ramFactor = 0;
 	private int diskFactor = 0;
@@ -56,7 +58,8 @@ public class RevolPeer extends Peer {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		//System.out.println(getResources().size());
+		if (params.containsKey(MAX_INIT_CHROMOSOME))
+			maxInitChromosome = Integer.parseInt(params.getProperty(MAX_INIT_CHROMOSOME));
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
@@ -67,7 +70,6 @@ public class RevolPeer extends Peer {
 				ramFactor = (int) ((AllocableResource) r).getAmount();
 			else if ( ((AllocableResource) r).getType().equals(DISK_FACTOR) )
 				diskFactor = (int) ((AllocableResource) r).getAmount();
-			//System.out.println("cpuFactor = " + ((AllocableResource) r).getAmount());
 		}	
 	}
 	
@@ -77,7 +79,7 @@ public class RevolPeer extends Peer {
 		clone.c = new int[3];
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
-			clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
+			clone.c[i] = random.nextInt(maxInitChromosome) + 1; // each gene is a random integer in [1,10]
 
 		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*512);
 		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
@@ -184,17 +186,24 @@ public class RevolPeer extends Peer {
 	}
 
 	public double getAvgNeighborsQhr() {
-		double sumQhr = this.getQhr();
-		int numNeighborsWithQPositive = 0;
+		double sumQhr = 0;
+		if (this.getQ() > 0)
+			sumQhr += this.getQhr();
+		int numNeighborsWithPositiveQ = 0;
 		RevolPeer currentNeighbor = null;
 		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) {
 			currentNeighbor = (RevolPeer) it.next();
 			if (currentNeighbor.getQ() > 0) {
 				sumQhr += currentNeighbor.getQhr();
-				numNeighborsWithQPositive++;
+				numNeighborsWithPositiveQ++;
 			}
 		}
-		return sumQhr / (numNeighborsWithQPositive + 1);
+			
+		if ((this.getQ() == 0) && (numNeighborsWithPositiveQ == 0))
+			return -1;
+		else if ((this.getQ() == 0) && (numNeighborsWithPositiveQ > 0))
+			return sumQhr / numNeighborsWithPositiveQ;
+		return sumQhr / (numNeighborsWithPositiveQ + 1);
 	}
 	
 	public ArrayList<ResourceAdv> getCache() {
