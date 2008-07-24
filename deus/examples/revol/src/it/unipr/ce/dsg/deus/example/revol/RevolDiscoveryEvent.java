@@ -449,6 +449,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		 */ 
 		int[] destinations = new int[numDestinations];
 		for (int i = 0; i < numDestinations; i++) {
+			
+			// FIXME avoid propagation to sender node (it would be better to avoid cycles, in general..)
 			boolean controlPassed;
 			do {
 				controlPassed = true;

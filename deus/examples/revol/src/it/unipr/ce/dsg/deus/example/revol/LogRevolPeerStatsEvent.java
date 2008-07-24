@@ -72,13 +72,29 @@ public class LogRevolPeerStatsEvent extends Event {
 			initialDiskTot += currentNode.getInitialDisk();
 			diskTot += currentNode.getDisk();
 		}
+		
+		double qhrMean = qhrTot / numSearchers;
+		
+		double qhrTotBiased = 0;
+		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
+			currentNode = (RevolPeer) it.next();
+			if (currentNode.getQ() > 0) {
+				qhrTotBiased += (currentNode.getQhr() - qhrMean) * (currentNode.getQhr() - qhrMean);
+			}
+		}
+		double qhrVariance = (double) qhrTotBiased /(numSearchers - 1);
+		
+		getLogger().info("num searchers = " + numSearchers);
+		getLogger().info("mean QHR value: " + qhrMean);
+		getLogger().info("QHR variance: " + qhrVariance);
+		
 		double[] cMean = new double[3];
 		for (int i = 0; i < 3; i++) {
 			cMean[i] = (double) cTot[i]/numNodes;
 			getLogger().info("mean value of c" + i + " is " + cMean[i]);
 		}
 		
-		int[] cTotBiased = new int[3]; 
+		double[] cTotBiased = new double[3]; 
 		for (int i = 0; i < 3; i++)
 			cTotBiased[i] = 0;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
@@ -98,8 +114,6 @@ public class LogRevolPeerStatsEvent extends Event {
 		getLogger().info("mean RAM value: " + (double) ramTot / numNodes);
 		getLogger().info("mean initial DISK value: " + (double) initialDiskTot / numNodes);
 		getLogger().info("mean DISK value: " + (double) diskTot / numNodes);
-		getLogger().info("num searchers = " + numSearchers);
-		getLogger().info("mean QHR value: " + qhrTot / numSearchers);
 	}
 
 }
