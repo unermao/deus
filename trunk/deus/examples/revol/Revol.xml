@@ -21,7 +21,7 @@
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
-			<aut:param name="numInitialConnections" value="4" />
+			<aut:param name="numInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
 	
@@ -31,7 +31,7 @@
 			<aut:param name="hasSameAssociatedNode" value="false" />
 			<aut:param name="cpu" value="1000" /><!-- MHz -->
 			<aut:param name="ram" value="1000" /><!-- MB -->
-			<aut:param name="disk" value="10000" /><!-- MB -->
+			<aut:param name="disk" value="50000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 		</aut:params>
@@ -68,6 +68,9 @@
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
+		<aut:params>
+			<aut:param name="maxInitChromosome" value="10" />
+		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
