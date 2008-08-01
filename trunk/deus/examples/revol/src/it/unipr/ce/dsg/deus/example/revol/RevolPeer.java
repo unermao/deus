@@ -27,11 +27,13 @@ import java.util.Random;
  */
 public class RevolPeer extends Peer {
 
-	private static final String MAX_INIT_CHROMOSOME = "maxInitChromosome";
+	private static final String AVG_INIT_CHROMOSOME = "avgInitChromosome";
+	private static final String IS_RANDOM_INIT = "isRandomInit";
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
-	private int maxInitChromosome = 0;
+	private int avgInitChromosome = 0;
+	private boolean isRandomInit = false;
 	private int cpuFactor = 0;
 	private int ramFactor = 0;
 	private int diskFactor = 0;
@@ -49,7 +51,8 @@ public class RevolPeer extends Peer {
 	private double q = 0;
 	private double qh = 0;
 	
-	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>(); 
+	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>();
+	private ArrayList<ResourceAdv> cachedQueries = new ArrayList<ResourceAdv>();
 	
 	public RevolPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -58,8 +61,10 @@ public class RevolPeer extends Peer {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		if (params.containsKey(MAX_INIT_CHROMOSOME))
-			maxInitChromosome = Integer.parseInt(params.getProperty(MAX_INIT_CHROMOSOME));
+		if (params.containsKey(AVG_INIT_CHROMOSOME))
+			avgInitChromosome = Integer.parseInt(params.getProperty(AVG_INIT_CHROMOSOME));
+		if (params.containsKey(IS_RANDOM_INIT))
+			isRandomInit = Boolean.parseBoolean(params.getProperty(IS_RANDOM_INIT));
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
@@ -79,7 +84,10 @@ public class RevolPeer extends Peer {
 		clone.c = new int[3];
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
-			clone.c[i] = random.nextInt(maxInitChromosome) + 1; // each gene is a random integer in [1,10]
+			if (isRandomInit)
+				clone.c[i] = random.nextInt(avgInitChromosome*2 - 1) + 1;
+			else
+				clone.c[i] = avgInitChromosome; 
 
 		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*512);
 		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
@@ -88,6 +96,7 @@ public class RevolPeer extends Peer {
 		clone.q = 0;
 		clone.qh = 0;
 		clone.cache = new ArrayList<ResourceAdv>();
+		clone.cachedQueries = new ArrayList<ResourceAdv>();
 		return clone;
 	}
 
@@ -231,7 +240,19 @@ public class RevolPeer extends Peer {
 			cache.add(res);
 		}
 	}
+	
+	public ArrayList<ResourceAdv> getCachedQueries() {
+		return cachedQueries;
+	}
 
+	public void setCachedQueries(ArrayList<ResourceAdv> cachedQueries) {
+		this.cachedQueries = cachedQueries;
+	}
+
+	public void addToCachedQueries(ResourceAdv res) {
+		cachedQueries.add(res);
+	}
+	
 	public int getG() {
 		return g;
 	}
@@ -245,7 +266,6 @@ public class RevolPeer extends Peer {
 		for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
 			ResourceAdv currentResourceAdv = it.next();
 			RevolPeer currentNode = (RevolPeer) currentResourceAdv.getOwner();
-			//if ((currentNode == null) || (!currentNode.isReachable()))
 			if (currentNode == null)
 				this.removeResourceAdvFromCache(currentResourceAdv);
 		}
@@ -259,6 +279,15 @@ public class RevolPeer extends Peer {
 		for (int i = (numResourceAdvs - dMax); i < numResourceAdvs; i++)
 			newResourceAdvsList.add((ResourceAdv) cache.get(i));
 		cache = newResourceAdvsList;
+		
+		// cleaning the query cache
+		for (Iterator<ResourceAdv> it = cachedQueries.iterator(); it.hasNext();) {
+			ResourceAdv currentCachedQuery = it.next();	
+			RevolPeer currentNode = (RevolPeer) currentCachedQuery.getOwner();
+			if ((currentNode == null) || (currentCachedQuery.isFound()))
+				this.removeResourceAdvFromCache(currentCachedQuery);
+		}
+	
 	}
 	
 	public void removeResourceAdvFromCache(ResourceAdv currentResourceAdv) {
