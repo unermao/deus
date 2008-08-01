@@ -51,20 +51,18 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		double qhr = node.getAvgNeighborsQhr();
 		getLogger().fine(node + " avg neighbor qhr = " + qhr);
+		
+		// F1
 		/*
-		if (qhr < 0.9)      // 1) F molto rozza
+		if (qhr < 0.9) 	  
 			return 1 / A;
 		else
 			return A;
 		*/
-		// return (1-qhr)/A + delta*delta*qhr*A;   // 2) ok sembra meglio di 1)
-		// return (1-qhr)/(delta*delta*A) + qhr*A; // 3) come 2)
-		
-		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  // 4) figa!!
-		
-		// return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax())
-		// / (node.getQh() + delta)) + (1/delta) * ((node.getQ()) /
-		// (node.getQh() + delta)));
+		// F2 
+		return (1-qhr)/A + delta*delta*qhr*A; 
+		// F3 return (1-qhr)/(delta*delta*A) + qhr*A;
+		// F4 return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private double computeFitness(int[] c, double qhr) {
@@ -72,20 +70,17 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		getLogger().fine("avg neighbor qhr = " + qhr);
 		
+		// F1
 		/*
 		if (qhr < 0.9) 	  
 			return 1 / A;
 		else
 			return A;
 		*/
-		// return (1-qhr)/A + delta*delta*qhr*A; 
-		// return (1-qhr)/(delta*delta*A) + qhr*A;
-		
-		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
-		
-		// return (((a0*node.getFk() + a1*node.getTtlMax() + a2*node.getDMax())
-		// / (node.getQh() + delta)) + (1/delta) * ((node.getQ()) /
-		// (node.getQh() + delta)));
+		// F2 
+		return (1-qhr)/A + delta*delta*qhr*A; 
+		// F3 return (1-qhr)/(delta*delta*A) + qhr*A;
+		// F4 return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private RevolPeer selectBestNeighbor() {
