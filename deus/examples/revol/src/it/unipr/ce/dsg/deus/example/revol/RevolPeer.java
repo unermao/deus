@@ -101,7 +101,7 @@ public class RevolPeer extends Peer {
 	}
 
 	public double getFk() {
-		return ((double) c[0])/10;
+		return ((double) c[0])/6;
 	}
 
 	public int getTtlMax() {
