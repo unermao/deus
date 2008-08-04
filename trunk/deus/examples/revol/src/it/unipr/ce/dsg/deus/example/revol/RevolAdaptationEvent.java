@@ -54,33 +54,31 @@ public class RevolAdaptationEvent extends NodeEvent {
 		
 		// F1
 		/*
-		if (qhr < 0.9) 	  
+		if (qhr < 0.99) 	  
 			return 1 / A;
 		else
 			return A;
 		*/
-		// F2 
-		return (1-qhr)/A + delta*delta*qhr*A; 
-		// F3 return (1-qhr)/(delta*delta*A) + qhr*A;
-		// F4 return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		// F2 return (1-qhr)/(delta*delta*A) + qhr*A;
+		// F3 
+		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private double computeFitness(int[] c, double qhr) {
-		double A = a0 * ((double) c[0]) / 10 + a1 * c[1] + a2 * c[2] * 2;
+		double A = a0 * ((double) c[0]) / 6 + a1 * c[1] + a2 * c[2] * 2;
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		getLogger().fine("avg neighbor qhr = " + qhr);
 		
 		// F1
 		/*
-		if (qhr < 0.9) 	  
+		if (qhr < 0.99) 	  
 			return 1 / A;
 		else
 			return A;
 		*/
-		// F2 
-		return (1-qhr)/A + delta*delta*qhr*A; 
-		// F3 return (1-qhr)/(delta*delta*A) + qhr*A;
-		// F4 return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		// F2  return (1-qhr)/(delta*delta*A) + qhr*A;
+		// F3 
+		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private RevolPeer selectBestNeighbor() {
@@ -195,7 +193,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 					if (epsilon <= pm) {
 						getLogger().fine("mutation! " + i + " " + j);
 						mutatedOffspring[i][j] = Engine.getDefault()
-								.getSimulationRandom().nextInt(10) + 1;
+								.getSimulationRandom().nextInt(6) + 1;
 					} else
 						mutatedOffspring[i][j] = offspring[i][j];
 				}
