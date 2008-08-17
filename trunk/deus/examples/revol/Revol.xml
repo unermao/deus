@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" />  
+		    <!-- aut:reference id="adaptation" / -->  
 		   	<aut:reference id="discovery" /> 
 		</aut:events>
 	</aut:event>
@@ -20,7 +20,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" />  
+		    <!-- aut:reference id="adaptation" / -->  
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="disconnection" />
 			<aut:reference id="death" />
@@ -78,8 +78,8 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
-			<aut:param name="avgInitChromosome" value="3" />
-			<aut:param name="isRandomInit" value="true" />
+			<aut:param name="avgInitChromosome" value="5" />
+			<aut:param name="isRandomInit" value="false" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
