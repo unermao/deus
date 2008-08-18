@@ -64,6 +64,10 @@
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
+		<aut:params>
+			<aut:param name="avgInitChromosome" value="3" />
+			<aut:param name="isRandomInit" value="false" />
+		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
