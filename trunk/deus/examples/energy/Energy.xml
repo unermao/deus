@@ -38,7 +38,7 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="energy" value="1000" /><!-- MWh -->
+			<aut:param name="power" value="25" /><!-- kW -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 		</aut:params>
@@ -69,8 +69,8 @@
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
-					<aut:param name="type" value="energyFactor" />
-					<aut:param name="amount" value="4" /><!-- *512 MWh -->
+					<aut:param name="type" value="powerFactor" />
+					<aut:param name="amount" value="5" /><!-- *10 kW -->
 				</aut:params>	
 			</aut:resource>
 		</aut:resources>
