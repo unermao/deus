@@ -109,8 +109,8 @@ public class LogEnergyPeerStatsEvent extends Event {
 		}
 
 		getLogger().info(
-				"mean initial ENERGY value: " + (double) initialEnergyTot / numNodes);
-		getLogger().info("mean ENERGY value: " + (double) energyTot / numNodes);
+				"mean max POWER value: " + (double) initialEnergyTot / numNodes);
+		getLogger().info("mean POWER value: " + (double) energyTot / numNodes);
 	}
 
 }
