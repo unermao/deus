@@ -60,11 +60,11 @@ public class EnergyFreeResourceEvent extends Event {
 		getLogger().fine("res owner: " + resOwner.getId());
 		getLogger().fine("res to be set free: " + resName);
 		if (this.resName.equals("energy")) {
-			getLogger().fine("cpu amount before freedom: " + ((EnergyPeer) resOwner).getEnergy());
-			((EnergyPeer) this.resOwner).setEnergy(((EnergyPeer) this.resOwner)
-					.getEnergy()
+			getLogger().fine("cpu amount before freedom: " + ((EnergyPeer) resOwner).getPower());
+			((EnergyPeer) this.resOwner).setPower(((EnergyPeer) this.resOwner)
+					.getPower()
 					+ this.resAmount);
-			getLogger().fine("cpu amount after freedom: " + ((EnergyPeer) resOwner).getEnergy());
+			getLogger().fine("cpu amount after freedom: " + ((EnergyPeer) resOwner).getPower());
 		}
 		getLogger().fine("end free resource ##");
 	}

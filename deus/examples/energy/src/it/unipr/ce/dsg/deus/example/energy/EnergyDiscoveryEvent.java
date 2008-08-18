@@ -27,12 +27,21 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
  * associated EnergyPeer.
  * </p>
  * 
+ * TODO: 
+ * - un nodo che richiede X kW e ne offre X'<=X, occupa i suoi X' kW e cerca X-X' kW nella rete
+ * - la ricerca non deve fermarsi al primo nodo che offre X-X'
+ * - bisogna contare il numero di eventi di ricerca associati a un certo ResourceAdv,
+ * e solo quando tutti gli eventi sono esauriti bisogna selezionare il fornitore di energia
+ * - la selezione del fornitore si basa su 
+ * 1) il prezzo che fa 
+ * 2) la sua distanza dal nodo richiedente 
+ * 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
 public class EnergyDiscoveryEvent extends NodeEvent {
-	private static final String ENERGY = "energy";
-	private int energy = 0;
+	private static final String POWER = "power";
+	private int power = 0;
 	private static final String MEAN_ARRIVAL_TRIGGERED_DISCOVERY = "meanArrivalTriggeredDiscovery";
 	private float meanArrivalTriggeredDiscovery = 0;
 	private static final String MEAN_ARRIVAL_FREE_RESOURCE = "meanArrivalFreeResource";
@@ -52,8 +61,8 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 
 	public void initialize() throws InvalidParamsException {
 		super.initialize();
-		if (params.containsKey(ENERGY))
-			energy = Integer.parseInt(params.getProperty(ENERGY));
+		if (params.containsKey(POWER))
+			power = Integer.parseInt(params.getProperty(POWER));
 		if (params.containsKey(MEAN_ARRIVAL_TRIGGERED_DISCOVERY)) {
 			try {
 				meanArrivalTriggeredDiscovery = Float.parseFloat(params
@@ -287,8 +296,8 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 		res = new ResourceAdv();
 		res.setInterestedNode(associatedRevolNode);
 		senderNode = associatedRevolNode;
-		res.setName("energy");
-		res.setAmount(random.nextInt(energy) + 1);
+		res.setName("power");
+		res.setAmount(random.nextInt(power) + 1);
 		getLogger().fine("res " + res);
 		getLogger().fine("res name = " + res.getName());
 		getLogger().fine("res amount = " + res.getAmount());
@@ -312,7 +321,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 		getLogger().fine(
 				"local search for res = " + res.getName() + " amount: "
 						+ res.getAmount());
-		if (res.getAmount() <= associatedRevolNode.getEnergy()) {
+		if (res.getAmount() <= associatedRevolNode.getPower()) {
 			res.setOwner(associatedRevolNode);
 			res.setFound(true);
 			getLogger().fine(
@@ -324,7 +333,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 			getLogger().fine("qhr = " + interestedNode.getQhr());
 			interestedNode.addToCache(res);
 
-			associatedRevolNode.setEnergy(associatedRevolNode.getEnergy() - res.getAmount());
+			associatedRevolNode.setPower(associatedRevolNode.getPower() - res.getAmount());
 
 			//if (!associatedRevolNode.getId().equals(interestedNode.getId())) {
 			if (isPropagation) {

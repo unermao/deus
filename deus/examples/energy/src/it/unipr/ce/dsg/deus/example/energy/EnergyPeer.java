@@ -29,12 +29,12 @@ public class EnergyPeer extends Peer {
 
 	private static final String AVG_INIT_CHROMOSOME = "avgInitChromosome";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
-	private static final String ENERGY_FACTOR = "energyFactor";
+	private static final String POWER_FACTOR = "powerFactor";
 	private int avgInitChromosome = 0;
 	private boolean isRandomInit = false;
-	private int energyFactor = 0;
-	private int initialEnergy = 0;
-	private int energy = 0;	
+	private int powerFactor = 0;
+	private int maxPower = 0;
+	private int power = 0;	
 	
 	private int g = 0;
 	// chromosome
@@ -61,8 +61,8 @@ public class EnergyPeer extends Peer {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
 				continue;
-			if ( ((AllocableResource) r).getType().equals(ENERGY_FACTOR) )
-				energyFactor = (int) ((AllocableResource) r).getAmount();
+			if ( ((AllocableResource) r).getType().equals(POWER_FACTOR) )
+				powerFactor = (int) ((AllocableResource) r).getAmount();
 		}	
 	}
 	
@@ -77,8 +77,8 @@ public class EnergyPeer extends Peer {
 			else
 				clone.c[i] = avgInitChromosome; 
 
-		clone.setInitialEnergy((random.nextInt(energyFactor)+1)*512);
-		
+		clone.maxPower = (random.nextInt(powerFactor)+1)*10; // kW
+		clone.power = clone.maxPower;
 		clone.q = 0;
 		clone.qh = 0;
 		clone.cache = new ArrayList<ResourceAdv>();
@@ -98,21 +98,16 @@ public class EnergyPeer extends Peer {
 		return c[2]*2;
 	}
 
-	public int getInitialEnergy() {
-		return initialEnergy;
+	public int getMaxPower() {
+		return maxPower;
 	}
 
-	public void setInitialEnergy(int initialEnergy) {
-		this.initialEnergy = initialEnergy;
-		this.energy = initialEnergy;
-	}
-
-	public int getEnergy() {
-		return energy;
+	public int getPower() {
+		return power;
 	}
 	
-	public void setEnergy(int energy) {
-		this.energy = energy;
+	public void setPower(int power) {
+		this.power = power;
 	}
 	
 	public int[] getC() {
