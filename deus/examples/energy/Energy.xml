@@ -38,9 +38,10 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="power" value="25" /><!-- kW -->
+			<aut:param name="power" value="25" /> <!-- kW -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
-			<aut:param name="meanArrivalFreeResource" value="500000" />
+			<aut:param name="meanArrivalFreeResource" value="500000" /> 
+			<!-- thus each peer on average consumes 25kW * 1.38h = 34.7kWh-->
 		</aut:params>
 	</aut:event>
 	
@@ -130,11 +131,9 @@
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
+	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="500000" />
-			<aut:param name="secondMeanArrival" value="250000" />
-			<aut:param name="vtThreshold" value="1000000" />
+			<aut:param name="meanArrival" value="1000000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="energyNode" />
