@@ -8,7 +8,7 @@
 	<!-- *** EVENTS *** -->
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
-		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+		schedulerListener="it.unipr.ce.dsg.deus.example.energy.EnergyBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		   	<aut:reference id="discovery" /> 
@@ -18,7 +18,7 @@
 	</aut:event>
 	
 	<aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
-		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+		schedulerListener="it.unipr.ce.dsg.deus.example.energy.EnergyBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		   	<aut:reference id="discovery" /> 
@@ -34,19 +34,17 @@
 		</aut:params>
 	</aut:event>
 	
- 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
+ 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.energy.EnergyDiscoveryEvent" >
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="cpu" value="1000" /><!-- MHz -->
-			<aut:param name="ram" value="1000" /><!-- MB -->
-			<aut:param name="disk" value="10000" /><!-- MB -->
+			<aut:param name="energy" value="1000" /><!-- MWh -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.revol.RevolFreeResourceEvent" >
+	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.energy.EnergyFreeResourceEvent" >
 		<aut:logger level="INFO" />
 	</aut:event>
 	
@@ -58,29 +56,21 @@
 
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 	
-	<aut:event id="logRevolPeerStats" handler="it.unipr.ce.dsg.deus.example.revol.LogRevolPeerStatsEvent" />
+	<aut:event id="logEnergyPeerStats" handler="it.unipr.ce.dsg.deus.example.energy.LogEnergyPeerStatsEvent" />
 	
 	
 	<!-- *** NODE SPECIES *** -->
 
-	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
+	<aut:node id="energyNode" handler="it.unipr.ce.dsg.deus.example.energy.EnergyPeer">
+		<aut:params>
+			<aut:param name="avgInitChromosome" value="3" />
+			<aut:param name="isRandomInit" value="false" />
+		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
-					<aut:param name="type" value="cpuFactor" />
-					<aut:param name="amount" value="4" /><!-- *512 MHz = 2GHz -->
-				</aut:params>	
-			</aut:resource>
-			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
-				<aut:params>
-					<aut:param name="type" value="ramFactor" />
-					<aut:param name="amount" value="4" /><!-- *256 MB = 1GB -->
-				</aut:params>	
-			</aut:resource>
-			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
-				<aut:params>
-					<aut:param name="type" value="diskFactor" />
-					<aut:param name="amount" value="10" /><!-- *10000 MB = 100GB -->
+					<aut:param name="type" value="energyFactor" />
+					<aut:param name="amount" value="4" /><!-- *512 MWh -->
 				</aut:params>	
 			</aut:resource>
 		</aut:resources>
@@ -96,7 +86,7 @@
 			<aut:param name="vtThreshold" value="10000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="energyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birth" />
@@ -108,7 +98,7 @@
 			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="energyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birth2" />
@@ -120,7 +110,7 @@
 			<aut:param name="meanArrival" value="5" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="energyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
@@ -133,7 +123,7 @@
 			<aut:param name="meanArrival" value="1000000" /> 
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="energyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="disconnection" />
@@ -147,7 +137,7 @@
 			<aut:param name="vtThreshold" value="1000000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="energyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="discovery" />
@@ -161,7 +151,7 @@
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" /> 
-			<aut:reference id="logRevolPeerStats" /> 
+			<aut:reference id="logEnergyPeerStats" /> 
 		</aut:events>
 	</aut:process>
 
@@ -172,7 +162,7 @@
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<!-- <aut:reference id="twospeedpoisson" /> -->
-			<aut:reference id="twospeedspoisson" />
+			<aut:reference id="poisson1" />
 			<aut:reference id="periodic" />
 		</aut:processes>
 	</aut:engine>
