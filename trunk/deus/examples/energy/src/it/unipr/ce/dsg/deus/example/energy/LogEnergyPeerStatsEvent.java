@@ -62,8 +62,8 @@ public class LogEnergyPeerStatsEvent extends Event {
 				qhrSearchersTot += currentNode.getQhr();
 			}
 			qhrTot += currentNode.getQhr();
-			initialEnergyTot += currentNode.getInitialEnergy();
-			energyTot += currentNode.getEnergy();
+			initialEnergyTot += currentNode.getMaxPower();
+			energyTot += currentNode.getPower();
 		}
 
 		double qhrMean = qhrTot / numPeers;
