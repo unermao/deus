@@ -9,6 +9,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.impl.resource.ResourceAdv;
 import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 

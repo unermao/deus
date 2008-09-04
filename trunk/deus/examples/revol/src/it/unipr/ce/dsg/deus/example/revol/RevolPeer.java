@@ -4,6 +4,7 @@ import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
+import it.unipr.ce.dsg.deus.impl.resource.ResourceAdv;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.ArrayList;
