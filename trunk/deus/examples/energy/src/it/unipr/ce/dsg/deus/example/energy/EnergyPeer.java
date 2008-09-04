@@ -4,6 +4,7 @@ import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
+import it.unipr.ce.dsg.deus.impl.resource.ResourceAdv;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.ArrayList;
@@ -29,9 +30,14 @@ public class EnergyPeer extends Peer {
 
 	private static final String AVG_INIT_CHROMOSOME = "avgInitChromosome";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
+	private static final String MAX_COST = "maxCost";
+	private static final String QUERY_TIMEOUT = "queryTimeout";
 	private static final String POWER_FACTOR = "powerFactor";
 	private int avgInitChromosome = 0;
 	private boolean isRandomInit = false;
+	private int maxCost = 0;
+	private int cost = 0;
+	private float queryTimeout = 0;
 	private int powerFactor = 0;
 	private int maxPower = 0;
 	private int power = 0;	
@@ -57,6 +63,10 @@ public class EnergyPeer extends Peer {
 			avgInitChromosome = Integer.parseInt(params.getProperty(AVG_INIT_CHROMOSOME));
 		if (params.containsKey(IS_RANDOM_INIT))
 			isRandomInit = Boolean.parseBoolean(params.getProperty(IS_RANDOM_INIT));
+		if (params.containsKey(MAX_COST))
+			maxCost = Integer.parseInt(params.getProperty(MAX_COST));
+		if (params.containsKey(QUERY_TIMEOUT))
+			queryTimeout = Float.parseFloat(params.getProperty(QUERY_TIMEOUT));
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
@@ -76,7 +86,8 @@ public class EnergyPeer extends Peer {
 				clone.c[i] = random.nextInt(avgInitChromosome*2 - 1) + 1;
 			else
 				clone.c[i] = avgInitChromosome; 
-
+		clone.cost = random.nextInt(maxCost)+1; // Euro/kWh  
+		clone.queryTimeout = queryTimeout;
 		clone.maxPower = (random.nextInt(powerFactor)+1)*10; // kW
 		clone.power = clone.maxPower;
 		clone.q = 0;
@@ -84,6 +95,22 @@ public class EnergyPeer extends Peer {
 		clone.cache = new ArrayList<ResourceAdv>();
 		clone.cachedQueries = new ArrayList<ResourceAdv>();
 		return clone;
+	}
+
+	public float getQueryTimeout() {
+		return queryTimeout;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+
+	public int getMaxCost() {
+		return maxCost;
 	}
 
 	public double getFk() {
