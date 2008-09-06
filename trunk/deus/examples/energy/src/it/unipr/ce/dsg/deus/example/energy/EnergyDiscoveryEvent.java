@@ -166,21 +166,20 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 
 		getLogger().fine("mean arrival triggered discovery " + meanArrivalTriggeredDiscovery);
 		getLogger().fine("mean arrival free resource " + meanArrivalFreeResource);
-		getLogger().fine("ttl = " + ttl);
 		EnergyPeer associatedEnergyNode = (EnergyPeer) associatedNode;
 
 		Random random = Engine.getDefault().getSimulationRandom();
 		
 		if (res != null) {
 			// if query timeout elapsed, do not execute this event
+			//System.out.println("triggeringTime = " + triggeringTime);
+			//System.out.println("res.getFirstQueryTime() = " + res.getFirstQueryTime());
+			//System.out.println("((EnergyPeer) res.getInterestedNode()).getQueryTimeout() = " + ((EnergyPeer) res.getInterestedNode()).getQueryTimeout());
 			if (triggeringTime > res.getFirstQueryTime() + ((EnergyPeer) res.getInterestedNode()).getQueryTimeout()) {
 				if (!res.isFound())
 					selectProvider((EnergyPeer) res.getInterestedNode(), random);
 				return;	
 			}
-			//System.out.println("************** TIME = " + triggeringTime + " ***************");
-			//System.out.println("************** RESOURCE = " + res + " ***************");
-			//System.out.println("************** ASSOCIATED NODE = " + associatedNode + " ***************");
 			if (isPropagation)
 				getLogger().fine("is propagation");
 			else
@@ -231,7 +230,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 			associatedEnergyNode.getCachedQueries().add(res);
 		
 		if (isRequestedResourceLocallyAvailable(associatedEnergyNode, interestedNode)) 
-			getLogger().fine("resource found locally");
+			return;
 		
 		/*
 		if (isResourceAdvInCache(associatedRevolNode))
@@ -282,10 +281,10 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	 * @param associatedRevolNode
 	 * @param random
 	 */
-	public void initializeDiscoveryProcess(EnergyPeer associatedRevolNode,
-			Random random) {
+	public void initializeDiscoveryProcess(EnergyPeer associatedRevolNode, Random random) {
 		getLogger().fine("First discovery from node " + associatedRevolNode);
 		ttl = associatedRevolNode.getTtlMax();
+		getLogger().fine("ttl = " + ttl);
 		//getLogger().fine("q = " + associatedRevolNode.getQ());
 		associatedRevolNode.setQ(associatedRevolNode.getQ() + 1);
 		//getLogger().fine("q = " + associatedRevolNode.getQ());
@@ -318,14 +317,14 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	public boolean isRequestedResourceLocallyAvailable(
 			EnergyPeer associatedEnergyNode, EnergyPeer interestedNode) {
 		getLogger().fine(
-				"local search for res = " + res.getName() + " amount: "
-						+ res.getAmount() + " duration: " + res.getDuration());
+				"local search for res = " + res.getName() + ", amount: "
+						+ res.getAmount() + ", duration: " + res.getDuration());
+		getLogger().fine("local amount: " + associatedEnergyNode.getPower());
 		if (!isPropagation) {
 			if (res.getAmount() <= associatedEnergyNode.getPower()) {
 				res.setFound(true);
 				res.setOwner(associatedEnergyNode);
-				getLogger().fine(
-						"Res " + res + " found in node " + associatedEnergyNode);
+				getLogger().fine("resource found locally");				
 				getLogger().fine("qh = " + interestedNode.getQh());
 				interestedNode.setQh(interestedNode.getQh() + 1);
 				getLogger().fine("qh = " + interestedNode.getQh());
@@ -354,7 +353,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 				res.setAmount(previousAmount - power); // requested power X-X'
 				getLogger().fine(
 						"set freeRes for " + res.getName() + " = "
-								+ res.getAmount());
+								+ power);
 				EnergyFreeResourceEvent freeResEv = (EnergyFreeResourceEvent) Engine
 						.getDefault()
 						.createEvent(EnergyFreeResourceEvent.class,
@@ -364,12 +363,13 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 				freeResEv.setResName(res.getName());
 				freeResEv.setResAmount(power);
 				Engine.getDefault().insertIntoEventsList(freeResEv);
-				return true;
+				return false;
 			}
 		}
 		else { // if (isPropagation)
 			if (res.getAmount() <= associatedEnergyNode.getPower()) {
-				getLogger().fine("Res " + res + " found in node " + associatedEnergyNode);
+				getLogger().fine("resource found locally.. now adding this node to list of possible providers");
+				//res.setFound(true);
 				res.getPossibleProviders().add(associatedEnergyNode);
 				return true;
 			}
@@ -379,6 +379,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	}
 	
 	private void selectProvider(EnergyPeer interestedNode, Random random) {
+		//System.out.println("now select");
 		int numPossibleProviders = res.getPossibleProviders().size();
 		getLogger().fine("numPossibleProviders = " + numPossibleProviders);
 		if (numPossibleProviders > 0) {
@@ -389,7 +390,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 			 */
 			EnergyPeer selectedProvider = (EnergyPeer) res.getPossibleProviders().get(random.nextInt(numPossibleProviders));
 			res.setOwner(selectedProvider);
-			
+			res.setFound(true);
 			getLogger().fine("qh = " + interestedNode.getQh());
 			interestedNode.setQh(interestedNode.getQh() + 1);
 			getLogger().fine("qh = " + interestedNode.getQh());
@@ -406,7 +407,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 			EnergyFreeResourceEvent freeResEv = (EnergyFreeResourceEvent) Engine
 					.getDefault()
 					.createEvent(EnergyFreeResourceEvent.class,
-							triggeringTime + res.getDuration());
+							res.getFirstQueryTime() + res.getDuration());
 			freeResEv.setOneShot(true);
 			freeResEv.setResOwner(selectedProvider);
 			freeResEv.setResName(res.getName());
