@@ -16,6 +16,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.ValidationEventLocator;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+
+import org.xml.sax.SAXException;
 
 /**
  * <p>
@@ -78,29 +82,37 @@ public class AutomatorParser {
 	 *             if the handler class cannot be instantiated.
 	 * @throws NoSuchMethodException
 	 *             if the handler class cannot be instantiated.
+	 * @throws SAXException
+	 *             if handler class cannot be instantiated.
 	 */
 	@SuppressWarnings("unchecked")
 	public AutomatorParser(String fileName) throws JAXBException,
 			ClassNotFoundException, IllegalArgumentException,
 			SecurityException, InstantiationException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
+			InvocationTargetException, NoSuchMethodException, SAXException {
 		nodes = new ArrayList<Node>();
 		events = new ArrayList<Event>();
 		processes = new ArrayList<Process>();
 
 		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema");
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		Schema schema = schemaFactory
+				.newSchema(new File("schema/automator.xsd"));
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		unmarshaller.setSchema(schema);
 		unmarshaller.setEventHandler(new ValidationEventHandler() {
 
 			public boolean handleEvent(ValidationEvent ve) {
 				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
-						|| ve.getSeverity() == ValidationEvent.ERROR) {
+						|| ve.getSeverity() == ValidationEvent.ERROR
+						|| ve.getSeverity() == ValidationEvent.WARNING) {
 					ValidationEventLocator locator = ve.getLocator();
 					System.out.println("Invalid configuration file: "
 							+ locator.getURL());
 					System.out.println("Error at column "
 							+ locator.getColumnNumber() + ", line "
-							+ locator.getLineNumber());					
+							+ locator.getLineNumber());
 					System.out.println("Error: " + ve.getMessage());
 					return false;
 				}

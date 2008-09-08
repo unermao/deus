@@ -100,6 +100,14 @@
 		<sequence>
 			<element name="reference" type="tns:reference"
 				maxOccurs="unbounded" minOccurs="1">
+				<keyref name="entityKeyRef" refer="tns:entityKey">
+					<selector xpath=".//tns:*/*" />
+					<field xpath="@id" />
+				</keyref>
+				<key name="entityKey">
+					<selector xpath=".//tns:*" />
+					<field xpath="@id" />
+				</key>
 			</element>
 		</sequence>
 	</complexType>
