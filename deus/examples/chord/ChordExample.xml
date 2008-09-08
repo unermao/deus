@@ -7,7 +7,7 @@
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.chord.BirthChordEvent" 
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.chord.ChordBirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.chord.ChordBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
@@ -63,7 +63,7 @@
 
 	<aut:process id="poisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10" />
+			<aut:param name="meanArrival" value="100" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -73,7 +73,20 @@
 		</aut:events>
 	</aut:process>
 	
-
+	<aut:process id="poissonConnDisc" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="120" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="chordPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="connection" />
+			<aut:reference id="disconnection" />
+		</aut:events>
+	</aut:process>
+	
+	
 	<!-- *** SIMULATION *** -->
 
 	<aut:engine maxvt="2000001" seed="123456789"> 
