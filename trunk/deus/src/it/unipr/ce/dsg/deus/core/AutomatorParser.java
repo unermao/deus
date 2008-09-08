@@ -98,10 +98,10 @@ public class AutomatorParser {
 					ValidationEventLocator locator = ve.getLocator();
 					System.out.println("Invalid configuration file: "
 							+ locator.getURL());
-					System.out.println("Error: " + ve.getMessage());
 					System.out.println("Error at column "
 							+ locator.getColumnNumber() + ", line "
-							+ locator.getLineNumber());
+							+ locator.getLineNumber());					
+					System.out.println("Error: " + ve.getMessage());
 					return false;
 				}
 				return true;
