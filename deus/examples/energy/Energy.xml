@@ -33,13 +33,13 @@
 	</aut:event>
 	
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.energy.EnergyDiscoveryEvent" >
-		<aut:logger level="FINE" />
+		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
 			<aut:param name="power" value="10" /> <!-- kW -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="1000000" /> 
-			<!-- thus each peer on average consumes 10kW * 5.55h = 55.5kWh-->
+			<!-- thus each peer on average consumes 10kW * 2.8h = 28kWh-->
 			<aut:param name="numInitialConnections" value="4" />
 		</aut:params>
 	</aut:event>
@@ -66,13 +66,13 @@
 			<aut:param name="avgInitChromosome" value="4" />
 			<aut:param name="isRandomInit" value="false" />
 			<aut:param name="maxCost" value="5" />
-			<aut:param name="queryTimeout" value="10" /> <!-- 10 csec -->
+			<aut:param name="queryTimeout" value="10" /> <!-- 20 csec -->
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="powerFactor" />
-					<aut:param name="amount" value="1" /><!-- *10 kW -->
+					<aut:param name="amount" value="1" /><!-- *10 kW max -->
 				</aut:params>	
 			</aut:resource>
 		</aut:resources>
