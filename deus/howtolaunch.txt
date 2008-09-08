@@ -1,0 +1,9 @@
+Simulation Execution in Eclipse
+	Main Class: it.unipr.ce.dsg.deus.core.Deus
+	Program Arguments: path/to/file.xml
+	VM Arguments: -Djava.util.logging.config.file=logging.properties -Xms256M -Xmx1024M
+	
+	
+Automator Schema Generation in Eclipse
+	Main Class: com.sun.tools.xjc.XJCFacade
+	Program Arguments: -p it.unipr.ce.dsg.deus.schema schema/automator.xsd -d src/
