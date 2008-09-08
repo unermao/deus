@@ -13,7 +13,6 @@
 		    <aut:reference id="connection" />
 		    <aut:reference id="disconnection" />
 			<aut:reference id="immediateDeath" />
-			<aut:reference id="immediateDeath2" />
 		</aut:events>
 	</aut:event>
 
