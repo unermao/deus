@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.xml.bind.JAXBException;
 
+import org.xml.sax.SAXException;
+
 public class Deus {
 	public static void main(String args[]) {
 		if (args.length != 1) {
@@ -32,6 +34,8 @@ public class Deus {
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		} catch (SimulationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
 			e.printStackTrace();
 		}
 
