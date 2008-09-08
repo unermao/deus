@@ -88,7 +88,7 @@ public class EnergyPeer extends Peer {
 				clone.c[i] = avgInitChromosome; 
 		clone.cost = random.nextInt(maxCost)+1; // Euro/kWh  
 		clone.queryTimeout = queryTimeout;
-		clone.maxPower = (random.nextInt(powerFactor)+1)*10; // kW
+		clone.maxPower = (random.nextInt(powerFactor*10)+1); // kW
 		clone.power = clone.maxPower;
 		clone.q = 0;
 		clone.qh = 0;
@@ -114,7 +114,7 @@ public class EnergyPeer extends Peer {
 	}
 
 	public double getFk() {
-		return ((double) c[0])/6;
+		return ((double) c[0])/(5); // FIXME should be a max, not 5
 	}
 
 	public int getTtlMax() {
