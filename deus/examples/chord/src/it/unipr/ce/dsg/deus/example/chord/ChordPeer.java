@@ -64,6 +64,10 @@ import java.util.Random;
 				throws InvalidParamsException {
 			super(id, params, resources);
 			initialize();
+			fingerTable = new ArrayList<String>();
+			searchResults = new ArrayList<Integer>();
+			localResources = new ArrayList<String>();
+			informationChordResources = new ArrayList<String>();
 		}	
 	
 		public void initialize() throws InvalidParamsException {
@@ -86,6 +90,10 @@ import java.util.Random;
 		
 		public Object clone() {
 			ChordPeer clone = (ChordPeer) super.clone();
+			clone.fingerTable = new ArrayList<String>();
+			clone.searchResults = new ArrayList<Integer>();
+			clone.localResources = new ArrayList<String>();
+			clone.informationChordResources = new ArrayList<String>();
 			clone.g = 0;
 			//clone.bigid = ;
 			clone.c = new int[3];

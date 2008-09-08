@@ -73,7 +73,7 @@ public class ChordConnectionNode extends NodeEvent {
 				ChordPeer chordPeer = null;
 		
 				//estraggo l'indice del nodo corrente nella rete ordinata
-				int i = Engine.getDefault().getNodes().indexOf(this);
+				int i = Engine.getDefault().getNodes().indexOf(this.getAssociatedNode());
 				System.out.println(i + " i");
 				 int step = 1;
 				 BigInteger stepBigInt;
@@ -81,7 +81,7 @@ public class ChordConnectionNode extends NodeEvent {
 				 int index = 0;
 
 				 //clono il nodo della lista
-				 chordPeer = (ChordPeer) Engine.getDefault().getNodes().get(i).clone();
+				 chordPeer = (ChordPeer) Engine.getDefault().getNodes().get(i);
 				 
 				 //estraggo il suo big int e lo salvo
 				 currentKeyNode = chordPeer.getBigId();

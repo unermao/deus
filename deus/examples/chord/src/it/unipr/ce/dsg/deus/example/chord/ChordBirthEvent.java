@@ -21,9 +21,9 @@ import java.util.Properties;
  * @author Marco Muro (marco.muro@studenti.unipr.it)
  * 
  */
-public class BirthChordEvent extends NodeEvent {
+public class ChordBirthEvent extends NodeEvent {
 	
-	public BirthChordEvent(String id, Properties params, Process parentProcess)
+	public ChordBirthEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
