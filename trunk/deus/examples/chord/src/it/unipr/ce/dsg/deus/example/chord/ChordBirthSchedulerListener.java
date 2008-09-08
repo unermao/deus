@@ -20,7 +20,7 @@ package it.unipr.ce.dsg.deus.example.chord;
 	public class ChordBirthSchedulerListener  implements SchedulerListener {
 
 		public void newEventScheduled(Event parentEvent, Event newEvent) {
-			BirthEvent be = (BirthEvent) parentEvent; 
+			ChordBirthEvent be = (ChordBirthEvent) parentEvent; 
 			if (newEvent instanceof ChordConnectionNode) {
 				((ChordConnectionNode) newEvent).setAssociatedNode((ChordPeer) be.getAssociatedNode());
 			} else if (newEvent instanceof DisconnectionEvent) {
