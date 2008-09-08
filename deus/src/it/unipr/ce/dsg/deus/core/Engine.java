@@ -252,12 +252,12 @@ public final class Engine extends SimulationObject {
 	}
 
 	/**
-	 * Generate a random Universally Unique Identifier (UUID).
+	 * Generate a random Universally Unique Identifier (UUID) using the MD5
+	 * hash.
 	 * 
-	 * @return a random UUID.
+	 * @return a random UUID based on MD5 hash.
 	 */
 	public String generateUUID() {
-		// TODO check that it hasn't been generated yet.
 		try {
 			MessageDigest digest = java.security.MessageDigest
 					.getInstance("MD5");
@@ -268,6 +268,24 @@ public final class Engine extends SimulationObject {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * Generate a random Universally Unique Identifier (UUID)using the given
+	 * hashing algorithm.
+	 * 
+	 * @param algorithm
+	 *            the hashing algorithm to be used in order to produce the UUID.
+	 * @return a random UUID based on the given hashing algorithm.
+	 * @throws NoSuchAlgorithmException
+	 *             if the given algorithm is not supported by Java Security.
+	 */
+	public String generateUUID(String algorithm)
+			throws NoSuchAlgorithmException {
+		MessageDigest digest = java.security.MessageDigest
+				.getInstance(algorithm);
+		digest.update(Double.toHexString(uuidRandom.nextDouble()).getBytes());
+		return bytesToHex(digest.digest());
 	}
 
 	/**
