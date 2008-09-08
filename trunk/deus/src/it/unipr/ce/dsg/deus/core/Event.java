@@ -169,7 +169,6 @@ public abstract class Event extends SimulationObject implements
 	 */
 	public void scheduleReferencedEvents() {
 		float nextTriggeringTime = triggeringTime;
-
 		for (Iterator<Event> it = referencedEvents.iterator(); it.hasNext();) {
 			Event event = (Event) it.next();
 			if (event.getParentProcess() == null)
