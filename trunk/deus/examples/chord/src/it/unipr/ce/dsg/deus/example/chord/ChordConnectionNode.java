@@ -32,7 +32,7 @@ public class ChordConnectionNode extends NodeEvent {
 		int out_of_range=-1;
 		BigInteger maxKey = new BigInteger("ffffffffffffffffffffffffffffffffffffffff", 16);
 		BigInteger incrementKeyNode = new BigInteger("0", 16);
-		
+		boolean first_node = false;
 		
 		public ChordConnectionNode(String id, Properties params, Process parentProcess)
 				throws InvalidParamsException {
@@ -55,7 +55,7 @@ public class ChordConnectionNode extends NodeEvent {
 
 		public void run() throws RunException {
 			
-			System.out.println("CHORD_CONNECTION_NODE");
+//			System.out.println("CHORD_CONNECTION_NODE");
 //			if (!(associatedNode instanceof Peer))
 //				throw new RunException("The associated node is not a Peer!");
 			int n = Engine.getDefault().getNodes().size();
@@ -69,12 +69,16 @@ public class ChordConnectionNode extends NodeEvent {
 			
 				
 				int initializedNode = Engine.getDefault().getNodes().size();
-				System.out.println(initializedNode + " initializedNode");
+				//System.out.println(initializedNode + " initializedNode");
 				ChordPeer chordPeer = null;
 		
 				//estraggo l'indice del nodo corrente nella rete ordinata
 				int i = Engine.getDefault().getNodes().indexOf(this.getAssociatedNode());
-				System.out.println(i + " i");
+				int index_chord_ring = i;
+				System.out.println("nodo " + i + " id :" + associatedNode.getId()); 
+				
+				
+				
 				 int step = 1;
 				 BigInteger stepBigInt;
 				 boolean mod = false;
@@ -83,6 +87,17 @@ public class ChordConnectionNode extends NodeEvent {
 				 //clono il nodo della lista
 				 chordPeer = (ChordPeer) Engine.getDefault().getNodes().get(i);
 				 
+				 //setto il predecessore e il successore per questo nodo
+				 if(i == 0)
+				 {	 
+					 chordPeer.setPredecessor(Engine.getDefault().getNodes().get(initializedNode-1).getId());	 
+				 	 chordPeer.setSuccessor(Engine.getDefault().getNodes().get((i+1)%initializedNode).getId());
+				 }
+				 else
+				 {
+				 chordPeer.setSuccessor(Engine.getDefault().getNodes().get((i+1)%initializedNode).getId());
+				 chordPeer.setPredecessor(Engine.getDefault().getNodes().get((i-1)%initializedNode).getId());
+				 }
 				 //estraggo il suo big int e lo salvo
 				 currentKeyNode = chordPeer.getBigId();
 				 
@@ -114,13 +129,14 @@ public class ChordConnectionNode extends NodeEvent {
 						}
 						
 						//CONTROLLO SE HO UN IDENTIFICATORE PIU GRANDE DELL'ULTIMO NODO DELLA RETE
-						ChordPeer checkNode = (ChordPeer) Engine.getDefault().getNodes().get(initializedNode-1).clone();
+						ChordPeer checkNode = (ChordPeer) Engine.getDefault().getNodes().get(initializedNode-1);
 						out_of_range =incrementKeyNode.compareTo(checkNode.getBigId()); 
 						
 						if( out_of_range > 0 )
 						{
-							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(0).clone();
-							if(!fingerTable.contains(checkNode.getId()))
+							
+							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(0);
+							if(!fingerTable.contains(checkNode.getId()) && !checkNode.getId().equals(chordPeer.getId()))
 							{
 								String app = checkNode.getId();
 								fingerTable.add(app);
@@ -135,17 +151,18 @@ public class ChordConnectionNode extends NodeEvent {
 						while(comparison_result < 0 )
 						{
 							index = (i + step)%initializedNode;
-							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(index).clone();
+							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(index);
 							keyNodeToCompare = checkNode.getBigId();
 
 							comparison_result = keyNodeToCompare.compareTo(incrementKeyNode);
 						//SALVO L'INDICE DEL NODO NELLA FINGER	
 						if( comparison_result > 0 )
 						{
-							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(index).clone();
+							String app = null;
+							checkNode = (ChordPeer) Engine.getDefault().getNodes().get(index);
 							if(!fingerTable.contains(checkNode.getId()))
 							{
-								String app = checkNode.getId(); 
+								app = checkNode.getId(); 
 								fingerTable.add(app);
 								chordPeer.setFingerTable(app);
 							}	
@@ -155,9 +172,18 @@ public class ChordConnectionNode extends NodeEvent {
 						
 						}
 					 } 
-				for(int c = 0; c< fingerTable.size(); c++)
-				 System.out.println("elemento "+ c + ": " + fingerTable.get(c));
+				 getLogger().fine("FingerTable del Nodo numero " + index_chord_ring + " " +associatedNode.getId()  );
+				 getLogger().fine(" ");
+				 getLogger().fine("successore " + chordPeer.getSuccessor());
+				 getLogger().fine("predecessore " + chordPeer.getPredecessor());
+				for(int c = 0; c < fingerTable.size(); c++)
+					getLogger().fine("elemento "+ c + ": " + fingerTable.get(c));
+				
+				getLogger().fine(" ");
+				fingerTable.clear();
 		}
+
+		
 
 		public int getNumInitialConnections() {
 			return numInitialConnections;
