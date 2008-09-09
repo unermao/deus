@@ -9,6 +9,7 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.chord.ChordBirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.chord.ChordBirthSchedulerListener" >
+	 	<aut:logger level="ALL" />
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		    <aut:reference id="disconnection" />
@@ -17,13 +18,18 @@
 	</aut:event>
 
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.example.chord.ChordConnectionNode" oneShot="true" >
+	<aut:logger level="ALL" />	
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 			<aut:param name="numInitialConnections" value="4" />
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true" />
+	<aut:event id="logChordRingStat" handler="it.unipr.ce.dsg.deus.example.chord.LogChordRingStatsEvent" />
+	
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.chord.ChordDisconnectionEvent" oneShot="true" >
+	<aut:logger level="ALL" />
+	</aut:event>
 	
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 	
@@ -63,7 +69,7 @@
 
 	<aut:process id="poisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="100" />
+			<aut:param name="meanArrival" value="1" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -75,24 +81,43 @@
 	
 	<aut:process id="poissonConnDisc" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="120" />
+			<aut:param name="meanArrival" value="12" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="poissonDisc" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:logger level="ALL" />	
+		<aut:params>
+			<aut:param name="meanArrival" value="1200000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="chordPeer" />
+		</aut:nodes>
+		<aut:events>
 			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
 	
+	<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="2000001" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="logChordRingStat" />
+		</aut:events>
+	</aut:process>
 	
 	<!-- *** SIMULATION *** -->
-
 	<aut:engine maxvt="2000001" seed="123456789"> 
-		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="poisson" />
+			<aut:reference id="periodic" />
 		</aut:processes>
 	</aut:engine>
 
