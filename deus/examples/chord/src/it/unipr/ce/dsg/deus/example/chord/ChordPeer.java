@@ -40,6 +40,9 @@ import java.util.Random;
 		private ArrayList<String> localResources = null;
 		private ArrayList<String> informationChordResources = null;
 		
+		public String successor = null;
+		public String predecessor = null;
+		
 		private static final String VIDEO = "risorsaVideo";
 		private static final String AUDIO = "risorsaAudio";
 		private static final String TESTO = "risorsaTesto";
@@ -68,6 +71,8 @@ import java.util.Random;
 			searchResults = new ArrayList<Integer>();
 			localResources = new ArrayList<String>();
 			informationChordResources = new ArrayList<String>();
+			predecessor = new String();
+			successor = new String();
 		}	
 	
 		public void initialize() throws InvalidParamsException {
@@ -150,6 +155,11 @@ import java.util.Random;
 				fingerTable.add(app);	
 		}
 		
+		public void setFingerTableAtFirst(String app){
+			
+			fingerTable.add(0, app);	
+	}
+		
 		public ArrayList<Integer> getSearchResults() {
 			return searchResults;
 		}
@@ -189,6 +199,21 @@ import java.util.Random;
 			return order_index ;
 		}
 		
+		public void setSuccessor(String successor) {
+			this.successor = successor;
+			
+		}
+		public String getSuccessor(){
+		return successor;
+		}
+		
+		public void setPredecessor(String predecessor) {
+			this.predecessor = predecessor;
+			
+		}
+		public String getPredecessor(){
+		return predecessor;
+		}
 		
 		public double getFk() {
 			return ((double) c[0])/10;

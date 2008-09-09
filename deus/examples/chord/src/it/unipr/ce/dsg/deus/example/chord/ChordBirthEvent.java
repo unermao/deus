@@ -35,8 +35,9 @@ public class ChordBirthEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
+		
 //		 System.out.println("birth -- N = " +
-//		 Engine.getDefault().getNodes().size());
+//		 Engine.getDefault().getNodes().size() );
 		if (getParentProcess() == null)
 			throw new RunException(
 					"A parent process must be set in order to run "
@@ -49,11 +50,40 @@ public class ChordBirthEvent extends NodeEvent {
 				.createInstance(Engine.getDefault().generateUUID());
 		Engine.getDefault().getNodes().add(n);
 		associatedNode = n;
+		getLogger().fine("id " + associatedNode.getId());
 		Collections.sort(Engine.getDefault().getNodes());
-//		for(int i = 0; i<Engine.getDefault().getNodes().size(); i++)
-//		System.out.println("nodo " + i + " " + Engine.getDefault().getNodes().get(i).getId());
+		
+		int initializedNode =  Engine.getDefault().getNodes().size();
+		int associateNode_index = Engine.getDefault().getNodes().indexOf(this.getAssociatedNode());
+		
+		stabilize(initializedNode,associateNode_index);
+
+		for(int i = 0; i<Engine.getDefault().getNodes().size(); i++)
+			getLogger().fine("nodo " + i + " " + Engine.getDefault().getNodes().get(i).getId());
 		
 	}
 
+	private void stabilize(int initializedNode, int associateNode_index)
+	{
+		ChordPeer peer = null;
+		//se il nodo arrivato  il primo della lista devo inserirlo come successore dell'ultimo nodo della rete
+		if (associateNode_index == 0)
+		{
+			peer = ((ChordPeer) Engine.getDefault().getNodes().get(initializedNode-1));
+			peer.setSuccessor(associatedNode.getId());
+		}
+		else
+		{
+			//inserisco il nodo arrivato come successore del nodo precedente
+			peer = ((ChordPeer) Engine.getDefault().getNodes().get((associateNode_index-1)%initializedNode));
+			peer.setSuccessor(associatedNode.getId());
+			//lo inserisco all'inizio della fingerTable del nodo precedente
+			peer.setFingerTableAtFirst(associatedNode.getId());
+		}
+
+		//il nodo arrivato  anche il predecessore del nodo successivo nella rete
+		peer = ((ChordPeer) Engine.getDefault().getNodes().get((associateNode_index+1)%initializedNode));
+		peer.setPredecessor(associatedNode.getId());
+	}
 
 }
