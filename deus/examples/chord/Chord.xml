@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
+
+
+	<!-- *** EVENTS *** -->
+
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.chord.ChordBirthSchedulerListener" >
+	 	<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="join" />
+		</aut:events>
+	</aut:event>
+
+	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.chord.ChordJoinEvent" oneShot="true">
+		<aut:logger level="ALL" />
+	</aut:event>
+	
+	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
+
+	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
+	
+	
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chord.ChordPeer" />
+
+
+	<!-- *** PROCESSES *** -->
+
+	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="10" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="chordPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="0" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="chordPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="join" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="10000" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="logPopulationSize" />
+			<aut:reference id="logNodeDegree" />  
+		</aut:events>
+	</aut:process>
+	
+		
+	<!-- *** SIMULATION *** -->
+
+	<aut:engine maxvt="100000" seed="123456789"> 
+		<aut:logger level="INFO" />
+		<aut:processes>
+			<aut:reference id="poisson1" />
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>

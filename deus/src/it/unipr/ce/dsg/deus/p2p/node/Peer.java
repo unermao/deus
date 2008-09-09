@@ -104,4 +104,8 @@ public class Peer extends Node {
 	 * public void setReachable(boolean isReachable) { this.isReachable =
 	 * isReachable; }
 	 */
+	
+	public String toString() {
+		return id;
+	}
 }

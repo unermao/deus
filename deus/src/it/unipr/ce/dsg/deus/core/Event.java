@@ -108,16 +108,6 @@ public abstract class Event extends SimulationObject implements
 	}
 
 	/**
-	 * Provides the initialization of the event according to the given
-	 * parameters. This method should also perform a check on the parameters
-	 * values.
-	 * 
-	 * @throws InvalidParamsException
-	 *             if the parameters passed to the event are wrong.
-	 */
-	public abstract void initialize() throws InvalidParamsException;
-
-	/**
 	 * Performs the standard Object.equals comparison by using the event id as
 	 * the criteria.
 	 */
