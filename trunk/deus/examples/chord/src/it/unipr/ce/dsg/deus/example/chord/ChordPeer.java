@@ -26,6 +26,7 @@ import java.util.Properties;
  * 
  */
 public class ChordPeer extends Peer {
+	private static int counter = 0;
 	public static final int NUMBITS = 64;
 	private ChordPeer predecessor = null;
 	private ChordPeer fingerTable[] = null;
@@ -120,7 +121,7 @@ public class ChordPeer extends Peer {
 				fingerTable[i + 1] = fingerTable[i];
 			else
 				fingerTable[i + 1] = gatewayNode
-						.findSuccessor(calculateNextNodeId(getId(), i + 1));
+						.findSuccessor(calculateNextNodeId(getId(), i+1));
 		}
 	}
 
@@ -133,8 +134,6 @@ public class ChordPeer extends Peer {
 		while (!isInInterval(nodeId, predecessor.getId(), predecessor
 				.getSuccessor().getId())) {
 			predecessor = predecessor.closestPrecedingFinger(nodeId);
-			System.out.println(nodeId + " " + predecessor.getId() + " "
-					+ predecessor.getSuccessor().getId());
 		}
 		return predecessor;
 	}
@@ -149,10 +148,8 @@ public class ChordPeer extends Peer {
 
 	public void updateOthers() {
 		for (int i = 0; i < NUMBITS; i++) {
-			System.out.println("qui**********");
 			ChordPeer predecessor = findPredecessor(calculateNextNodeId(
 					getId(), i, true));
-
 			predecessor.updateFingerTable(this, i);
 		}
 	}
@@ -160,12 +157,15 @@ public class ChordPeer extends Peer {
 	public void updateFingerTable(ChordPeer node, int entry) {
 		if (isInInterval(node.getId(), getId(), fingerTable[entry].getId())) {
 			fingerTable[entry] = node;
-			getPredecessor().updateFingerTable(node, entry);
+			if (!getPredecessor().equals(this))
+				getPredecessor().updateFingerTable(node, entry);
 		}
 
 	}
 
 	private boolean isInInterval(String nodeId, String a, String b) {
+		String min = "00000000000000000000000000000000";
+		String max = "ffffffffffffffffffffffffffffffff";
 		if (a.equals(b))
 			return true;
 
@@ -176,7 +176,8 @@ public class ChordPeer extends Peer {
 			if (nodeId.compareTo(a) > 0 && nodeId.compareTo(b) < 0)
 				return true;
 		} else {
-			if (nodeId.compareTo(b) > 0 && nodeId.compareTo(a) < 0)
+			if ((nodeId.compareTo(a) > 0 && nodeId.compareTo(max) < 0)
+					|| (nodeId.compareTo(min) > 0 && nodeId.compareTo(b) < 0))
 				return true;
 		}
 

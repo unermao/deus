@@ -42,7 +42,20 @@ public class ChordJoinEvent extends NodeEvent {
 		connectingNode.initFingerTable(gatewayNode);
 		
 		connectingNode.updateOthers();
-	
+		
+		boolean isOk = true;
+		String id = null;
+		for(int i=0; i<ChordPeer.NUMBITS; i++) {
+			if(id != null && !id.equals(gatewayNode.getFingerTable()[i].getId())) {
+				isOk = false;
+				break;
+			}
+			id = gatewayNode.getFingerTable()[i].getId();
+		}
+		
+		if(!isOk)
+			System.out.println("Ci sono entry diverse");
+		
 		getLogger().fine("Current: " + connectingNode.getId() + "\tGateway: " + gatewayNode.getId() + "\tSuccessor: " + connectingNode.getSuccessor().getId());
 	}
 
