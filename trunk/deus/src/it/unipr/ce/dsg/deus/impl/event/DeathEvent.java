@@ -25,12 +25,6 @@ public class DeathEvent extends Event {
 	public DeathEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
-	}
-
-	@Override
-	public void initialize() throws InvalidParamsException {
-
 	}
 
 	public Object clone() {

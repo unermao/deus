@@ -1,5 +1,7 @@
 package it.unipr.ce.dsg.deus.core;
 
+import it.unipr.ce.dsg.deus.example.chord.ChordStabilizeEvent;
+
 import java.util.Properties;
 
 /**
@@ -45,7 +47,10 @@ public abstract class NodeEvent extends Event {
 	public NodeEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
+		
+		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
+			hasSameAssociatedNode = Boolean.parseBoolean(params
+					.getProperty(HAS_SAME_ASSOCIATED_NODE));
 	}
 
 	/**
@@ -91,22 +96,11 @@ public abstract class NodeEvent extends Event {
 	}
 
 	/**
-	 * The initialization method parse the configuration parameter that sets
-	 * whether the node associated event should be cloned with the event as well
-	 * or not.
-	 */
-	public void initialize() throws InvalidParamsException {
-		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
-			hasSameAssociatedNode = Boolean.parseBoolean(params
-					.getProperty(HAS_SAME_ASSOCIATED_NODE));
-	}
-
-	/**
 	 * Clone the event and if the property of cloning the associated node is
 	 * true it will clone it as well otherwise it will set it to null.
 	 */
 	public Object clone() {
-		NodeEvent clone = (NodeEvent) super.clone();
+		NodeEvent clone = (NodeEvent) super.clone();		
 		if (!hasSameAssociatedNode)
 			clone.associatedNode = null;
 		return clone;

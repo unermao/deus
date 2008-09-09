@@ -21,12 +21,6 @@ public class LogPopulationSizeEvent extends Event {
 	public LogPopulationSizeEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
-	}
-
-	@Override
-	public void initialize() throws InvalidParamsException {
-
 	}
 
 	@Override

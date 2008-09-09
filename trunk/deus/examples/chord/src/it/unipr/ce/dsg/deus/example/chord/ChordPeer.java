@@ -1,358 +1,220 @@
 package it.unipr.ce.dsg.deus.example.chord;
 
-	import it.unipr.ce.dsg.deus.core.Engine;
-	import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
-	import it.unipr.ce.dsg.deus.core.Resource;
-	import it.unipr.ce.dsg.deus.example.chord.ResourceAdv;
-import it.unipr.ce.dsg.deus.example.revol.RevolPeer;
-	import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
-	import it.unipr.ce.dsg.deus.p2p.node.Peer;
-	import java.math.BigInteger;
-	import java.util.ArrayList;
-	import java.util.Iterator;
-	import java.util.Properties;
-import java.util.Random;
+import it.unipr.ce.dsg.deus.core.Engine;
+import it.unipr.ce.dsg.deus.core.InvalidParamsException;
+import it.unipr.ce.dsg.deus.core.Resource;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
-	/**
-	 * <p>
-	 * ChordPeers are characterized by three kinds of consumable resources:
-	 * CPU, RAM, DISK. Moreover, each RevolPeer has a chromosome, i.e.
-	 * a set of parameters whose values are randomly initialized when the
-	 * RevolPeer is instantiated, and may change during its lifetime, depending
-	 * on external events. The RevolPeer keeps track of the number of sent queries (Q)
-	 * and of the number of query hits (QH). The query hit ratio (QHR = QH/Q) is 
-	 * initialized to 0.
-	 * </p>
-	 * 
-	 * @author Marco Muro (marco.muro@studenti.unipr.it)
-	 *
-	 */
-	public class ChordPeer extends Peer {
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Properties;
 
-		private int first_index = 0;
-		private int order_index = 0;
-		private int numLocalResources = 0;
-		private BigInteger bigId = null;
-		
-		public ArrayList<String> fingerTable = null;
-		public ArrayList<Integer> searchResults = null;
-		private ArrayList<String> localResources = null;
-		private ArrayList<String> informationChordResources = null;
-		
-		public String successor = null;
-		public String predecessor = null;
-		
-		private static final String VIDEO = "risorsaVideo";
-		private static final String AUDIO = "risorsaAudio";
-		private static final String TESTO = "risorsaTesto";
-		private static final String IMMAGINE = "risorsaImmagine";
-		
-		private int risorsaVideo = 0;
-		private int risorsaAudio = 0;
-		private int risorsaTesto = 0;
-		private int risorsaImmagine = 0;
-		
-		private int g = 0;
-		// chromosome
-		private int[] c = new int[3]; 
-		// query log
-		private double q = 0;
-		private double qh = 0;
-		
-		
-		private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>(); 
-		
-		public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
-				throws InvalidParamsException {
-			super(id, params, resources);
-			initialize();
-			fingerTable = new ArrayList<String>();
-			searchResults = new ArrayList<Integer>();
-			localResources = new ArrayList<String>();
-			informationChordResources = new ArrayList<String>();
-			predecessor = new String();
-			successor = new String();
-		}	
-	
-		public void initialize() throws InvalidParamsException {
-			//System.out.println(getResources().size());
-			for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
-				Resource r = it.next();
-				if (!(r instanceof AllocableResource))
-					continue;
-				if ( ((AllocableResource) r).getType().equals(VIDEO) )
-					risorsaVideo = (int) ((AllocableResource) r).getAmount();
-				else if ( ((AllocableResource) r).getType().equals(AUDIO) )
-					risorsaAudio = (int) ((AllocableResource) r).getAmount();
-				else if ( ((AllocableResource) r).getType().equals(TESTO) )
-					risorsaTesto = (int) ((AllocableResource) r).getAmount();
-				else if ( ((AllocableResource) r).getType().equals(IMMAGINE) )
-					risorsaImmagine = (int) ((AllocableResource) r).getAmount();
-				//System.out.println("cpuFactor = " + ((AllocableResource) r).getAmount());
-			}	
-		}
-		
-		public Object clone() {
-			ChordPeer clone = (ChordPeer) super.clone();
-			clone.fingerTable = new ArrayList<String>();
-			clone.searchResults = new ArrayList<Integer>();
-			clone.localResources = new ArrayList<String>();
-			clone.informationChordResources = new ArrayList<String>();
-			clone.g = 0;
-			//clone.bigid = ;
-			clone.c = new int[3];
-			Random random = Engine.getDefault().getSimulationRandom(); 
-			for (int i = 0; i < 3; i++)
-				clone.c[i] = random.nextInt(10) + 1; // each gene is a random integer in [1,10]
+/**
+ * <p>
+ * ChordPeers are characterized by three kinds of consumable resources: CPU,
+ * RAM, DISK. Moreover, each RevolPeer has a chromosome, i.e. a set of
+ * parameters whose values are randomly initialized when the RevolPeer is
+ * instantiated, and may change during its lifetime, depending on external
+ * events. The RevolPeer keeps track of the number of sent queries (Q) and of
+ * the number of query hits (QH). The query hit ratio (QHR = QH/Q) is
+ * initialized to 0.
+ * </p>
+ * 
+ * @author Marco Muro (marco.muro@studenti.unipr.it)
+ * 
+ */
+public class ChordPeer extends Peer {
+	public static final int NUMBITS = 64;
+	private ChordPeer predecessor = null;
+	private ChordPeer fingerTable[] = null;
+	private int lastFixedFinger = 0;
 
-			clone.setVideoResource((random.nextInt(risorsaVideo)+1)*512);
-			clone.setAudioResource((random.nextInt(risorsaAudio)+1)*256);
-			clone.setTextResource((random.nextInt(risorsaTesto)+1)*10000);
-			clone.setImageResource((random.nextInt(risorsaImmagine)+1)*10000);
-			
-			clone.q = 0;
-			clone.qh = 0;
-			clone.cache = new ArrayList<ResourceAdv>();
-			return clone;
-		}
-		
-		
-		public int getFirstIndex() {
-			return first_index;
-		}
-		
-		public void setFirstIndex(int first_index) {
-			this.first_index = first_index;
-		}
-		
-//		public String getUid() {
-//			return uid;
-//		}
-//
-//		public void setUid(String uid) {
-//			this.uid = uid;
-//		}
-//
-		public BigInteger getBigId() {
-			return bigId;
-		}
-		
-		public void setId(BigInteger bigId) {
-			this.bigId= bigId;
-		}
-		
-		public void setNumLocalResources(int numLocalResources) {
-			this.numLocalResources = numLocalResources;
-		}
-
-		public ArrayList<String> getFingerTable() {
-			return fingerTable;
-		}
-		
-		public void setFingerTable(String app){
-			
-				fingerTable.add(app);	
-		}
-		
-		public void setFingerTableAtFirst(String app){
-			
-			fingerTable.add(0, app);	
+	public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
+			throws InvalidParamsException {
+		super(id, params, resources);
+		initialize();
 	}
-		
-		public ArrayList<Integer> getSearchResults() {
-			return searchResults;
-		}
-		
-		public void setSearchResults(Integer index){
-			
-			searchResults.add(index);	
-		}
-		
-		public ArrayList<String> getLocalResources() {
-			return localResources;
 
-		}
-		public ArrayList<String> getLocalChordResources() {
-			return informationChordResources;
+	public void initialize() throws InvalidParamsException {
 
-		}
-		public void setLocalChordResources(String resource){
-			if(!informationChordResources.contains(resource))
-			informationChordResources.add(resource);
-		}
-		
-		public int getNumLocalResources() {
-			return numLocalResources;
-		}
+	}
 
-		public void setSearchResults(ArrayList<Integer> results) {
-			searchResults.addAll(results);	
-			
-		}
+	public Object clone() {
+		ChordPeer clone = (ChordPeer) super.clone();
+		clone.predecessor = null;
+		clone.fingerTable = new ChordPeer[NUMBITS];
+		clone.lastFixedFinger = 0;
+		return clone;
+	}
 
-		public void setOrderIndex(int index) {
-			order_index = index;
-		}
-		
-		public int getOrderIndex() {
-			return order_index ;
-		}
-		
-		public void setSuccessor(String successor) {
-			this.successor = successor;
-			
-		}
-		public String getSuccessor(){
-		return successor;
-		}
-		
-		public void setPredecessor(String predecessor) {
-			this.predecessor = predecessor;
-			
-		}
-		public String getPredecessor(){
+	public ChordPeer getPredecessor() {
 		return predecessor;
-		}
-		
-		public double getFk() {
-			return ((double) c[0])/10;
-		}
+	}
 
-		public int getTtlMax() {
-			return c[1];
-		}
+	public void setPredecessor(ChordPeer predecessor) {
+		this.predecessor = predecessor;
+	}
 
-		public int getDMax() {
-			return c[2]*2;
-		}
+	public ChordPeer getSuccessor() {
+		return fingerTable[0];
+	}
 
-		public int getVideoResource() {
-			return risorsaVideo;
-		}
+	public void setSuccessor(ChordPeer successor) {
+		fingerTable[0] = successor;
+	}
 
-		public void setVideoResource(int risorsaVideo) {
-			this.risorsaVideo = risorsaVideo;
-		}
+	/*
+	 * public ChordPeer findSuccessor(ChordPeer connectingNode) { if
+	 * (fingerTable[0] != null) if
+	 * (connectingNode.getId().compareTo(fingerTable[0].getId()) < 0) return
+	 * fingerTable[0];
+	 * 
+	 * if (getNeighbors().size() == 0) return this; else { ArrayList<ChordPeer>
+	 * tempList = new ArrayList<ChordPeer>(); System.arraycopy(getNeighbors(),
+	 * 0, tempList, 0, getNeighbors() .size()); tempList.add(connectingNode);
+	 * Collections.sort(tempList);
+	 * 
+	 * int successorIndex = tempList.indexOf(connectingNode.getId()) + 1; if
+	 * (successorIndex < tempList.size()) return
+	 * tempList.get(successorIndex).findSuccessor( connectingNode); else return
+	 * this; } }
+	 * 
+	 * public ChordPeer notify(ChordPeer stabilizingNode) { if (predecessor ==
+	 * null || (stabilizingNode.getId().compareTo(predecessor.getId()) > 0 &&
+	 * stabilizingNode .getId().compareTo(this.getId()) < 0)) { predecessor =
+	 * stabilizingNode; return predecessor; } return null; }
+	 * 
+	 * public void fixFingers() { lastFixedFinger++; if (lastFixedFinger > 64)
+	 * lastFixedFinger = 0;
+	 * 
+	 * ChordPeer nextNode = calculateNextNode(lastFixedFinger); if (nextNode !=
+	 * null) { if (lastFixedFinger > getNeighbors().size())
+	 * getNeighbors().add(findSuccessor(nextNode)); else
+	 * getNeighbors().set(lastFixedFinger, findSuccessor(nextNode)); }
+	 * 
+	 * }
+	 * 
+	 * 
+	 * public int getLastFixedFinger() { return lastFixedFinger; }
+	 */
 
-		public int getAudioResource() {
-			return risorsaAudio;
-		}
+	public ChordPeer[] getFingerTable() {
+		return fingerTable;
+	}
 
-		public void setAudioResource(int risorsaAudio) {
-			this.risorsaAudio = risorsaAudio;
-		}
+	/*************************************/
 
-		public int getImageResource() {
-			return risorsaImmagine;
-		}
-		
-		public void setImageResource(int risorsaImmagine) {
-			this.risorsaImmagine = risorsaImmagine;
-		}
-		
-		public int getTextResource() {
-			return risorsaTesto;
-		}
+	public void initFirstFingerTable() {
+		for (int i = 0; i < NUMBITS; i++)
+			fingerTable[i] = this;
+	}
 
-		public void setTextResource(int risorsaTesto) {
-			this.risorsaTesto = risorsaTesto;
-		}
-		
-		public int[] getC() {
-			return c;
-		}
-
-		public void setC(int[] c) {
-			this.c = c;
-		}
-
-		public double getQ() {
-			return q;
-		}
-
-		public void setQ(double q) {
-			this.q = q;
-		}
-
-		public double getQh() {
-			return qh;
-		}
-
-		public void setQh(double qh) {
-			this.qh = qh;
-		}
-
-		public double getQhr() {
-			if (this.q == 0)
-				return -1;
+	public void initFingerTable(ChordPeer gatewayNode) {
+		setSuccessor(gatewayNode.findSuccessor(calculateNextNodeId(getId(), 0)));
+		setPredecessor(getSuccessor().getPredecessor());
+		for (int i = 0; i < NUMBITS - 1; i++) {
+			if (isInInterval(calculateNextNodeId(getId(), i + 1), getId(),
+					fingerTable[i].getId()))
+				fingerTable[i + 1] = fingerTable[i];
 			else
-				return this.qh / this.q;
+				fingerTable[i + 1] = gatewayNode
+						.findSuccessor(calculateNextNodeId(getId(), i + 1));
+		}
+	}
+
+	public ChordPeer findSuccessor(String nodeId) {
+		return findPredecessor(nodeId).getSuccessor();
+	}
+
+	public ChordPeer findPredecessor(String nodeId) {
+		ChordPeer predecessor = this;
+		while (!isInInterval(nodeId, predecessor.getId(), predecessor
+				.getSuccessor().getId())) {
+			predecessor = predecessor.closestPrecedingFinger(nodeId);
+			System.out.println(nodeId + " " + predecessor.getId() + " "
+					+ predecessor.getSuccessor().getId());
+		}
+		return predecessor;
+	}
+
+	public ChordPeer closestPrecedingFinger(String nodeId) {
+		for (int i = NUMBITS; i > 0; i--) {
+			if (isInInterval(fingerTable[i - 1].getId(), getId(), nodeId))
+				return fingerTable[i - 1];
+		}
+		return this;
+	}
+
+	public void updateOthers() {
+		for (int i = 0; i < NUMBITS; i++) {
+			System.out.println("qui**********");
+			ChordPeer predecessor = findPredecessor(calculateNextNodeId(
+					getId(), i, true));
+
+			predecessor.updateFingerTable(this, i);
+		}
+	}
+
+	public void updateFingerTable(ChordPeer node, int entry) {
+		if (isInInterval(node.getId(), getId(), fingerTable[entry].getId())) {
+			fingerTable[entry] = node;
+			getPredecessor().updateFingerTable(node, entry);
 		}
 
-		
-		public ArrayList<ResourceAdv> getCache() {
-			return cache;
+	}
+
+	private boolean isInInterval(String nodeId, String a, String b) {
+		if (a.equals(b))
+			return true;
+
+		if (nodeId.equals(a) || nodeId.equals(b))
+			return true;
+
+		if (a.compareTo(b) < 0) {
+			if (nodeId.compareTo(a) > 0 && nodeId.compareTo(b) < 0)
+				return true;
+		} else {
+			if (nodeId.compareTo(b) > 0 && nodeId.compareTo(a) < 0)
+				return true;
 		}
 
-		public void setCache(ArrayList<ResourceAdv> cache) {
-			this.cache = cache;
-		}
-		
-		public void addToCache(ResourceAdv res) {
-			if (cache.size() < getDMax()) 
-				cache.add(res);
-			else if (cache.size() == getDMax()) {
-				cache.remove(0);
-				cache.add(res);
+		return false;
+
+	}
+
+	private String calculateNextNodeId(String startId, int step) {
+		return calculateNextNodeId(startId, step, false);
+	}
+
+	private String calculateNextNodeId(String startId, int step,
+			boolean subtract) {
+		BigInteger minKey = BigInteger.valueOf(0);
+		BigInteger maxKey = new BigInteger("ffffffffffffffffffffffffffffffff",
+				16);
+		BigInteger nodeBigId = new BigInteger(startId, 16);
+		BigInteger stepBigId = null;
+
+		if (step == 0)
+			stepBigId = BigInteger.valueOf(1);
+		else {
+			stepBigId = BigInteger.valueOf(2);
+			for (int i = 1; i < step; i++) {
+				stepBigId = stepBigId.multiply(BigInteger.valueOf(2));
 			}
-		}
-		
-		public int getG() {
-			return g;
 		}
 
-		public void setG(int g) {
-			this.g = g;
-		}
-		
-		public void dropExceedingResourceAdvs() {
-			// pulizia della cache: via gli adv. associati a nodi morti
-			for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
-				ResourceAdv currentResourceAdv = it.next();
-				ChordPeer currentNode = (ChordPeer) currentResourceAdv.getOwner();
-				//if ((currentNode == null) || (!currentNode.isReachable()))
-				if (currentNode == null)
-					this.removeResourceAdvFromCache(currentResourceAdv);
-			}
-			
-			int dMax = this.getDMax();
-			int numResourceAdvs = cache.size();
-			if (numResourceAdvs <= dMax)
-				return;
-			ArrayList<ResourceAdv> newResourceAdvsList = new ArrayList<ResourceAdv>();
-			// mantengo solo le più recenti
-			for (int i = (numResourceAdvs - dMax); i < numResourceAdvs; i++)
-				newResourceAdvsList.add((ResourceAdv) cache.get(i));
-			cache = newResourceAdvsList;
-		}
-		
-		public void removeResourceAdvFromCache(ResourceAdv currentResourceAdv) {
-			ArrayList<ResourceAdv> newCache = new ArrayList<ResourceAdv>();
-			for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
-				ResourceAdv r = it.next();
-				if (!r.equals(currentResourceAdv))
-					newCache.add(r);
-			}
-			cache = newCache;
-		}
-		
-		public Node createInstance(String id)
-		{
-			ChordPeer n = (ChordPeer) super.createInstance(id);
-			n.bigId = new BigInteger(id,16);
-			return n;
-			
-		}
-		
+		if (subtract)
+			nodeBigId = nodeBigId.subtract(stepBigId);
+		else
+			nodeBigId = nodeBigId.add(stepBigId);
+
+		if (nodeBigId.compareTo(minKey) < 0)
+			nodeBigId = maxKey.add(nodeBigId);
+		if (nodeBigId.compareTo(maxKey) > 0)
+			nodeBigId = nodeBigId.subtract(maxKey);
+
+		return Engine.getDefault().bytesToHex(nodeBigId.toByteArray());
+	}
 }

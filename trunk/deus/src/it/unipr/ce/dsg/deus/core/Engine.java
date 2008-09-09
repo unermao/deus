@@ -211,9 +211,13 @@ public final class Engine extends SimulationObject {
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
 			Event e = eventsList.removeFirst();
+
+				System.out.println(virtualTime);
+			
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
+					getLogger().fine("Running event " + e);
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot())
@@ -295,7 +299,7 @@ public final class Engine extends SimulationObject {
 	 *            the byte array to convert.
 	 * @return the hex string representation of the given byte array.
 	 */
-	private String bytesToHex(byte hash[]) {
+	public String bytesToHex(byte hash[]) {
 		char buf[] = new char[hash.length * 2];
 		for (int i = 0, x = 0; i < hash.length; i++) {
 			buf[x++] = HEX_CHARS[(hash[i] >>> 4) & 0xf];
