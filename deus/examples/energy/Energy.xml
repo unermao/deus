@@ -35,10 +35,10 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="power" value="10" /> <!-- kW -->
+			<aut:param name="power" value="8" /> <!-- kW -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" /> 
-			<!-- thus each peer on average consumes 10kW * 2.8h = 28kWh-->
+			<!-- thus each peer consumes maximum 8kW * 2.8h = 28kWh-->
 			<aut:param name="numInitialConnections" value="4" />
 		</aut:params>
 	</aut:event>
@@ -71,7 +71,7 @@
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="powerFactor" />
-					<aut:param name="amount" value="1" /><!-- *10 kW max -->
+					<aut:param name="amount" value="5" /><!-- *2 kW -->
 				</aut:params>	
 			</aut:resource>
 		</aut:resources>
