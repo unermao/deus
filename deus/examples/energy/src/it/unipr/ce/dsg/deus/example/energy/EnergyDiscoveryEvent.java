@@ -163,7 +163,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	public void run() throws RunException {
 		getLogger().fine("####### disc event: " + this);
 		getLogger().fine("####### disc event time: " + triggeringTime);
-
+		//System.out.println("####### disc event time: " + triggeringTime);
 		getLogger().fine("mean arrival triggered discovery " + meanArrivalTriggeredDiscovery);
 		getLogger().fine("mean arrival free resource " + meanArrivalFreeResource);
 		EnergyPeer associatedEnergyNode = (EnergyPeer) associatedNode;
@@ -391,6 +391,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 			EnergyPeer selectedProvider = (EnergyPeer) res.getPossibleProviders().get(random.nextInt(numPossibleProviders));
 			res.setOwner(selectedProvider);
 			res.setFound(true);
+			getLogger().fine("select: interested node: " + interestedNode);
 			getLogger().fine("qh = " + interestedNode.getQh());
 			interestedNode.setQh(interestedNode.getQh() + 1);
 			getLogger().fine("qh = " + interestedNode.getQh());
