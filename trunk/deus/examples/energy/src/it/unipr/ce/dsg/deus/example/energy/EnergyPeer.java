@@ -83,12 +83,12 @@ public class EnergyPeer extends Peer {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			if (isRandomInit)
-				clone.c[i] = random.nextInt(avgInitChromosome*2 - 1) + 1;
+				clone.c[i] = random.nextInt(2*avgInitChromosome - 1) + 1;
 			else
 				clone.c[i] = avgInitChromosome; 
 		clone.cost = random.nextInt(maxCost)+1; // Euro/kWh  
 		clone.queryTimeout = queryTimeout;
-		clone.maxPower = (random.nextInt(powerFactor*10)+1); // kW
+		clone.maxPower = (random.nextInt(powerFactor)+1)*2; // kW
 		clone.power = clone.maxPower;
 		clone.q = 0;
 		clone.qh = 0;
@@ -114,7 +114,8 @@ public class EnergyPeer extends Peer {
 	}
 
 	public double getFk() {
-		return ((double) c[0])/(5); // FIXME should be a max, not 5
+		//return ((double) c[0])/(2*avgInitChromosome); 
+		return ((double) c[0])/(avgInitChromosome); // Gnutella!
 	}
 
 	public int getTtlMax() {
