@@ -9,13 +9,32 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.chord.ChordBirthSchedulerListener" >
+	 	<aut:logger level="ALL" />
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="join" />
+		    <aut:reference id="stabilize" />
+		    <aut:reference id="fixFingers" />
 		</aut:events>
 	</aut:event>
 
 	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.chord.ChordJoinEvent" oneShot="true">
 		<aut:logger level="ALL" />
+	</aut:event>
+	
+	<aut:event id="stabilize" handler="it.unipr.ce.dsg.deus.example.chord.ChordStabilizeEvent" oneShot="false">
+		<aut:logger level="ALL" />
+		<aut:params><aut:param name="hasSameAssociatedNode" value="true" /> 
+		</aut:params>
+	</aut:event>
+	
+	<aut:event id="fixFingers" handler="it.unipr.ce.dsg.deus.example.chord.ChordFixFingersEvent" oneShot="false">
+		<aut:logger level="ALL" />
+		<aut:params><aut:param name="hasSameAssociatedNode" value="true" /> 
+		</aut:params>
+	</aut:event>
+	
+	<aut:event id="logChordRingStatsEvent" handler="it.unipr.ce.dsg.deus.example.chord.LogChordRingStatsEvent" >
+	<aut:logger level="ALL" />
 	</aut:event>
 	
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
@@ -32,7 +51,7 @@
 
 	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10" />
+			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -54,9 +73,19 @@
 		</aut:events>
 	</aut:process>
 
+	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="1001" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="stabilize" />
+			<aut:reference id="fixFingers" />  
+		</aut:events>
+	</aut:process>
+
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="10000" /> 
+			<aut:param name="period" value="1000" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
@@ -64,13 +93,23 @@
 		</aut:events>
 	</aut:process>
 	
+	<aut:process id="periodic3" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="10000" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="logChordRingStatsEvent" />
+		</aut:events>
+	</aut:process>
+	
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="100000" seed="123456789"> 
+	<aut:engine maxvt="10005" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="poisson1" />
+			<aut:reference id="periodic3" />
 		</aut:processes>
 	</aut:engine>
 
