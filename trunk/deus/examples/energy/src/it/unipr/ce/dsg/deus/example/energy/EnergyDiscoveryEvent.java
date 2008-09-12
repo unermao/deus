@@ -50,11 +50,6 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	public EnergyDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
-	}
-
-	public void initialize() throws InvalidParamsException {
-		super.initialize();
 		if (params.containsKey(POWER))
 			power = Integer.parseInt(params.getProperty(POWER));
 		if (params.containsKey(MEAN_ARRIVAL_TRIGGERED_DISCOVERY)) {
