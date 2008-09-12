@@ -1,7 +1,5 @@
 package it.unipr.ce.dsg.deus.core;
 
-import it.unipr.ce.dsg.deus.example.chord.ChordStabilizeEvent;
-
 import java.util.Properties;
 
 /**

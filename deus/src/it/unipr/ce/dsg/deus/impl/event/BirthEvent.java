@@ -31,8 +31,7 @@ public class BirthEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		// System.out.println("birth -- N = " +
-		// Engine.getDefault().getNodes().size());
+
 		if (getParentProcess() == null)
 			throw new RunException(
 					"A parent process must be set in order to run "
@@ -42,7 +41,7 @@ public class BirthEvent extends NodeEvent {
 		Node n = (Node) getParentProcess().getReferencedNodes().get(
 				Engine.getDefault().getSimulationRandom().nextInt(
 						getParentProcess().getReferencedNodes().size()))
-				.createInstance(Engine.getDefault().generateUUID());
+				.createInstance(Engine.getDefault().generateKey());
 		Engine.getDefault().getNodes().add(n);
 		associatedNode = n;
 	}

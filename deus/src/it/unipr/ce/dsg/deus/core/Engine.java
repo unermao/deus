@@ -3,8 +3,6 @@ package it.unipr.ce.dsg.deus.core;
 import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -46,9 +44,6 @@ import java.util.logging.Logger;
  * 
  */
 public final class Engine extends SimulationObject {
-	private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5',
-			'6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', };
-
 	public static final Level DEFAULT_LOGGER_LEVEL = Level.INFO;
 
 	public static final String DEFAULT_LOGGER_PATH_PREFIX = "log";
@@ -65,16 +60,20 @@ public final class Engine extends SimulationObject {
 
 	private float virtualTime = 0;
 
+	private int keySpaceSize;
+
 	private LinkedList<Event> eventsList = null;
 
 	private Random simulationRandom = null;
 
-	private Random uuidRandom = null;
+	private Random keyRandom = null;
 
 	private static Engine engine = null;
 
 	private ArrayList<Node> nodes = null;
 
+	private ArrayList<Integer> generatedKeys = null;
+	
 	/**
 	 * Class constructor that initializes the simulation engine according to the
 	 * parameters extracted from the configuration file.
@@ -96,19 +95,24 @@ public final class Engine extends SimulationObject {
 	 * 
 	 * @see it.unipr.ce.dsg.deus.core.AutomatorParser
 	 */
-	public Engine(float maxVirtualTime, int seed, ArrayList<Node> configNodes,
+	public Engine(float maxVirtualTime, int seed, Integer keySpaceSize, ArrayList<Node> configNodes,
 			ArrayList<Event> configEvents, ArrayList<Process> configProcesses,
 			ArrayList<Process> referencedProcesses) {
 		engine = this;
 		this.maxVirtualTime = maxVirtualTime;
+		if(keySpaceSize == null)
+			this.keySpaceSize = Integer.MAX_VALUE;
+		else
+			this.keySpaceSize = keySpaceSize;
 		simulationRandom = new Random(seed);
-		uuidRandom = new Random(seed);
+		keyRandom = new Random(seed);
 		this.configNodes = configNodes;
 		this.configEvents = configEvents;
 		this.configProcesses = configProcesses;
 		this.referencedProcesses = referencedProcesses;
 		eventsList = new LinkedList<Event>();
 		nodes = new ArrayList<Node>();
+		generatedKeys = new ArrayList<Integer>();
 		parseReferencedProcesses();
 	}
 
@@ -211,9 +215,9 @@ public final class Engine extends SimulationObject {
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
 			Event e = eventsList.removeFirst();
-
-				System.out.println(virtualTime);
-			
+			System.out.println(
+					"virtualTime=" + virtualTime + " numOfQueueEvents="
+					+ eventsList.size());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
@@ -256,56 +260,17 @@ public final class Engine extends SimulationObject {
 	}
 
 	/**
-	 * Generate a random Universally Unique Identifier (UUID) using the MD5
-	 * hash.
+	 * Generate a random key, in the given key space
 	 * 
-	 * @return a random UUID based on MD5 hash.
+	 * @return a random key
 	 */
-	public String generateUUID() {
-		try {
-			MessageDigest digest = java.security.MessageDigest
-					.getInstance("MD5");
-			digest.update(Double.toHexString(uuidRandom.nextDouble())
-					.getBytes());
-			return bytesToHex(digest.digest());
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Generate a random Universally Unique Identifier (UUID)using the given
-	 * hashing algorithm.
-	 * 
-	 * @param algorithm
-	 *            the hashing algorithm to be used in order to produce the UUID.
-	 * @return a random UUID based on the given hashing algorithm.
-	 * @throws NoSuchAlgorithmException
-	 *             if the given algorithm is not supported by Java Security.
-	 */
-	public String generateUUID(String algorithm)
-			throws NoSuchAlgorithmException {
-		MessageDigest digest = java.security.MessageDigest
-				.getInstance(algorithm);
-		digest.update(Double.toHexString(uuidRandom.nextDouble()).getBytes());
-		return bytesToHex(digest.digest());
-	}
-
-	/**
-	 * Convert a byte array into an hex string.
-	 * 
-	 * @param hash
-	 *            the byte array to convert.
-	 * @return the hex string representation of the given byte array.
-	 */
-	public String bytesToHex(byte hash[]) {
-		char buf[] = new char[hash.length * 2];
-		for (int i = 0, x = 0; i < hash.length; i++) {
-			buf[x++] = HEX_CHARS[(hash[i] >>> 4) & 0xf];
-			buf[x++] = HEX_CHARS[hash[i] & 0xf];
-		}
-		return new String(buf);
+	public int generateKey() {
+		int result;
+		do {
+			result = keyRandom.nextInt(keySpaceSize); 
+		} while(generatedKeys.contains(Integer.valueOf(result)));
+		generatedKeys.add(result);
+		return result;
 	}
 
 	/**
@@ -380,4 +345,7 @@ public final class Engine extends SimulationObject {
 		return configProcesses;
 	}
 
+	public int getKeySpaceSize() {
+		return keySpaceSize;
+	}
 }

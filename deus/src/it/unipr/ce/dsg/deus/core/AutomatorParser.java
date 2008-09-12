@@ -277,8 +277,9 @@ public class AutomatorParser {
 		}
 
 		engine = new Engine(automator.getEngine().getMaxvt(), automator
-				.getEngine().getSeed(), nodes, events, processes,
-				referencedProcesses);
+				.getEngine().getSeed(),
+				automator.getEngine().getKeyspacesize(), nodes, events,
+				processes, referencedProcesses);
 
 		if (automator.getEngine().getLogger() != null) {
 			engine.setLoggerLevel(automator.getEngine().getLogger().getLevel());
