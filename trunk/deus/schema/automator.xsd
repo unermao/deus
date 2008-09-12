@@ -81,6 +81,7 @@
 		</sequence>
 		<attribute name="maxvt" type="float" use="required"></attribute>
 		<attribute name="seed" type="int" use="required"></attribute>
+		<attribute name="keyspacesize" type="int" use="optional"></attribute>
 	</complexType>
 
 	<complexType name="params">

@@ -16,32 +16,7 @@ public class ChordFixFingersEvent extends NodeEvent {
 
 	@Override
 	public void run() throws RunException {
-		ChordPeer currentNode = (ChordPeer) getAssociatedNode();
-		currentNode.fixFingers();
-		
-		try {
-			//System.out.println(currentNode);
-//			if(currentNode.getLastFixedFinger() == 0)
-//				getLogger().fine("Current: " + currentNode.getId() + "\tLast Fixed Finger Entry: " + (currentNode.getLastFixedFinger()));
-//			else
-			getLogger().fine(
-					"Current: "
-							+ currentNode.getId()
-							+ "\tLast Fixed Finger Entry: "
-							+ (currentNode.getLastFixedFinger() - 1)
-							+ "\tFinger entry: "
-							+ currentNode.fingerTable[currentNode.getLastFixedFinger() - 1].getId());
-			
-		} catch (Exception e) {
-			//System.out.println("************************");
-			/*getLogger().fine(
-					"Current: "
-							+ currentNode.getId()
-							+ "\tLast Fixed Finger Entry: "
-							+ (currentNode.getLastFixedFinger() - 1)
-							+ "\tFinger entry: NULL");*/
-		}
-
+		((ChordPeer) getAssociatedNode()).fixFingers();
 	}
 
 }

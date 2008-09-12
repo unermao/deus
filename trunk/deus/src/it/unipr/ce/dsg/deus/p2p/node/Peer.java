@@ -20,8 +20,15 @@ import java.util.Properties;
 public class Peer extends Node {
 
 	protected ArrayList<Peer> neighbors = null;
+	protected boolean isConnected = false;
 
-	// protected boolean isReachable = false;
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+	public void setConnected(boolean isConnected) {
+		this.isConnected = isConnected;
+	}
 
 	public Peer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -97,15 +104,8 @@ public class Peer extends Node {
 	public void resetNeighbors() {
 		neighbors = new ArrayList<Peer>();
 	}
-
-	/*
-	 * public boolean isReachable() { return isReachable; }
-	 * 
-	 * public void setReachable(boolean isReachable) { this.isReachable =
-	 * isReachable; }
-	 */
 	
 	public String toString() {
-		return id;
+		return Integer.toString(key);
 	}
 }
