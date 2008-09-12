@@ -60,7 +60,7 @@ public class Peer extends Node {
 		// check if newNeighbor is already in the neighbors list
 		boolean isAlreadyNeighbor = false;
 		for (Iterator<Peer> it = neighbors.iterator(); it.hasNext();)
-			if (((Peer) it.next()).id.equals(newNeighbor.id))
+			if (((Peer) it.next()).key == newNeighbor.key)
 				isAlreadyNeighbor = true;
 		if (!isAlreadyNeighbor) {
 			neighbors.add(newNeighbor);

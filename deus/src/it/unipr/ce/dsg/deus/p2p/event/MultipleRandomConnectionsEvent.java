@@ -62,15 +62,15 @@ public class MultipleRandomConnectionsEvent extends NodeEvent {
 			m = numInitialConnections;
 		do {
 			Peer target = null;			
-			do {
+			do {			
 				int randomInt = Engine.getDefault().getSimulationRandom().nextInt(n);
 				Node randomNode = Engine.getDefault().getNodes().get(randomInt);
 				if (!(randomNode instanceof Peer)) {
-					target = null;
+					target = null;					
 					continue;
 				}
 				target = (Peer) randomNode; 
-			} while ((target == null) || (target.getId().equals(((Peer) associatedNode).getId())));
+			} while ((target == null) || (target.getKey() == ((Peer) associatedNode).getKey()));
 			if (((Peer) associatedNode).addNeighbor(target)) {
 				if (isBidirectional)
 					target.addNeighbor(((Peer) associatedNode));
