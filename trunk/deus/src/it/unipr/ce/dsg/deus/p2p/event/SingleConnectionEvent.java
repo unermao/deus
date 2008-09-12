@@ -63,7 +63,7 @@ public class SingleConnectionEvent extends NodeEvent {
 						continue;
 					}
 					target = (Peer) n; 
-				} while ( (target == null) || target.getId().equals(associatedNode.getId()));
+				} while ( (target == null) || target.getKey() == associatedNode.getKey());
 			}
 			else
 				return;
