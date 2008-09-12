@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.chord;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -61,8 +62,12 @@ public class LogChordRingStatsEvent extends Event{
 					{
 					ChordPeer peer = (ChordPeer) Engine.getDefault().getNodes().get(i);
 					getLogger().info("fingerTable del nodo "+ i + " " + peer.getId());
-					for(int c = 0; c < peer.fingerTable.size(); c++)
-					getLogger().info(peer.fingerTable.get(c));
+					for(int c = 0; c < peer.fingerTable.length; c++)
+					getLogger().info(" " + peer.fingerTable[c].getId());
+					}
+					Collections.sort(Engine.getDefault().getNodes());
+					for(int d = 0; d < Engine.getDefault().getNodes().size(); d++){
+						getLogger().info("nodo  "+ d + " " + Engine.getDefault().getNodes().get(d).getId());
 					}
 			}
 
