@@ -215,9 +215,7 @@ public final class Engine extends SimulationObject {
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
 			Event e = eventsList.removeFirst();
-			System.out.println(
-					"virtualTime=" + virtualTime + " numOfQueueEvents="
-					+ eventsList.size());
+			//System.out.println("virtualTime=" + virtualTime + " numOfQueueEvents=" + eventsList.size());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
