@@ -25,11 +25,6 @@ public class RevolAdaptationEvent extends NodeEvent {
 	public RevolAdaptationEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
-	}
-
-	public void initialize() throws InvalidParamsException {
-		super.initialize(); // important!
 		if (params.containsKey(A_0))
 			a0 = Integer.parseInt(params.getProperty(A_0));
 		if (params.containsKey(A_1))

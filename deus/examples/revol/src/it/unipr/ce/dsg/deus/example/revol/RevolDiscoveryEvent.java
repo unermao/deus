@@ -52,11 +52,6 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	public RevolDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		initialize();
-	}
-
-	public void initialize() throws InvalidParamsException {
-		super.initialize();
 		if (params.containsKey(CPU))
 			cpu = Integer.parseInt(params.getProperty(CPU));
 		if (params.containsKey(RAM))
