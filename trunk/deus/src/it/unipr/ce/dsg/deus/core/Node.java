@@ -20,8 +20,10 @@ import java.util.Properties;
  */
 public abstract class Node extends SimulationObject implements
 		Comparable<Node>, Cloneable {
-	protected String id = null;
+	protected String id;
 
+	protected int key;
+	
 	protected ArrayList<Resource> resources = null;
 
 	protected Properties params = null;
@@ -61,24 +63,24 @@ public abstract class Node extends SimulationObject implements
 	public abstract void initialize() throws InvalidParamsException;
 
 	/**
-	 * Performs the standard Object.equals comparison by using the node id as
+	 * Performs the standard Object.equals comparison by using the node key as
 	 * the criteria.
 	 */
 	public boolean equals(Object o) {
-		return id.equals(((Node) o).getId());
+		return key == (((Node) o).key);
 	}
 
 	/**
-	 * Standard implementation of the compareTo method that uses the node id as
+	 * Standard implementation of the compareTo method that uses the node key as
 	 * sorting criteria.
 	 */
 	public int compareTo(Node n) {
 		int result = 0;
-		if (this.id.compareTo(n.id) < 0)
+		if (key < n.key)
 			result = -1;
-		else if (this.id.equals(n.id))
+		else if (key == n.key)
 			result = 0;
-		else if (this.id.compareTo(n.id) > 0)
+		else if (key > n.key)
 			result = 1;
 		return result;
 	}
@@ -102,16 +104,16 @@ public abstract class Node extends SimulationObject implements
 	}
 
 	/**
-	 * Create an instance of the current node by cloning it and updating the id
+	 * Create an instance of the current node by cloning it and updating the key
 	 * with the one provided.
 	 * 
-	 * @param id
-	 *            the id of the newly created node instance.
+	 * @param key
+	 *            the key of the newly created node instance.
 	 * @return the newly created node instance.
 	 */
-	public Node createInstance(String id) {
+	public Node createInstance(int key) {
 		Node clone = (Node) clone();
-		clone.id = id;
+		clone.key = key;
 		return clone;
 	}
 
@@ -127,4 +129,11 @@ public abstract class Node extends SimulationObject implements
 		}
 	}
 
+	public int getKey() {
+		return key;
+	}
+
+	public void setKey(int key) {
+		this.key = key;
+	}
 }
