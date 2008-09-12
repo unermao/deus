@@ -58,20 +58,20 @@ import java.util.Properties;
 			app = (ChordPeer) Engine.getDefault().getNodes().get((random_node)%initialized_node);
 			getLogger().fine("nodo predecessore " + app.getId()  );
 			getLogger().fine("vecchio successore " + app.getSuccessor() );
-			app.setSuccessor(disconnection_peer.successor);
-			app.setFingerTableAtFirst(disconnection_peer.successor);
+			app.setSuccessor(disconnection_peer.getSuccessor());
+		//	app.setFingerTableAtFirst(disconnection_peer.getSuccessor());
 			}
 			else
 			{
 				app = (ChordPeer) Engine.getDefault().getNodes().get((random_node-1)%initialized_node);
 				getLogger().fine("nodo predecessore " + app.getId()  );
-				app.setSuccessor(disconnection_peer.successor);
-				app.setFingerTableAtFirst(disconnection_peer.successor);	
+				app.setSuccessor(disconnection_peer.getSuccessor());
+			//	app.setFingerTableAtFirst(disconnection_peer.getSuccessor());	
 			}
 			ChordPeer app2 = (ChordPeer) Engine.getDefault().getNodes().get((random_node+1)%initialized_node);
 			getLogger().fine("nodo successore " + app2.getId()  );
 			getLogger().fine("vecchio predecessore " + app2.getPredecessor()  );
-			app2.setPredecessor(disconnection_peer.predecessor);
+			app2.setPredecessor(disconnection_peer.getPredecessor());
 			
 			getLogger().fine("random " + random_node);
 			getLogger().fine("nodo disconnesso " + disconnection_peer.getId() );

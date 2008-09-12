@@ -31,32 +31,33 @@ public class ChordJoinEvent extends NodeEvent {
 
 			connectingNode.initFirstFingerTable();
 			connectingNode.setPredecessor(connectingNode);
+			getLogger().fine("Current: " + connectingNode.getId() +  "\tSuccessor: " + connectingNode.getSuccessor().getId() + "\tPredecessor; " + connectingNode.getPredecessor().getId());
 			return;
 		}
 		do {
 			gatewayNode = (ChordPeer) Engine.getDefault().getNodes().get(
 					Engine.getDefault().getSimulationRandom().nextInt(
 							Engine.getDefault().getNodes().size()));
+
 		} while (gatewayNode.equals(connectingNode));
 		
 		connectingNode.initFingerTable(gatewayNode);
-		
 		connectingNode.updateOthers();
 		
-		boolean isOk = true;
-		String id = null;
-		for(int i=0; i<ChordPeer.NUMBITS; i++) {
-			if(id != null && !id.equals(gatewayNode.getFingerTable()[i].getId())) {
-				isOk = false;
-				break;
-			}
-			id = gatewayNode.getFingerTable()[i].getId();
-		}
+//		boolean isOk = true;
+//		String id = null;
+//		for(int i=0; i<ChordPeer.NUMBITS; i++) {
+//			if(id != null && !id.equals(gatewayNode.getFingerTable()[i].getId())) {
+//				isOk = false;
+//				break;
+//			}
+//			id = gatewayNode.getFingerTable()[i].getId();
+//		}
+//		
+//		if(!isOk)
+//			System.out.println("Ci sono entry diverse");
 		
-		if(!isOk)
-			System.out.println("Ci sono entry diverse");
-		
-		getLogger().fine("Current: " + connectingNode.getId() + "\tGateway: " + gatewayNode.getId() + "\tSuccessor: " + connectingNode.getSuccessor().getId());
+		getLogger().fine("Current: " + connectingNode.getId() + "\tGateway: " + gatewayNode.getId() + "\tSuccessor: " + connectingNode.getSuccessor().getId() + "\tPredecessor; " + connectingNode.getPredecessor().getId());
 	}
 
 }

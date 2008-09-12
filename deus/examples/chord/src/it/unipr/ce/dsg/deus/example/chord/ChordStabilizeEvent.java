@@ -16,9 +16,12 @@ public class ChordStabilizeEvent extends NodeEvent {
 
 	@Override
 	public void run() throws RunException {
+		
 		ChordPeer currentNode = (ChordPeer) getAssociatedNode();
-		ChordPeer successorNode = currentNode.getSuccessor();
-
+		//System.out.println("prova " + currentNode);
+		//ystem.out.println("prova " + currentNode.getFingerTable()[0]);
+		ChordPeer successorNode = currentNode.getFingerTable()[0];
+		
 		if (successorNode == null)
 			return;
 
