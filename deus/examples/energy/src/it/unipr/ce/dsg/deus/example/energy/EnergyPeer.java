@@ -88,7 +88,7 @@ public class EnergyPeer extends Peer {
 				clone.c[i] = avgInitChromosome; 
 		clone.cost = random.nextInt(maxCost)+1; // Euro/kWh  
 		clone.queryTimeout = queryTimeout;
-		clone.maxPower = (random.nextInt(powerFactor)+1)*2; // kW
+		clone.maxPower = (random.nextInt(powerFactor)+1)*5; // kW
 		clone.power = clone.maxPower;
 		clone.q = 0;
 		clone.qh = 0;

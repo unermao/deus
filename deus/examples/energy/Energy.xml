@@ -35,7 +35,7 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="power" value="8" /> <!-- kW -->
+			<aut:param name="power" value="10" /> <!-- kW -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" /> 
 			<!-- thus each peer consumes maximum 8kW * 2.8h = 28kWh-->
@@ -62,7 +62,7 @@
 
 	<aut:node id="energyNode" handler="it.unipr.ce.dsg.deus.example.energy.EnergyPeer">
 		<aut:params>
-			<aut:param name="avgInitChromosome" value="1" />
+			<aut:param name="avgInitChromosome" value="5" />
 			<aut:param name="isRandomInit" value="false" />
 			<aut:param name="maxCost" value="5" />
 			<aut:param name="queryTimeout" value="2" /> <!-- 2 csec (non esagerare che se no la select non viene mai eseguita perche' gli eventi terminano prima) -->
@@ -71,7 +71,7 @@
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="powerFactor" />
-					<aut:param name="amount" value="5" /><!-- *2 kW -->
+					<aut:param name="amount" value="2" /><!-- * 5 kW -->
 				</aut:params>	
 			</aut:resource>
 		</aut:resources>
