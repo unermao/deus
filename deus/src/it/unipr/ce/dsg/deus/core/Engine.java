@@ -73,7 +73,7 @@ public final class Engine extends SimulationObject {
 	private ArrayList<Node> nodes = null;
 
 	private ArrayList<Integer> generatedKeys = null;
-	
+
 	/**
 	 * Class constructor that initializes the simulation engine according to the
 	 * parameters extracted from the configuration file.
@@ -95,12 +95,13 @@ public final class Engine extends SimulationObject {
 	 * 
 	 * @see it.unipr.ce.dsg.deus.core.AutomatorParser
 	 */
-	public Engine(float maxVirtualTime, int seed, Integer keySpaceSize, ArrayList<Node> configNodes,
-			ArrayList<Event> configEvents, ArrayList<Process> configProcesses,
+	public Engine(float maxVirtualTime, int seed, Integer keySpaceSize,
+			ArrayList<Node> configNodes, ArrayList<Event> configEvents,
+			ArrayList<Process> configProcesses,
 			ArrayList<Process> referencedProcesses) {
 		engine = this;
 		this.maxVirtualTime = maxVirtualTime;
-		if(keySpaceSize == null)
+		if (keySpaceSize == null)
 			this.keySpaceSize = Integer.MAX_VALUE;
 		else
 			this.keySpaceSize = keySpaceSize;
@@ -215,7 +216,8 @@ public final class Engine extends SimulationObject {
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
 			Event e = eventsList.removeFirst();
-			//System.out.println("virtualTime=" + virtualTime + " numOfQueueEvents=" + eventsList.size());
+			// System.out.println("virtualTime=" + virtualTime +
+			// " numOfQueueEvents=" + eventsList.size());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
@@ -258,16 +260,30 @@ public final class Engine extends SimulationObject {
 	}
 
 	/**
-	 * Generate a random key, in the given key space
+	 * Generate a random key without check for duplicates.
 	 * 
-	 * @return a random key
+	 * @return a random key.
 	 */
 	public int generateKey() {
+		return generateKey(false);
+	}
+
+	/**
+	 * Generate a random key by checking or not for duplicates.
+	 * 
+	 * @param checkDuplicates
+	 *            whether check or not for duplicates.
+	 * @return a random key.
+	 */
+	public int generateKey(boolean checkDuplicates) {
 		int result;
 		do {
-			result = keyRandom.nextInt(keySpaceSize); 
-		} while(generatedKeys.contains(Integer.valueOf(result)));
-		generatedKeys.add(result);
+			result = keyRandom.nextInt(keySpaceSize);
+		} while (generatedKeys.contains(Integer.valueOf(result))
+				&& checkDuplicates);
+
+		if (!generatedKeys.contains(Integer.valueOf(result)))
+			generatedKeys.add(result);
 		return result;
 	}
 
