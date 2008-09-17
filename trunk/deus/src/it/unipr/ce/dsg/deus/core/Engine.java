@@ -277,6 +277,10 @@ public final class Engine extends SimulationObject {
 	 */
 	public int generateKey(boolean checkDuplicates) {
 		int result;
+		
+		if(checkDuplicates && generatedKeys.size() == keySpaceSize)
+			throw new RuntimeException("The Engine is not able to generate new unique key. Increase key space size.");
+		
 		do {
 			result = keyRandom.nextInt(keySpaceSize);
 		} while (generatedKeys.contains(Integer.valueOf(result))
