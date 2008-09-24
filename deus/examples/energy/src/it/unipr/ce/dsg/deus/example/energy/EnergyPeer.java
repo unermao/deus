@@ -83,7 +83,7 @@ public class EnergyPeer extends Peer {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			if (isRandomInit)
-				clone.c[i] = random.nextInt(2*avgInitChromosome - 1) + 1;
+				clone.c[i] = random.nextInt(2*avgInitChromosome) + 1;
 			else
 				clone.c[i] = avgInitChromosome; 
 		clone.cost = random.nextInt(maxCost)+1; // Euro/kWh  
@@ -114,8 +114,8 @@ public class EnergyPeer extends Peer {
 	}
 
 	public double getFk() {
-		//return ((double) c[0])/(2*avgInitChromosome); 
-		return ((double) c[0])/(avgInitChromosome); // Gnutella!
+		return ((double) c[0])/(2*avgInitChromosome); 
+		//return ((double) c[0])/(avgInitChromosome); // Gnutella!
 	}
 
 	public int getTtlMax() {
