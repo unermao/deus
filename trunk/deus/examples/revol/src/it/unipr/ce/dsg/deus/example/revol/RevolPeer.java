@@ -86,7 +86,7 @@ public class RevolPeer extends Peer {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			if (isRandomInit)
-				clone.c[i] = random.nextInt(avgInitChromosome*2 - 1) + 1;
+				clone.c[i] = random.nextInt(avgInitChromosome*2) + 1;
 			else
 				clone.c[i] = avgInitChromosome; 
 
