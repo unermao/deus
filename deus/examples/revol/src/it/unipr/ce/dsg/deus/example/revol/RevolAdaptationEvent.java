@@ -48,15 +48,14 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine(node + " avg neighbor qhr = " + qhr);
 		
 		// F1
-		/*
 		if (qhr < 0.99) 	  
 			return 1 / A;
 		else
 			return A;
-		*/
+		
 		// F2 return (1-qhr)/(delta*delta*A) + qhr*A;
 		// F3 
-		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		//return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private double computeFitness(int[] c, double qhr) {
@@ -65,15 +64,15 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine("avg neighbor qhr = " + qhr);
 		
 		// F1
-		/*
+		
 		if (qhr < 0.99) 	  
 			return 1 / A;
 		else
 			return A;
-		*/
+		
 		// F2 return (1-qhr)/(delta*delta*A) + qhr*A;
 		// F3 
-		return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		//return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
 	}
 
 	private RevolPeer selectBestNeighbor() {
@@ -217,7 +216,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 
 		getLogger().fine("+++ select best neighbor");
 		RevolPeer bestNeighbor = selectBestNeighbor();
-		if (bestNeighbor.getId().equals(associatedNode.getId()))
+		if (bestNeighbor.getKey() == associatedNode.getKey())
 			return;
 
 		getLogger()
