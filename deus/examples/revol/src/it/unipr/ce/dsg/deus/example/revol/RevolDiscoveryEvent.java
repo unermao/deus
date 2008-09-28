@@ -426,7 +426,10 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			discEv.setAssociatedNode((RevolPeer) resInCache.getOwner());
 			discEv.setSenderNode(associatedRevolNode);
 			discEv.setResourceToSearchFor(res);
-			discEv.setTtl(ttl - 1);
+			if (ttl > 0)
+				discEv.setTtl(ttl - 1);
+			else 
+				discEv.setTtl(0);
 			Engine.getDefault().insertIntoEventsList(discEv);
 
 			return true;
