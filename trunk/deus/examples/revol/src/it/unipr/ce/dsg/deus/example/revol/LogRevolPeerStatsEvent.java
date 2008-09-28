@@ -93,7 +93,7 @@ public class LogRevolPeerStatsEvent extends Event {
 		double qhrSearchersVariance = (double) qhrSearchersBiased / (numSearchers - 1);
 
 		getLogger().info("num peers = " + numPeers + " ** num searchers = " + numSearchers);
-		getLogger().info("QHR (total): mean " + qhrMean + ", variance = " + qhrVariance);
+		getLogger().info("QHR (total): mean = " + qhrMean + ", variance = " + qhrVariance);
 		getLogger().info("QHR (searchers): mean = " + qhrSearchersMean + ", variance = " + qhrSearchersVariance);
 
 		double[] cMean = new double[3];
