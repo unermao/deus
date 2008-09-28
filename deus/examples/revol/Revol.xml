@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <!-- aut:reference id="adaptation" / -->  
+		    <aut:reference id="adaptation" />  
 		   	<aut:reference id="discovery" /> 
 		</aut:events>
 	</aut:event>
@@ -78,8 +78,8 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
-			<aut:param name="avgInitChromosome" value="5" />
-			<aut:param name="isRandomInit" value="false" />
+			<aut:param name="avgInitChromosome" value="3" />
+			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -197,11 +197,11 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000001" seed="567891234"> 
+	<aut:engine maxvt="10000001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<!-- aut:reference id="twospeedspoisson" / --> 
-			<aut:reference id="poisson1" />
+			<aut:reference id="twospeedspoisson" /> 
+			<!-- aut:reference id="poisson1" / -->
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
