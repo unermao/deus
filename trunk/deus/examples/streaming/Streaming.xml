@@ -8,14 +8,14 @@
 	<!-- *** EVENTS *** -->
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
-		schedulerListener="it.unipr.ce.dsg.deus.example.energy.EnergyBirthSchedulerListener" >
+		schedulerListener="it.unipr.ce.dsg.deus.example.streaming.StreamingBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		</aut:events>
 	</aut:event>
 	
 	<aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
-		schedulerListener="it.unipr.ce.dsg.deus.example.energy.EnergyBirthSchedulerListener" >
+		schedulerListener="it.unipr.ce.dsg.deus.example.streaming.StreamingBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		   	<aut:reference id="discovery" /> 
@@ -31,7 +31,7 @@
 		</aut:params>
 	</aut:event>
 	
- 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.energy.EnergyDiscoveryEvent" >
+ 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.streaming.StreamingDiscoveryEvent" >
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
@@ -43,7 +43,7 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.energy.EnergyFreeResourceEvent" >
+	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.streaming.StreamingFreeResourceEvent" >
 		<aut:logger level="INFO" />
 	</aut:event>
 	
@@ -55,12 +55,12 @@
 
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 	
-	<aut:event id="logEnergyPeerStats" handler="it.unipr.ce.dsg.deus.example.energy.LogEnergyPeerStatsEvent" />
+	<aut:event id="logEnergyPeerStats" handler="it.unipr.ce.dsg.deus.example.streaming.LogStreamingPeerStatsEvent" />
 	
 	
 	<!-- *** NODE SPECIES *** -->
 
-	<aut:node id="energyNode" handler="it.unipr.ce.dsg.deus.example.energy.EnergyPeer">
+	<aut:node id="streamingNode" handler="it.unipr.ce.dsg.deus.example.streaming.StreamingPeer">
 		<aut:params>
 			<aut:param name="avgInitChromosome" value="5" />
 			<aut:param name="isRandomInit" value="false" />
@@ -87,7 +87,7 @@
 			<aut:param name="vtThreshold" value="50000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="energyNode" />
+			<aut:reference id="streamingNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birth" />
@@ -99,7 +99,7 @@
 			<aut:param name="meanArrival" value="1000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="energyNode" />
+			<aut:reference id="streamingNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birth2" />
@@ -111,7 +111,7 @@
 			<aut:param name="meanArrival" value="5" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="energyNode" />
+			<aut:reference id="streamingNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
@@ -124,7 +124,7 @@
 			<aut:param name="meanArrival" value="1000000" /> 
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="energyNode" />
+			<aut:reference id="streamingyNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="disconnection" />
@@ -136,7 +136,7 @@
 			<aut:param name="meanArrival" value="2000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="energyNode" />
+			<aut:reference id="streamingNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="discovery" />
@@ -150,7 +150,7 @@
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" /> 
-			<aut:reference id="logEnergyPeerStats" /> 
+			<aut:reference id="logStreamingPeerStats" /> 
 		</aut:events>
 	</aut:process>
 
