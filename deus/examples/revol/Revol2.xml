@@ -12,7 +12,7 @@
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		    <aut:reference id="adaptation" /> 
-		   	<!-- aut:reference id="discoveryA" / -->
+		   	<aut:reference id="discoveryA" />
 		   	<aut:reference id="discoveryB" />
 		</aut:events>
 	</aut:event>
