@@ -42,6 +42,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	private float meanArrivalTriggeredDiscovery = 0;
 	private static final String MEAN_ARRIVAL_FREE_RESOURCE = "meanArrivalFreeResource";
 	private float meanArrivalFreeResource = 0;
+	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
+	private int numInitialConnections = 0;
 
 	private boolean isPropagation = false;
 	private RevolPeer senderNode = null;
@@ -75,6 +77,15 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			} catch (NumberFormatException ex) {
 				throw new InvalidParamsException(MEAN_ARRIVAL_FREE_RESOURCE
 						+ " must be a valid float value.");
+			}
+		}
+		if (params.containsKey(NUM_INITIAL_CONNECTIONS)) {
+			try {
+				numInitialConnections = Integer.parseInt(params
+						.getProperty(NUM_INITIAL_CONNECTIONS));
+			} catch (NumberFormatException ex) {
+				throw new InvalidParamsException(NUM_INITIAL_CONNECTIONS
+						+ " must be a valid int value.");
 			}
 		}
 	}
@@ -153,7 +164,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * 
 	 */
 	public void run() throws RunException {
-
+		
 		getLogger().fine("####### disc event: " + this);
 		getLogger().fine("####### disc event time: " + triggeringTime);
 
@@ -251,15 +262,13 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				getLogger().fine("no neighbors...");
 				try {
 					Properties connEvParams = new Properties();
-					// FIXME the re-connection event should be set according to the
-					// value of a param
 					MultipleRandomConnectionsEvent connEv = (MultipleRandomConnectionsEvent) new MultipleRandomConnectionsEvent(
 							"connection", connEvParams, null)
 							.createInstance(triggeringTime
 									+ expRandom(meanArrivalTriggeredDiscovery));
 					connEv.setOneShot(true);
 					connEv.setAssociatedNode(associatedRevolNode);
-					connEv.setNumInitialConnections(3); // FIXME should be a param!!
+					connEv.setNumInitialConnections(numInitialConnections); 
 					Engine.getDefault().insertIntoEventsList(connEv);
 				} catch (InvalidParamsException e) {
 					e.printStackTrace();

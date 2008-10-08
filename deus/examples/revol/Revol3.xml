@@ -5,15 +5,15 @@
 	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
 
 
-	<!-- *** EVENTS *** -->
+	<!-- *** EVENTS bug: try to exchange discoveryA and B and see the logs *** -->
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="adaptation" /> 
-		   	<!-- aut:reference id="discoveryA" / -->
-		   	<aut:reference id="discoveryB" />
+		    <!-- aut:reference id="adaptation" / -->
+		    <aut:reference id="discoveryB" />     
+		   	<aut:reference id="discoveryA" />
 		</aut:events>
 	</aut:event>
 
@@ -125,7 +125,7 @@
 
 	<aut:process id="twospeedspoisson" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="10" />
+			<aut:param name="firstMeanArrival" value="100" />
 			<aut:param name="secondMeanArrival" value="100000" />
 			<aut:param name="vtThreshold" value="50000" />
 		</aut:params>
@@ -173,34 +173,6 @@
 			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
-
-	<aut:process id="poisson4a" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
-		<aut:params>
-			<aut:param name="firstMeanArrival" value="50000000" />
-			<aut:param name="secondMeanArrival" value="500000" />
-			<aut:param name="vtThreshold" value="5000000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="discoveryA" />
-		</aut:events>
-	</aut:process>
-	
-	<aut:process id="poisson4b" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
-		<aut:params>
-			<aut:param name="firstMeanArrival" value="500000" />
-			<aut:param name="secondMeanArrival" value="50000000" />
-			<aut:param name="vtThreshold" value="5000000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="discoveryB" />
-		</aut:events>
-	</aut:process>
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
@@ -227,7 +199,7 @@
 	
 	<aut:process id="periodicA" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="5000" />
+			<aut:param name="period" value="50000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -239,20 +211,20 @@
 	
 	<aut:process id="periodicB" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="50000" />
+			<aut:param name="period" value="500000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="discoveryA" />
+			<aut:reference id="discoveryB" />
 		</aut:events>
 	</aut:process>
 
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000001" seed="456789123"> 
+	<aut:engine maxvt="300001" seed="123456789"> 
 		<aut:logger level="FINE" />
 		<aut:processes>
 			<aut:reference id="twospeedspoisson" />
