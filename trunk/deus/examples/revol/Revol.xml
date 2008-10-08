@@ -43,6 +43,7 @@
 			<aut:param name="disk" value="50000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
+			<aut:param name="numInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
 	
