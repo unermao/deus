@@ -216,12 +216,10 @@ public final class Engine extends SimulationObject {
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
 			Event e = eventsList.removeFirst();
-			// System.out.println("virtualTime=" + virtualTime +
-			// " numOfQueueEvents=" + eventsList.size());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
-					getLogger().fine("Running event " + e);
+					getLogger().fine("Running event " + e.getId());
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot())
