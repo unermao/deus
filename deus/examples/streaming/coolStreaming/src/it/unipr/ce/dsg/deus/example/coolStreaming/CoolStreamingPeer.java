@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.coolStreaming;
 
+
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
@@ -29,6 +30,7 @@ public class CoolStreamingPeer extends Peer {
 	private static final String BATTERY = "battery";
 	private static final String CONNECTION_TYPE = "connectionType";
 	private static final String UPLOAD_SPEED = "uploadSpeed";
+	private static final String DOWNLOAD_SPEED = "downloadSpeed";
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
 	private static final String VIDEO_RESOURCE_BUFFER_LIMIT = "videoResourceBufferLimit";
 	private static final String FITNESS_SORT = "fitnessSort"; 
@@ -42,6 +44,7 @@ public class CoolStreamingPeer extends Peer {
 	private int battery = 0;
 	private String connectionType = "";
 	private double uploadSpeed = 0.0;
+	private double downloadSpeed = 0.0;
 	private int videoResourceBufferLimit = 10;
 	private double fitnessValue = 0.0;
 	private boolean fitnessSort = false;
@@ -59,7 +62,7 @@ public class CoolStreamingPeer extends Peer {
 	
 	
 	private ArrayList<CoolStreamingPeer> servedPeers = new ArrayList<CoolStreamingPeer>();
-	private ArrayList<Integer> videoResource = new ArrayList<Integer>();
+	private ArrayList<CoolStreamingVideoChunk> videoResource = new ArrayList<CoolStreamingVideoChunk>();
 	
 	
 	public CoolStreamingPeer(String id, Properties params, ArrayList<Resource> resources)
@@ -78,6 +81,9 @@ public class CoolStreamingPeer extends Peer {
 		
 		if (params.containsKey(UPLOAD_SPEED))
 			uploadSpeed = Double.parseDouble(params.getProperty(UPLOAD_SPEED));
+	
+		if (params.containsKey(DOWNLOAD_SPEED))
+			downloadSpeed = Double.parseDouble(params.getProperty(DOWNLOAD_SPEED));	
 		
 		if (params.containsKey(VIDEO_RESOURCE_BUFFER_LIMIT))
 			videoResourceBufferLimit = Integer.parseInt(params.getProperty(VIDEO_RESOURCE_BUFFER_LIMIT));
@@ -114,7 +120,7 @@ public class CoolStreamingPeer extends Peer {
 		clone.servedPeers = new ArrayList<CoolStreamingPeer>();;
 		clone.serverNode = this.serverNode;
 		clone.sourceStreamingNode = this.sourceStreamingNode;
-		clone.videoResource = new ArrayList<Integer>(); ;
+		clone.videoResource = new ArrayList<CoolStreamingVideoChunk>(); ;
 		clone.videoResourceBufferLimit  = this.videoResourceBufferLimit;
 		
 		return clone;
@@ -171,7 +177,7 @@ public class CoolStreamingPeer extends Peer {
 				if(
 						( peer.getServerNode() != null || peer.getSourceStreamingNode() != null )
 						&& peer.isConnected() //Se il peer e' connesso
-						&& !this.neighbors.contains(peer) //Se non e' già tra i miei vicni
+						&& !this.neighbors.contains(peer) //Se non e' giÔøΩ tra i miei vicni
 						&& !peer.equals(this) //Se non sono io
 						&& !this.servedPeers.contains(peer) //Se non lo sto servendo
 				  )
@@ -199,7 +205,7 @@ public class CoolStreamingPeer extends Peer {
 				
 				if(
 						peer.isConnected() //Se il peer e' connesso
-						&& !this.neighbors.contains(peer) //Se non e' già tra i miei vicni
+						&& !this.neighbors.contains(peer) //Se non e' giÔøΩ tra i miei vicni
 						&& !peer.equals(this) //Se non sono io
 						&& !this.servedPeers.contains(peer) //Se non lo sto servendo
 				  )
@@ -349,7 +355,7 @@ public class CoolStreamingPeer extends Peer {
 			//Calcolo la nuova fitness
 			this.updateFitnessValue();
 			
-			//Se il protocollo che valuta la fitness è attivo
+			//Se il protocollo che valuta la fitness ÔøΩ attivo
 			if(this.isFitnessSort())
 			{
 				//Scollego i nodi che stavo servendo in modo che possano cercare altri fornitori
@@ -389,7 +395,7 @@ public class CoolStreamingPeer extends Peer {
 		
 	}
 	
-	public void addNewVideoResource(Integer newVideoRes){
+	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
 		
 		//System.out.println("Parents Size: " + this.neighbors.size());
 		
@@ -399,9 +405,10 @@ public class CoolStreamingPeer extends Peer {
 		if(this.videoResource.size() > videoResourceBufferLimit)
 			this.videoResource.remove(0);
 		
+		/*
 		for(int i = 0; i<this.getServedPeers().size(); i++ ){
 			this.getServedPeers().get(i).addNewVideoResource(newVideoRes);
-		}
+		}*/
 	}
 	
 	public void removeActiveConnection(){
@@ -429,7 +436,7 @@ public class CoolStreamingPeer extends Peer {
 		
 		//System.out.println("findFirstProviderNode");
 		
-		//Devo cercare un fornitore per il filmato soltanto se nn ho già un un nodo come fornitore e non mi sto rifornendo dal server centrale
+		//Devo cercare un fornitore per il filmato soltanto se nn ho giÔøΩ un un nodo come fornitore e non mi sto rifornendo dal server centrale
 		if( this.getSourceStreamingNode() == null && this.getServerNode() == null )
 		{
 			//Riordino la lista dei vicini in base alla loro fitness  
@@ -441,7 +448,7 @@ public class CoolStreamingPeer extends Peer {
 				
 				CoolStreamingPeer appSourceStreamingNode = (CoolStreamingPeer)this.getNeighbors().get(i);
 				
-				//Mi collego solo, se ha un fornitore se ha le risorse video e se ha la possibilità di accettare le connessioni e se non è tra la lista di quelli che sto fornendo
+				//Mi collego solo, se ha un fornitore se ha le risorse video e se ha la possibilitÔøΩ di accettare le connessioni e se non ÔøΩ tra la lista di quelli che sto fornendo
 				if( 	(appSourceStreamingNode.getServerNode() != null || appSourceStreamingNode.getSourceStreamingNode() != null)
 						&& appSourceStreamingNode.getVideoResource().size() > 0 
 						&& (appSourceStreamingNode.getMaxAcceptedConnection() - appSourceStreamingNode.getActiveConnection())>0){
@@ -459,7 +466,7 @@ public class CoolStreamingPeer extends Peer {
 				
 			}
 			
-			//Se non trovo nessun nodo da cui fornirmi, e non sono già connesso al nodo centrale mi collego al server centrale
+			//Se non trovo nessun nodo da cui fornirmi, e non sono giÔøΩ connesso al nodo centrale mi collego al server centrale
 			if( this.getSourceStreamingNode() == null && this.getServerNode() == null)
 			{
 					this.setServerNode((CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0));
@@ -477,7 +484,7 @@ public class CoolStreamingPeer extends Peer {
 	
 	public boolean findProviderNodeFromLastSegment() {
 		
-		//Devo cercare un fornitore per il filmato soltanto se nn ho già un un nodo come fornitore e non mi sto rifornendo dal server centrale
+		//Devo cercare un fornitore per il filmato soltanto se nn ho giÔøΩ un un nodo come fornitore e non mi sto rifornendo dal server centrale
 		if( this.getSourceStreamingNode() == null && this.getServerNode() == null )
 		{
 			//Riordino la lista dei vicini in base alla loro fitness  
@@ -486,12 +493,12 @@ public class CoolStreamingPeer extends Peer {
 			
 			if(this.getVideoResource().size() > 0)
 			{
-				//Cerco all'interno della mia lista di vicini se trovo un fornitore partendo dal segmento che già posseggo
+				//Cerco all'interno della mia lista di vicini se trovo un fornitore partendo dal segmento che gi√† posseggo
 				for(int i = 0 ; i < this.getNeighbors().size(); i++){
 					
 					CoolStreamingPeer appSourceStreamingNode = (CoolStreamingPeer)this.getNeighbors().get(i);
 					
-					//Mi collego solo, se ha un fornitore, se ha le risorse video e se ha la possibilità di accettare le connessioni e se non è tra la lista di quelli che sto fornendo
+					//Mi collego solo, se ha un fornitore, se ha le risorse video e se ha la possibilitÔøΩ di accettare le connessioni e se non ÔøΩ tra la lista di quelli che sto fornendo
 					if(     (appSourceStreamingNode.getServerNode() != null || appSourceStreamingNode.getSourceStreamingNode() != null)	
 							&& appSourceStreamingNode.isConnected()
 							&& !this.servedPeers.contains(appSourceStreamingNode) 
@@ -552,12 +559,12 @@ public class CoolStreamingPeer extends Peer {
 		{
 			CoolStreamingPeer peerOriginal = (CoolStreamingPeer)this.neighbors.get(i);
 			
-			//La lista è vuota aggiungo direttamente l'elemento
+			//La lista ÔøΩ vuota aggiungo direttamente l'elemento
 			if(appList.size() == 0)
 				appList.add(peerOriginal);
 			else
 			{
-				//Cerco se c'è un Peer con fitness minore
+				//Cerco se c'ÔøΩ un Peer con fitness minore
 				for(int j = 0 ; j < appList.size(); j++)
 				{
 					
@@ -658,7 +665,7 @@ public class CoolStreamingPeer extends Peer {
 		return activeConnection;
 	}
 
-	public ArrayList<Integer> getVideoResource() {
+	public ArrayList<CoolStreamingVideoChunk> getVideoResource() {
 		return videoResource;
 	}
 
@@ -700,6 +707,14 @@ public class CoolStreamingPeer extends Peer {
 
 	public boolean isFitnessSort() {
 		return fitnessSort;
+	}
+
+	public double getDownloadSpeed() {
+		return downloadSpeed;
+	}
+
+	public void setDownloadSpeed(double downloadSpeed) {
+		this.downloadSpeed = downloadSpeed;
 	}
 	
 }

@@ -22,7 +22,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 
 	private static final String MEAN_ARRIVAL_TRIGGERED_DISCOVERY = "meanArrivalTriggeredDiscovery";
 	private float meanArrivalTriggeredDiscovery = 0;
-	private int resourceValue = 0;
+	private CoolStreamingVideoChunk videoChunk = null;
 	
 	public CoolStreamingPeerNewVideoResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -47,7 +47,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 	public Object clone() {
 		
 		CoolStreamingPeerNewVideoResourceEvent clone = (CoolStreamingPeerNewVideoResourceEvent) super.clone();
-		clone.resourceValue = this.resourceValue;
+		clone.videoChunk = this.videoChunk;
 		return clone;
 	}
 
@@ -60,41 +60,54 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		//System.out.println("New Peer Video Resource Event" + " (" + associatedStreamingNode.getId() + ")" +" : " + associatedStreamingNode.getServedPeers().size() + " (" + Engine.getDefault().getNodes().size() + " )");
 		
 		//Aggiungo la nuova porzione video al nodo
-		associatedStreamingNode.addNewVideoResource(resourceValue);
+		associatedStreamingNode.addNewVideoResource(videoChunk);
 		
-		/*
+		
+	
+		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
-		{
+		{		
+
+		        time = triggeringTime + nextChunkArrivalTime(associatedStreamingNode.getUploadSpeed(),associatedStreamingNode.getServedPeers().get(index).getDownloadSpeed(),videoChunk);
 			
-			System.out.println("RICEVO : " + resourceValue);
-			
-			if(!associatedStreamingNode.equals( associatedStreamingNode.getServedPeers().get(index)))
-			{
-				//System.out.println("Sono: " + associatedStreamingNode.getKey() + " Aggiorno: " + associatedStreamingNode.getServedPeers().get(index).getKey());
-			
-				StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,triggeringTime + expRandom(meanArrivalTriggeredDiscovery));
+				CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
 				newPeerResEvent.setOneShot(true);
 				newPeerResEvent.setAssociatedNode(associatedStreamingNode.getServedPeers().get(index));
+				newPeerResEvent.setResourceValue(videoChunk);
 				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
-			}	
 		}
-		*/
+		
+		
 		getLogger().fine("end new node video resource ##");
 	}
 	
-	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) * meanValue);
-		return myRandom;
+	/**
+	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
+	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
+	 * @param providerUploadSpeed
+	 * @param clientDownloadSpeed
+	 * @return
+	 */
+	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
+		
+		double time = 0.0;
+		double minSpeed = Math.min(providerUploadSpeed, clientDownloadSpeed);
+		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
+		
+		time = (chunkMbitSize / minSpeed)*1000.0;
+		
+		System.out.println("New Chunk Time :" + time);
+		
+		return (float)time;
 	}
 
-	public int getResourceValue() {
-		return resourceValue;
+	public CoolStreamingVideoChunk getResourceValue() {
+		return videoChunk;
 	}
 
-	public void setResourceValue(int resourceValue) {
-		this.resourceValue = resourceValue;
+	public void setResourceValue(CoolStreamingVideoChunk newResource) {
+		this.videoChunk = newResource;
 	}
 
 }
