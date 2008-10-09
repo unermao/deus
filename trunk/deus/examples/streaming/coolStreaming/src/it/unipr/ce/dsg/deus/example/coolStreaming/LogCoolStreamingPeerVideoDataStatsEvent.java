@@ -52,7 +52,7 @@ public class LogCoolStreamingPeerVideoDataStatsEvent extends Event {
 				
 				
 				for(int j = 0 ; j < peer.getVideoResource().size(); j++)
-					listaRisorse = listaRisorse + " " + peer.getVideoResource().get(j); 
+					listaRisorse = listaRisorse + " " + peer.getVideoResource().get(j).getChunkIndex(); 
 				
 				if(peer.getId().equals("pcNode"))
 					getLogger().info("Nodo ("+ peer.getId() +"):       " + listaRisorse);
