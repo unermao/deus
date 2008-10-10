@@ -79,7 +79,7 @@ public class Streaming3GTo2GEvent extends NodeEvent {
 		
 		getLogger().fine("Sono : "+ associatedStreamingNode.getKey()+ " - " + associatedStreamingNode.getConnectionType() + " - " + associatedStreamingNode.getId());	
 		
-		associatedStreamingNode.change3GTo2G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
+		associatedStreamingNode.change2GTo3G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
 		
 		getLogger().fine("end new 3G --> 2G Event ##");
 	}

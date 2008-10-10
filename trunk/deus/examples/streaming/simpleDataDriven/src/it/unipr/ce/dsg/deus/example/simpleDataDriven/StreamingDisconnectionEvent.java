@@ -45,7 +45,7 @@ public class StreamingDisconnectionEvent extends NodeEvent {
 		
 		if(associatedStreamingNode.isConnected())
 			//Disconnetto il nodo
-			associatedStreamingNode.disconnection();
+			associatedStreamingNode.disconnection(this.triggeringTime);
 		
 		
 		getLogger().fine("end disconnection event ##");

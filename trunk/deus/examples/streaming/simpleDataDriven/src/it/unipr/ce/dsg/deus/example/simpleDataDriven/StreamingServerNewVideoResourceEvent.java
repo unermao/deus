@@ -57,30 +57,57 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 		
 		ServerPeer serverNode = (ServerPeer)Engine.getDefault().getNodes().get(0);
 		
-		//System.out.println("New SERVER Video Resource Event" + " (" + serverNode.getId() + ")" +" : " + serverNode.getServedPeers().size() + " (" + Engine.getDefault().getNodes().size() + " )");
+		
+		VideoChunk newResource = null;
+		
+		//Creo la nuova risorsa video
+	    if(serverNode.getVideoResource().size() == 0)
+	    	newResource = new VideoChunk(0,serverNode.getChunkSize());
+	    else 
+	    	newResource = new VideoChunk(serverNode.getLastChunk().getChunkIndex()+1,serverNode.getChunkSize());
+		
+    	//Aggiungo la nuova porzione video al Server
+	    serverNode.addNewVideoResource(newResource);
 		
 		
-		int resourceValue = 1;
 		
-		//Aggiungo la nuova porzione video al Server
-		if(serverNode.getVideoResource().size() != 0)
-			resourceValue = serverNode.getVideoResource().get(serverNode.getVideoResource().size() -1) + 1;
-		
-		serverNode.addNewVideoResource(resourceValue);
-		
-		/*
-		float time = triggeringTime + expRandom(meanArrivalTriggeredDiscovery)
+		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++)
-		{			
-				StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,triggeringTime + expRandom(meanArrivalTriggeredDiscovery));
+		{		
+
+		        time = triggeringTime + nextChunkArrivalTime(serverNode.getUploadSpeed(),serverNode.getServedPeers().get(index).getDownloadSpeed(),newResource);
+			
+				StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,time);
 				newPeerResEvent.setOneShot(true);
 				newPeerResEvent.setAssociatedNode(serverNode.getServedPeers().get(index));
-				newPeerResEvent.setResourceValue(resourceValue);
+				newPeerResEvent.setResourceValue(newResource);
 				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
 		}
-		*/
+		
 		getLogger().fine("end new video resource ##");
+	}
+	
+	/**
+	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
+	 * in base alla velocita' di Upload del fornitore e quella di Downalod del cliente.
+	 * @param providerUploadSpeed
+	 * @param clientDownloadSpeed
+	 * @return
+	 */
+	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, VideoChunk chunk) {
+		
+		ServerPeer serverNode = (ServerPeer)Engine.getDefault().getNodes().get(0);
+		double time = 0.0;
+		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
+		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
+		time = (chunkMbitSize / minSpeed);
+		
+		float floatTime = expRandom((float)time);
+		
+		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
+		
+		return floatTime*100;
 	}
 	
 	private float expRandom(float meanValue) {
@@ -88,5 +115,5 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 				.getSimulationRandom().nextFloat()) * meanValue);
 		return myRandom;
 	}
-
+	
 }
