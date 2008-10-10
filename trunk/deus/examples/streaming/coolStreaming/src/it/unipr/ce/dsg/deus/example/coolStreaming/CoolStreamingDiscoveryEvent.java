@@ -49,7 +49,7 @@ public class CoolStreamingDiscoveryEvent extends NodeEvent {
 		
 		
 		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
-		associatedStreamingNode.findFirstProviderNode();
+		associatedStreamingNode.findFirstProviderNode(this.triggeringTime);
 		
 		getLogger().fine("Ho trovato come nodo( Nodo - Server ): " + associatedStreamingNode.getSourceStreamingNode() + " - " +(associatedStreamingNode.getServerNode()) );
 		getLogger().fine("########################################");

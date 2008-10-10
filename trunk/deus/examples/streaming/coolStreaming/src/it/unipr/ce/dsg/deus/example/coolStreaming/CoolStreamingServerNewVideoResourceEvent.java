@@ -98,12 +98,13 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 	 */
 	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
 		
+		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
 		double time = 0.0;
-		double minSpeed = Math.min(providerUploadSpeed, clientDownloadSpeed);
+		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
 		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
-		time = (chunkMbitSize / minSpeed)*1000.0;
+		time = (chunkMbitSize / minSpeed)*100.0;
 		
-		System.out.println("Server New Chunk Time :" + time);
+		//System.out.println("Server New Chunk Time :" + time);
 		
 		return (float)time;
 	}

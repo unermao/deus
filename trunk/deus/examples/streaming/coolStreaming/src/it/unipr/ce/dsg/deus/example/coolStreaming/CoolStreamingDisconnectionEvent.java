@@ -45,7 +45,7 @@ public class CoolStreamingDisconnectionEvent extends NodeEvent {
 		
 		if(associatedStreamingNode.isConnected())
 			//Disconnetto il nodo
-			associatedStreamingNode.disconnection();
+			associatedStreamingNode.disconnection(triggeringTime);
 		
 		
 		getLogger().fine("end disconnection event ##");

@@ -200,16 +200,25 @@ public class CoolStreamingPeer extends Peer {
 			for(int index = 0; index < this.neighbors.size() ; index++)
 			{
 	
-				
 				CoolStreamingPeer peer = (CoolStreamingPeer)this.neighbors.get(index);
 				
-				if(
-						peer.isConnected() //Se il peer e' connesso
-						&& !this.neighbors.contains(peer) //Se non e' gi� tra i miei vicni
-						&& !peer.equals(this) //Se non sono io
-						&& !this.servedPeers.contains(peer) //Se non lo sto servendo
-				  )
-					this.addNeighbor(peer);
+				for(int j = 0; j < peer.getNeighbors().size(); j++ ){
+				
+					CoolStreamingPeer peerApp = (CoolStreamingPeer)peer.neighbors.get(j);
+					
+					if(
+							peerApp.isConnected() //Se il peer e' connesso
+							&& !this.neighbors.contains(peerApp) //Se non e' gi� tra i miei vicni
+							&& !peerApp.equals(this) //Se non sono io
+							&& !this.servedPeers.contains(peerApp) //Se non lo sto servendo
+					  )
+						this.addNeighbor(peerApp);
+					
+					//Se ho raggiunto il limite massimo esco
+					if(this.neighbors.size() == this.maxPartnersNumber)
+						break;
+				
+				}
 				
 				//Se ho raggiunto il limite massimo esco
 				if(this.neighbors.size() == this.maxPartnersNumber)
@@ -291,7 +300,7 @@ public class CoolStreamingPeer extends Peer {
 		
 	}
 	
-	public void disconnection(){
+	public void disconnection(float triggeringTime){
 		
 		//Imposto il nodo come disconnesso
 		this.setConnected(false);
@@ -317,7 +326,7 @@ public class CoolStreamingPeer extends Peer {
 		for( int i = 0 ; i < this.servedPeers.size(); i++){
 		
 			//Lancio l'evento per l'aggiornamento dei fornitori per quel nodo
-			this.servedPeers.get(i).findProviderNodeFromLastSegment();	
+			this.servedPeers.get(i).findProviderNodeFromLastSegment(triggeringTime);	
 			//this.servedPeers.get(i).setServerNode((ServerPeer)Engine.getDefault().getNodes().get(0));
 		}
 		
@@ -343,7 +352,7 @@ public class CoolStreamingPeer extends Peer {
 	}
 	
 	//Metodo utilizzato per simulare il passaggio da una rete 3G ad una 2G
-	public void change3GTo2G( String connType, double uploadSpeed, int maxAcceptedConnection ){
+	public void change3GTo2G( String connType, double uploadSpeed, int maxAcceptedConnection, float triggeringTime ){
 		
 		//Verifico il parametro connType
 		if( connType.equals(G2) ){
@@ -363,7 +372,7 @@ public class CoolStreamingPeer extends Peer {
 					this.servedPeers.get(i).setSourceStreamingNode(null);
 					
 					//Lancio l'evento per l'aggiornamento dei fornitori per quel nodo
-					this.servedPeers.get(i).findProviderNodeFromLastSegment();
+					this.servedPeers.get(i).findProviderNodeFromLastSegment(triggeringTime);
 				}
 				
 				//Svuoto la lista dei nodi che stavo servendo
@@ -432,7 +441,7 @@ public class CoolStreamingPeer extends Peer {
 			this.getServedPeers().add(peer);
 	}
 	
-	public void findFirstProviderNode(){
+	public void findFirstProviderNode(float triggeringTime){
 		
 		//System.out.println("findFirstProviderNode");
 		
@@ -461,6 +470,9 @@ public class CoolStreamingPeer extends Peer {
 					//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 					this.getSourceStreamingNode().addServedPeer(this);
 					
+					//Chiamiamo la funzione per avere segmenti mancanti
+					this.getBufferNeighbor(appSourceStreamingNode,0, triggeringTime);
+					
 					break;
 				}
 				
@@ -482,7 +494,7 @@ public class CoolStreamingPeer extends Peer {
 		
 	}
 	
-	public boolean findProviderNodeFromLastSegment() {
+	public boolean findProviderNodeFromLastSegment(float triggeringTime) {
 		
 		//Devo cercare un fornitore per il filmato soltanto se nn ho gi� un un nodo come fornitore e non mi sto rifornendo dal server centrale
 		if( this.getSourceStreamingNode() == null && this.getServerNode() == null )
@@ -493,47 +505,79 @@ public class CoolStreamingPeer extends Peer {
 			
 			if(this.getVideoResource().size() > 0)
 			{
-				//Cerco all'interno della mia lista di vicini se trovo un fornitore partendo dal segmento che già posseggo
-				for(int i = 0 ; i < this.getNeighbors().size(); i++){
+				for( int neededVideoIndex = this.getVideoResource().size()-1; neededVideoIndex >= 0; neededVideoIndex-- )
+				{
 					
-					CoolStreamingPeer appSourceStreamingNode = (CoolStreamingPeer)this.getNeighbors().get(i);
+					//Prendo l'ultimo chunk dal mio vettore
+					//CoolStreamingVideoChunk myLastChunk = this.getVideoResource().get(this.getVideoResource().size()-1);
+					//CoolStreamingVideoChunk neededChunk = new CoolStreamingVideoChunk(myLastChunk.getChunkIndex()+1, myLastChunk.getChunkSize());
 					
-					//Mi collego solo, se ha un fornitore, se ha le risorse video e se ha la possibilit� di accettare le connessioni e se non � tra la lista di quelli che sto fornendo
-					if(     (appSourceStreamingNode.getServerNode() != null || appSourceStreamingNode.getSourceStreamingNode() != null)	
-							&& appSourceStreamingNode.isConnected()
-							&& !this.servedPeers.contains(appSourceStreamingNode) 
-							&& (appSourceStreamingNode.getMaxAcceptedConnection() - appSourceStreamingNode.getActiveConnection())>0)
-					{
+					CoolStreamingVideoChunk neededChunk = this.getVideoResource().get(neededVideoIndex);
+					
+					//Cerco all'interno della mia lista di vicini se trovo un fornitore partendo dal segmento che già posseggo
+					for(int i = 0 ; i < this.getNeighbors().size(); i++){
 						
-						for(int j = 0; j < appSourceStreamingNode.getVideoResource().size() ;j++)
-						{
-							for( int myVideoIndex = 0 ; myVideoIndex < this.getVideoResource().size(); myVideoIndex++){
+						CoolStreamingPeer appSourceStreamingNode = (CoolStreamingPeer)this.getNeighbors().get(i);
+						
 
-								if(appSourceStreamingNode.getVideoResource().get(j) == this.getVideoResource().get(myVideoIndex))
-								{
+						
+						//Mi collego solo, se ha un fornitore, se ha le risorse video e se ha la possibilit� di accettare le connessioni e se non � tra la lista di quelli che sto fornendo
+						if(     (appSourceStreamingNode.getServerNode() != null || appSourceStreamingNode.getSourceStreamingNode() != null)	
+								&& appSourceStreamingNode.isConnected()
+								&& !this.servedPeers.contains(appSourceStreamingNode) 
+								&& (appSourceStreamingNode.getMaxAcceptedConnection() - appSourceStreamingNode.getActiveConnection())>0
+							    && appSourceStreamingNode.getVideoResource().contains(neededChunk)
+						   )
+						{
+							
+							this.setSourceStreamingNode(appSourceStreamingNode);
+							
+							//Imposto la connessione attiva con il nodo fornitore trovato
+							appSourceStreamingNode.addActiveConnection();
+						
+							//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
+							appSourceStreamingNode.addServedPeer(this);
+							
+							//Chiamiamo la funzione per avere segmenti mancanti
+							this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
+							
+							return true;
+							
+						/*	for(int j = 0; j < appSourceStreamingNode.getVideoResource().size() ;j++)
+							{
+								for( int myVideoIndex = 0 ; myVideoIndex < this.getVideoResource().size(); myVideoIndex++){
+
+									if(appSourceStreamingNode.getVideoResource().get(j) == this.getVideoResource().get(myVideoIndex))
+									{
+										
+										//System.out.println("Sono: " + this.getKey() + " Ho trovato: " + appSourceStreamingNode.getKey());
+										
+										this.setSourceStreamingNode(appSourceStreamingNode);
 									
-									//System.out.println("Sono: " + this.getKey() + " Ho trovato: " + appSourceStreamingNode.getKey());
+										//Imposto la connessione attiva con il nodo fornitore trovato
+										appSourceStreamingNode.addActiveConnection();
 									
-									this.setSourceStreamingNode(appSourceStreamingNode);
-								
-									//Imposto la connessione attiva con il nodo fornitore trovato
-									appSourceStreamingNode.addActiveConnection();
-								
-									//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
-									appSourceStreamingNode.addServedPeer(this);
-								
-									return true;
+										//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
+										appSourceStreamingNode.addServedPeer(this);
+									
+										//Chiamiamo la funzione per avere segmenti mancanti
+										this.getBufferNeighbor(appSourceStreamingNode,j, triggeringTime);
+										
+										return true;
+									}
 								}
 							}
+							*/
 						}
-					}
+				}
+				}
 			}
 			
-		}
 			
 			//Se non trovo nessun nodo da cui fornirmi per una certa porzione rilancio la funzione base di ricerca fornitore
 			if( this.getSourceStreamingNode() == null && this.getServerNode() == null)
 			{		
+				
 				this.setServerNode((CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0));
 			
 				//Imposto la connessione attiva con il server centrale
@@ -541,8 +585,8 @@ public class CoolStreamingPeer extends Peer {
 			
 				//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 				this.getServerNode().addServedPeer(this);
-				
-			}	
+			    	
+			}
 		}
 		
 		return true;
@@ -591,6 +635,79 @@ public class CoolStreamingPeer extends Peer {
 		getLogger().fine("Num Vicini: " + this.neighbors.size());	
 		
 		getLogger().fine("#####################################\n");
+	}
+	
+	/**
+	 * Ricavo dal fornitore i segmenti video che mancano.
+	 * Il triggerTime e' utilizzato per determinare l'istante di invio di tali porzioni video.
+	 * 
+	 * L'indice j specifica nell'array del fornitore da quale pacchetto iniziare a ricevere i segmenti.
+	 * 
+	 * @param appSourceStreamingNode
+	 * @param j
+	 * @param triggeringTime
+	 */
+	public void getBufferNeighbor(CoolStreamingPeer providerNode, int chunkIndex, float triggeringTime)
+	{
+
+		int startIndex = 0;
+		
+		// Se mia lista non e' vuota mi faccio inviare gli elementi 
+		//dal fornitore a partire dall'indice specificato come parametro che non posseggo
+		if(this.getVideoResource().size() != 0)
+			startIndex = chunkIndex;
+		 
+		for(int index = startIndex ; index < providerNode.getVideoResource().size(); index++)
+			if(!this.getVideoResource().contains(providerNode.getVideoResource().get(index)))
+				providerNode.sendVideoChunk(this, providerNode.getVideoResource().get(index), triggeringTime);
+		
+	}
+
+	/**
+	 * Invia al nodo client di destinazione, la porzione video newResource partendo dal tempo 
+	 * triggerTime
+	 * 
+	 * @param clientNode
+	 * @param newResource
+	 * @param triggeringTime
+	 */
+	public void sendVideoChunk(CoolStreamingPeer clientNode,CoolStreamingVideoChunk newResource, float triggeringTime){
+		
+		float time = triggeringTime + nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
+			
+		CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
+		newPeerResEvent.setOneShot(true);
+		newPeerResEvent.setAssociatedNode(clientNode);
+		newPeerResEvent.setResourceValue(newResource);
+		Engine.getDefault().insertIntoEventsList(newPeerResEvent);
+	}
+	
+	/**
+	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
+	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
+	 * @param providerUploadSpeed
+	 * @param clientDownloadSpeed
+	 * @return
+	 */
+	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
+		
+		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+		double time = 0.0;
+		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
+		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
+		time = (chunkMbitSize / minSpeed);
+		
+		float floatTime = expRandom((float)time);
+		
+		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
+		
+		return floatTime*100;
+	}
+	
+	private float expRandom(float meanValue) {
+		float myRandom = (float) (-Math.log(Engine.getDefault()
+				.getSimulationRandom().nextFloat()) * meanValue);
+		return myRandom;
 	}
 	
 	public void setUploadSpeed(double uploadSpeed) {
