@@ -22,7 +22,7 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 
 	private static final String MEAN_ARRIVAL_TRIGGERED_DISCOVERY = "meanArrivalTriggeredDiscovery";
 	private float meanArrivalTriggeredDiscovery = 0;
-	private int resourceValue = 0;
+	private VideoChunk videoChunk = null;
 	
 	public StreamingPeerNewVideoResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -47,7 +47,7 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 	public Object clone() {
 		
 		StreamingPeerNewVideoResourceEvent clone = (StreamingPeerNewVideoResourceEvent) super.clone();
-		clone.resourceValue = this.resourceValue;
+		clone.videoChunk = this.videoChunk;
 		return clone;
 	}
 
@@ -56,30 +56,14 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		getLogger().fine("## new node video resource");
 	
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
-		
-		//System.out.println("New Peer Video Resource Event" + " (" + associatedStreamingNode.getId() + ")" +" : " + associatedStreamingNode.getServedPeers().size() + " (" + Engine.getDefault().getNodes().size() + " )");
-		
+	
 		//Aggiungo la nuova porzione video al nodo
-		associatedStreamingNode.addNewVideoResource(resourceValue);
+		associatedStreamingNode.addNewVideoResource(videoChunk);
 		
-		/*
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
-		{
+			   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), videoChunk, this.triggeringTime);
 			
-			System.out.println("RICEVO : " + resourceValue);
-			
-			if(!associatedStreamingNode.equals( associatedStreamingNode.getServedPeers().get(index)))
-			{
-				//System.out.println("Sono: " + associatedStreamingNode.getKey() + " Aggiorno: " + associatedStreamingNode.getServedPeers().get(index).getKey());
-			
-				StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,triggeringTime + expRandom(meanArrivalTriggeredDiscovery));
-				newPeerResEvent.setOneShot(true);
-				newPeerResEvent.setAssociatedNode(associatedStreamingNode.getServedPeers().get(index));
-				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
-			}	
-		}
-		*/
 		getLogger().fine("end new node video resource ##");
 	}
 	
@@ -89,12 +73,12 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		return myRandom;
 	}
 
-	public int getResourceValue() {
-		return resourceValue;
+	public VideoChunk getResourceValue() {
+		return videoChunk;
 	}
 
-	public void setResourceValue(int resourceValue) {
-		this.resourceValue = resourceValue;
+	public void setResourceValue(VideoChunk resourceValue) {
+		this.videoChunk = resourceValue;
 	}
 
 }

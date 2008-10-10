@@ -26,12 +26,18 @@ import java.util.Properties;
 public class ServerPeer extends Peer {
 
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
+	private static final String UPLOAD_SPEED = "uploadSpeed";
+	private static final String DOWNLOAD_SPEED = "downloadSpeed";
+	private static final String CHUNK_SIZE = "chunkSize";
 	
 	private int maxAcceptedConnection = 0;
 	private int activeConnection = 0;
+	private int chunkSize = 0;	
+	private double uploadSpeed = 0.0;
+	private double downloadSpeed = 0.0;
 	
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
-	private ArrayList<Integer> videoResource = new ArrayList<Integer>();
+	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
 	
 	public ServerPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -40,6 +46,16 @@ public class ServerPeer extends Peer {
 	}
 
 	public void initialize() throws InvalidParamsException {
+		
+		if (params.containsKey(CHUNK_SIZE))
+			chunkSize = Integer.parseInt(params.getProperty(CHUNK_SIZE));
+		
+		if (params.containsKey(UPLOAD_SPEED))
+			uploadSpeed = Double.parseDouble(params.getProperty(UPLOAD_SPEED));
+	
+		if (params.containsKey(DOWNLOAD_SPEED))
+			downloadSpeed = Double.parseDouble(params.getProperty(DOWNLOAD_SPEED));	
+		
 		
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
@@ -50,6 +66,8 @@ public class ServerPeer extends Peer {
 		}	
 		
 	}
+	
+	
 	
 	public Object clone() {
 		
@@ -63,14 +81,9 @@ public class ServerPeer extends Peer {
 		return clone;
 	}
 
-	public void addNewVideoResource(Integer newVideoRes){
+	public void addNewVideoResource(VideoChunk newVideoRes){
 		
 		this.videoResource.add(newVideoRes);
-		
-		
-		for(int i = 0; i<this.getServedPeers().size(); i++ ){
-			this.getServedPeers().get(i).addNewVideoResource(newVideoRes);
-		}
 
 	}
 	
@@ -93,6 +106,10 @@ public class ServerPeer extends Peer {
 	public void addServedPeer(StreamingPeer peer){
 		if(!this.getServedPeers().contains(peer) && !this.equals(peer))
 			this.getServedPeers().add(peer);
+	}
+	
+	public VideoChunk getLastChunk() {
+		return this.getVideoResource().get(this.getVideoResource().size()-1);
 	}
 	
 	public void setActiveConnection(int activeConnection) {
@@ -120,12 +137,40 @@ public class ServerPeer extends Peer {
 		this.servedPeers = servedPeers;
 	}
 
-	public ArrayList<Integer> getVideoResource() {
+	public ArrayList<VideoChunk> getVideoResource() {
 		return videoResource;
 	}
 
-	public void setVideoResource(ArrayList<Integer> videoResource) {
+	public void setVideoResource(ArrayList<VideoChunk> videoResource) {
 		this.videoResource = videoResource;
+	}
+
+	public int getChunkSize() {
+		return chunkSize;
+	}
+
+	public void setChunkSize(int chunkSize) {
+		this.chunkSize = chunkSize;
+	}
+
+	public double getUploadSpeed() {
+		return uploadSpeed;
+	}
+
+	public void setUploadSpeed(double uploadSpeed) {
+		this.uploadSpeed = uploadSpeed;
+	}
+
+	public double getDownloadSpeed() {
+		return downloadSpeed;
+	}
+
+	public void setDownloadSpeed(double downloadSpeed) {
+		this.downloadSpeed = downloadSpeed;
+	}
+
+	public void setMaxAcceptedConnection(int maxAcceptedConnection) {
+		this.maxAcceptedConnection = maxAcceptedConnection;
 	}
 	
 }
