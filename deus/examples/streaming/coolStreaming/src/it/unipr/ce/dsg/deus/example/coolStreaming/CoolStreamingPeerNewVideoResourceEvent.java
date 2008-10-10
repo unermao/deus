@@ -62,44 +62,12 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		//Aggiungo la nuova porzione video al nodo
 		associatedStreamingNode.addNewVideoResource(videoChunk);
 		
-		
-	
-		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
-		{		
-
-		        time = triggeringTime + nextChunkArrivalTime(associatedStreamingNode.getUploadSpeed(),associatedStreamingNode.getServedPeers().get(index).getDownloadSpeed(),videoChunk);
-			
-				CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
-				newPeerResEvent.setOneShot(true);
-				newPeerResEvent.setAssociatedNode(associatedStreamingNode.getServedPeers().get(index));
-				newPeerResEvent.setResourceValue(videoChunk);
-				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
-		}
+			    associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), videoChunk, this.triggeringTime);
 		
 		
 		getLogger().fine("end new node video resource ##");
-	}
-	
-	/**
-	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
-	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
-	 * @param providerUploadSpeed
-	 * @param clientDownloadSpeed
-	 * @return
-	 */
-	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
-		
-		double time = 0.0;
-		double minSpeed = Math.min(providerUploadSpeed, clientDownloadSpeed);
-		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
-		
-		time = (chunkMbitSize / minSpeed)*1000.0;
-		
-		System.out.println("New Chunk Time :" + time);
-		
-		return (float)time;
 	}
 
 	public CoolStreamingVideoChunk getResourceValue() {

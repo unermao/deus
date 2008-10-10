@@ -70,7 +70,7 @@ public class CoolStreaming3GTo2GEvent extends NodeEvent {
 		}
 		while( !(peer.getId().equals("mobileNode") && peer.getConnectionType() == StreamingPeer.G3));
 		
-		//Il peer alla fine del ciclo  il peer che voglio modificare
+		//Il peer alla fine del ciclo ï¿½ il peer che voglio modificare
 		//Il peer passa da 3G a 2G
 		peer.change3GTo2G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
 		*/
@@ -79,7 +79,7 @@ public class CoolStreaming3GTo2GEvent extends NodeEvent {
 		
 		getLogger().fine("Sono : "+ associatedStreamingNode.getKey()+ " - " + associatedStreamingNode.getConnectionType() + " - " + associatedStreamingNode.getId());	
 		
-		associatedStreamingNode.change3GTo2G(CoolStreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
+		associatedStreamingNode.change3GTo2G(CoolStreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection,this.triggeringTime);
 		
 		getLogger().fine("end new 3G --> 2G Event ##");
 	}
