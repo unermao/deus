@@ -304,11 +304,6 @@ public class StreamingPeer extends Peer {
 	
 	public void addNewVideoResource(VideoChunk newVideoRes){
 		
-		if(this.getKey() == 572584394){
-			System.out.println("RICEVO: " + newVideoRes.getChunkIndex() );
-			for(int i = 0; i < this.getVideoResource().size(); i++)
-				System.out.println("Elem: " + this.getVideoResource().get(i).getChunkIndex() );
-		}
 		if(!this.getVideoResource().contains(newVideoRes))
 		{	
 			this.videoResource.add(newVideoRes);
@@ -563,13 +558,6 @@ public class StreamingPeer extends Peer {
 		float appTime = nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
 		
 		float time = triggeringTime + appTime;
-			
-		if(time > 500)
-			System.out.println("Base: " + triggeringTime + " AppTime : " + appTime + "Time: " + time);
-	
-		if(clientNode.getKey() == 572584394)
-			System.out.println("Chunk: " + newResource.getChunkIndex() + " Base: " + triggeringTime + " AppTime : " + appTime + "Time: " + time);
-			
 		
 		StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,time);
 		newPeerResEvent.setOneShot(true);
@@ -667,12 +655,10 @@ public class StreamingPeer extends Peer {
 		//Controllo tra i miei fornitori se hanno la porzione che sto cercando
 		if( this.sourceStreamingNode != null ){
 			
-			//boolean foundedProvider = false;
 			
 			if(this.sourceStreamingNode.getVideoResource().contains(chunk))
-			{
+			{		
 				this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
-				//foundedProvider = true;
 			}
 			else
 			{
@@ -689,16 +675,6 @@ public class StreamingPeer extends Peer {
 		
 				}
 			}	
-			
-			/*
-			if(foundedProvider == false){
-				
-				ServerPeer server = (ServerPeer)Engine.getDefault().getNodes().get(0);
-				
-				server.sendVideoChunk(this, chunk, triggeringTime);
-			}
-			 */
-		
 		}
 		
 		//Se mi rifornisco dal server sicuramente ha la porzione che mi serve
@@ -756,7 +732,7 @@ public class StreamingPeer extends Peer {
 		
 		for(int i = 0 ; i < missingChunk.size(); i++)
 			this.findChunkFromProvider(missingChunk.get(i), triggeringTime);
-		
+				
 	}
 	
 	
