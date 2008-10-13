@@ -69,14 +69,9 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 			//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 			for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
 			{
-				   getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
+				   //getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
 				   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), videoChunk, this.triggeringTime);
 			}
-		}
-		else
-		{
-			//Chiedo al mio fornitore di inviarmi la porzione che non mi e' arrivata
-			associatedStreamingNode.findChunkFromProvider(videoChunk, triggeringTime);	
 		}
 			
 		getLogger().fine("end new node video resource ##");
