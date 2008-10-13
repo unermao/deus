@@ -66,6 +66,9 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 	    else 
 	    	newResource = new VideoChunk(serverNode.getLastChunk().getChunkIndex()+1,serverNode.getChunkSize());
 		
+	    //Imposto nel chunk le informazioni sul sorgente
+	    newResource.setSourceNode(serverNode);
+	    
     	//Aggiungo la nuova porzione video al Server
 	    serverNode.addNewVideoResource(newResource);
 		
@@ -74,6 +77,9 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++)
+			serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
+		
+			/*
 		{		
 
 		        time = triggeringTime + nextChunkArrivalTime(serverNode.getUploadSpeed(),serverNode.getServedPeers().get(index).getDownloadSpeed(),newResource);
@@ -82,9 +88,10 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 				newPeerResEvent.setOneShot(true);
 				newPeerResEvent.setAssociatedNode(serverNode.getServedPeers().get(index));
 				newPeerResEvent.setResourceValue(newResource);
+				newPeerResEvent.setOriginalTime(this.triggeringTime);
 				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
 		}
-		
+		*/
 		getLogger().fine("end new video resource ##");
 	}
 	

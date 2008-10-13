@@ -1,10 +1,13 @@
 package it.unipr.ce.dsg.deus.example.simpleDataDriven;
 
+import it.unipr.ce.dsg.deus.core.Node;
+
 public class VideoChunk {
 	
 	private int chunkIndex;
 	private int chunkSize;
-
+	private Node sourceNode;
+	
 	public VideoChunk(int chunkIndex, int chunkSize) {
 		super();
 		this.chunkIndex = chunkIndex;
@@ -33,6 +36,14 @@ public class VideoChunk {
 
 	public void setChunkSize(int chunkSize) {
 		this.chunkSize = chunkSize;
+	}
+
+	public Node getSourceNode() {
+		return sourceNode;
+	}
+
+	public void setSourceNode(Node sourceNode) {
+		this.sourceNode = sourceNode;
 	}
 
 }

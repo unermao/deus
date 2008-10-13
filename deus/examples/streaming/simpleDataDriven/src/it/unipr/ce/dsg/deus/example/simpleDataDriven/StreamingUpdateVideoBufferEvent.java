@@ -18,11 +18,11 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class StreamingUpdateParentsEvent extends NodeEvent {
+public class StreamingUpdateVideoBufferEvent extends NodeEvent {
 
 	private int maxPartnersNumber = 20;
 	
-	public StreamingUpdateParentsEvent(String id, Properties params,
+	public StreamingUpdateVideoBufferEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,7 +34,7 @@ public class StreamingUpdateParentsEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		StreamingUpdateParentsEvent clone = (StreamingUpdateParentsEvent) super.clone();
+		StreamingUpdateVideoBufferEvent clone = (StreamingUpdateVideoBufferEvent) super.clone();
 	
 		clone.maxPartnersNumber = this.maxPartnersNumber;
 		
@@ -43,7 +43,7 @@ public class StreamingUpdateParentsEvent extends NodeEvent {
 
 	public void run() throws RunException {
 
-		getLogger().fine("## Update Parents List Event ! ");
+		getLogger().fine("## Update Video Buffer Event ! ");
 	
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
@@ -51,10 +51,9 @@ public class StreamingUpdateParentsEvent extends NodeEvent {
 			StreamingPeer peer = (StreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
-			{
-				peer.updateParentsList();
-			}
-		}	
+				peer.updateVideoBufferList(this.triggeringTime);
+		}
+			
 			
 		getLogger().fine("end Update Parents List Event ##");
 	}
