@@ -7,6 +7,7 @@ public class VideoChunk {
 	private int chunkIndex;
 	private int chunkSize;
 	private Node sourceNode;
+	private float originalTime = 0;
 	
 	public VideoChunk(int chunkIndex, int chunkSize) {
 		super();
@@ -44,6 +45,14 @@ public class VideoChunk {
 
 	public void setSourceNode(Node sourceNode) {
 		this.sourceNode = sourceNode;
+	}
+
+	public float getOriginalTime() {
+		return originalTime;
+	}
+
+	public void setOriginalTime(float originalTime) {
+		this.originalTime = originalTime;
 	}
 
 }
