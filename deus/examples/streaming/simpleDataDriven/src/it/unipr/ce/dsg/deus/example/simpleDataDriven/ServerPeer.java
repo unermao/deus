@@ -36,6 +36,7 @@ public class ServerPeer extends Peer {
 	private int chunkSize = 0;	
 	private double uploadSpeed = 0.0;
 	private double downloadSpeed = 0.0;
+	private int nodeDepth = 0;
 	
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
 	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
@@ -80,6 +81,7 @@ public class ServerPeer extends Peer {
 		clone.maxAcceptedConnection = this.maxAcceptedConnection;
 		clone.servedPeers = this.servedPeers;
 		clone.videoResource = this.videoResource;
+		clone.nodeDepth = 0;
 		
 		return clone;
 	}
@@ -102,13 +104,12 @@ public class ServerPeer extends Peer {
 		newPeerResEvent.setOneShot(true);
 		newPeerResEvent.setAssociatedNode(clientNode);
 		newPeerResEvent.setResourceValue(newResource);
-		newPeerResEvent.setOriginalTime(triggeringTime);
 		Engine.getDefault().insertIntoEventsList(newPeerResEvent);
 	}
 	
 	/**
 	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
-	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
+	 * in base alla velocita' di Upload del fornitore e quella di Downalod del cliente.
 	 * @param providerUploadSpeed
 	 * @param clientDownloadSpeed
 	 * @return
@@ -223,6 +224,14 @@ public class ServerPeer extends Peer {
 
 	public void setMaxAcceptedConnection(int maxAcceptedConnection) {
 		this.maxAcceptedConnection = maxAcceptedConnection;
+	}
+
+	public int getNodeDepth() {
+		return nodeDepth;
+	}
+
+	public void setNodeDepth(int nodeDepth) {
+		this.nodeDepth = nodeDepth;
 	}
 	
 }

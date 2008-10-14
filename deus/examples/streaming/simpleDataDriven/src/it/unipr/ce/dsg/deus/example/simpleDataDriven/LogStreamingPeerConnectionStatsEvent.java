@@ -50,6 +50,21 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		double totalmobileNode = 0.0;
 		double totalmobile3GNode = 0.0;
 		
+		float totalReceivedChunk = 0;
+		float totalPcReceivedChunk = 0;
+		float totalMobileWifiReceivedChunk = 0;
+		float totalMobile3GReceivedChunk = 0;
+		
+		float totalArrivalTime = 0;
+		float totalPcArrivalTime = 0;
+		float totalMobileWifiArrivalTime = 0;
+		float totalMobile3GArrivalTime = 0;
+		
+		float averageArrivalTime = 0;
+		float averagePcArrivalTime = 0;
+		float averageMobileWifiArrivalTime = 0;
+		float averageMobile3GArrivalTime = 0;
+		
 		ServerPeer serverPeer = (ServerPeer) Engine.getDefault().getNodes().get(0);
 
 		activeConnectionServer = (double)serverPeer.getActiveConnection();
@@ -61,6 +76,34 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			
 			activeConnectionTotal = activeConnectionTotal + ( (double)peer.getActiveConnection());
 			
+			//Aggiungo il numero di chunk ricevuti dal singolo nodo
+			totalReceivedChunk = totalReceivedChunk + peer.getArrivalTimes().size();
+			
+			if(peer.getId().equals("pcNode"))
+				totalPcReceivedChunk = totalPcReceivedChunk + peer.getArrivalTimes().size();
+			
+			if(peer.getId().equals("mobileNode"))	
+				totalMobileWifiReceivedChunk = totalMobileWifiReceivedChunk + peer.getArrivalTimes().size();
+			
+			if(peer.getId().equals("mobile3GNode"))
+				totalMobile3GReceivedChunk = totalMobile3GReceivedChunk + peer.getArrivalTimes().size();
+			
+			for( int k = 0 ; k < peer.getArrivalTimes().size(); k++ ){
+				
+				float localValue =  peer.getArrivalTimes().get(k);
+				
+				totalArrivalTime = totalArrivalTime + localValue;
+				
+				if(peer.getId().equals("pcNode"))
+					totalPcArrivalTime = totalPcArrivalTime + localValue;
+				
+				if(peer.getId().equals("mobileNode"))	
+					totalMobileWifiArrivalTime = totalMobileWifiArrivalTime + localValue;
+				
+				if(peer.getId().equals("mobile3GNode"))
+					totalMobile3GArrivalTime = totalMobile3GArrivalTime + localValue;
+			}
+				
 			if(peer.getId().equals("pcNode"))
 			{
 				activeConnectionPercentTotalPcNode = activeConnectionPercentTotalPcNode + ( (double)peer.getActiveConnection());
@@ -97,10 +140,27 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("\n");
 		getLogger().info("VT = " + Engine.getDefault().getVirtualTime() + "\n");
 		
-		getLogger().info("Total Node           : " + (double)( totalPcNode + totalmobileNode + totalmobile3GNode));
-		getLogger().info("Total PcNode         : " + totalPcNode);
-		getLogger().info("Total mobileWifiNode : " + totalmobileNode);
-		getLogger().info("Total mobile3GNode   : " + totalmobile3GNode);		
+		averageArrivalTime = totalArrivalTime / totalReceivedChunk;
+		averagePcArrivalTime = totalPcArrivalTime / totalPcReceivedChunk;
+		averageMobileWifiArrivalTime = totalMobileWifiArrivalTime / totalMobileWifiReceivedChunk;
+		averageMobile3GArrivalTime = totalMobile3GArrivalTime / totalMobile3GReceivedChunk;
+		
+		
+		getLogger().info("Total Node              : " + (double)( totalPcNode + totalmobileNode + totalmobile3GNode));
+		getLogger().info("Total PcNode            : " + totalPcNode);
+		getLogger().info("Total mobileWifiNode    : " + totalmobileNode);
+		getLogger().info("Total mobile3GNode      : " + totalmobile3GNode);	
+		
+		
+		
+		getLogger().info("\n");
+		getLogger().info("Average Arrival Times                   : " + averageArrivalTime);	
+		getLogger().info("");
+		getLogger().info("PC-Node Average Arrival Times           : " + averagePcArrivalTime);
+		getLogger().info("MobileWiFi-Node Average Arrival Times   : " + averageMobileWifiArrivalTime);
+		getLogger().info("Mobile3G-Node Average Arrival Times     : " + averageMobile3GArrivalTime);
+
+		
 		getLogger().info("###########################");
 		getLogger().info("\n");
 		

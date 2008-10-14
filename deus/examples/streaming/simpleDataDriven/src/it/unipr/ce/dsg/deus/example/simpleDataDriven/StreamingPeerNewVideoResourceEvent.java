@@ -22,7 +22,6 @@ import java.util.Properties;
 public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 
 	private VideoChunk videoChunk = null;
-	private float originalTime = 0;
 	
 	public StreamingPeerNewVideoResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -37,7 +36,6 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		
 		StreamingPeerNewVideoResourceEvent clone = (StreamingPeerNewVideoResourceEvent) super.clone();
 		clone.videoChunk = this.videoChunk;
-		clone.originalTime = this.originalTime;
 		return clone;
 	}
 
@@ -48,6 +46,8 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
 		
 		Peer sourcePeer = (Peer) videoChunk.getSourceNode();
+		
+		
 			
 		/**
 		 * Se il nodo che mi ha inviato il pacchetto e' ancora conneso
@@ -58,15 +58,16 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		 */
 		if( Engine.getDefault().getNodes().contains(sourcePeer) )
 		{
-		
-			VideoChunk newVideoChunk = new VideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
 			
 			//Aggiungo la nuova porzione video al nodo
-			associatedStreamingNode.addNewVideoResource(newVideoChunk);
+			associatedStreamingNode.addNewVideoResource(videoChunk,this.triggeringTime);
+			
+			VideoChunk newVideoChunk = new VideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
 			
 			//Imposto il nuovo nodo sorgente sulla porzione video
 			newVideoChunk.setSourceNode(associatedNode);
-				
+			newVideoChunk.setOriginalTime(triggeringTime);
+			
 			//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 			for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
 			{
@@ -86,12 +87,5 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		this.videoChunk = resourceValue;
 	}
 
-	public float getOriginalTime() {
-		return originalTime;
-	}
-
-	public void setOriginalTime(float originalTime) {
-		this.originalTime = originalTime;
-	}
 
 }

@@ -271,9 +271,9 @@
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="videoPoisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="videoPoisson1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="100" />
+			<aut:param name="period" value="10" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="newvideores" />
@@ -293,7 +293,7 @@
 	
 	<aut:process id="updateListPoisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="50" />
+			<aut:param name="meanArrival" value="30" />
 		</aut:params>
 		<aut:events>
 			<aut:reference id="updatelist" />
@@ -334,7 +334,7 @@
 	
 	<aut:process id="disconnectionPoisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="3000" />
+			<aut:param name="meanArrival" value="2000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNode" />
@@ -346,11 +346,10 @@
 			<aut:reference id="death" />
 		</aut:events>
 	</aut:process>
-	
 	 	
 	<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="50" /> 
+			<aut:param name="period" value="30" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="logNodeVideoData" /> 

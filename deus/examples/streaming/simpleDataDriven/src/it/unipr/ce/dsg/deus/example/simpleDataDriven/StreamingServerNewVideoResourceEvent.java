@@ -68,6 +68,7 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 		
 	    //Imposto nel chunk le informazioni sul sorgente
 	    newResource.setSourceNode(serverNode);
+	    newResource.setOriginalTime(this.triggeringTime);
 	    
     	//Aggiungo la nuova porzione video al Server
 	    serverNode.addNewVideoResource(newResource);

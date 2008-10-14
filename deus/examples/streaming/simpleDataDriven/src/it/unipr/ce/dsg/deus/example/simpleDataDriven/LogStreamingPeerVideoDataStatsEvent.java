@@ -69,11 +69,11 @@ public class LogStreamingPeerVideoDataStatsEvent extends Event {
 					}
 				
 				if(peer.getId().equals("pcNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() +  " -> " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);
 				if(peer.getId().equals("mobileNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"):   " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() +  " -> " + sourceId+"("+ sourceKey +")"+"):   " + listaRisorse);
 				if(peer.getId().equals("mobile3GNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"): " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() +  " -> " + sourceId+"("+ sourceKey +")"+"): " + listaRisorse);
 				
 			}
 		}

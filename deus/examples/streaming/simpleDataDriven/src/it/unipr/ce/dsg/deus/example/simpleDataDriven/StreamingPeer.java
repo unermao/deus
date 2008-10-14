@@ -49,6 +49,8 @@ public class StreamingPeer extends Peer {
 	private double fitnessValue = 0.0;
 	private boolean fitnessSort = false;
 	private int maxPartnersNumber = 20;
+	
+	private int nodeDepth = 0;
 
 	private long time1;
 	private long time2;
@@ -64,6 +66,8 @@ public class StreamingPeer extends Peer {
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
 	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
 	
+	//Array per le statistiche dei tempi di ricezione
+	private ArrayList<Float> arrivalTimes = new ArrayList<Float>(); 
 	
 	public StreamingPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -123,8 +127,10 @@ public class StreamingPeer extends Peer {
 		clone.servedPeers = new ArrayList<StreamingPeer>();;
 		clone.serverNode = this.serverNode;
 		clone.sourceStreamingNode = this.sourceStreamingNode;
-		clone.videoResource = new ArrayList<VideoChunk>(); ;
+		clone.videoResource = new ArrayList<VideoChunk>(); 
+		clone.arrivalTimes = new ArrayList<Float>(); 
 		clone.videoResourceBufferLimit  = this.videoResourceBufferLimit;
+		clone.nodeDepth = 0;
 		
 		return clone;
 	}
@@ -210,10 +216,16 @@ public class StreamingPeer extends Peer {
 		if(this.sourceStreamingNode != null)
 			this.sourceStreamingNode.getServedPeers().remove(this);
 		
+		//Azzero il mio grado di nodo
+		this.nodeDepth = 0;
+		
 		//Scollego i nodi che stavo servendo in modo che possano cercare altri fornitori
 		for( int i = 0 ; i < this.servedPeers.size(); i++){
 			
 			this.servedPeers.get(i).setSourceStreamingNode(null);
+			
+			//Azzero la profondita' del nodo che si stava fornendo da me
+			this.servedPeers.get(i).resetNodeDepth();
 			
 			//Lancio l'evento per l'aggiornamento delle liste sul quel nodo
 			this.servedPeers.get(i).updateParentsList();
@@ -235,6 +247,41 @@ public class StreamingPeer extends Peer {
 		
 		//Rimuovo tutti i miei vicini
 		this.resetNeighbors();
+	}
+	
+	/**
+	 * Funzione utilizzata per azzerare iterativamente il mio grado di nodo 
+	 * e tutti i gradi di nodo dei nodi a me collegati
+	 */
+	public void resetNodeDepth() {
+		
+		this.nodeDepth = 0;
+		
+		for(int i = 0 ; i < this.getServedPeers().size(); i++)
+			this.getServedPeers().get(i).resetNodeDepth();
+		
+	}
+
+	/**
+	 * Nel caso di un cambio di fornitore aggiorno il grado di nodo di tutti i 
+	 * miei serviti
+	 */
+	public void updateNodeDepth() {
+		
+		int value = 0;
+		
+		if(this.sourceStreamingNode != null)
+			value = this.sourceStreamingNode.getNodeDepth();
+		
+		if(this.serverNode != null)
+			value = this.serverNode.getNodeDepth();
+		
+		
+		this.nodeDepth = value + 1;
+		
+		for(int i = 0 ; i < this.getServedPeers().size(); i++)
+			this.getServedPeers().get(i).updateNodeDepth();
+		
 	}
 	
 	public void updateFitnessValue(){
@@ -302,7 +349,11 @@ public class StreamingPeer extends Peer {
 		
 	}
 	
-	public void addNewVideoResource(VideoChunk newVideoRes){
+	public void addNewVideoResource(VideoChunk newVideoRes, float triggeringTime){
+			
+		//Salvo il tempo in cui e' arrivato il chunk
+		float arrivalValue = triggeringTime - newVideoRes.getOriginalTime(); 
+		this.arrivalTimes.add(arrivalValue);
 		
 		if(!this.getVideoResource().contains(newVideoRes))
 		{	
@@ -361,6 +412,10 @@ public class StreamingPeer extends Peer {
 					//Imposto il mio fornitore
 					this.setSourceStreamingNode(appSourceStreamingNode);
 					
+					//Incremento il mio ordine di nodo
+					this.updateNodeDepth();
+					//this.setNodeDepth(this.getSourceStreamingNode().getNodeDepth()+1);
+					
 					//Imposto la connessione attiva con il nodo fornitore trovato
 					this.getSourceStreamingNode().addActiveConnection();
 					
@@ -368,7 +423,7 @@ public class StreamingPeer extends Peer {
 					this.getSourceStreamingNode().addServedPeer(this);
 					
 					//Chiamiamo la funzione per avere segmenti mancanti
-					//this.getBufferNeighbor(appSourceStreamingNode,0, triggeringTime);
+					this.getBufferNeighbor(appSourceStreamingNode,0, triggeringTime);
 					
 					break;
 				}
@@ -379,6 +434,10 @@ public class StreamingPeer extends Peer {
 			if( this.getSourceStreamingNode() == null && this.getServerNode() == null)
 			{
 					this.setServerNode((ServerPeer)Engine.getDefault().getNodes().get(0));
+					
+					//Incremento il mio ordine di nodo
+					this.updateNodeDepth();
+					//this.setNodeDepth(this.getServerNode().getNodeDepth()+1);
 					
 					//Imposto la connessione attiva con il server centrale
 					this.getServerNode().addActiveConnection();
@@ -421,7 +480,12 @@ public class StreamingPeer extends Peer {
 						   )
 						{
 							
+							//Imposto il mio fornitore
 							this.setSourceStreamingNode(appSourceStreamingNode);
+							
+							//Incremento il mio ordine di nodo
+							this.updateNodeDepth();
+							//this.setNodeDepth(this.getSourceStreamingNode().getNodeDepth()+1);
 							
 							//Imposto la connessione attiva con il nodo fornitore trovato
 							appSourceStreamingNode.addActiveConnection();
@@ -430,7 +494,7 @@ public class StreamingPeer extends Peer {
 							appSourceStreamingNode.addServedPeer(this);
 							
 							//Chiamiamo la funzione per avere segmenti mancanti
-							//this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
+							this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
 							
 							return true;
 						}
@@ -442,8 +506,11 @@ public class StreamingPeer extends Peer {
 			if( this.getSourceStreamingNode() == null && this.getServerNode() == null)
 			{		
 				
+				//Imposto il server come mio fornitore
 				this.setServerNode((ServerPeer)Engine.getDefault().getNodes().get(0));
 			
+				//Incremento il mio ordine di nodo
+				this.updateNodeDepth();	
 				//Imposto la connessione attiva con il server centrale
 				this.getServerNode().addActiveConnection();
 			
@@ -514,7 +581,7 @@ public class StreamingPeer extends Peer {
 	public void getBufferNeighbor(StreamingPeer providerNode, int chunkIndex, float triggeringTime)
 	{
 
-		
+		/*
 		int startIndex = 0;
 		
 		// Se mia lista non e' vuota mi faccio inviare gli elementi 
@@ -526,9 +593,9 @@ public class StreamingPeer extends Peer {
 			if(!this.getVideoResource().contains(providerNode.getVideoResource().get(index)))
 				providerNode.sendVideoChunk(this, providerNode.getVideoResource().get(index), triggeringTime);
 		
-		/*
+		*/
 		
-		int startIndex = providerNode.getVideoResource().get(providerNode.getVideoResource().size() - 1).getChunkIndex() - 8;
+		int startIndex = providerNode.getVideoResource().get(providerNode.getVideoResource().size() - 1).getChunkIndex() - 5;
 		 
 		 if( startIndex < 0 )
 		  startIndex = 0;
@@ -542,7 +609,7 @@ public class StreamingPeer extends Peer {
 		 for(int index = startIndex ; index < providerNode.getVideoResource().size(); index++)
 		  if(!this.getVideoResource().contains(providerNode.getVideoResource().get(index)))
 		   providerNode.sendVideoChunk(this, providerNode.getVideoResource().get(index), triggeringTime);
-		*/
+		
 	}
 
 	/**
@@ -554,7 +621,8 @@ public class StreamingPeer extends Peer {
 	 * @param triggeringTime
 	 */
 	public void sendVideoChunk(StreamingPeer clientNode,VideoChunk newResource, float triggeringTime){
-			
+		
+
 		float appTime = nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
 		
 		float time = triggeringTime + appTime;
@@ -563,13 +631,13 @@ public class StreamingPeer extends Peer {
 		newPeerResEvent.setOneShot(true);
 		newPeerResEvent.setAssociatedNode(clientNode);
 		newPeerResEvent.setResourceValue(newResource);
-		newPeerResEvent.setOriginalTime(triggeringTime);
 		Engine.getDefault().insertIntoEventsList(newPeerResEvent);
+		
 	}
 	
 	/**
 	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
-	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
+	 * in base alla velocita' di Upload del fornitore e quella di Downalod del cliente.
 	 * @param providerUploadSpeed
 	 * @param clientDownloadSpeed
 	 * @return
@@ -585,7 +653,7 @@ public class StreamingPeer extends Peer {
 		
 		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
 		
-		return floatTime;
+		return floatTime*100;
 	}
 	
 	private float expRandom(float meanValue) {
@@ -659,6 +727,7 @@ public class StreamingPeer extends Peer {
 			if(this.sourceStreamingNode.getVideoResource().contains(chunk))
 			{		
 				chunk.setSourceNode(this.sourceStreamingNode);
+				chunk.setOriginalTime(triggeringTime);
 				this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
 				
 			}
@@ -671,6 +740,7 @@ public class StreamingPeer extends Peer {
 					if( peer.getVideoResource().contains(chunk) && peer.isConnected() )
 					{
 						chunk.setSourceNode(peer);
+						chunk.setOriginalTime(triggeringTime);
 						peer.sendVideoChunk(this, chunk, triggeringTime);
 						//foundedProvider = true;
 						break;
@@ -683,6 +753,7 @@ public class StreamingPeer extends Peer {
 		//Se mi rifornisco dal server sicuramente ha la porzione che mi serve
 		if( this.serverNode != null ){
 			chunk.setSourceNode(this.serverNode);
+			chunk.setOriginalTime(triggeringTime);
 			this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
 		}
 		
@@ -865,5 +936,22 @@ public class StreamingPeer extends Peer {
 		this.downloadSpeed = downloadSpeed;
 	}
 
+	public ArrayList<Float> getArrivalTimes() {
+		return arrivalTimes;
+	}
+
+	public void setArrivalTimes(ArrayList<Float> arrivalTimes) {
+		this.arrivalTimes = arrivalTimes;
+	}
+
+	public int getNodeDepth() {
+		return nodeDepth;
+	}
+
+	public void setNodeDepth(int nodeDepth) {
+		this.nodeDepth = nodeDepth;
+	}
+
+	
 
 }
