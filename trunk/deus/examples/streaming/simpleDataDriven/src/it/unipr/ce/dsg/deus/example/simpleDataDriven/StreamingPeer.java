@@ -658,7 +658,9 @@ public class StreamingPeer extends Peer {
 			
 			if(this.sourceStreamingNode.getVideoResource().contains(chunk))
 			{		
+				chunk.setSourceNode(this.sourceStreamingNode);
 				this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
+				
 			}
 			else
 			{
@@ -668,6 +670,7 @@ public class StreamingPeer extends Peer {
 					
 					if( peer.getVideoResource().contains(chunk) && peer.isConnected() )
 					{
+						chunk.setSourceNode(peer);
 						peer.sendVideoChunk(this, chunk, triggeringTime);
 						//foundedProvider = true;
 						break;
@@ -679,6 +682,7 @@ public class StreamingPeer extends Peer {
 		
 		//Se mi rifornisco dal server sicuramente ha la porzione che mi serve
 		if( this.serverNode != null ){
+			chunk.setSourceNode(this.serverNode);
 			this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
 		}
 		
@@ -728,6 +732,7 @@ public class StreamingPeer extends Peer {
 			miss = miss + " " + missingChunk.get(j).getChunkIndex();
 			
 		System.out.println("Cerco : " + miss);
+		
 		*/
 		
 		for(int i = 0 ; i < missingChunk.size(); i++)

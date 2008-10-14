@@ -72,13 +72,11 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
     	//Aggiungo la nuova porzione video al Server
 	    serverNode.addNewVideoResource(newResource);
 		
-		
-		
 		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
-		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++)
+		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++){	
 			serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
-		
+		}
 			/*
 		{		
 

@@ -21,7 +21,6 @@ import java.util.Properties;
  */
 public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 
-	private static final String MEAN_ARRIVAL_TRIGGERED_DISCOVERY = "meanArrivalTriggeredDiscovery";
 	private VideoChunk videoChunk = null;
 	private float originalTime = 0;
 	
@@ -49,7 +48,7 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
 		
 		Peer sourcePeer = (Peer) videoChunk.getSourceNode();
-		
+			
 		/**
 		 * Se il nodo che mi ha inviato il pacchetto e' ancora conneso
 		 * effettuo le operazioni di invio ai miei forniti.
@@ -59,18 +58,20 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 		 */
 		if( Engine.getDefault().getNodes().contains(sourcePeer) )
 		{
+		
+			VideoChunk newVideoChunk = new VideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
 			
 			//Aggiungo la nuova porzione video al nodo
-			associatedStreamingNode.addNewVideoResource(videoChunk);
+			associatedStreamingNode.addNewVideoResource(newVideoChunk);
 			
 			//Imposto il nuovo nodo sorgente sulla porzione video
-			videoChunk.setSourceNode(associatedNode);
+			newVideoChunk.setSourceNode(associatedNode);
 				
 			//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 			for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
 			{
 				   //getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
-				   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), videoChunk, this.triggeringTime);
+				   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), newVideoChunk, this.triggeringTime);
 			}
 		}
 			
