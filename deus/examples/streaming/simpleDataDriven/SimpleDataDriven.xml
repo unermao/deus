@@ -348,7 +348,7 @@
 	 	
 	<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="5" /> 
+			<aut:param name="period" value="1" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="logNodeVideoData" /> 

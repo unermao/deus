@@ -57,15 +57,17 @@ public class LogStreamingPeerVideoDataStatsEvent extends Event {
 				int sourceKey = -1;
 				
 				if(peer.getServerNode() != null){
+					
 					sourceId = peer.getServerNode().getId();	
 					sourceKey = peer.getServerNode().getKey();
 				}	
+				else
+					if(peer.getSourceStreamingNode() != null)
+					{
+						sourceId = peer.getSourceStreamingNode().getId();
+						sourceKey = peer.getSourceStreamingNode().getKey();
+					}
 				
-				if(peer.getSourceStreamingNode() != null)
-				{
-					sourceId = peer.getSourceStreamingNode().getId();
-					sourceKey = peer.getSourceStreamingNode().getKey();
-				}
 				if(peer.getId().equals("pcNode"))
 					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);
 				if(peer.getId().equals("mobileNode"))
