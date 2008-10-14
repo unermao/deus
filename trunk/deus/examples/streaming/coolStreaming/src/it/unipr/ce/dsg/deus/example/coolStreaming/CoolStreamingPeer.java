@@ -34,6 +34,7 @@ public class CoolStreamingPeer extends Peer {
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
 	private static final String VIDEO_RESOURCE_BUFFER_LIMIT = "videoResourceBufferLimit";
 	private static final String FITNESS_SORT = "fitnessSort"; 
+	private static final String MAX_PARTNERS_NUMBER = "maxPartnersNumber"; 
 	
 	public static final String ADSL = "adsl";
 	public static final String WIFI = "wifi";
@@ -91,6 +92,9 @@ public class CoolStreamingPeer extends Peer {
 		if (params.containsKey(FITNESS_SORT))
 			fitnessSort = Boolean.parseBoolean(params.getProperty(FITNESS_SORT));
 		
+		if (params.containsKey(MAX_PARTNERS_NUMBER))
+			maxPartnersNumber = Integer.parseInt(params.getProperty(MAX_PARTNERS_NUMBER));
+		
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
 			if (!(r instanceof AllocableResource))
@@ -142,60 +146,14 @@ public class CoolStreamingPeer extends Peer {
 		this.updateFitnessValue();
 		
 		//Attraverso la lista dei nodi
-		for(int i = 0; i < this.getNeighbors().size(); i++){
-			//Se il nodo si e' morto lo rimuovo
-			if(this.getNeighbors().get(i) == null){
+		for(int i = 0; i < this.getNeighbors().size(); i++)
+			if(checkDisconnection((CoolStreamingPeer) this.getNeighbors().get(i)))
 				this.getNeighbors().remove(i);
-			}
-			else{
-				//Se il nodo si e' disconnesso
-				if( !this.getNeighbors().get(i).isConnected() ){
-					//Rimuovo il nodo disconnesso
-					this.getNeighbors().remove(i);
-				}
-			}			
-		}
 		
 		//System.out.println(this.getNeighbors().size() + "/" + Engine.getDefault().getNodes().size());
 		//Se qualche nodo e' stato rimosso dalla lista dei vicini
 		if( this.getNeighbors().size() < this.getMaxPartnersNumber() ){
-			
-
-			/*
-			int index = 0;
-			StreamingPeer peer = null;
-			
-			int count = 0;
-			
-			int size = (Engine.getDefault().getNodes().size() - 1 );
-			
-			index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-			peer = (StreamingPeer)Engine.getDefault().getNodes().get(index);
-			
-			while( count < 20 ){
-				
-				if(
-						( peer.getServerNode() != null || peer.getSourceStreamingNode() != null )
-						&& peer.isConnected() //Se il peer e' connesso
-						&& !this.neighbors.contains(peer) //Se non e' gi� tra i miei vicni
-						&& !peer.equals(this) //Se non sono io
-						&& !this.servedPeers.contains(peer) //Se non lo sto servendo
-				  )
-					this.addNeighbor(peer);
-				
-				//Se ho raggiunto il limite massimo esco
-				if(this.neighbors.size() == this.maxPartnersNumber)
-					break;
-				
-				index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-				peer = (StreamingPeer)Engine.getDefault().getNodes().get(index);
-				
-				count++;
-				
-			}
-			*/
-			
-			
+		
 			//Cerco tra i miei vicini qualche nuovo contatto
 			for(int index = 0; index < this.neighbors.size() ; index++)
 			{
@@ -226,65 +184,6 @@ public class CoolStreamingPeer extends Peer {
 				
 			}
 			
-			
-			/*
-			//Se ci sono almeno un numero di peer superiore al massimo 
-			if( Engine.getDefault().getNodes().size() - 1 - this.neighbors.size() -1 > this.getMaxPartnersNumber())
-			{
-				
-				int index = 0;
-				StreamingPeer peer = null;
-				
-				int size = (Engine.getDefault().getNodes().size() - 1 );
-				
-				index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-				peer = (StreamingPeer)Engine.getDefault().getNodes().get(index);
-				
-				//Associo Casualmente i Vicini fino al massimo consentito!
-				while( this.getNeighbors().size() < this.getMaxPartnersNumber() )
-				{
-					
-					if(
-							peer.isConnected() 
-							&& !this.getNeighbors().contains((Peer)peer) 
-							&& !this.equals(Engine.getDefault().getNodes().get(index)))
-					{	
-						this.addNeighbor((Peer)peer);
-					}
-					
-					//Se ho raggiunto il limite massimo esco
-					if(this.neighbors.size() == this.maxPartnersNumber)
-						break;
-					
-					index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-					peer = (StreamingPeer)Engine.getDefault().getNodes().get(index);
-				}
-
-			}
-			else
-			{
-
-				for(int i = 1; i<Engine.getDefault().getNodes().size(); i++)
-				{
-					
-					StreamingPeer peer = (StreamingPeer) Engine.getDefault().getNodes().get(i);
-					
-					if(
-						 !this.equals(Engine.getDefault().getNodes().get(i)) 
-						 && peer.isConnected()
-					   )
-					{
-						this.addNeighbor((Peer) Engine.getDefault().getNodes().get(i));
-					}
-					
-					//Se ho raggiunto il limite massimo esco
-					if(this.neighbors.size() == this.maxPartnersNumber)
-						break;
-					
-				}
-			}
-			*/
-			
 		}
 		
 		//Riordino la lista dei vicini in base alla loro fitness  
@@ -295,9 +194,7 @@ public class CoolStreamingPeer extends Peer {
 		
 		if( endListNumber > this.maxPartnersNumber )
 			System.out.println("ERRORE LISTA TROPPO GRANDE !!!! ("+ endListNumber + "/" + this.maxPartnersNumber + ")");
-		
-		
-		
+					
 	}
 	
 	public void disconnection(float triggeringTime){
@@ -407,17 +304,16 @@ public class CoolStreamingPeer extends Peer {
 	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
 		
 		//System.out.println("Parents Size: " + this.neighbors.size());
-		
-		this.videoResource.add(newVideoRes);
+		if(!this.getVideoResource().contains(newVideoRes))
+		{	
+			this.videoResource.add(newVideoRes);
+			this.sortBuffer();
+		}
 		
 		//Se le porzioni di video che ho in memoria superano il limite del buffer rimuoso un elemento
 		if(this.videoResource.size() > videoResourceBufferLimit)
 			this.videoResource.remove(0);
-		
-		/*
-		for(int i = 0; i<this.getServedPeers().size(); i++ ){
-			this.getServedPeers().get(i).addNewVideoResource(newVideoRes);
-		}*/
+	
 	}
 	
 	public void removeActiveConnection(){
@@ -471,7 +367,7 @@ public class CoolStreamingPeer extends Peer {
 					this.getSourceStreamingNode().addServedPeer(this);
 					
 					//Chiamiamo la funzione per avere segmenti mancanti
-					this.getBufferNeighbor(appSourceStreamingNode,0, triggeringTime);
+			//		this.getBufferNeighbor(appSourceStreamingNode,0,triggeringTime);
 					
 					break;
 				}
@@ -518,9 +414,7 @@ public class CoolStreamingPeer extends Peer {
 					for(int i = 0 ; i < this.getNeighbors().size(); i++){
 						
 						CoolStreamingPeer appSourceStreamingNode = (CoolStreamingPeer)this.getNeighbors().get(i);
-						
-
-						
+										
 						//Mi collego solo, se ha un fornitore, se ha le risorse video e se ha la possibilit� di accettare le connessioni e se non � tra la lista di quelli che sto fornendo
 						if(     (appSourceStreamingNode.getServerNode() != null || appSourceStreamingNode.getSourceStreamingNode() != null)	
 								&& appSourceStreamingNode.isConnected()
@@ -539,35 +433,10 @@ public class CoolStreamingPeer extends Peer {
 							appSourceStreamingNode.addServedPeer(this);
 							
 							//Chiamiamo la funzione per avere segmenti mancanti
-							this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
+						//	this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
 							
 							return true;
 							
-						/*	for(int j = 0; j < appSourceStreamingNode.getVideoResource().size() ;j++)
-							{
-								for( int myVideoIndex = 0 ; myVideoIndex < this.getVideoResource().size(); myVideoIndex++){
-
-									if(appSourceStreamingNode.getVideoResource().get(j) == this.getVideoResource().get(myVideoIndex))
-									{
-										
-										//System.out.println("Sono: " + this.getKey() + " Ho trovato: " + appSourceStreamingNode.getKey());
-										
-										this.setSourceStreamingNode(appSourceStreamingNode);
-									
-										//Imposto la connessione attiva con il nodo fornitore trovato
-										appSourceStreamingNode.addActiveConnection();
-									
-										//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
-										appSourceStreamingNode.addServedPeer(this);
-									
-										//Chiamiamo la funzione per avere segmenti mancanti
-										this.getBufferNeighbor(appSourceStreamingNode,j, triggeringTime);
-										
-										return true;
-									}
-								}
-							}
-							*/
 						}
 				}
 				}
@@ -650,7 +519,11 @@ public class CoolStreamingPeer extends Peer {
 	public void getBufferNeighbor(CoolStreamingPeer providerNode, int chunkIndex, float triggeringTime)
 	{
 
-		int startIndex = 0;
+		int startIndex = providerNode.getVideoResource().get(providerNode.getVideoResource().size() - 1).getChunkIndex() - 3;
+		
+		if( startIndex < 0 )
+		 startIndex = 0;
+		
 		
 		// Se mia lista non e' vuota mi faccio inviare gli elementi 
 		//dal fornitore a partire dall'indice specificato come parametro che non posseggo
@@ -691,9 +564,9 @@ public class CoolStreamingPeer extends Peer {
 	 */
 	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
 		
-		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+		//CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
 		double time = 0.0;
-		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
+		double minSpeed = Math.min(  (providerUploadSpeed  / (double) this.getActiveConnection()) , clientDownloadSpeed);
 		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
 		time = (chunkMbitSize / minSpeed);
 		
@@ -710,6 +583,147 @@ public class CoolStreamingPeer extends Peer {
 		return myRandom;
 	}
 	
+	public void sortBuffer() {
+
+		
+	/*	for(int i = 0 ; i < this.getVideoResource().size() ; i++)
+			System.out.println(this.getVideoResource().get(i).getChunkIndex());*/
+		
+		ArrayList<CoolStreamingVideoChunk> appList = new ArrayList<CoolStreamingVideoChunk>();
+		
+		//Ordinamento dei vicini in base al loro valore di fitness
+		for(int i = 0 ; i < this.getVideoResource().size() ; i++)
+		{
+			CoolStreamingVideoChunk chunkOriginal = (CoolStreamingVideoChunk)this.getVideoResource().get(i);
+			
+			//La lista � vuota aggiungo direttamente l'elemento
+			if(appList.size() == 0)
+				appList.add(chunkOriginal);
+			else
+			{
+				//Cerco se c'� un Peer con fitness minore
+				for(int j = 0 ; j < appList.size(); j++)
+				{
+					
+					CoolStreamingVideoChunk chunkApp = (CoolStreamingVideoChunk)appList.get(j);
+					
+					//Se il peer che analizzo ha la fitness Maggiore o uguale di quello nel vettore di appoggio
+					if(chunkOriginal.getChunkIndex() <= chunkApp.getChunkIndex())
+					{	
+						appList.add(j,chunkOriginal);
+						break;
+					}// Se alla fine non ho trovato un elemento minore aggiungo l'elemento in coda
+					else if( j == appList.size() - 1)
+					{
+						appList.add(chunkOriginal);
+						break;
+					}
+				}
+			}
+		}
+
+		this.getVideoResource().clear();
+		this.getVideoResource().addAll(appList);
+	/*	for(int i = 0 ; i < this.getVideoResource().size() ; i++)
+			System.out.println(this.getVideoResource().get(i).getChunkIndex());*/
+	}
+	
+	/**
+	 * Funzione che controlla se un nodo e' ancora attivo nel sistema
+	 * 
+	 * @param peer
+	 * @return
+	 */
+	public boolean checkDisconnection( CoolStreamingPeer peer ){
+
+		if(peer == null || !peer.isConnected())
+			return true;
+		else
+			return false;
+	}	
+		
+public void findChunkFromProvider(CoolStreamingVideoChunk chunk,float triggeringTime){
+		
+	if( this.sourceStreamingNode != null ){
+		
+		
+		if(this.sourceStreamingNode.getVideoResource().contains(chunk))
+		{		
+			chunk.setSourceNode(this.sourceStreamingNode);
+			this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
+			
+		}
+		else
+		{
+			for(int index = 0 ; index < this.getNeighbors().size() ; index++)
+			{	
+				CoolStreamingPeer peer = (CoolStreamingPeer) this.getNeighbors().get(index);
+				
+				if( peer.getVideoResource().contains(chunk) && peer.isConnected() )
+				{
+					chunk.setSourceNode(peer);
+					peer.sendVideoChunk(this, chunk, triggeringTime);
+					//foundedProvider = true;
+					break;
+				}
+	
+			}
+		}	
+	}
+	
+	//Se mi rifornisco dal server sicuramente ha la porzione che mi serve
+	if( this.serverNode != null ){
+		chunk.setSourceNode(this.serverNode);
+		this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
+	}
+	
+	}
+
+
+public void updateVideoBufferList(float triggeringTime) {
+	
+	ArrayList<CoolStreamingVideoChunk> missingChunk = new ArrayList<CoolStreamingVideoChunk>(); 
+	
+	if(this.getVideoResource().size() >= 5)
+	{
+		//Guardo la prima meta' del mio buffer e vedo se ci sono porzioni mancanti
+		for(int index = 0 ; index < this.getVideoResource().size()-1 ; index++){
+			
+			int diff = this.getVideoResource().get(index+1).getChunkIndex() - this.getVideoResource().get(index).getChunkIndex();
+		
+			if( diff > 1 ){
+				
+				CoolStreamingVideoChunk chunk = this.getVideoResource().get(index);
+				int baseIndex = chunk.getChunkIndex();
+				
+				for(int k = 0 ; k < diff-1 ; k++)
+				{
+					baseIndex++;
+					CoolStreamingVideoChunk newChunk = new CoolStreamingVideoChunk(baseIndex,chunk.getChunkSize());
+					missingChunk.add(newChunk);
+				}
+			}
+		}
+	}
+	
+	/*
+	String my ="";
+	for(int j = 0 ; j < this.getVideoResource().size(); j++)
+		my = my + " " + this.getVideoResource().get(j).getChunkIndex();
+		
+	System.out.println("Ho : " + my);
+	
+	String miss ="";
+	for(int j = 0 ; j < missingChunk.size(); j++)
+		miss = miss + " " + missingChunk.get(j).getChunkIndex();
+		
+	System.out.println("Cerco : " + miss);
+	*/
+	
+	for(int i = 0 ; i < missingChunk.size(); i++)
+		this.findChunkFromProvider(missingChunk.get(i), triggeringTime);
+	
+}
 	public void setUploadSpeed(double uploadSpeed) {
 		this.uploadSpeed = uploadSpeed;
 	}

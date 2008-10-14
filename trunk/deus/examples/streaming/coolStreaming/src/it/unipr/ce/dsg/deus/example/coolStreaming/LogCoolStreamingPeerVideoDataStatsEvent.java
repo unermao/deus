@@ -54,12 +54,27 @@ public class LogCoolStreamingPeerVideoDataStatsEvent extends Event {
 				for(int j = 0 ; j < peer.getVideoResource().size(); j++)
 					listaRisorse = listaRisorse + " " + peer.getVideoResource().get(j).getChunkIndex(); 
 				
+				String sourceId = "";
+				int sourceKey = -1;
+				
+				if(peer.getServerNode() != null){
+					
+					sourceId = peer.getServerNode().getId();	
+					sourceKey = peer.getServerNode().getKey();
+				}	
+				else
+					if(peer.getSourceStreamingNode() != null)
+					{
+						sourceId = peer.getSourceStreamingNode().getId();
+						sourceKey = peer.getSourceStreamingNode().getKey();
+					}
+				
 				if(peer.getId().equals("pcNode"))
-					getLogger().info("Nodo ("+ peer.getId() +"):       " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);
 				if(peer.getId().equals("mobileNode"))
-					getLogger().info("Nodo ("+ peer.getId() +"):   " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"):   " + listaRisorse);
 				if(peer.getId().equals("mobile3GNode"))
-					getLogger().info("Nodo ("+ peer.getId() +"): " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + sourceId+"("+ sourceKey +")"+"): " + listaRisorse);
 				
 			}
 		}

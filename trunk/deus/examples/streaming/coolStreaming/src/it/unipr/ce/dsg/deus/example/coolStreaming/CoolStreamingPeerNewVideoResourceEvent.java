@@ -4,6 +4,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.Properties;
 
@@ -55,18 +56,37 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		
 		getLogger().fine("## new node video resource");
 	
-		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
+		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;		
 		
-		//System.out.println("New Peer Video Resource Event" + " (" + associatedStreamingNode.getId() + ")" +" : " + associatedStreamingNode.getServedPeers().size() + " (" + Engine.getDefault().getNodes().size() + " )");
+		//Verifico se il nodo che mi ha inviato il pacchetto è ancora connesso
+		Peer sourcePeer = (Peer) videoChunk.getSourceNode();
 		
-		//Aggiungo la nuova porzione video al nodo
-		associatedStreamingNode.addNewVideoResource(videoChunk);
-		
-		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
-		for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
-			    associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), videoChunk, this.triggeringTime);
-		
-		
+		/**
+		 * Se il nodo che mi ha inviato il pacchetto e' ancora conneso
+		 * effettuo le operazioni di invio ai miei forniti.
+		 * Altrimenti il pacchetto non viene inoltrato dato che si suppone che a causa
+		 * della disconnessione della sorgente non sia arrivato.
+		 * 
+		 */
+	
+	    if(Engine.getDefault().getNodes().contains(sourcePeer) )
+	     {
+	    	CoolStreamingVideoChunk newVideoChunk = new CoolStreamingVideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
+			
+			//Aggiungo la nuova porzione video al nodo
+			associatedStreamingNode.addNewVideoResource(newVideoChunk);
+			
+			//Imposto il nuovo nodo sorgente sulla porzione video
+			newVideoChunk.setSourceNode(associatedNode);
+				
+			//Innesca per i nodi forniti l'evento di aggiornamento risorsa
+			for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
+			{
+				   //getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
+				   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), newVideoChunk, this.triggeringTime);
+			}
+		}
+			
 		getLogger().fine("end new node video resource ##");
 	}
 

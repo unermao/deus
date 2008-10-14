@@ -67,46 +67,20 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 	    else 
 	    	newResource = new CoolStreamingVideoChunk(serverNode.getLastChunk().getChunkIndex()+1,serverNode.getChunkSize());
 		
+	    //Imposto nel chunk le informazioni sul sorgente
+	    newResource.setSourceNode(serverNode);
+	    
     	//Aggiungo la nuova porzione video al Server
 	    serverNode.addNewVideoResource(newResource);
-		
-		
 		
 		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++)
 		{		
-
-		        time = triggeringTime + nextChunkArrivalTime(serverNode.getUploadSpeed(),serverNode.getServedPeers().get(index).getDownloadSpeed(),newResource);
-			
-				CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
-				newPeerResEvent.setOneShot(true);
-				newPeerResEvent.setAssociatedNode(serverNode.getServedPeers().get(index));
-				newPeerResEvent.setResourceValue(newResource);
-				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
+			serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
 		}
 		
 		getLogger().fine("end new video resource ##");
-	}
-	
-	/**
-	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
-	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
-	 * @param providerUploadSpeed
-	 * @param clientDownloadSpeed
-	 * @return
-	 */
-	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
-		
-		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
-		double time = 0.0;
-		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
-		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
-		time = (chunkMbitSize / minSpeed)*100.0;
-		
-		//System.out.println("Server New Chunk Time :" + time);
-		
-		return (float)time;
 	}
 
 }
