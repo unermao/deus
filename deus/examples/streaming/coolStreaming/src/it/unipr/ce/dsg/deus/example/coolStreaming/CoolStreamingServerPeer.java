@@ -36,6 +36,7 @@ public class CoolStreamingServerPeer extends Peer {
 	private int chunkSize = 0;	
 	private double uploadSpeed = 0.0;
 	private double downloadSpeed = 0.0;
+	private int nodeDepth = 0;
 	
 	private ArrayList<CoolStreamingPeer> servedPeers = new ArrayList<CoolStreamingPeer>();
 	private ArrayList<CoolStreamingVideoChunk> videoResource = new ArrayList<CoolStreamingVideoChunk>();
@@ -79,6 +80,7 @@ public class CoolStreamingServerPeer extends Peer {
 		clone.servedPeers = this.servedPeers;
 		clone.videoResource = this.videoResource;
 		clone.chunkSize = this.chunkSize;
+		clone.nodeDepth = 0;
 		
 		return clone;
 	}
@@ -216,6 +218,14 @@ public class CoolStreamingServerPeer extends Peer {
 
 	public void setDownloadSpeed(double downloadSpeed) {
 		this.downloadSpeed = downloadSpeed;
+	}
+
+	public int getNodeDepth() {
+		return nodeDepth;
+	}
+
+	public void setNodeDepth(int nodeDepth) {
+		this.nodeDepth = nodeDepth;
 	}
 	
 }

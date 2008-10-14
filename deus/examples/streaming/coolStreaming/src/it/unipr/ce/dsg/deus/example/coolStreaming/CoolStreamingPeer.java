@@ -50,6 +50,7 @@ public class CoolStreamingPeer extends Peer {
 	private double fitnessValue = 0.0;
 	private boolean fitnessSort = false;
 	private int maxPartnersNumber = 20;
+	private int nodeDepth = 0;
 
 	private long time1;
 	private long time2;
@@ -126,6 +127,7 @@ public class CoolStreamingPeer extends Peer {
 		clone.sourceStreamingNode = this.sourceStreamingNode;
 		clone.videoResource = new ArrayList<CoolStreamingVideoChunk>(); ;
 		clone.videoResourceBufferLimit  = this.videoResourceBufferLimit;
+		clone.nodeDepth = 0;
 		
 		return clone;
 	}
@@ -214,6 +216,9 @@ public class CoolStreamingPeer extends Peer {
 			
 			this.servedPeers.get(i).setSourceStreamingNode(null);
 			
+			//Azzero il mio ordine di nodo
+			this.resetNodeDepth();
+			
 			//Lancio l'evento per l'aggiornamento delle liste sul quel nodo
 			this.servedPeers.get(i).updateParentsList();
 			
@@ -236,6 +241,36 @@ public class CoolStreamingPeer extends Peer {
 		this.resetNeighbors();
 	}
 	
+	private void resetNodeDepth() {
+		
+		this.setNodeDepth(0);
+		
+		for(int i =0; i<this.getServedPeers().size(); i++)
+			this.getServedPeers().get(i).resetNodeDepth();
+		
+	}
+	
+	/**
+	 * Nel caso di un cambio di fornitore aggiorno il grado di nodo di tutti i 
+	 * miei serviti
+	 */
+	public void updateNodeDepth() {
+		
+		int value = 0;
+		
+		if(this.sourceStreamingNode != null)
+			value = this.sourceStreamingNode.getNodeDepth();
+		
+		if(this.serverNode != null)
+			value = this.serverNode.getNodeDepth();
+		
+		
+		this.nodeDepth = value + 1;
+		
+		for(int i = 0 ; i < this.getServedPeers().size(); i++)
+			this.getServedPeers().get(i).updateNodeDepth();
+		
+	}
 	public void updateFitnessValue(){
 		
 		double newFitness = 0.0;
@@ -363,11 +398,14 @@ public class CoolStreamingPeer extends Peer {
 					//Imposto la connessione attiva con il nodo fornitore trovato
 					this.getSourceStreamingNode().addActiveConnection();
 					
+					//Incremento il mio ordine di nodo
+					this.updateNodeDepth();
+					
 					//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 					this.getSourceStreamingNode().addServedPeer(this);
 					
 					//Chiamiamo la funzione per avere segmenti mancanti
-			//		this.getBufferNeighbor(appSourceStreamingNode,0,triggeringTime);
+					this.getBufferNeighbor(appSourceStreamingNode,0,triggeringTime);
 					
 					break;
 				}
@@ -381,6 +419,9 @@ public class CoolStreamingPeer extends Peer {
 					
 					//Imposto la connessione attiva con il server centrale
 					this.getServerNode().addActiveConnection();
+					
+					//Incremento il mio ordine di nodo
+					this.updateNodeDepth();
 					
 					//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 					this.getServerNode().addServedPeer(this);
@@ -428,12 +469,15 @@ public class CoolStreamingPeer extends Peer {
 							
 							//Imposto la connessione attiva con il nodo fornitore trovato
 							appSourceStreamingNode.addActiveConnection();
+							
+							//Incremento il mio ordine di nodo
+							this.updateNodeDepth();
 						
 							//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 							appSourceStreamingNode.addServedPeer(this);
 							
 							//Chiamiamo la funzione per avere segmenti mancanti
-						//	this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
+							this.getBufferNeighbor(appSourceStreamingNode,appSourceStreamingNode.getVideoResource().indexOf(neededChunk), triggeringTime);
 							
 							return true;
 							
@@ -451,6 +495,9 @@ public class CoolStreamingPeer extends Peer {
 			
 				//Imposto la connessione attiva con il server centrale
 				this.getServerNode().addActiveConnection();
+				
+				//Incremento il mio ordine di nodo
+				this.updateNodeDepth();
 			
 				//Aggiungo il nodo che si sta connettendo alla lista di quelli da fornire
 				this.getServerNode().addServedPeer(this);
@@ -519,7 +566,7 @@ public class CoolStreamingPeer extends Peer {
 	public void getBufferNeighbor(CoolStreamingPeer providerNode, int chunkIndex, float triggeringTime)
 	{
 
-		int startIndex = providerNode.getVideoResource().get(providerNode.getVideoResource().size() - 1).getChunkIndex() - 3;
+		int startIndex = providerNode.getVideoResource().get(providerNode.getVideoResource().size() - 1).getChunkIndex() - 5;
 		
 		if( startIndex < 0 )
 		 startIndex = 0;
@@ -846,6 +893,14 @@ public void updateVideoBufferList(float triggeringTime) {
 
 	public void setDownloadSpeed(double downloadSpeed) {
 		this.downloadSpeed = downloadSpeed;
+	}
+
+	public int getNodeDepth() {
+		return nodeDepth;
+	}
+
+	public void setNodeDepth(int nodeDepth) {
+		this.nodeDepth = nodeDepth;
 	}
 	
 }

@@ -236,8 +236,8 @@
 		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="10" />
-			<aut:param name="secondMeanArrival" value="100000" />
-			<aut:param name="vtThreshold" value="50000" />
+			<aut:param name="secondMeanArrival" value="2000" />
+			<aut:param name="vtThreshold" value="3000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNode" />
@@ -251,8 +251,8 @@
 		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="20" />
-			<aut:param name="secondMeanArrival" value="200000" />
-			<aut:param name="vtThreshold" value="50000" />
+			<aut:param name="secondMeanArrival" value="2000" />
+			<aut:param name="vtThreshold" value="3000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="mobileNode" />
@@ -266,8 +266,8 @@
 		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="30" />
-			<aut:param name="secondMeanArrival" value="200000" />
-			<aut:param name="vtThreshold" value="50000" />
+			<aut:param name="secondMeanArrival" value="2000" />
+			<aut:param name="vtThreshold" value="3000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="mobile3GNode" />
@@ -278,9 +278,9 @@
 	</aut:process>
 
 	<aut:process id="videoPoisson1"
-		handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="100" />
+			<aut:param name="period" value="10" />
 		</aut:params>
 		<aut:events>
 			<aut:reference id="newvideores" />
@@ -339,7 +339,7 @@
 		</aut:events>
 	</aut:process>
 
-
+ 
 	<aut:process id="disconnectionPoisson"
 		handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
@@ -360,7 +360,7 @@
 	<aut:process id="periodic"
 		handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="25" />
+			<aut:param name="period" value="30" />
 		</aut:params>
 		<aut:events>
 			<aut:reference id="logNodeVideoData" />
