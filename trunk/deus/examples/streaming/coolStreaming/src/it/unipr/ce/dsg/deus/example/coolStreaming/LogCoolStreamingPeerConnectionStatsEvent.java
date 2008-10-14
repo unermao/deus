@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.coolStreaming;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -54,10 +55,31 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 
 		activeConnectionServer = (double)serverPeer.getActiveConnection();
 		
+		//Trovo il massimo grado di nodo
+		int maxNodeDepth = 0;
+		for(int k = 1; k < Engine.getDefault().getNodes().size(); k++ ){
+			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(k);
+			
+			maxNodeDepth = Math.max(maxNodeDepth, peer.getNodeDepth());
+		}
+			
+		
+		//Creo la matrice per le statistiche sulla profondita'
+		ArrayList<ArrayList<Integer>> depthMatrix = new ArrayList<ArrayList<Integer>>();
+		
+		for(int j = 0 ; j < maxNodeDepth; j++ )
+			depthMatrix.add(new ArrayList<Integer>());
+		
 		//Controllo le connessioni attie dei diversi nodi
 		for(int index = 1; index < Engine.getDefault().getNodes().size(); index++ ){
 			
 			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);
+			
+         //CALCOLO MEDIA SEGMENTI RICEVUTI IN BASE ALLA PROFONDITA' DEL NODO
+			
+			//Se il nodo e' connesso a qualcuno e ha almeno una risorsa 
+			if(peer.getNodeDepth() > 0 && peer.getVideoResource().size() > 0)
+				depthMatrix.get(peer.getNodeDepth()-1).add(peer.getVideoResource().get(peer.getVideoResource().size()-1).getChunkIndex());
 			
 			activeConnectionTotal = activeConnectionTotal + ( (double)peer.getActiveConnection());
 			
@@ -103,6 +125,26 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("Total mobile3GNode   : " + totalmobile3GNode);		
 		getLogger().info("###########################");
 		getLogger().info("\n");
+		
+		getLogger().info("\n");		
+		for(int j = 0 ; j < maxNodeDepth; j++ )
+		{
+			
+			long totalSum = 0;
+			int chunkIndexAverage = 0;
+			
+			if( depthMatrix.get(j).size() > 0 )
+			{
+				for( int k = 0 ; k < depthMatrix.get(j).size(); k++)
+				{
+					totalSum = totalSum + depthMatrix.get(j).get(k);
+				}
+				
+				chunkIndexAverage = (int) (totalSum / depthMatrix.get(j).size());
+				
+				getLogger().info("Nodes Depth: " + (j+1) + " Chunk Average: " + chunkIndexAverage);		
+			}
+		}
 		
 	}
 
