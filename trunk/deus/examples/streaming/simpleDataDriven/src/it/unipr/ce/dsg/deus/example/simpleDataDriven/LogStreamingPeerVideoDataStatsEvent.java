@@ -48,8 +48,6 @@ public class LogStreamingPeerVideoDataStatsEvent extends Event {
 			{
 				String listaRisorse = "";
 				
-				//getLogger().info("Connessioni attive("+ peer.getId() + "): " + peer.getActiveConnection() + "/" + peer.getMaxAcceptedConnection());
-				
 				for(int j = 0 ; j < peer.getVideoResource().size(); j++)
 					listaRisorse = listaRisorse + " " + peer.getVideoResource().get(j).getChunkIndex(); 
 				
