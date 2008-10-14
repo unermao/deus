@@ -100,7 +100,9 @@
 		<aut:logger level="FINE" />
 	</aut:event>
 
-
+	<aut:event id="updateVideoBuffer" handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingUpdateVideoBufferEvent" >
+		<aut:logger level="FINE" />
+	</aut:event>
 
 	<aut:event id="disconnection"
 		handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingDisconnectionEvent"
@@ -302,6 +304,7 @@
 		</aut:params>
 		<aut:events>
 			<aut:reference id="updatelist" />
+			<aut:reference id="updateVideoBuffer" />
 		</aut:events>
 	</aut:process>
 

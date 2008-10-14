@@ -1,9 +1,12 @@
 package it.unipr.ce.dsg.deus.example.coolStreaming;
 
+import it.unipr.ce.dsg.deus.core.Node;
+
 public class CoolStreamingVideoChunk {
 	
 	private int chunkIndex;
 	private int chunkSize;
+	private Node sourceNode;
 
 	public CoolStreamingVideoChunk(int chunkIndex, int chunkSize) {
 		super();
@@ -34,5 +37,14 @@ public class CoolStreamingVideoChunk {
 	public void setChunkSize(int chunkSize) {
 		this.chunkSize = chunkSize;
 	}
+
+	public Node getSourceNode() {
+		return sourceNode;
+	}
+
+	public void setSourceNode(Node sourceNode) {
+		this.sourceNode = sourceNode;
+	}
+
 
 }

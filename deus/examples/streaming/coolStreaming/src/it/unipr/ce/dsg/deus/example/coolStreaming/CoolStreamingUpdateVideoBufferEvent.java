@@ -18,11 +18,11 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingUpdateParentsEvent extends NodeEvent {
+public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
 
 	private int maxPartnersNumber = 20;
 	
-	public CoolStreamingUpdateParentsEvent(String id, Properties params,
+	public CoolStreamingUpdateVideoBufferEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,7 +34,7 @@ public class CoolStreamingUpdateParentsEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		CoolStreamingUpdateParentsEvent clone = (CoolStreamingUpdateParentsEvent) super.clone();
+		CoolStreamingUpdateVideoBufferEvent clone = (CoolStreamingUpdateVideoBufferEvent) super.clone();
 	
 		clone.maxPartnersNumber = this.maxPartnersNumber;
 		
@@ -43,7 +43,7 @@ public class CoolStreamingUpdateParentsEvent extends NodeEvent {
 
 	public void run() throws RunException {
 
-		getLogger().fine("## Update Parents List Event ! ");
+		getLogger().fine("## Update Video Buffer Event ! ");
 	
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
@@ -51,10 +51,7 @@ public class CoolStreamingUpdateParentsEvent extends NodeEvent {
 			CoolStreamingPeer peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
-			{
-				peer.updateParentsList();
-				//peer.updateVideoBufferList(triggeringTime);
-			}
+				peer.updateVideoBufferList(this.triggeringTime);
 		}
 			
 			

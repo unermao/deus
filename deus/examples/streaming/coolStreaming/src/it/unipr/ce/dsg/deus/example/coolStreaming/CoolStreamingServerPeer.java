@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.coolStreaming;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
@@ -65,6 +66,8 @@ public class CoolStreamingServerPeer extends Peer {
 				maxAcceptedConnection = (int) ((AllocableResource) r).getAmount();
 		}	
 		
+		this.setConnected(true);
+		
 	}
 	
 	public Object clone() {
@@ -83,13 +86,55 @@ public class CoolStreamingServerPeer extends Peer {
 	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
 		
 		this.videoResource.add(newVideoRes);
-		
-		/*
-		for(int i = 0; i<this.getServedPeers().size(); i++ ){
-			this.getServedPeers().get(i).addNewVideoResource(newVideoRes);
-		}
-		*/
 	}
+	
+	/**
+	 * Invia al nodo client di destinazione, la porzione video newResource partendo dal tempo 
+	 * triggerTime
+	 * 
+	 * @param clientNode
+	 * @param newResource
+	 * @param triggeringTime
+	 */
+	public void sendVideoChunk(CoolStreamingPeer clientNode,CoolStreamingVideoChunk newResource, float triggeringTime){
+		
+		float time = triggeringTime + nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
+			
+		CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
+		newPeerResEvent.setOneShot(true);
+		newPeerResEvent.setAssociatedNode(clientNode);
+		newPeerResEvent.setResourceValue(newResource);
+		Engine.getDefault().insertIntoEventsList(newPeerResEvent);
+	}
+	
+	/**
+	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
+	 * in base alla velocità di Upload del fornitore e quella di Downalod del cliente.
+	 * @param providerUploadSpeed
+	 * @param clientDownloadSpeed
+	 * @return
+	 */
+	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
+		
+	//	CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+		double time = 0.0;
+		double minSpeed = Math.min(  (providerUploadSpeed  / (double) this.getActiveConnection()) , clientDownloadSpeed);
+		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
+		time = (chunkMbitSize / minSpeed);
+		
+		float floatTime = expRandom((float)time);
+		//System.out.println("Server New Chunk Time :" + time);
+		
+		return floatTime*100;
+	}
+	
+	private float expRandom(float meanValue) {
+		float myRandom = (float) (-Math.log(Engine.getDefault()
+				.getSimulationRandom().nextFloat()) * meanValue);
+		return myRandom;
+	}
+	
+	
 	
 	public void removeActiveConnection(){
 		
