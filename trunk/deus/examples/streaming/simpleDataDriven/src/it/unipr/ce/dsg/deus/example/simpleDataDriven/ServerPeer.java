@@ -96,7 +96,16 @@ public class ServerPeer extends Peer {
 	 */
 	public void sendVideoChunk(StreamingPeer clientNode,VideoChunk newResource, float triggeringTime){
 		
-		float time = triggeringTime + nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
+		//Verifico se devo degradare la velocitˆ di download del nodo client in base alle
+		//sue connessioni in ingresso attive
+		double clientDownloadSpeed = 0.0;
+		if( clientNode.getDownloadActiveConnection() > 0 )
+			clientDownloadSpeed = clientNode.getDownloadSpeed() / (double)clientNode.getDownloadActiveConnection();
+		else
+			clientDownloadSpeed = clientNode.getDownloadSpeed();
+		
+		
+		float time = triggeringTime + nextChunkArrivalTime(this.getUploadSpeed(),clientDownloadSpeed,newResource);
 			
 		//System.out.println("Server Invia: " + newResource.getChunkIndex() + " At: " + time + " To:" + clientNode.getKey());
 		

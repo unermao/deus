@@ -115,6 +115,10 @@
 			<aut:logger level="INFO" />
 	</aut:event>
 	
+	<aut:event id="playVideo" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingPlayVideoEvent" >
+			<aut:logger level="INFO" />
+	</aut:event>
+	
 	<aut:event id="logNodeConnectionStat" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.LogStreamingPeerConnectionStatsEvent" >
 		<aut:logger level="INFO" />
 	</aut:event>
@@ -356,6 +360,15 @@
 			<aut:reference id="logNodeConnectionStat" /> 
 		</aut:events>
 	</aut:process>
+
+	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="100" /> 
+		</aut:params>
+		<aut:events>
+			<aut:reference id="playVideo" /> 
+		</aut:events>
+	</aut:process>
 	
 	<aut:process id="graph" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
@@ -374,12 +387,12 @@
 		<aut:processes>
 			<aut:reference id="serverPoisson1" /> 
 			<aut:reference id="twospeedspoissonPcNode" /> 
-
 			<aut:reference id="twospeedspoissonMobileNode" /> 
 			<aut:reference id="twospeedspoissonMobile3GNode" /> 
 			<aut:reference id="videoPoisson1" />
 			<aut:reference id="updateListPoisson1" />
 			<aut:reference id="periodic" />
+			<aut:reference id="periodicPlayVideo" />
 			<aut:reference id="graph" />
 
 		</aut:processes>
