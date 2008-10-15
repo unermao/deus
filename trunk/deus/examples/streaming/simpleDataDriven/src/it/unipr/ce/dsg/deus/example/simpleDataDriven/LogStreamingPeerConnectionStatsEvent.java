@@ -70,9 +70,18 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		double totalMissingChunk = 0;
 		double totalArrivedChunk = 0;
 	
+		//Varibiali per calcolare la media dei chunk mancanti
+		double totalDuplicateChunk = 0;
 		
 		ServerPeer serverPeer = (ServerPeer) Engine.getDefault().getNodes().get(0);
 
+		//Aggiungo alle statistiche relative ai chunk mancanti quelle memorizzate nel server dai nodi disconnessi
+		totalMissingChunk = totalMissingChunk + serverPeer.getMissingChunkNumber();
+		totalArrivedChunk = totalArrivedChunk + serverPeer.getTotalChunkReceived();
+		
+		//Aggiungo le statistiche relative ai doppioni dei nodi che si sono disconnessi e che hanno salvato le statistiche nel server
+		totalDuplicateChunk = totalDuplicateChunk + serverPeer.getDuplicateChunkNumber();
+		
 		activeConnectionServer = (double)serverPeer.getActiveConnection();
 		
 		//Trovo il massimo grado di nodo
@@ -98,6 +107,9 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			//CALCOLO LA MEDIA DEI CHUNK MANCANTI
 			totalMissingChunk = totalMissingChunk + (double)peer.getMissingChunkNumber();
 			totalArrivedChunk = totalArrivedChunk + (double)peer.getTotalChunkReceived();
+			
+			//CALCOLO IL NUMERO DEI DUPLICATI
+			totalDuplicateChunk = totalDuplicateChunk + peer.getDuplicateChunkNumber();
 			
 			//CALCOLO MEDIA SEGMENTI RICEVUTI IN BASE ALLA PROFONDITA' DEL NODO
 			
@@ -220,6 +232,11 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("Total   Missed   Chunk: " + totalMissingChunk);
 		getLogger().info("Total   Arrived  Chunk: " + totalArrivedChunk);
 		getLogger().info("Average Missed   Chunk: " + (totalMissingChunk/totalArrivedChunk)*100.0 + " %");	
+		
+		getLogger().info("\n");
+		getLogger().info("Total   Duplicated Chunk: " + totalDuplicateChunk);
+		getLogger().info("Average Duplicated Chunk (Total Duplicate / Total Arrived) : " + (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0 + " %");	
+		getLogger().info("\n");
 		
 		getLogger().info("###########################");
 		getLogger().info("\n");

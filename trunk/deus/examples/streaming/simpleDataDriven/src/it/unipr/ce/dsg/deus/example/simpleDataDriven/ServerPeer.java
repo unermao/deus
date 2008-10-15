@@ -38,6 +38,10 @@ public class ServerPeer extends Peer {
 	private double downloadSpeed = 0.0;
 	private int nodeDepth = 0;
 	
+	private double missingChunkNumber   = 0.0; 
+	private double totalChunkReceived   = 0.0; 
+	private double duplicateChunkNumber = 0.0;
+
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
 	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
 	
@@ -131,8 +135,6 @@ public class ServerPeer extends Peer {
 		time = (chunkMbitSize / minSpeed);
 		
 		float floatTime = expRandom((float)time);
-		
-		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
 		
 		return floatTime*100;
 	}
@@ -241,6 +243,30 @@ public class ServerPeer extends Peer {
 
 	public void setNodeDepth(int nodeDepth) {
 		this.nodeDepth = nodeDepth;
+	}
+
+	public double getMissingChunkNumber() {
+		return missingChunkNumber;
+	}
+
+	public void setMissingChunkNumber(double missingChunkNumber) {
+		this.missingChunkNumber = missingChunkNumber;
+	}
+
+	public double getTotalChunkReceived() {
+		return totalChunkReceived;
+	}
+
+	public void setTotalChunkReceived(double totalChunkReceived) {
+		this.totalChunkReceived = totalChunkReceived;
+	}
+
+	public double getDuplicateChunkNumber() {
+		return duplicateChunkNumber;
+	}
+
+	public void setDuplicateChunkNumber(double duplicateChunkNumber) {
+		this.duplicateChunkNumber = duplicateChunkNumber;
 	}
 	
 }

@@ -53,6 +53,7 @@ public class StreamingPeer extends Peer {
 	private int missingChunkNumber = 0; 
 	private int totalChunkReceived = 0; 
 	private int indexOfLastReceivedChunk;
+	private int duplicateChunkNumber = 0;
 	
 	private int nodeDepth = 0;
 
@@ -139,6 +140,7 @@ public class StreamingPeer extends Peer {
 		clone.missingChunkNumber = 0;
 		clone.videoPlayBuffer = new ArrayList<VideoChunk>();
 		clone.totalChunkReceived = 0;
+		clone.duplicateChunkNumber = 0;
 		
 		return clone;
 	}
@@ -179,7 +181,7 @@ public class StreamingPeer extends Peer {
 					
 					if(
 							peerApp.isConnected() //Se il peer e' connesso
-							&& !this.neighbors.contains(peerApp) //Se non e' gi� tra i miei vicni
+							&& !this.neighbors.contains(peerApp) //Se non e' gia' tra i miei vicni
 							&& !peerApp.equals(this) //Se non sono io
 							&& !this.servedPeers.contains(peerApp) //Se non lo sto servendo
 					  )
@@ -217,6 +219,12 @@ public class StreamingPeer extends Peer {
 		//Imposto il nodo come disconnesso
 		this.setConnected(false);
 		
+		//Comunico le mie statistiche al Server
+		ServerPeer server = (ServerPeer)Engine.getDefault().getNodes().get(0);
+		server.setMissingChunkNumber(server.getMissingChunkNumber() + this.missingChunkNumber);
+		server.setTotalChunkReceived(server.getTotalChunkReceived() + this.totalChunkReceived);
+		server.setDuplicateChunkNumber(server.getDuplicateChunkNumber() + this.getDuplicateChunkNumber() );
+		
 		//Mi tolgo dal mio fornitore
 		if(this.serverNode != null)
 			this.serverNode.getServedPeers().remove(this);
@@ -243,7 +251,7 @@ public class StreamingPeer extends Peer {
 			
 		}
 		
-		//Lancio la funzione di ricerca dei nuovi nodi per quelli ceh stavo servendo
+		//Lancio la funzione di ricerca dei nuovi nodi per quelli che stavo servendo
 		for( int i = 0 ; i < this.servedPeers.size(); i++){
 		
 			if(this.servedPeers.get(i).sourceStreamingNode == null && this.servedPeers.get(i).serverNode == null)
@@ -361,20 +369,20 @@ public class StreamingPeer extends Peer {
 	}
 	
 	public void addNewVideoResource(VideoChunk newVideoRes, float triggeringTime){
-			
-		//Incremento il numero totale di chunk ricevuti
-		this.totalChunkReceived ++;
 		
 		//Salvo il tempo in cui e' arrivato il chunk
 		float arrivalValue = triggeringTime - newVideoRes.getOriginalTime(); 
 		this.arrivalTimes.add(arrivalValue);
 		
 		if(!this.getVideoResource().contains(newVideoRes))
-		{	
+		{
+			//Incremento il numero totale di chunk ricevuti
+			this.totalChunkReceived ++;
 			this.videoResource.add(newVideoRes);
 			this.sortVideoBuffer();
 		}
-		//TODO Aggiungere il conteggio di eventuali doppioni ricevuti
+		else
+			this.duplicateChunkNumber ++; //Incremento il numero di duplicati
 		
 		//Se le porzioni di video che ho in memoria superano il limite del buffer 
 		//rimuovo un elemento e lo inserisco nel buffer di riproduzione
@@ -1079,6 +1087,14 @@ public class StreamingPeer extends Peer {
 
 	public void setIndexOfLastReceivedChunk(int indexOfLastReceivedChunk) {
 		this.indexOfLastReceivedChunk = indexOfLastReceivedChunk;
+	}
+
+	public int getDuplicateChunkNumber() {
+		return duplicateChunkNumber;
+	}
+
+	public void setDuplicateChunkNumber(int duplicateChunkNumber) {
+		this.duplicateChunkNumber = duplicateChunkNumber;
 	}
 
 	
