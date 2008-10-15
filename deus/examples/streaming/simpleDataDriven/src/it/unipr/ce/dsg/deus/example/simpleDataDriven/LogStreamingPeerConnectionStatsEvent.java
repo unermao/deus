@@ -66,6 +66,9 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		float averageMobileWifiArrivalTime = 0;
 		float averageMobile3GArrivalTime = 0;
 		
+		//Varibiali per calcolare la media dei chunk mancanti
+		double totalMissingChunk = 0;
+		double totalArrivedChunk = 0;
 	
 		
 		ServerPeer serverPeer = (ServerPeer) Engine.getDefault().getNodes().get(0);
@@ -92,6 +95,9 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			
 			StreamingPeer peer = (StreamingPeer) Engine.getDefault().getNodes().get(index);
 			
+			//CALCOLO LA MEDIA DEI CHUNK MANCANTI
+			totalMissingChunk = totalMissingChunk + (double)peer.getMissingChunkNumber();
+			totalArrivedChunk = totalArrivedChunk + (double)peer.getTotalChunkReceived();
 			
 			//CALCOLO MEDIA SEGMENTI RICEVUTI IN BASE ALLA PROFONDITA' DEL NODO
 			
@@ -208,6 +214,12 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 				getLogger().info("Nodes Depth: " + (j+1) + " Chunk Average: " + chunkIndexAverage);		
 			}
 		}	
+		
+
+		getLogger().info("\n");
+		getLogger().info("Total   Missed   Chunk: " + totalMissingChunk);
+		getLogger().info("Total   Arrived  Chunk: " + totalArrivedChunk);
+		getLogger().info("Average Missed   Chunk: " + (totalMissingChunk/totalArrivedChunk)*100.0 + " %");	
 		
 		getLogger().info("###########################");
 		getLogger().info("\n");

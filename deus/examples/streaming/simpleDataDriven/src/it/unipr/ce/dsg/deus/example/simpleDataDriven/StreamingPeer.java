@@ -49,6 +49,10 @@ public class StreamingPeer extends Peer {
 	private double fitnessValue = 0.0;
 	private boolean fitnessSort = false;
 	private int maxPartnersNumber = 20;
+	private int downloadActiveConnection = 0;
+	private int missingChunkNumber = 0; 
+	private int totalChunkReceived = 0; 
+	private int indexOfLastReceivedChunk;
 	
 	private int nodeDepth = 0;
 
@@ -65,9 +69,10 @@ public class StreamingPeer extends Peer {
 	
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
 	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
+	private ArrayList<VideoChunk> videoPlayBuffer = new ArrayList<VideoChunk>();
 	
 	//Array per le statistiche dei tempi di ricezione
-	private ArrayList<Float> arrivalTimes = new ArrayList<Float>(); 
+	private ArrayList<Float> arrivalTimes = new ArrayList<Float>();
 	
 	public StreamingPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -131,6 +136,9 @@ public class StreamingPeer extends Peer {
 		clone.arrivalTimes = new ArrayList<Float>(); 
 		clone.videoResourceBufferLimit  = this.videoResourceBufferLimit;
 		clone.nodeDepth = 0;
+		clone.missingChunkNumber = 0;
+		clone.videoPlayBuffer = new ArrayList<VideoChunk>();
+		clone.totalChunkReceived = 0;
 		
 		return clone;
 	}
@@ -223,6 +231,9 @@ public class StreamingPeer extends Peer {
 		for( int i = 0 ; i < this.servedPeers.size(); i++){
 			
 			this.servedPeers.get(i).setSourceStreamingNode(null);
+			
+			//Decremento il numero di download attivi del nodo che stavo fornendo
+			this.servedPeers.get(i).setDownloadActiveConnection(this.servedPeers.get(i).getDownloadActiveConnection()-1);
 			
 			//Azzero la profondita' del nodo che si stava fornendo da me
 			this.servedPeers.get(i).resetNodeDepth();
@@ -351,6 +362,9 @@ public class StreamingPeer extends Peer {
 	
 	public void addNewVideoResource(VideoChunk newVideoRes, float triggeringTime){
 			
+		//Incremento il numero totale di chunk ricevuti
+		this.totalChunkReceived ++;
+		
 		//Salvo il tempo in cui e' arrivato il chunk
 		float arrivalValue = triggeringTime - newVideoRes.getOriginalTime(); 
 		this.arrivalTimes.add(arrivalValue);
@@ -362,10 +376,66 @@ public class StreamingPeer extends Peer {
 		}
 		//TODO Aggiungere il conteggio di eventuali doppioni ricevuti
 		
-		//Se le porzioni di video che ho in memoria superano il limite del buffer rimuoso un elemento
+		//Se le porzioni di video che ho in memoria superano il limite del buffer 
+		//rimuovo un elemento e lo inserisco nel buffer di riproduzione
 		if(this.videoResource.size() > videoResourceBufferLimit)
+		{
+			this.videoPlayBuffer.add(this.videoResource.get(0));
+			
+			//Controllo che la grandezza del buffer di riproduzione non superi il limite consentito
+			if(this.videoPlayBuffer.size() > videoResourceBufferLimit)
+				this.videoPlayBuffer.remove(0);
+				
 			this.videoResource.remove(0);
+		}
 	}
+	
+	/**
+	 * Funzione utilizzata per simulare la riproduzione del filmato
+	 * utilizzando i chunk all'interno del videoPlayBuffer.
+	 * 
+	 * Effettua dei controlli su eventuali pacchetti mancanti al momento della
+	 * riproduzione e memorizza l'ultimo indice riprodotto per controllare
+	 * successive deadline.
+	 * 
+	 */
+	public void playVideoBuffer(){
+		
+		//Verifichiamo che il buffer sia completo per poter iniziare la riproduzione
+		if( this.videoPlayBuffer.size() == this.videoResourceBufferLimit )
+		{
+			
+			//Memorizzo l'indice dell'ultimo elemento che mando in riproduzione 
+			//per verificare eventuali deadline successive
+			this.indexOfLastReceivedChunk = this.videoPlayBuffer.get(this.videoPlayBuffer.size()-1).getChunkIndex();
+			
+			//Verifichiamo eventuali chunk mancanti
+			for(int index = 0 ; index < this.getVideoResource().size()-1 ; index++){
+				
+				int diff = this.getVideoResource().get(index+1).getChunkIndex() - this.getVideoResource().get(index).getChunkIndex();
+			
+				if( diff > 1 ){
+					
+					VideoChunk chunk = this.getVideoResource().get(index);
+					int baseIndex = chunk.getChunkIndex();
+					
+					for(int k = 0 ; k < diff-1 ; k++)
+					{
+						baseIndex++;
+						this.missingChunkNumber ++;	
+					}
+				}
+				
+			}
+			
+			//Puliamo il buffer di riproduzione 
+			this.videoPlayBuffer.clear();
+			
+		}
+		
+		
+	}
+	
 	
 	public void removeActiveConnection(){
 		
@@ -414,7 +484,9 @@ public class StreamingPeer extends Peer {
 					
 					//Incremento il mio ordine di nodo
 					this.updateNodeDepth();
-					//this.setNodeDepth(this.getSourceStreamingNode().getNodeDepth()+1);
+					
+					//Incremento il numero di download attivi
+					this.downloadActiveConnection ++;
 					
 					//Imposto la connessione attiva con il nodo fornitore trovato
 					this.getSourceStreamingNode().addActiveConnection();
@@ -438,6 +510,9 @@ public class StreamingPeer extends Peer {
 					//Incremento il mio ordine di nodo
 					this.updateNodeDepth();
 					//this.setNodeDepth(this.getServerNode().getNodeDepth()+1);
+					
+					//Incremento il numero di download attivi
+					this.downloadActiveConnection ++;
 					
 					//Imposto la connessione attiva con il server centrale
 					this.getServerNode().addActiveConnection();
@@ -485,7 +560,9 @@ public class StreamingPeer extends Peer {
 							
 							//Incremento il mio ordine di nodo
 							this.updateNodeDepth();
-							//this.setNodeDepth(this.getSourceStreamingNode().getNodeDepth()+1);
+							
+							//Incremento il numero di download attivi
+							this.downloadActiveConnection ++;
 							
 							//Imposto la connessione attiva con il nodo fornitore trovato
 							appSourceStreamingNode.addActiveConnection();
@@ -511,6 +588,10 @@ public class StreamingPeer extends Peer {
 			
 				//Incremento il mio ordine di nodo
 				this.updateNodeDepth();	
+				
+				//Incremento il numero di download attivi
+				this.downloadActiveConnection ++;
+				
 				//Imposto la connessione attiva con il server centrale
 				this.getServerNode().addActiveConnection();
 			
@@ -622,8 +703,15 @@ public class StreamingPeer extends Peer {
 	 */
 	public void sendVideoChunk(StreamingPeer clientNode,VideoChunk newResource, float triggeringTime){
 		
-
-		float appTime = nextChunkArrivalTime(this.getUploadSpeed(),clientNode.getDownloadSpeed(),newResource);
+		//Verifico se devo degradare la velocitˆ di download del nodo client in base alle
+		//sue connessioni in ingresso attive
+		double clientDownloadSpeed = 0.0;
+		if( clientNode.getDownloadActiveConnection() > 0 )
+			clientDownloadSpeed = clientNode.getDownloadSpeed() / (double)clientNode.getDownloadActiveConnection();
+		else
+			clientDownloadSpeed = clientNode.getDownloadSpeed();
+		
+		float appTime = nextChunkArrivalTime(this.getUploadSpeed(),clientDownloadSpeed,newResource);
 		
 		float time = triggeringTime + appTime;
 		
@@ -749,14 +837,15 @@ public class StreamingPeer extends Peer {
 				}
 			}	
 		}
-		
+
+		/*
 		//Se mi rifornisco dal server sicuramente ha la porzione che mi serve
 		if( this.serverNode != null ){
 			chunk.setSourceNode(this.serverNode);
 			chunk.setOriginalTime(triggeringTime);
 			this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
 		}
-		
+		*/
 	}
 	
 	/**
@@ -950,6 +1039,46 @@ public class StreamingPeer extends Peer {
 
 	public void setNodeDepth(int nodeDepth) {
 		this.nodeDepth = nodeDepth;
+	}
+
+	public int getDownloadActiveConnection() {
+		return downloadActiveConnection;
+	}
+
+	public void setDownloadActiveConnection(int downloadActiveConnection) {
+		this.downloadActiveConnection = downloadActiveConnection;
+	}
+
+	public ArrayList<VideoChunk> getVideoPlayBuffer() {
+		return videoPlayBuffer;
+	}
+
+	public void setVideoPlayBuffer(ArrayList<VideoChunk> videoPlayBuffer) {
+		this.videoPlayBuffer = videoPlayBuffer;
+	}
+
+	public int getMissingChunkNumber() {
+		return missingChunkNumber;
+	}
+
+	public void setMissingChunkNumber(int missingChunkNumber) {
+		this.missingChunkNumber = missingChunkNumber;
+	}
+
+	public int getTotalChunkReceived() {
+		return totalChunkReceived;
+	}
+
+	public void setTotalChunkReceived(int totalChunkReceived) {
+		this.totalChunkReceived = totalChunkReceived;
+	}
+
+	public int getIndexOfLastReceivedChunk() {
+		return indexOfLastReceivedChunk;
+	}
+
+	public void setIndexOfLastReceivedChunk(int indexOfLastReceivedChunk) {
+		this.indexOfLastReceivedChunk = indexOfLastReceivedChunk;
 	}
 
 	
