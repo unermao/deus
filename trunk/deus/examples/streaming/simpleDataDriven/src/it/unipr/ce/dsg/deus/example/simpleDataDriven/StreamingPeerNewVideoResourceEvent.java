@@ -72,7 +72,8 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 			for(int index = 0 ; index < associatedStreamingNode.getServedPeers().size(); index++)
 			{
 				   //getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
-				   associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), newVideoChunk, this.triggeringTime);
+				   //if( !associatedStreamingNode.getServedPeers().get(index).getNeededChunk().contains(newVideoChunk.getChunkIndex()) )
+					associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), newVideoChunk, this.triggeringTime);
 			}
 		}
 			

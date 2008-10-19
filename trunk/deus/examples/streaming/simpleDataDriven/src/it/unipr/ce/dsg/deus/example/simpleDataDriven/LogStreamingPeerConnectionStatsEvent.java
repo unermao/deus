@@ -38,8 +38,8 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 
 	public void run() throws RunException {
 
-		getLogger().info("###########################");
-		getLogger().info("Node Connection Stats:");
+		
+		getLogger().info("\nNode Connection Stats:");
 		
 		double activeConnectionTotal = 0.0;
 		double activeConnectionPercentTotalPcNode = 0.0;
@@ -73,11 +73,17 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		//Varibiali per calcolare la media dei chunk mancanti
 		double totalDuplicateChunk = 0;
 		
+		//Variabili per calcolare le deadLine
+		double totalDeadlineNumber = 0;
+		
 		ServerPeer serverPeer = (ServerPeer) Engine.getDefault().getNodes().get(0);
 
 		//Aggiungo alle statistiche relative ai chunk mancanti quelle memorizzate nel server dai nodi disconnessi
 		totalMissingChunk = totalMissingChunk + serverPeer.getMissingChunkNumber();
 		totalArrivedChunk = totalArrivedChunk + serverPeer.getTotalChunkReceived();
+		
+		totalDeadlineNumber = totalDeadlineNumber + serverPeer.getTotalDeadine();
+		
 		
 		//Aggiungo le statistiche relative ai doppioni dei nodi che si sono disconnessi e che hanno salvato le statistiche nel server
 		totalDuplicateChunk = totalDuplicateChunk + serverPeer.getDuplicateChunkNumber();
@@ -92,6 +98,42 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			maxNodeDepth = Math.max(maxNodeDepth, peer.getNodeDepth());
 		}
 			
+		//Aggiungo i tempi di ricezione dei nodi PC disconnessi
+		totalReceivedChunk = totalReceivedChunk + serverPeer.getArrivalTimesPcNode().size();
+		totalReceivedChunk = totalReceivedChunk + serverPeer.getArrivalTimesMobileWifiNode().size();
+		totalReceivedChunk = totalReceivedChunk + serverPeer.getArrivalTimesMobile3GNode().size();
+		
+		totalPcReceivedChunk = totalPcReceivedChunk + serverPeer.getArrivalTimesPcNode().size();
+		for(int i = 0 ; i < serverPeer.getArrivalTimesPcNode().size(); i++)
+		{
+			float localValue = serverPeer.getArrivalTimesPcNode().get(i);
+			
+			totalArrivalTime = totalArrivalTime + localValue;
+			
+			totalPcArrivalTime = totalPcArrivalTime + localValue;
+		}
+		
+		//Aggiungo i tempi di ricezione dei nodi Mobili Wifi disconnessi
+		totalMobileWifiReceivedChunk = totalMobileWifiReceivedChunk + serverPeer.getArrivalTimesMobileWifiNode().size();
+		for(int i = 0 ; i < serverPeer.getArrivalTimesMobileWifiNode().size(); i++)
+		{
+			float localValue = serverPeer.getArrivalTimesMobileWifiNode().get(i);
+			
+			totalArrivalTime = totalArrivalTime + localValue;
+			
+			totalMobileWifiArrivalTime = totalMobileWifiArrivalTime + localValue;
+		}	
+
+		//Aggiungo i tempi di ricezione dei nodi Mobili 3G disconnessi
+		totalMobile3GReceivedChunk = totalMobile3GReceivedChunk + serverPeer.getArrivalTimesMobile3GNode().size();
+		for(int i = 0 ; i < serverPeer.getArrivalTimesMobile3GNode().size(); i++)
+		{
+			float localValue = serverPeer.getArrivalTimesMobile3GNode().get(i);
+			
+			totalArrivalTime = totalArrivalTime + localValue;
+			
+			totalMobile3GArrivalTime = totalMobile3GArrivalTime + localValue;
+		}	
 		
 		//Creo la matrice per le statistiche sulla profondita'
 		ArrayList<ArrayList<Integer>> depthMatrix = new ArrayList<ArrayList<Integer>>();
@@ -110,6 +152,9 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			
 			//CALCOLO IL NUMERO DEI DUPLICATI
 			totalDuplicateChunk = totalDuplicateChunk + peer.getDuplicateChunkNumber();
+			
+			//CALCOLO LE DEADLINE TOTALI
+			totalDeadlineNumber = totalDeadlineNumber + peer.getDeadlineNumber();
 			
 			//CALCOLO MEDIA SEGMENTI RICEVUTI IN BASE ALLA PROFONDITA' DEL NODO
 			
@@ -192,22 +237,28 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		averageMobileWifiArrivalTime = totalMobileWifiArrivalTime / totalMobileWifiReceivedChunk;
 		averageMobile3GArrivalTime = totalMobile3GArrivalTime / totalMobile3GReceivedChunk;
 		
-		
-		getLogger().info("Total Node              : " + (double)( totalPcNode + totalmobileNode + totalmobile3GNode));
+
+		getLogger().info("-------------------- NODES INFO ----------------------------------------");
+		getLogger().info("Total Nodes             : " + (double)( totalPcNode + totalmobileNode + totalmobile3GNode+serverPeer.getDisconnectedNodes()));
+		getLogger().info("Disconnected Nodes      : " + serverPeer.getDisconnectedNodes());
+		getLogger().info("Total Active Node       : " + (double)( totalPcNode + totalmobileNode + totalmobile3GNode));
 		getLogger().info("Total PcNode            : " + totalPcNode);
 		getLogger().info("Total mobileWifiNode    : " + totalmobileNode);
 		getLogger().info("Total mobile3GNode      : " + totalmobile3GNode);	
-		
+		getLogger().info("------------------------------------------------------------------------");
 		
 		
 		getLogger().info("\n");
+		getLogger().info("-------------------- CHUNKS ARRIVAL TIME INFO --------------------------");
 		getLogger().info("Average Arrival Times                   : " + averageArrivalTime);	
 		getLogger().info("");
 		getLogger().info("PC-Node Average Arrival Times           : " + averagePcArrivalTime);
 		getLogger().info("MobileWiFi-Node Average Arrival Times   : " + averageMobileWifiArrivalTime);
 		getLogger().info("Mobile3G-Node Average Arrival Times     : " + averageMobile3GArrivalTime);
+		getLogger().info("------------------------------------------------------------------------");
 		
 		getLogger().info("\n");		
+		getLogger().info("-------------------- NODES DEPTH INFO ----------------------------------");
 		for(int j = 0 ; j < maxNodeDepth; j++ )
 		{
 			
@@ -226,20 +277,29 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 				getLogger().info("Nodes Depth: " + (j+1) + " Chunk Average: " + chunkIndexAverage);		
 			}
 		}	
-		
+		getLogger().info("------------------------------------------------------------------------");
 
 		getLogger().info("\n");
-		getLogger().info("Total   Missed   Chunk: " + totalMissingChunk);
-		getLogger().info("Total   Arrived  Chunk: " + totalArrivedChunk);
-		getLogger().info("Average Missed   Chunk: " + (totalMissingChunk/totalArrivedChunk)*100.0 + " %");	
+		getLogger().info("-------------------- CHUNKS NUMBER / DEADLINE INFO ---------------------");
+		getLogger().info("\n");
+		getLogger().info("Total Chunk           : " + (totalDuplicateChunk+totalArrivedChunk));
+		getLogger().info("Total Arrived Chunk   : " + totalArrivedChunk);
+		getLogger().info("Average Missed Chunk  : " + (totalMissingChunk/(double)( totalPcNode + totalmobileNode + totalmobile3GNode + serverPeer.getDisconnectedNodes())) + " %");	
 		
 		getLogger().info("\n");
-		getLogger().info("Total   Duplicated Chunk: " + totalDuplicateChunk);
+		getLogger().info("Total Duplicated Chunk                                     : " + totalDuplicateChunk);
 		getLogger().info("Average Duplicated Chunk (Total Duplicate / Total Arrived) : " + (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0 + " %");	
 		getLogger().info("\n");
 		
-		getLogger().info("###########################");
+		getLogger().info("Chunk Skip Number: " + totalMissingChunk);
 		getLogger().info("\n");
+		
+		getLogger().info("Perceived Continuity Index : " + ((totalArrivedChunk-totalDeadlineNumber)/totalArrivedChunk)*100.0 + "%");
+		getLogger().info("\n");
+		getLogger().info("------------------------------------------------------------------------");
+		
+		getLogger().info("\n");
+		getLogger().info("########################################################################");
 		
 	}
 

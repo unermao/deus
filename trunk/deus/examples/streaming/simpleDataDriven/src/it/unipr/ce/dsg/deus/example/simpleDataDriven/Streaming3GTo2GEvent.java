@@ -54,32 +54,10 @@ public class Streaming3GTo2GEvent extends NodeEvent {
 	public void run() throws RunException {
 		
 		getLogger().fine("## new 3G --> 2G Event");
-	
-		/*
-		//Scelgo un nodo casuale che sia un dispositio mobile con connessione 3G e imposto i nuovi parametri 
-		int index = 0;
-		
-		StreamingPeer peer = null;
-		int size = (Engine.getDefault().getNodes().size() - 1 );
-	
-		do{
-			
-			index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-			peer = (StreamingPeer) Engine.getDefault().getNodes().get(index);
-			System.out.println("Ho trovato: " + peer.getConnectionType() + " - " + peer.getId());	
-		}
-		while( !(peer.getId().equals("mobileNode") && peer.getConnectionType() == StreamingPeer.G3));
-		
-		//Il peer alla fine del ciclo  il peer che voglio modificare
-		//Il peer passa da 3G a 2G
-		peer.change3GTo2G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
-		*/
 		
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
 		
-		getLogger().fine("Sono : "+ associatedStreamingNode.getKey()+ " - " + associatedStreamingNode.getConnectionType() + " - " + associatedStreamingNode.getId());	
-		
-		associatedStreamingNode.change2GTo3G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection);
+		associatedStreamingNode.change3GTo2G(StreamingPeer.G2, this.newUploadSpeed, this.newMaxAcceptedConnection,this.triggeringTime);
 		
 		getLogger().fine("end new 3G --> 2G Event ##");
 	}

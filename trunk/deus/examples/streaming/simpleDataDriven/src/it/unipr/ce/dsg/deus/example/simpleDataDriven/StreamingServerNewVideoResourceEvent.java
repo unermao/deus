@@ -76,50 +76,12 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 		float time = 0;
 		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
 		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++){	
-			serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
-		}
-			/*
-		{		
-
-		        time = triggeringTime + nextChunkArrivalTime(serverNode.getUploadSpeed(),serverNode.getServedPeers().get(index).getDownloadSpeed(),newResource);
 			
-				StreamingPeerNewVideoResourceEvent newPeerResEvent = (StreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(StreamingPeerNewVideoResourceEvent.class,time);
-				newPeerResEvent.setOneShot(true);
-				newPeerResEvent.setAssociatedNode(serverNode.getServedPeers().get(index));
-				newPeerResEvent.setResourceValue(newResource);
-				newPeerResEvent.setOriginalTime(this.triggeringTime);
-				Engine.getDefault().insertIntoEventsList(newPeerResEvent);
+			//if(!serverNode.getServedPeers().get(index).getNeededChunk().contains(newResource.getChunkIndex()))
+				serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
 		}
-		*/
+			
 		getLogger().fine("end new video resource ##");
-	}
-	
-	/**
-	 * Determina  il tempo in cui dovra' essere schedulato il nuovo arrivo di un chunk al destinatario
-	 * in base alla velocita' di Upload del fornitore e quella di Downalod del cliente.
-	 * @param providerUploadSpeed
-	 * @param clientDownloadSpeed
-	 * @return
-	 */
-	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, VideoChunk chunk) {
-		
-		ServerPeer serverNode = (ServerPeer)Engine.getDefault().getNodes().get(0);
-		double time = 0.0;
-		double minSpeed = Math.min(  (providerUploadSpeed  / (double) serverNode.getActiveConnection()) , clientDownloadSpeed);
-		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
-		time = (chunkMbitSize / minSpeed);
-		
-		float floatTime = expRandom((float)time);
-		
-		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
-		
-		return floatTime*100;
-	}
-	
-	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) * meanValue);
-		return myRandom;
 	}
 	
 }

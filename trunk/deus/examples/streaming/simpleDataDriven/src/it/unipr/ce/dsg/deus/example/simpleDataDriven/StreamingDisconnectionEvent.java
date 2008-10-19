@@ -1,10 +1,12 @@
 package it.unipr.ce.dsg.deus.example.simpleDataDriven;
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
+import java.util.Random;
 
 
 /**
@@ -39,13 +41,17 @@ public class StreamingDisconnectionEvent extends NodeEvent {
 		
 		getLogger().fine("## new disconnection event");
 		
+		int index = 0;
+		StreamingPeer peer = null;
 		
-		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
-	
+		int size = (Engine.getDefault().getNodes().size() - 1 );
 		
-		if(associatedStreamingNode.isConnected())
+		index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
+		peer = (StreamingPeer)Engine.getDefault().getNodes().get(index);
+		
+		if(peer.isConnected())
 			//Disconnetto il nodo
-			associatedStreamingNode.disconnection(this.triggeringTime);
+			peer.disconnection(this.triggeringTime);
 		
 		
 		getLogger().fine("end disconnection event ##");
