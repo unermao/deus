@@ -41,6 +41,23 @@ public class ServerPeer extends Peer {
 	private double missingChunkNumber   = 0.0; 
 	private double totalChunkReceived   = 0.0; 
 	private double duplicateChunkNumber = 0.0;
+	private double totalDeadine = 0.0;
+	private double disconnectedNodes = 0;
+
+	//Array per le statistiche dei tempi di ricezione dei nodi che si sono disconnessi
+	private ArrayList<Float> arrivalTimesPcNode = new ArrayList<Float>();
+	private ArrayList<Float> arrivalTimesMobileWifiNode = new ArrayList<Float>();
+	private ArrayList<Float> arrivalTimesMobile3GNode = new ArrayList<Float>();
+	
+	
+	
+	public double getTotalDeadine() {
+		return totalDeadine;
+	}
+
+	public void setTotalDeadine(double totalDeadine) {
+		this.totalDeadine = totalDeadine;
+	}
 
 	private ArrayList<StreamingPeer> servedPeers = new ArrayList<StreamingPeer>();
 	private ArrayList<VideoChunk> videoResource = new ArrayList<VideoChunk>();
@@ -268,5 +285,42 @@ public class ServerPeer extends Peer {
 	public void setDuplicateChunkNumber(double duplicateChunkNumber) {
 		this.duplicateChunkNumber = duplicateChunkNumber;
 	}
+
+	public double getDisconnectedNodes() {
+		return disconnectedNodes;
+	}
+
+	public void setDisconnectedNodes(double disconnectedNodes) {
+		this.disconnectedNodes = disconnectedNodes;
+	}
 	
+	public void addDisconnectedNode(){
+		this.disconnectedNodes++;
+	}
+
+	public ArrayList<Float> getArrivalTimesPcNode() {
+		return arrivalTimesPcNode;
+	}
+
+	public void setArrivalTimesPcNode(ArrayList<Float> arrivalTimesPcNode) {
+		this.arrivalTimesPcNode = arrivalTimesPcNode;
+	}
+
+	public ArrayList<Float> getArrivalTimesMobileWifiNode() {
+		return arrivalTimesMobileWifiNode;
+	}
+
+	public void setArrivalTimesMobileWifiNode(
+			ArrayList<Float> arrivalTimesMobileWifiNode) {
+		this.arrivalTimesMobileWifiNode = arrivalTimesMobileWifiNode;
+	}
+
+	public ArrayList<Float> getArrivalTimesMobile3GNode() {
+		return arrivalTimesMobile3GNode;
+	}
+
+	public void setArrivalTimesMobile3GNode(
+			ArrayList<Float> arrivalTimesMobile3GNode) {
+		this.arrivalTimesMobile3GNode = arrivalTimesMobile3GNode;
+	}
 }

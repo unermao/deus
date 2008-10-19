@@ -52,7 +52,7 @@ public class StreamingUpdateParentsEvent extends NodeEvent {
 			
 			if(peer.isConnected())
 			{
-				peer.updateParentsList();
+				peer.updateParentsList(this.triggeringTime);
 			}
 		}	
 			

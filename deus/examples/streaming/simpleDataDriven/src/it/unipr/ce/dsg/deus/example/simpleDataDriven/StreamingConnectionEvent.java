@@ -48,7 +48,7 @@ public class StreamingConnectionEvent extends NodeEvent {
 	
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
 		associatedStreamingNode.setConnected(true);
-			
+		
 		//Se ci sono almeno un numero di peer superiore al massimo 
 		if( Engine.getDefault().getNodes().size() - 1 > associatedStreamingNode.getMaxPartnersNumber())
 		{

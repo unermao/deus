@@ -16,17 +16,9 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingBirthSchedulerListener" >
 
 	 	<aut:events><!-- events to be scheduled on created node -->
-
 		    <aut:reference id="connection" />
-
 		   	<aut:reference id="discovery" /> 
-
-		    <aut:reference id="disconnection" />
-
-			<aut:reference id="death" />
-
 		</aut:events>
-
 	</aut:event>
 
 	<aut:event id="birth3" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
@@ -34,8 +26,6 @@
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		   	<aut:reference id="discovery" /> 
-		    <aut:reference id="disconnection" />
-			<aut:reference id="death" />
 		</aut:events>
 	</aut:event>
 
@@ -46,8 +36,6 @@
 		   	<aut:reference id="discovery" /> 
 		    <aut:reference id="3g2g" />
 		    <aut:reference id="2g3g" />
-		    <aut:reference id="disconnection" />
-			<aut:reference id="death" />
 		</aut:events>
 	</aut:event>
 
@@ -56,8 +44,6 @@
 		<aut:logger level="FINE" />
 
 	</aut:event>
-
-	
 
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingDiscoveryEvent" oneShot="true">
 
@@ -102,15 +88,10 @@
 	</aut:event>
 	
 
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingDisconnectionEvent" oneShot="true" >
-
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingDisconnectionEvent" >
 		<aut:logger level="FINE" />
 	</aut:event>
-	
 
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
-
-	
 	<aut:event id="logNodeVideoData" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.LogStreamingPeerVideoDataStatsEvent" >
 			<aut:logger level="INFO" />
 	</aut:event>
@@ -155,21 +136,16 @@
 			<aut:param name="downloadSpeed" value="4.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="fitnessSort" value="false" />
-			<aut:param name="maxPartnersNumber" value="20" />
+			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 
 		<aut:resources>
-
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
-
 				<aut:params>
 				    <aut:param name="type" value="maxAcceptedConnection" />
 					<aut:param name="amount" value="10" />
-
 				</aut:params>	
-
 			</aut:resource>
-
 		</aut:resources>
 	</aut:node>
 
@@ -182,7 +158,7 @@
 			<aut:param name="downloadSpeed" value="2.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="fitnessSort" value="false" />
-			<aut:param name="maxPartnersNumber" value="20" />
+			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -203,7 +179,7 @@
 			<aut:param name="downloadSpeed" value="0.4" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="fitnessSort" value="false" />
-			<aut:param name="maxPartnersNumber" value="20" />
+			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -301,14 +277,12 @@
 		</aut:params>
 		<aut:events>
 			<aut:reference id="updatelist" />
-			<aut:reference id="updateVideoBuffer" />
 		</aut:events>
 	</aut:process>
 	
-    <!-- 
 	<aut:process id="connectionChangePoisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="1000" />
+			<aut:param name="meanArrival" value="4000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="mobile3GNode" />
@@ -318,7 +292,6 @@
 			<aut:reference id="2g3g" />
 		</aut:events>
 	</aut:process>
-	 -->
 	
 	<aut:process id="connectionPoisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
@@ -336,18 +309,12 @@
 	</aut:process>
 	
 	
-	<aut:process id="disconnectionPoisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="disconnection" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="2000" />
+			<aut:param name="period" value="50" /> 
 		</aut:params>
-		<aut:nodes>
-			<aut:reference id="pcNode" />
-			<aut:reference id="mobileNode" />
-			<aut:reference id="mobile3GNode" />
-		</aut:nodes>
 		<aut:events>
-			<aut:reference id="disconnection" />
-			<aut:reference id="death" />
+			<aut:reference id="disconnection" /> 
 		</aut:events>
 	</aut:process>
 	 	
@@ -363,10 +330,19 @@
 
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="100" /> 
+			<aut:param name="period" value="50" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="playVideo" /> 
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="periodicVideoBuffer" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="50" /> 
+		</aut:params>
+		<aut:events>
+			<aut:reference id="updateVideoBuffer" />
 		</aut:events>
 	</aut:process>
 	
@@ -381,7 +357,7 @@
 
 	<!-- *** SIMULATION *** -->
 	
-	<aut:engine maxvt="5001" seed="567891234"> 
+	<aut:engine maxvt="5001" seed="567891236"> 
 
 		<aut:logger level="INFO" />
 		<aut:processes>
@@ -391,10 +367,11 @@
 			<aut:reference id="twospeedspoissonMobile3GNode" /> 
 			<aut:reference id="videoPoisson1" />
 			<aut:reference id="updateListPoisson1" />
+			<aut:reference id="periodicVideoBuffer" />
 			<aut:reference id="periodic" />
 			<aut:reference id="periodicPlayVideo" />
+			<aut:reference id="disconnection" />
 			<aut:reference id="graph" />
-
 		</aut:processes>
 	</aut:engine>
 
