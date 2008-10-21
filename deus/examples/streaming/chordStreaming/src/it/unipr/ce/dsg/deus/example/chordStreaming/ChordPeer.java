@@ -437,7 +437,7 @@ public class ChordPeer extends Peer {
 					}
 				else
 				{
-					System.out.println(successorKey);
+					//System.out.println(successorKey);
 					if(resource.getResource_key() != 85)
 						createExchangeResourceEvent(this,successorKey.getSuccessor(),resource);
 					//this.rePublish.add(resource);
@@ -485,7 +485,7 @@ public class ChordPeer extends Peer {
 		this.setCountSearch();
 		ChordPeer possessorPeer = null;
 		ChordResourceType resourceToFind= null;
-		System.out.println(videoName+max);
+//		System.out.println(videoName+max);
 		max++;
 		this.setSequenceNumber(max);
 		videoName = this.generateUUID(videoName + max);
@@ -567,7 +567,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		.getDefault().createEvent(
 				ChordFindedResourceEvent.class,
 				Engine.getDefault().getVirtualTime()
-						+ expRandom(2));
+						+ expRandom(1));
 //	getLogger().fine("findedEv event: " + findedEv);
    
 	findedEv.setAssociatedNode(searchedNode);
