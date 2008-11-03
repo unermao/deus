@@ -28,5 +28,4 @@ public class LogChordForPajekEvent extends Event {
 				getLogger().info(n + " " + n.getFingerTable()[i]);
 		}
 	}
-
 }
