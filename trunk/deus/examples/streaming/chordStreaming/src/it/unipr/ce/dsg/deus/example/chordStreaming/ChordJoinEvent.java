@@ -57,7 +57,6 @@ public class ChordJoinEvent extends NodeEvent {
 		Random rand = new Random();
 		int randomVideo = rand.nextInt(3);
 		
-//		System.out.println(randomVideo);
 		if(randomVideo==1)
 			{
 			connectingNode.setVideoName("KillBill");
@@ -72,6 +71,24 @@ public class ChordJoinEvent extends NodeEvent {
 		{	
 			connectingNode.setVideoName("Armaggeddon");
 			connectingNode.setCountThirdVideo();
+		}
+		
+		randomVideo = rand.nextInt(3);
+		
+		if(randomVideo==1)
+		{
+			connectingNode.setTypePeer(1);
+			connectingNode.setCountFastPeer();
+		}
+		else if(randomVideo==2)
+		{
+			connectingNode.setTypePeer(2);
+			connectingNode.setCountMediumPeer();
+		}
+		else
+		{	
+			connectingNode.setTypePeer(3);
+			connectingNode.setCountSlowPeer();
 		}
 		
 		getLogger().fine("Current: " + connectingNode.getKey() + "\tGateway: " + gatewayNode.getKey() + "\tSuccessor: " + connectingNode.getSuccessor().getKey() + "\tPredecessor; " + connectingNode.getPredecessor().getKey());

@@ -10,7 +10,6 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * This event represents the birth of a simulation ChordPeer. During its execution an
@@ -23,12 +22,10 @@ import java.util.Random;
 public class ChordBirthEvent extends NodeEvent {
 	
 	private static int birth_sequence = 1;
-	private HashMap<String,Integer> KeysSequenceNumbersMap = new HashMap<String,Integer>();
-//	private HashMap<String,Integer> KeysSequenceNumbersMap2 = new HashMap<String,Integer>();
-//	private HashMap<String,Integer> KeysSequenceNumbersMap3 = new HashMap<String,Integer>();
-	private ArrayList<Integer> generatedResourcesKeys = new ArrayList<Integer>();
+	static HashMap<String,Integer> KeysSequenceNumbersMap1 = new HashMap<String,Integer>();
+	static HashMap<String,Integer> KeysSequenceNumbersMap2 = new HashMap<String,Integer>();
+	static HashMap<String,Integer> KeysSequenceNumbersMap3 = new HashMap<String,Integer>();
 	private ArrayList<ChordResourceType> app = new ArrayList<ChordResourceType>();
-//	private HashMap<String,Integer> listaFilm = new HashMap<String,Integer>();
 	
 	public ChordBirthEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -71,7 +68,7 @@ public class ChordBirthEvent extends NodeEvent {
 				
 				videoName = birthPeer.videoList.get(j);
 
-			for(int i = 0; i <(Engine.getDefault().getKeySpaceSize())/birthPeer.videoList.size(); i++)
+			for(int i = 0; i <(Engine.getDefault().getKeySpaceSize()/4)/birthPeer.videoList.size(); i++)
 				try {
 					
 					birthPeer.chordResources.add(new ChordResourceType(Engine.getDefault().generateResourceKey()));
@@ -89,25 +86,40 @@ public class ChordBirthEvent extends NodeEvent {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				KeysSequenceNumbersMap.putAll(birthPeer.KeyToSequenceNumber);
-				count+=((Engine.getDefault().getKeySpaceSize())/birthPeer.videoList.size());
+
+				if(j == 0)
+				{
+					KeysSequenceNumbersMap1.putAll(birthPeer.KeyToSequenceNumber);	
+					birthPeer.KeyToSequenceNumber.clear();
+				}
+				else if(j == 1)
+				{
+					KeysSequenceNumbersMap2.putAll(birthPeer.KeyToSequenceNumber);	
+					birthPeer.KeyToSequenceNumber.clear();
+				}
+				else if(j == 2)
+				{					
+					KeysSequenceNumbersMap3.putAll(birthPeer.KeyToSequenceNumber);	
+					birthPeer.KeyToSequenceNumber.clear();
+				}
 				
+				count+=((Engine.getDefault().getKeySpaceSize()/4)/birthPeer.videoList.size());
 			}	
 			int cost = 0;
-			int resourceDistribution = (Engine.getDefault().getKeySpaceSize())/birthPeer.videoList.size();
+			int resourceDistribution = (Engine.getDefault().getKeySpaceSize()/4)/birthPeer.videoList.size();
 			
-			if(birthPeer.videoList.size() == 2)
-			{
-			for(int i = 0; i < birthPeer.chordResources.size()/4; i++)
-			{
-				app.add(birthPeer.chordResources.get(cost));
-				app.add(birthPeer.chordResources.get(cost+1));
-				app.add(birthPeer.chordResources.get(resourceDistribution+cost));
-				app.add(birthPeer.chordResources.get((resourceDistribution+1)+cost));
-				cost= cost +2;
-				
-			}
-			}
+//			if(birthPeer.videoList.size() == 2)
+//			{
+//			for(int i = 0; i < birthPeer.chordResources.size()/4; i++)
+//			{
+//				app.add(birthPeer.chordResources.get(cost));
+//				app.add(birthPeer.chordResources.get(cost+1));
+//				app.add(birthPeer.chordResources.get(resourceDistribution+cost));
+//				app.add(birthPeer.chordResources.get((resourceDistribution+1)+cost));
+//				cost= cost +2;
+//				
+//			}
+//			}
 			if(birthPeer.videoList.size() == 3)
 			{
 			for(int i = 0; i < birthPeer.chordResources.size()/6; i++)
@@ -126,22 +138,7 @@ public class ChordBirthEvent extends NodeEvent {
 			birthPeer.chordResources.addAll(app);
 
 		}
-		birthPeer.KeyToSequenceNumber.putAll(KeysSequenceNumbersMap);	
 
 	}
-	
-/*int generatedResources_Key(){
-	int result;
-	Random keyRandom = new Random();
-	if(generatedResourcesKeys.size() == 1000000)
-		throw new RuntimeException("The Engine is not able to generate new unique key for resource. Increase key space size.");
-	do {
-			result = keyRandom.nextInt(1000000);
-		} while(generatedResourcesKeys.contains(Integer.valueOf(result)));
-		
-			generatedResourcesKeys.add(result);			
-		return result;
-	
-}*/
 
 }

@@ -27,6 +27,17 @@ public class ChordDataExchangeEvent extends NodeEvent {
 			getReceiverNode().chordResources.add(getResourceToExchange());
 			if(!senderNode.getServerId())
 			senderNode.chordResources.remove(getResourceToExchange());
+			
+				if(getReceiverNode().KeyToSequenceNumber.isEmpty())
+				{
+				if(getReceiverNode().getVideoName().equals(getReceiverNode().videoList.get(0)))
+					getReceiverNode().KeyToSequenceNumber.putAll(ChordBirthEvent.KeysSequenceNumbersMap1);
+				if(getReceiverNode().getVideoName().equals(getReceiverNode().videoList.get(1)))
+					getReceiverNode().KeyToSequenceNumber.putAll(ChordBirthEvent.KeysSequenceNumbersMap2);
+				if(getReceiverNode().getVideoName().equals(getReceiverNode().videoList.get(2)))
+					getReceiverNode().KeyToSequenceNumber.putAll(ChordBirthEvent.KeysSequenceNumbersMap3);	
+				}
+			
 			getReceiverNode().setIsPublished(true);
 			getResourceToExchange().addOwners(getReceiverNode());
 			getResourceToExchange().removeOwners(senderNode);
