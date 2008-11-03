@@ -55,10 +55,7 @@ public class ChordBirthEvent extends NodeEvent {
 		ChordPeer birthPeer = (ChordPeer) n;
 		birthPeer.setArrival(birth_sequence);
 		birth_sequence+=1;
-		//rendere dinamico anche i nomi e il numero di video(max=5)
-		//mettere nell'xml il numero di video e il nome delle risorse
 		String videoName = null;
-		
 			
 		if(Engine.getDefault().getNodes().size() == 1)
 		{
