@@ -43,7 +43,6 @@ package it.unipr.ce.dsg.deus.example.chord;
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			int random_node = random.nextInt(initialized_nodes);
 			ChordPeer disconnectedNode = (ChordPeer) Engine.getDefault().getNodes().get(random_node);
-			System.out.println("\t diconnectedNode: " + disconnectedNode.getKey());
 			disconnectedNode.disconnectChordPeer();
 		}
 
