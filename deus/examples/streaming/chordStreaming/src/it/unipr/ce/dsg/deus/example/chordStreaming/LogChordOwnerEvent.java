@@ -13,12 +13,12 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
  * <p>
- * This class is used to print all the predecessor, the successor
- * and the fingerTables of all ChordPeers of the network
+ * This class is used to print all the predecessor, the successor and the
+ * fingerTables of all ChordPeers of the network
  * </p>
  * 
- * @author  Matteo Agosti (matteo.agosti@unipr.it)
- * @author  Marco Muro (marco.muro@studenti.unipr.it)
+ * @author Matteo Agosti (matteo.agosti@unipr.it)
+ * @author Marco Muro (marco.muro@studenti.unipr.it)
  */
 public class LogChordOwnerEvent extends Event {
 
@@ -54,6 +54,9 @@ public class LogChordOwnerEvent extends Event {
 			double sumFirstVideo = 0;
 			double sumSecondVideo = 0;
 			double sumThirdVideo = 0;
+			double sumFastPeer = 0;
+			double sumMediumPeer = 0;
+			double sumSlowPeer = 0;
 			
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
@@ -66,6 +69,9 @@ public class LogChordOwnerEvent extends Event {
 				sumFirstVideo+=t.getCountFirstVideo();
 				sumSecondVideo+=t.getCountSecondVideo();
 				sumThirdVideo+=t.getCountThirdVideo();
+				sumFastPeer+=t.getCountFastPeer();
+				sumMediumPeer+=t.getCountMediumPeer();
+				sumSlowPeer+=t.getCountSlowPeer();
 		}
 			getLogger().info(
 					"N¡ of searches: " + sumSearches + " failed Searches: "
@@ -75,14 +81,18 @@ public class LogChordOwnerEvent extends Event {
 							+ sumCorrectBuffer + "\n MatrixVideo: "
 							+ sumFirstVideo + " KillBillVideo: "
 							+ sumSecondVideo + " ArmaggeddonVideo: "
-							+ sumThirdVideo);
+							+ sumThirdVideo  + "FastPeer: " 
+							+ sumFastPeer 	+ "MediumPeer: "
+							+ sumMediumPeer + "SlowPeer: " 
+							+ sumSlowPeer  	 );
 			if(sumSearches!=0)
 			getLogger().info("% of Failed Searches: " + (sumFaleidSearches/sumSearches)*100 + "%");
 			getLogger().info("% of Finded Indirect Resource : " + (sumFindedOtherResource/sumFindedResource)*100 + "%");
 			getLogger().info("% of firstVideo Resource : " + (sumFirstVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + "%");
 			getLogger().info("% of secondVideo Resource : " + (sumSecondVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + "%");
 			getLogger().info("% of thirdVideo Resource : " + (sumThirdVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + "%");
-
+			getLogger().info("% of fastPeer: " + (sumFastPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
+			
 		getLogger().info("##########");
 		}
 		

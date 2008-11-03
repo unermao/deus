@@ -3,17 +3,13 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
-import it.unipr.ce.dsg.deus.example.chordStreaming.LogChordRingStatsEvent.MyComp;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Random;
 
 
 /**
@@ -43,10 +39,9 @@ public class ChordPeer extends Peer {
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
 	
-	private String videoName = "Matrix";
+	private String videoName = null;
 	private boolean serverId = false;
 	private int counter= 0;
-//	private int check = 0;
 	private boolean isPublished = false;
 	private boolean isStarted = false;
 	private Integer sequenceNumber = -1;
@@ -56,6 +51,7 @@ public class ChordPeer extends Peer {
 	private int numMaxResources = 0;
 	private int numConnections = -1;
 	private int lastPlayingResource = -1;
+	private int typePeer = 0;
 	
 	//variabili per statistiche
 	private int countFailedDiscovery = 0;
@@ -67,6 +63,9 @@ public class ChordPeer extends Peer {
 	private int countFirstVideo = 0;
 	private int countSecondVideo = 0;
 	private int countThirdVideo = 0;
+	private int countFastPeer = 0;
+	private int countMediumPeer = 0;
+	private int countSlowPeer = 0;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -128,6 +127,7 @@ public class ChordPeer extends Peer {
 		clone.servedPeers = new ArrayList<ChordPeer>();
 		clone.missingSequenceNumber = new ArrayList<Integer>();
 		clone.bufferVideo = new ArrayList<ChordResourceType>();
+		clone.KeyToSequenceNumber = new HashMap<String,Integer>();
 	
 		return clone;
 	}
@@ -425,6 +425,7 @@ public class ChordPeer extends Peer {
 		
 		if(this.getServerId())
 		{
+			System.out.println(counter + " "+Engine.getDefault().getVirtualTime());
 			for(int i = counter; i < counter+4; i++)
 			{
 				resource = chordResources.get(i);
@@ -437,16 +438,8 @@ public class ChordPeer extends Peer {
 					}
 				else
 				{
-					//System.out.println(successorKey);
-					if(resource.getResource_key() != 85)
+					if(resource.getResource_key() != this.getKey())
 						createExchangeResourceEvent(this,successorKey.getSuccessor(),resource);
-					//this.rePublish.add(resource);
-					//creare evento che la ripubblica in un secondo momento vicino pero..
-//					ChordPeer successor = this.getSuccessor();
-//					successor.chordResources.add(resource);
-//					successor.setIsPublished(true);
-//					resource.addOwners(successor);
-//					resource.removeOwners(this);
 			}
 			}
 		counter+= 4;
@@ -485,7 +478,6 @@ public class ChordPeer extends Peer {
 		this.setCountSearch();
 		ChordPeer possessorPeer = null;
 		ChordResourceType resourceToFind= null;
-//		System.out.println(videoName+max);
 		max++;
 		this.setSequenceNumber(max);
 		videoName = this.generateUUID(videoName + max);
@@ -502,7 +494,6 @@ public class ChordPeer extends Peer {
 			{
 				int index = possessorPeer.chordResources.indexOf(resourceToFind);
 				resourceToFind = possessorPeer.chordResources.get(index);
-				//this.searchResults.add(resourceToFind);
 				possessorPeer.incrementNumConnections();
 				createFindedResourceEvent(this,possessorPeer,resourceToFind);
 				
@@ -527,7 +518,6 @@ public class ChordPeer extends Peer {
 					if(!test)
 						{
 							resourceToFind.setResource_key(-1);
-							//this.consumableResources.add(resourceToFind);
 							this.setCountFailedDiscovery();
 							max--;
 							setSequenceNumber(max);
@@ -536,7 +526,6 @@ public class ChordPeer extends Peer {
 		else
 		{	
 			resourceToFind.setResource_key(-1);
-			//this.consumableResources.add(resourceToFind);
 			this.setCountFailedDiscovery();
 			max--;
 			setSequenceNumber(max);
@@ -545,12 +534,21 @@ public class ChordPeer extends Peer {
 
 	private void createExchangeResourceEvent(ChordPeer senderNode, ChordPeer receiverNode ,ChordResourceType resourceToExchange) {
 		
+		int exchange_time = 0;
+		if (senderNode.getTypePeer() == 1 && receiverNode.getTypePeer() == 1)
+			exchange_time = 1;
+		else if(senderNode.getTypePeer() == 2 && receiverNode.getTypePeer() == 2)
+			exchange_time = 3;
+		else if (senderNode.getTypePeer() == 3 || receiverNode.getTypePeer() == 3)
+			exchange_time = 10;
+		else if ((senderNode.getTypePeer() == 1 && receiverNode.getTypePeer() == 2) || (senderNode.getTypePeer() == 2 && receiverNode.getTypePeer() == 1) )
+			exchange_time = 6;
+			
 		ChordDataExchangeEvent exchangeEv = (ChordDataExchangeEvent) Engine
 		.getDefault().createEvent(
 				ChordDataExchangeEvent.class,
 				Engine.getDefault().getVirtualTime()
-						+ expRandom(1));
-	//getLogger().fine("ExchangeResource event: " + exchangeEv);
+						+ expRandom(exchange_time));
    
 	exchangeEv.setAssociatedNode(senderNode);
 	exchangeEv.setHasSameAssociatedNode(true);
@@ -568,7 +566,6 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 				ChordFindedResourceEvent.class,
 				Engine.getDefault().getVirtualTime()
 						+ expRandom(1));
-//	getLogger().fine("findedEv event: " + findedEv);
    
 	findedEv.setAssociatedNode(searchedNode);
 	findedEv.setHasSameAssociatedNode(true);
@@ -666,15 +663,6 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		for(int d = 0; d < successorNode.chordResources.size(); d++)
 			getLogger().fine("\tsuccessorDyingNode's resource " + d + "\t: " + successorNode.chordResources.get(d).getResource_key());	
 	}
-
-//	public void changeOwner(ArrayList<ChordResourceType> ChordResources, ChordPeer newOwner)
-//	{
-//		
-//		for(int i = 0; i <ChordResources.size(); i++)
-//			ChordResources.get(i).removeOwners(this);
-//		for(int i = 0; i <ChordResources.size(); i++)
-//			ChordResources.get(i).addOwners(newOwner);
-//	}
 
 	public boolean getServerId() {
 		return serverId;
@@ -878,6 +866,38 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public void setCountThirdVideo() {
 		this.countThirdVideo = countThirdVideo+1;
+	}
+
+	public int getTypePeer() {
+		return typePeer;
+	}
+
+	public void setTypePeer(int typePeer) {
+		this.typePeer = typePeer;
+	}
+
+	public int getCountFastPeer() {
+		return countFastPeer;
+	}
+
+	public void setCountFastPeer() {
+		this.countFastPeer = countFastPeer+1;
+	}
+
+	public int getCountMediumPeer() {
+		return countMediumPeer;
+	}
+
+	public void setCountMediumPeer() {
+		this.countMediumPeer = countMediumPeer+1;
+	}
+
+	public int getCountSlowPeer() {
+		return countSlowPeer;
+	}
+
+	public void setCountSlowPeer() {
+		this.countSlowPeer = countSlowPeer+1;
 	}
 	
 }
