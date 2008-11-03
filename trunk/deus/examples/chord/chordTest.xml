@@ -55,12 +55,15 @@
 	
 	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chord.LogChordForPajekEvent" />
 	
+	<aut:event id="logChordForNWB" handler="it.unipr.ce.dsg.deus.example.chord.LogChordForNwbEvent" />
+	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chord.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="fingerTableSize" value="10" />
+			<aut:param name="numbersPublishNode" value="5" />
 		</aut:params>
 	</aut:node>
 
@@ -167,6 +170,7 @@
 		    <aut:reference id="logPopulationSize" />
 		    <aut:reference id="logChordRingStats" />
 		    <aut:reference id="logChordForPajek" />
+		    <aut:reference id="logChordForNWB" />
 		</aut:events>
 	</aut:process>
 	
