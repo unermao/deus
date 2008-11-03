@@ -26,8 +26,6 @@ public class ChordBirthEvent extends NodeEvent {
 	}
 
 	public void initialize() throws InvalidParamsException {
-		// TODO implement params to establish the policy of node type initialization
-		// (now choose one type only - randomly - from the parent process)
 	}
 
 	public void run() throws RunException {

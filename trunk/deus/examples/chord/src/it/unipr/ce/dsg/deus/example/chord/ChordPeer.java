@@ -433,6 +433,30 @@ public class ChordPeer extends Peer {
 	}
 
 	public void disconnectChordPeer() {
+		ChordPeer successorNode = this.getSuccessor();
+		ChordPeer predecessorNode = this.getPredecessor();
+		
+		this.changeOwner(chordResources, successorNode);
+		successorNode.chordResources.addAll(this.chordResources);
+		this.setConnected(false);
+		
+		int pos = Engine.getDefault().getNodes().indexOf(this);
+			if (pos > -1)
+			Engine.getDefault().getNodes().remove(pos);
+		
+		predecessorNode.setSuccessor(successorNode);
+		predecessorNode.fingerTable[0] = successorNode;
+		successorNode.setPredecessor(predecessorNode);
+		
+		getLogger().fine("\tdisconnectedNode: " + this.getKey() + "\tsuccessorNode: " + this.getSuccessor().getKey() + "\tpredecessorNode: " + this.getPredecessor().getKey());
+		for(int c = 0; c < this.chordResources.size(); c++)
+		getLogger().fine("\tdisconnectedNode's resource " + c + "\t: " + this.chordResources.get(c).getResource_key());
+		
+		getLogger().fine("\tnew predecessor's successor: " + successorNode.getPredecessor().getKey() + "\tnew successor's predecessor: " + predecessorNode.getSuccessor().getKey());
+		
+		for(int d = 0; d < successorNode.chordResources.size(); d++)
+			getLogger().fine("\tsuccessordisconnectedNode's resource " + d + "\t: " + successorNode.chordResources.get(d).getResource_key());	
+	
 	}
 
 	/**
@@ -450,9 +474,6 @@ public class ChordPeer extends Peer {
 		ChordPeer successorNode = this.getSuccessor();
 		ChordPeer predecessorNode = this.getPredecessor();
 		
-		this.changeOwner(chordResources, successorNode);
-		successorNode.chordResources.addAll(this.chordResources)
-		;
 		this.setConnected(false);
 		
 		int pos = Engine.getDefault().getNodes().indexOf(this);
