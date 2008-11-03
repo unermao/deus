@@ -9,6 +9,7 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+	 	<aut:logger level="FINE" />
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		    <!-- aut:reference id="adaptation" / -->
