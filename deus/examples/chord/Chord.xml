@@ -25,7 +25,7 @@
 
 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.chord.ChordDiscoveryEvent" oneShot="true" />
 
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.chord.ChordDeathEvent" />
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.chord.ChordDeathEvent" oneShot="true"/>
 	
 	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.chord.ChordDisconnectionEvent" />
 
@@ -62,7 +62,7 @@
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chord.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="10" />
+			<aut:param name="fingerTableSize" value="8" />
 			<aut:param name="numbersPublishNode" value="5" />
 		</aut:params>
 	</aut:node>
@@ -74,7 +74,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="0.5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="1000" />	
+			<aut:param name="vtThreshold" value="128" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -114,7 +114,7 @@
 
 	<aut:process id="periodicStabilization" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="500" /> 
+			<aut:param name="period" value="8" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="stabilize" />
@@ -139,7 +139,7 @@
 	
 	<aut:process id="periodicDeath" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="3000" /> 
+			<aut:param name="period" value="700" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -151,7 +151,7 @@
 	
 	<aut:process id="periodicDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="3000" /> 
+			<aut:param name="period" value="700" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -164,7 +164,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="9999.99" /> 
+			<aut:param name="period" value="999.99" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
@@ -177,7 +177,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000" seed="123456789" keyspacesize="10000"> 
+	<aut:engine maxvt="1000" seed="123456789" keyspacesize="10000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="poissonBirth" />
