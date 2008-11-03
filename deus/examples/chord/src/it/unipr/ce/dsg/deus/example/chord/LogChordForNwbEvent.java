@@ -37,9 +37,7 @@ public class LogChordForNwbEvent extends Event {
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
 				ChordPeer n = (ChordPeer) Engine.getDefault().getNodes().get(i);
-//				x[i] = getX_center() + getRay() * Math.cos((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
-//				y[i] = getY_center() + getRay() * Math.sin((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
-				getLogger().info((i+1)+" " + "\"" + (n.getKey()) + "\"" +" " +"\"blue\"" +" "); //+  x[i] + " " +  y[i]);
+				getLogger().info((i+1)+" " + "\"" + (n.getKey()) + "\"" +" " +"\"red\"" +" ");
 				app.put(Integer.toString(n.getKey()), i+1);
 			}
 		
@@ -53,10 +51,12 @@ public class LogChordForNwbEvent extends Event {
 				ChordPeer n = (ChordPeer) Engine.getDefault().getNodes().get(i);
 				for(int c = 0; c < n.fingerTable.length; c++)
 				{
+					if(app.get(Integer.toString(n.fingerTable[c].getKey())) != null)
+					{
 					if( n.fingerTable[c] != null && control != app.get(Integer.toString(n.fingerTable[c].getKey())))
-				getLogger().info( app.get(Integer.toString(n.getKey())) + " " + app.get(Integer.toString(n.fingerTable[c].getKey())) +" " +"\"true\"" +" " +" " +"\"black\"" +" ");	
-				control = app.get(Integer.toString(n.fingerTable[c].getKey()));	
-					
+						getLogger().info( app.get(Integer.toString(n.getKey())) + " " + app.get(Integer.toString(n.fingerTable[c].getKey())) +" " +"\"true\"" +" " +"\"blue\"" +" ");	
+						control = app.get(Integer.toString(n.fingerTable[c].getKey()));	
+					}
 				}
 				
 			}
