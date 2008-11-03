@@ -158,14 +158,13 @@ public abstract class Event extends SimulationObject implements
 	 * invoked so that the event itself is notified of that operation.
 	 */
 	public void scheduleReferencedEvents() {
-		float nextTriggeringTime = triggeringTime;
+		float referencedEventTriggeringTime = 0;
 		for (Iterator<Event> it = referencedEvents.iterator(); it.hasNext();) {
 			Event event = (Event) it.next();
 			if (event.getParentProcess() == null)
 				continue;
-			nextTriggeringTime = event.getParentProcess()
-					.getNextTriggeringTime(nextTriggeringTime);
-			Event eventToSchedule = event.createInstance(nextTriggeringTime);
+			referencedEventTriggeringTime = event.getParentProcess().getNextTriggeringTime(triggeringTime);
+			Event eventToSchedule = event.createInstance(referencedEventTriggeringTime);
 			schedulerListener.newEventScheduled(this, eventToSchedule);
 			Engine.getDefault().insertIntoEventsList(eventToSchedule);
 		}
