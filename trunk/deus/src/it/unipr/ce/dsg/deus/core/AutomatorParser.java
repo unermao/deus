@@ -171,6 +171,7 @@ public class AutomatorParser {
 		for (Iterator<it.unipr.ce.dsg.deus.schema.Event> it = automator
 				.getEvent().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Event event = it.next();
+			//System.out.println("event: " + event.getId());
 			Class<Event> eventHandler = (Class<Event>) this.getClass()
 					.getClassLoader().loadClass(event.getHandler());
 
@@ -210,7 +211,7 @@ public class AutomatorParser {
 				.getEvent().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Event event = it.next();
 			Event realEvent = getEventById(event.getId());
-
+			//System.out.println("event: " + realEvent.getId());
 			if (event.getEvents() != null) {
 				for (Iterator<it.unipr.ce.dsg.deus.schema.Reference> it2 = event
 						.getEvents().getReference().iterator(); it2.hasNext();) {
