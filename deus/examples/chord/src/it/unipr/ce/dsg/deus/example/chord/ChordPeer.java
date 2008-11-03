@@ -25,17 +25,14 @@ import java.util.Properties;
 
 public class ChordPeer extends Peer {
 	private static final String FINGER_TABLE_SIZE = "fingerTableSize";
+	private static final String NUMBERS_PUBISH_NODE = "numbersPublishNode";
 	private int fingerTableSize = 0;
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
-	
-	@SuppressWarnings("unused")
-	private int numMinResources = 0;
-	private int numMaxResources = 0;
+	private int numbersPublishNode = 0;
 	
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> searchResults = new ArrayList<ChordResourceType>();
-	public ArrayList<ChordPeer> referencePeersForMyResources = new ArrayList<ChordPeer>();
 	
 	public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -44,7 +41,6 @@ public class ChordPeer extends Peer {
 		if (params.getProperty(FINGER_TABLE_SIZE) == null)
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
 					+ " param is expected.");
-
 		try {
 			fingerTableSize = Integer.parseInt(params
 					.getProperty(FINGER_TABLE_SIZE));
@@ -52,7 +48,9 @@ public class ChordPeer extends Peer {
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
 					+ " must be a valid int value.");
 		}
-		setNumMaxResources(Math.pow(2, fingerTableSize));
+		if (params.containsKey(NUMBERS_PUBISH_NODE))
+			this.setNumbersPublishNode(Integer.parseInt(params
+					.getProperty(NUMBERS_PUBISH_NODE)));
 	}
 
 	public Object clone() {
@@ -367,7 +365,6 @@ public class ChordPeer extends Peer {
 				{
 					successorKey.chordResources.add(resource);
 					chordResources.remove(resource);
-					this.referencePeersForMyResources.add(successorKey);
 				}
 		}
 	}
@@ -422,14 +419,6 @@ public class ChordPeer extends Peer {
 		ChordPeer prova = (ChordPeer) Engine.getDefault().getNodes().get(i);
 		prova.fingerTable[0].publishResources();
 		
-	}
-
-	public int getNumMaxResources() {
-		return numMaxResources;
-	}
-
-	public void setNumMaxResources(double d) {
-		this.numMaxResources = (int) d;
 	}
 
 	public void disconnectChordPeer() {
@@ -498,6 +487,14 @@ public class ChordPeer extends Peer {
 	{
 		for(int i = 0; i <ChordResources.size(); i++)
 			ChordResources.get(i).setOwner(peer);
+	}
+
+	public int getNumbersPublishNode() {
+		return numbersPublishNode;
+	}
+
+	public void setNumbersPublishNode(int numbersPublishNode) {
+		this.numbersPublishNode = numbersPublishNode;
 	}
 	
 }
