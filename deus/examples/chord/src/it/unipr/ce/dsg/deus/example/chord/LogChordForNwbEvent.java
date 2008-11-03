@@ -32,18 +32,18 @@ public class LogChordForNwbEvent extends Event {
 		
 		Collections.sort(Engine.getDefault().getNodes());
 
-		getLogger().info("#NWB Data for Streaming P2P\n *Nodes " +Engine.getDefault().getNodes().size() + "\n id*int label*string x*float y*float");
+		getLogger().info("#NWB Data for Streaming P2P\n *Nodes " +Engine.getDefault().getNodes().size() + "\n id*int label*string color*string ");//x*float y*float");
 		
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
 				ChordPeer n = (ChordPeer) Engine.getDefault().getNodes().get(i);
-				x[i] = getX_center() + getRay() * Math.cos((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
-				y[i] = getY_center() + getRay() * Math.sin((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
-				getLogger().info((i+1)+" " + "\"" + (n.getKey()) + "\"" +" " +  x[i] + " " +  y[i]);
+//				x[i] = getX_center() + getRay() * Math.cos((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
+//				y[i] = getY_center() + getRay() * Math.sin((i*6.283185307*(360.0/(double)Engine.getDefault().getNodes().size()))/360.0);
+				getLogger().info((i+1)+" " + "\"" + (n.getKey()) + "\"" +" " +"\"blue\"" +" "); //+  x[i] + " " +  y[i]);
 				app.put(Integer.toString(n.getKey()), i+1);
 			}
 		
-			getLogger().info("*DirectedEdges\n source*int target*int");
+			getLogger().info("*DirectedEdges\n source*int target*int directed*string color*string");
 			
 			
 			
@@ -54,7 +54,7 @@ public class LogChordForNwbEvent extends Event {
 				for(int c = 0; c < n.fingerTable.length; c++)
 				{
 					if( n.fingerTable[c] != null && control != app.get(Integer.toString(n.fingerTable[c].getKey())))
-				getLogger().info( app.get(Integer.toString(n.getKey())) + " " + app.get(Integer.toString(n.fingerTable[c].getKey())) + " \""+ "true"+ "\"");	
+				getLogger().info( app.get(Integer.toString(n.getKey())) + " " + app.get(Integer.toString(n.fingerTable[c].getKey())) +" " +"\"true\"" +" " +" " +"\"black\"" +" ");	
 				control = app.get(Integer.toString(n.fingerTable[c].getKey()));	
 					
 				}
