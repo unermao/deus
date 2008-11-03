@@ -164,7 +164,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="9999" /> 
+			<aut:param name="period" value="9999.99" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
