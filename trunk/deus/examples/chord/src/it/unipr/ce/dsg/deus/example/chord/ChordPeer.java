@@ -8,12 +8,35 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 import java.util.ArrayList;
 import java.util.Properties;
 
+/**
+ * <p>
+ * ChordPeers are characterized by different kinds of resources.
+ * Every Peers have a own fingerTable in which there are a groups of successors of the node.
+ * the first entry of the fingerTable is called successor of the Peer.
+ * Every Peers have also a parameters with his predecessor in the Chord Ring.
+ * a group of methods create and refresh the fingerTable providing stabilization of the network.
+ * </p>
+ * 
+ * @author  Matteo Agosti (matteo.agosti@unipr.it)
+ * @author  Marco Muro (marco.muro@studenti.unipr.it)
+ *
+ */
+
+
 public class ChordPeer extends Peer {
 	private static final String FINGER_TABLE_SIZE = "fingerTableSize";
 	private int fingerTableSize = 0;
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
-
+	
+	@SuppressWarnings("unused")
+	private int numMinResources = 0;
+	private int numMaxResources = 0;
+	
+	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
+	public ArrayList<ChordResourceType> searchResults = new ArrayList<ChordResourceType>();
+	public ArrayList<ChordPeer> referencePeersForMyResources = new ArrayList<ChordPeer>();
+	
 	public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
@@ -29,12 +52,17 @@ public class ChordPeer extends Peer {
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
 					+ " must be a valid int value.");
 		}
+		setNumMaxResources(Math.pow(2, fingerTableSize));
 	}
 
 	public Object clone() {
+
 		ChordPeer clone = (ChordPeer) super.clone();
 		clone.predecessor = null;
 		clone.fingerTable = new ChordPeer[fingerTableSize];
+		clone.chordResources = new ArrayList<ChordResourceType>();
+		clone.searchResults = new ArrayList<ChordResourceType>();
+		
 		return clone;
 	}
 
@@ -63,20 +91,15 @@ public class ChordPeer extends Peer {
 			fingerTable[i] = this;
 	}
 
-	// il nodo che chiama questo metodo si fa comunicare da un nodo scelto a
-	// caso all'interno della rete
-	// qual il suo successore e la sua fingerTable iniziale
-	// il suo successore viene cercato a partire dall'identificatore appena pi
-	// grande di lui
-	// il predecessore viene settato con il predecessore del successore del nodo
-	// diventato suo successore
-	// in seguito scorre la fingerTable e aggiorna la tabella: se la chiave
-	// generata compresa tra il nodo chiamante e l'elemento i-esimo
-	// della sua fingerTable allora l'elemento i+1 della tabella diventa
-	// l'elemento i
-	// altrimenti cerco un successore per l'elemento i-esimo della tabella e lo
-	// inserisco nella posizione i+1
-
+	/**
+	 * <p>
+	 * This method is called by an arrival peer that ask to an another peer on the network
+	 * what's his successor, his predecessor and his initial fingerTable
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void initFingerTable(ChordPeer gatewayNode) {
 		setSuccessor(gatewayNode
 				.findSuccessor(calculateNextNodeId(getKey(), 0)));
@@ -94,24 +117,26 @@ public class ChordPeer extends Peer {
 		}
 	}
 
-	// chiede al nodo chiamante di trovare il successore del nodo identificato
-	// dall'identificatore passato
-	// chiama il metodo findPredecessor passandogli l'identificatore del nodo
-	// restituirˆ un nodo che il precedenti di quello cercato
-	// basterˆ applicare il metodo getSuccessor() per ottenere il nodo cercato
-
+	/**
+	 * <p>
+	 * This method is used to find the successor of the peer identified by the argument
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public ChordPeer findSuccessor(int nodeId) {
 		return findPredecessor(nodeId).getSuccessor();
 	}
 
-	// il nodo che chiama questo metodo cerca il predecessore del nodo
-	// identificato dall'id passato
-	// finch l'identificatore passato non compreso tra chi chiama il metodo e il
-	// successore di chi chiama il metodo,
-	// viene eseguito sul nodo chiamante il metodo di ricerca del nodo
-	// predecessore piu vicino all'identificatore passato
-	//
-
+	/**
+	 * <p>
+	 * This method is used to find the predecessor of the peer identified by the argument
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public ChordPeer findPredecessor(int nodeId) {
 		ChordPeer p = this;
 		while (!isInInterval(nodeId, p.getKey(), p.getSuccessor().getKey(),
@@ -123,15 +148,15 @@ public class ChordPeer extends Peer {
 		return p;
 	}
 
-	// Ritorna il nodo che ha l'identificatore pi vicino all'identificatore
-	// passato e che lo precede
-	// Scorre la fingerTable del nodo che chiama questo metodo dall'ultima entry
-	// e controlla se l'identificatore presente compreso tra l'identificatore di
-	// chi chiama e l'identificatore passato
-	// se compreso restituisce il nodo con l'identificatore presente nella
-	// fingerTable altrimenti restituisce se stesso
-	// perch significa che lui quello piu vicino
-
+	/**
+	 * <p>
+	 * This method is used to find the peer that have the identificator more similar to the
+	 * identifcator passed the argument
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public ChordPeer closestPrecedingFinger(int nodeId) {
 		for (int i = fingerTableSize; i > 0; i--) {
 			if (isInInterval(fingerTable[i - 1].getKey(), getKey(), nodeId,
@@ -143,14 +168,15 @@ public class ChordPeer extends Peer {
 		return this;
 	}
 
-	// il metodo aggiorna tutte le tabelle dei nodi che hanno qualche
-	// riferimento con il nodo arrivato
-	// trova tutti i nodi che precedono e quindi hanno nell'i-esima entry il
-	// nodo chiamante e aggiorna la sua tabella
-	// lancia updateFingerTable passandogli il nodo che arrivato e l'indice
-	// della finger dove presente il nodo che deve modificare
-	// la sua fingerTable
-
+	/**
+	 * <p>
+	 * This method is used to refresh the Peer's fingerTables that
+	 * are in his fingerTable using findPredecessor and updateFingers
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void updateOthers() {
 		ChordPeer p = null;
 		for (int i = 0; i < fingerTableSize; i++) {
@@ -160,13 +186,15 @@ public class ChordPeer extends Peer {
 
 	}
 
-	// aggiorna la fingerTable di un nodo, controllando se il suo identificatore
-	// compreso tra il nodo arrivato e il nodo che si trova
-	// nella posizione individuata in updateOthers. se cosi aggiorna la sua
-	// fingerTable con il nodo che arrivato precedentemente
-	// invoca l'aggiornamento del predecessore del nodo che ha modificato la sua
-	// fingerTable
-
+	/**
+	 * <p>
+	 * This method is used to update the Peer's fingerTables of the Peer that are
+	 * in the new peer's fingerTable
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void updateFingerTable(ChordPeer s, int entry) {
 		if (isInInterval(s.getKey(), getKey(), fingerTable[entry].getKey(),
 				true, false)) {
@@ -176,9 +204,15 @@ public class ChordPeer extends Peer {
 
 	}
 
-	// permette di capire se l'identificatore del nodo passato compreso tra
-	// altri 2 identificatori (a e b)
-
+	/**
+	 * <p>
+	 * This method is used to determine if an identificator is in an specificated 
+	 * interval of the Chord Ring
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */	
 	private boolean isInInterval(int nodeId, int a, int b, boolean isAIncluded,
 			boolean isBIncluded) {
 
@@ -235,6 +269,15 @@ public class ChordPeer extends Peer {
 		return calculateNextNodeId(nodeId, step, false);
 	}
 
+	/**
+	 * <p>
+	 * This method is used to move forward and back on the key space and calculate
+	 * the correct identificator for the operations 
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	private int calculateNextNodeId(int nodeId, int step, boolean subtract) {
 
 		if (subtract) {
@@ -253,6 +296,14 @@ public class ChordPeer extends Peer {
 		return nodeId;
 	}
 
+	/**
+	 * <p>
+	 * This method is used to stabilize the successors of the Chord Ring
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void stabilize() {
 		ChordPeer x = getSuccessor().getPredecessor();
 		if (isInInterval(x.getKey(), getKey(), getSuccessor().getKey(), false,
@@ -261,12 +312,30 @@ public class ChordPeer extends Peer {
 		getSuccessor().notify(this);
 	}
 
+	/**
+	 * <p>
+	 * This method is used to refresh in a random way the peer's fingerTables
+	 * of every peer of the network
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void fixFingers() {
 		int i = Engine.getDefault().getSimulationRandom().nextInt(
 				fingerTableSize - 1) + 1;
 		fingerTable[i] = findSuccessor(calculateNextNodeId(getKey(), i + 1));
 	}
 
+	/**
+	 * <p>
+	 * This method is used to stabilize the predecessors of the Chord Ring
+	 * when a successor is changed
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
 	public void notify(ChordPeer stabilizingNode) {
 		if (getPredecessor() == null
 				|| isInInterval(stabilizingNode.getKey(), getPredecessor()
@@ -275,4 +344,139 @@ public class ChordPeer extends Peer {
 
 	}
 
+	/**
+	 * <p>
+	 * This method is used to publish the Peer's resources given a resource's reference
+	 * to the node
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
+	public void publishResources() {
+		
+		ChordResourceType resource = null;
+		 
+		for(int i = 0; i < chordResources.size(); i++)
+		{
+			resource = chordResources.get(i);
+			int resource_key = resource.getResource_key();
+
+			ChordPeer successorKey = findSuccessor(resource_key);
+			if(successorKey != this )
+				{
+					successorKey.chordResources.add(resource);
+					chordResources.remove(resource);
+					this.referencePeersForMyResources.add(successorKey);
+				}
+		}
+	}
+
+	/**
+	 * <p>
+	 * This method is used to search the Peer's resources situated on a node of the 
+	 * chordPeer
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
+	public void searchForAResource(int resourceKey) {
+	
+		ChordPeer possessorPeer = null;
+		ChordResourceType resourceToFind= null;
+		try {
+			resourceToFind = new ChordResourceType(resourceKey);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	if(this.chordResources.contains(resourceToFind))
+		this.searchResults.add(resourceToFind);
+		else
+		{
+			possessorPeer = this.findSuccessor(resourceKey);
+			if(possessorPeer.chordResources.contains(resourceToFind))
+				this.searchResults.add(resourceToFind);
+		else 
+		{
+			resourceToFind.setResource_key(-1);
+			this.searchResults.add(resourceToFind);
+		}
+		}
+	}
+
+	/**
+	 * <p>
+	 * This method is used to refresh periodically the operation of publish resources make sure
+	 * resources's position on the chordRing 
+	 * chordPeer
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
+	
+	public void refreshpublish() {
+		int i = Engine.getDefault().getSimulationRandom().nextInt(Engine.getDefault().getNodes().size());
+		ChordPeer prova = (ChordPeer) Engine.getDefault().getNodes().get(i);
+		prova.fingerTable[0].publishResources();
+		
+	}
+
+	public int getNumMaxResources() {
+		return numMaxResources;
+	}
+
+	public void setNumMaxResources(double d) {
+		this.numMaxResources = (int) d;
+	}
+
+	public void disconnectChordPeer() {
+	}
+
+	/**
+	 * <p>
+	 * This method is called when a node go out to the ChordRing. He gives its resources to the successor's node
+	 * and update predecessor's successor and successor's predecessor
+	 * </p>
+	 * 
+	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
+	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
+	 */
+	
+	public void dyingNode() {
+		
+		ChordPeer successorNode = this.getSuccessor();
+		ChordPeer predecessorNode = this.getPredecessor();
+		
+		this.changeOwner(chordResources, successorNode);
+		successorNode.chordResources.addAll(this.chordResources)
+		;
+		this.setConnected(false);
+		
+		int pos = Engine.getDefault().getNodes().indexOf(this);
+			if (pos > -1)
+			Engine.getDefault().getNodes().remove(pos);
+		
+		predecessorNode.setSuccessor(successorNode);
+		predecessorNode.fingerTable[0] = successorNode;
+		successorNode.setPredecessor(predecessorNode);
+		
+		getLogger().fine("\tdyingNode: " + this.getKey() + "\tsuccessorNode: " + this.getSuccessor().getKey() + "\tpredecessorNode: " + this.getPredecessor().getKey());
+		for(int c = 0; c < this.chordResources.size(); c++)
+		getLogger().fine("\tdyingNode's resource " + c + "\t: " + this.chordResources.get(c).getResource_key());
+		
+		getLogger().fine("\tnew predecessor's successor: " + successorNode.getPredecessor().getKey() + "\tnew successor's predecessor: " + predecessorNode.getSuccessor().getKey());
+		
+		for(int d = 0; d < successorNode.chordResources.size(); d++)
+			getLogger().fine("\tsuccessorDyingNode's resource " + d + "\t: " + successorNode.chordResources.get(d).getResource_key());	
+	}
+
+	public void changeOwner(ArrayList<ChordResourceType> ChordResources, ChordPeer peer)
+	{
+		for(int i = 0; i <ChordResources.size(); i++)
+			ChordResources.get(i).setOwner(peer);
+	}
+	
 }
