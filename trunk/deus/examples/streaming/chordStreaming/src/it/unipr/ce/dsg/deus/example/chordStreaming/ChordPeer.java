@@ -35,6 +35,7 @@ public class ChordPeer extends Peer {
 	private static final String VIDEO_TITLE_1 = "videoTitle1";
 	private static final String VIDEO_TITLE_2 = "videoTitle2";
 	private static final String VIDEO_TITLE_3 = "videoTitle3";
+	private static final String MAX_CONNECTIONS = "maxConnections";
 	private int fingerTableSize = 0;
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
@@ -46,20 +47,18 @@ public class ChordPeer extends Peer {
 	private boolean isStarted = false;
 	private Integer sequenceNumber = -1;
 	private int arrivalNumber = -1;
-	@SuppressWarnings("unused")
-	private int numMinResources = 0;
-	private int numMaxResources = 0;
 	private int numConnections = -1;
 	private int lastPlayingResource = -1;
 	private int typePeer = 0;
+	private int maxConnections = -1;
 	
 	//variabili per statistiche
 	private int countFailedDiscovery = 0;
 	private int countSearch = 0;
 	private int countIndirectServing = 0;
 	private int countFindedResource = 0;
-	private int countFindedOtherResource =0;
-	private int countCorrectBuffer =0;
+	private int countFindedOtherResource = 0;
+	private int countCorrectBuffer = 0;
 	private int countFirstVideo = 0;
 	private int countSecondVideo = 0;
 	private int countThirdVideo = 0;
@@ -76,12 +75,16 @@ public class ChordPeer extends Peer {
 	public ArrayList<ChordResourceType> bufferVideo = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> rePublish = new ArrayList<ChordResourceType>();
 	
+	
 	public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
 
 		if (params.getProperty(FINGER_TABLE_SIZE) == null)
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
+					+ " param is expected.");
+		if (params.getProperty(MAX_CONNECTIONS) == null)
+			throw new InvalidParamsException(MAX_CONNECTIONS
 					+ " param is expected.");
 		if (params.containsKey(VIDEO_TITLE_1))
 			this.videoList.add((params.getProperty(VIDEO_TITLE_1)));
@@ -97,7 +100,14 @@ public class ChordPeer extends Peer {
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
 					+ " must be a valid int value.");
 		}
-		setNumMaxResources(Math.pow(2, fingerTableSize));
+		
+		try {
+			maxConnections = Integer.parseInt(params
+					.getProperty(MAX_CONNECTIONS));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(MAX_CONNECTIONS
+					+ " must be a valid int value.");
+		}
 		
 	}
 
@@ -490,7 +500,7 @@ public class ChordPeer extends Peer {
 		}
 		
 			possessorPeer = this.findSuccessor(resourceKey);
-			if(possessorPeer.chordResources.contains(resourceToFind) && possessorPeer.getNumConnections() < 7)
+			if(possessorPeer.chordResources.contains(resourceToFind) && possessorPeer.getNumConnections() < getMaxConnections()+1)
 			{
 				int index = possessorPeer.chordResources.indexOf(resourceToFind);
 				resourceToFind = possessorPeer.chordResources.get(index);
@@ -502,7 +512,7 @@ public class ChordPeer extends Peer {
 					if(possessorPeer.servedPeers.size() > 7)
 						possessorPeer.servedPeers.remove(0);
 			}
-				else if(possessorPeer.getNumConnections() >= 5)
+				else if(possessorPeer.getNumConnections() >= getMaxConnections())
 				{
 					boolean test = false;	
 					for(int i = 0; i < possessorPeer.servedPeers.size();i++)
@@ -591,14 +601,6 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		if(!this.getServerId() && !this.fingerTable[0].getServerId())
 		this.fingerTable[0].publishResources();
 		
-	}
-
-	public int getNumMaxResources() {
-		return numMaxResources;
-	}
-
-	public void setNumMaxResources(double d) {
-		this.numMaxResources = (int) d;
 	}
 
 	public void disconnectChordNode() {
@@ -899,5 +901,8 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	public void setCountSlowPeer() {
 		this.countSlowPeer = countSlowPeer+1;
 	}
-	
+
+	public int getMaxConnections() {
+		return maxConnections;
+	}
 }

@@ -49,9 +49,12 @@ public class LogChordForNwbEvent extends Event {
 			ChordPeer n = (ChordPeer) Engine.getDefault().getNodes().get(i);
 			for(int c = 0; c < n.fingerTable.length; c++)
 			{
+				if(app.get(Integer.toString(n.fingerTable[c].getKey())) != null)
+				{
 				if( n.fingerTable[c] != null && control!=app.get(Integer.toString(n.fingerTable[c].getKey())))
 				getLogger().info( app.get(Integer.toString(n.getKey())) + " " + app.get(Integer.toString(n.fingerTable[c].getKey())) +" " +"\"true\"" +" " +" " +"\"black\"" +" ");		
 				control = app.get(Integer.toString(n.fingerTable[c].getKey()));	
+				}
 			}
 		}	
 		
