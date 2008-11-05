@@ -126,6 +126,7 @@
 		<aut:params>
 			<aut:param name="fingerTableSize" value="7" />
 			<aut:param name="maxConnections" value="5" />
+			<aut:param name="numPublishServer" value="4" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -138,7 +139,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="4" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="160" />	
+			<aut:param name="vtThreshold" value="320" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
