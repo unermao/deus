@@ -63,7 +63,7 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="fingerTableSize" value="8" />
-			<aut:param name="numbersPublishNode" value="5" />
+			<aut:param name="resourcesNode" value="5" />
 		</aut:params>
 	</aut:node>
 

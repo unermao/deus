@@ -25,11 +25,11 @@ import java.util.Properties;
 
 public class ChordPeer extends Peer {
 	private static final String FINGER_TABLE_SIZE = "fingerTableSize";
-	private static final String NUMBERS_PUBISH_NODE = "numbersPublishNode";
+	private static final String RESOURCES_NODE = "resourcesNode";
 	private int fingerTableSize = 0;
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
-	private int numbersPublishNode = 0;
+	private int resourcesNode = 0;
 	
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> searchResults = new ArrayList<ChordResourceType>();
@@ -48,9 +48,9 @@ public class ChordPeer extends Peer {
 			throw new InvalidParamsException(FINGER_TABLE_SIZE
 					+ " must be a valid int value.");
 		}
-		if (params.containsKey(NUMBERS_PUBISH_NODE))
+		if (params.containsKey(RESOURCES_NODE))
 			this.setNumbersPublishNode(Integer.parseInt(params
-					.getProperty(NUMBERS_PUBISH_NODE)));
+					.getProperty(RESOURCES_NODE)));
 	}
 
 	public Object clone() {
@@ -489,12 +489,12 @@ public class ChordPeer extends Peer {
 			ChordResources.get(i).setOwner(peer);
 	}
 
-	public int getNumbersPublishNode() {
-		return numbersPublishNode;
+	public int getResourcesNode() {
+		return resourcesNode;
 	}
 
 	public void setNumbersPublishNode(int numbersPublishNode) {
-		this.numbersPublishNode = numbersPublishNode;
+		this.resourcesNode = numbersPublishNode;
 	}
 	
 }
