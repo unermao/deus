@@ -36,7 +36,7 @@ public class ChordJoinEvent extends NodeEvent {
 		ChordPeer gatewayNode = null;
 		ChordResourceType prova = null;
 		//connectingNode.getNumMaxResources()
-		for (int c = 0; c <connectingNode.getNumbersPublishNode(); c++) {
+		for (int c = 0; c <connectingNode.getResourcesNode(); c++) {
 			prova = connectingNode.chordResources.get(c);			
 			prova.setOwner(connectingNode);
 		}		

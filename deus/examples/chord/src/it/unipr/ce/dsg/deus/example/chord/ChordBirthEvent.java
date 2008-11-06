@@ -47,7 +47,7 @@ public class ChordBirthEvent extends NodeEvent {
 		ChordPeer app = (ChordPeer) n;
 		app.setConnected(true);
 		
-		for(int i = 0; i <app.getNumbersPublishNode(); i++)
+		for(int i = 0; i <app.getResourcesNode(); i++)
 			try {
 				app.chordResources.add(new ChordResourceType(Engine.getDefault().generateResourceKey()));
 			} catch (Exception e) {
