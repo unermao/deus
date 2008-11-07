@@ -35,13 +35,12 @@ public class ChordJoinEvent extends NodeEvent {
 		ChordPeer connectingNode = (ChordPeer) getAssociatedNode();
 		ChordPeer gatewayNode = null;
 		ChordResourceType prova = null;
-		//connectingNode.getNumMaxResources()
+		
 		for (int c = 0; c <connectingNode.getResourcesNode(); c++) {
 			prova = connectingNode.chordResources.get(c);			
 			prova.setOwner(connectingNode);
 		}		
 		// If there are no nodes in the network the join won't be able to choose
-
 		// the node to which connect
 
 		if (Engine.getDefault().getNodes().size() <= 1) {
