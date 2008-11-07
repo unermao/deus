@@ -28,7 +28,7 @@ public class ChordRefreshPublishEvent extends NodeEvent{
 	
 	@Override
 	public void run() throws RunException {
-		((ChordPeer) getAssociatedNode()).refreshpublish();
+		((ChordPeer) getAssociatedNode()).refreshPublish();
 	}
 
 }

@@ -610,7 +610,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
 	
-	public void refreshpublish() {
+	public void refreshPublish() {
 		if(!this.getServerId() && !this.fingerTable[0].getServerId())
 		this.fingerTable[0].publishResources();
 		
@@ -654,7 +654,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
 	
-	public void dyingNode() {
+	public void deathChordNode() {
 		ChordPeer successorNode = this.getSuccessor();
 		ChordPeer predecessorNode = this.getPredecessor();
 		
