@@ -419,7 +419,7 @@ public class ChordPeer extends Peer {
 		
 	}
 
-	public void disconnectChordPeer() {
+	public void disconnectChordNode() {
 		ChordPeer successorNode = this.getSuccessor();
 		ChordPeer predecessorNode = this.getPredecessor();
 		
@@ -456,7 +456,7 @@ public class ChordPeer extends Peer {
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
 	
-	public void deathChordPeer() {
+	public void deathChordNode() {
 		
 		ChordPeer successorNode = this.getSuccessor();
 		ChordPeer predecessorNode = this.getPredecessor();
