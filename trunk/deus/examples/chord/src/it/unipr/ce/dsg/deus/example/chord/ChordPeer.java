@@ -169,7 +169,7 @@ public class ChordPeer extends Peer {
 	/**
 	 * <p>
 	 * This method is used to refresh the Peer's fingerTables that
-	 * are in his fingerTable using findPredecessor and updateFingers
+	 * are in his fingerTable using findPredecessor and updateFingerTable
 	 * </p>
 	 * 
 	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
@@ -181,7 +181,6 @@ public class ChordPeer extends Peer {
 			p = findPredecessor(calculateNextNodeId(getKey(), i, true));
 			p.updateFingerTable(this, i);
 		}
-
 	}
 
 	/**
@@ -199,7 +198,6 @@ public class ChordPeer extends Peer {
 			fingerTable[entry] = s;
 			getPredecessor().updateFingerTable(s, entry);
 		}
-
 	}
 
 	/**
@@ -414,7 +412,7 @@ public class ChordPeer extends Peer {
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
 	
-	public void refreshpublish() {
+	public void refreshPublish() {
 		int i = Engine.getDefault().getSimulationRandom().nextInt(Engine.getDefault().getNodes().size());
 		ChordPeer prova = (ChordPeer) Engine.getDefault().getNodes().get(i);
 		prova.fingerTable[0].publishResources();
@@ -458,7 +456,7 @@ public class ChordPeer extends Peer {
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
 	
-	public void dyingNode() {
+	public void deathChordPeer() {
 		
 		ChordPeer successorNode = this.getSuccessor();
 		ChordPeer predecessorNode = this.getPredecessor();
