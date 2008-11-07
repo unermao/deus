@@ -49,7 +49,7 @@ public class ChordDeathEvent extends Event {
 				int random_node = random.nextInt(initialized_nodes);
 				disconnectedNode = (ChordPeer) Engine.getDefault().getNodes().get(random_node);	
 			}
-		disconnectedNode.deathChordPeer();
+		disconnectedNode.deathChordNode();
 	}
 
 	
