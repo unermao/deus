@@ -70,7 +70,7 @@
 
 	<!-- *** PROCESSES *** -->
 
-	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="0.5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
@@ -84,7 +84,7 @@
 		</aut:events>
 	</aut:process>
 <!--	
-	<aut:process id="poissonBirthForDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+	<aut:process id="periodicBirthForDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="2000" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
@@ -180,8 +180,8 @@
 	<aut:engine maxvt="1000" seed="123456789" keyspacesize="10000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
-			<aut:reference id="poissonBirth" />
-			<!--<aut:reference id="poissonBirthForDeath" />-->
+			<aut:reference id="periodicBirth" />
+			<!--<aut:reference id="periodicBirthForDeath" />-->
 			<aut:reference id="periodicLog" />
 			<aut:reference id="periodicDeath" />
 			<aut:reference id="periodicDisconnection" />
