@@ -26,7 +26,7 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		searchedNode.setCountFindedResource();
 		
 		searchedNode.consumableResources.add(getFindedResource());
-		addOtherConsistenceResource(searchedNode);
+		addOthersResources(searchedNode);
 		getServingNode().decrementNumConnections();
 	
 		if(searchedNode.consumableResources.size() >= 7)
@@ -41,7 +41,7 @@ public class ChordFindedResourceEvent extends NodeEvent{
 			}
 		}
 
-	private void addOtherConsistenceResource(ChordPeer searchedNode) {
+	private void addOthersResources(ChordPeer searchedNode) {
 		
 		Collections.sort(getServingNode().consumableResources, new MyComp(null));
 		if(getServingNode().getVideoName() == searchedNode.getVideoName())

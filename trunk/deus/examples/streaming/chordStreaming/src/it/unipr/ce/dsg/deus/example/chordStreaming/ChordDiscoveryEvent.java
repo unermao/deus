@@ -33,7 +33,7 @@ public class ChordDiscoveryEvent extends NodeEvent{
 
 			ChordPeer app = (ChordPeer) getAssociatedNode();
 			if(app.isPublished())
-				((ChordPeer) getAssociatedNode()).searchForAResource(app.getVideoName(),searchNextSequenceNumber(app));
+				((ChordPeer) getAssociatedNode()).searchResources(app.getVideoName(),searchNextSequenceNumber(app));
 		}
 		
 		private int searchNextSequenceNumber(ChordPeer app) {

@@ -105,18 +105,7 @@ public class ChordBirthEvent extends NodeEvent {
 			int cost = 0;
 			int resourceDistribution = (Engine.getDefault().getKeySpaceSize()/4)/birthPeer.videoList.size();
 			
-//			if(birthPeer.videoList.size() == 2)
-//			{
-//			for(int i = 0; i < birthPeer.chordResources.size()/4; i++)
-//			{
-//				app.add(birthPeer.chordResources.get(cost));
-//				app.add(birthPeer.chordResources.get(cost+1));
-//				app.add(birthPeer.chordResources.get(resourceDistribution+cost));
-//				app.add(birthPeer.chordResources.get((resourceDistribution+1)+cost));
-//				cost= cost +2;
-//				
-//			}
-//			}
+			//diffusione dello streaming per 3 video in modo che in chordResources non ci siano di fila tutte le parti di un unico video
 			if(birthPeer.videoList.size() == 3)
 			{
 			for(int i = 0; i < birthPeer.chordResources.size()/6; i++)
@@ -133,9 +122,6 @@ public class ChordBirthEvent extends NodeEvent {
 			}
 			birthPeer.chordResources.clear();
 			birthPeer.chordResources.addAll(app);
-
 		}
-
 	}
-
 }

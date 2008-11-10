@@ -496,7 +496,7 @@ public class ChordPeer extends Peer {
 	 * @author  Matteo Agosti (matteo.agosti@unipr.it)
 	 * @author  Marco Muro (marco.muro@studenti.unipr.it)
 	 */
-	public void searchForAResource(String videoName , int max) {
+	public void searchResources(String videoName , int max) {
 	
 		this.setCountSearch();
 		ChordPeer possessorPeer = null;
