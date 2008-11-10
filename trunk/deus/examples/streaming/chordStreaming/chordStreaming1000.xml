@@ -268,7 +268,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="12449" /> 
+			<aut:param name="period" value="12999" /> 
 		</aut:params>
 		<aut:events>
 		   <!-- <aut:reference id="logPopulationSize" />-->
@@ -283,7 +283,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="12550" seed="123456789" keyspacesize="40000"> 
+	<aut:engine maxvt="13000" seed="123456789" keyspacesize="40000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />
