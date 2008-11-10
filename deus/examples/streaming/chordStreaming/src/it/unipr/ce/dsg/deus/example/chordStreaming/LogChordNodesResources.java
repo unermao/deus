@@ -21,18 +21,16 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author  Matteo Agosti (matteo.agosti@unipr.it)
  * @author  Marco Muro (marco.muro@studenti.unipr.it)
  */
-public class LogChordRingStatsEvent extends Event {
-
-	private int numGeneratedResource = 0;
+public class LogChordNodesResources extends Event {
 	
-	public LogChordRingStatsEvent(String id, Properties params,
+	public LogChordNodesResources(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
 
 	public void run() throws RunException {
-		getLogger().info("######################### ChordPeer stats:" + Engine.getDefault().getVirtualTime());
-		
+		getLogger().info("######################### ChordPeer fingerTable:" + Engine.getDefault().getVirtualTime());
+
 		Collections.sort(Engine.getDefault().getNodes());
 		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
@@ -41,34 +39,20 @@ public class LogChordRingStatsEvent extends Event {
 			getLogger().info(
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
 							+ n.getSuccessor() + "\t server?: " + n.getServerId() +  "\tarriva: " + n.getArrival());
-			numGeneratedResource +=  n.chordResources.size();
-			getLogger().info(
-					"\tnumber of resources: " + n.chordResources.size()
-							+ "\tnum connections: " + n.getNumConnections()
-							+ "\tvideo search: " + n.getVideoName());
-			getLogger().info(" ");
-			for (int d = 0; d < n.consumableResources.size(); d++)
+			for (int c = 0; c < n.chordResources.size(); c++) {
 				getLogger().info(
-						"\t searchResults: "
-								+ n.consumableResources.get(d).getResource_key()
+						"\ti: " + c + "\tresourceKey: "
+								+ n.chordResources.get(c).getResource_key()
 								+ "\tsequence number: "
-								+ n.consumableResources.get(d).getSequenceNumber() + "\tfilm: "
-								+ n.consumableResources.get(d).getVideoName());
-			for (int r = 0; r < n.bufferVideo.size(); r++)
-				getLogger().info(
-						"\t\t bufferVideo: "
-								+ n.bufferVideo.get(r).getResource_key()
-								+ "\tsequence number: "
-								+ n.bufferVideo.get(r).getSequenceNumber() + "\tfilm: "
-								+ n.bufferVideo.get(r).getVideoName() + "\tUltima risorsa vista: "
-								+ n.getLastPlayingResource());
-	
+								+ n.chordResources.get(c).getSequenceNumber()
+								+ "\tfilm: "
+								+ n.chordResources.get(c).getVideoName()
+								);
 		}
-		
-		
-		getLogger().info("\t generatedResources: = " + numGeneratedResource);
+		Collections.sort(n.chordResources, new MyComp(null));
 		getLogger().info("################################");
 	}
+}
 
 	class MyComp implements Comparator<ChordResourceType>{
 		public MyComp(Object object) {
@@ -79,5 +63,4 @@ public class LogChordRingStatsEvent extends Event {
 			return o1.compareTo(o2);
 		}
 		}
-	
 }
