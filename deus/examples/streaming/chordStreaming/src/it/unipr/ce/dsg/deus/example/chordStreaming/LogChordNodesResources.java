@@ -29,7 +29,7 @@ public class LogChordNodesResources extends Event {
 	}
 
 	public void run() throws RunException {
-		getLogger().info("######################### ChordPeer fingerTable:" + Engine.getDefault().getVirtualTime());
+		getLogger().info("######################### ChordPeer Nodes Resources:" + Engine.getDefault().getVirtualTime());
 
 		Collections.sort(Engine.getDefault().getNodes());
 		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
@@ -38,7 +38,10 @@ public class LogChordNodesResources extends Event {
 			ChordPeer n = (ChordPeer) it.next();
 			getLogger().info(
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
-							+ n.getSuccessor() + "\t server?: " + n.getServerId() +  "\tarriva: " + n.getArrival());
+							+ n.getSuccessor() + "\t server?: "
+							+ n.getServerId() + "\tarriva: " + n.getArrival()
+							+ "\tchordResource size: "
+							+ n.chordResources.size());
 			for (int c = 0; c < n.chordResources.size(); c++) {
 				getLogger().info(
 						"\ti: " + c + "\tresourceKey: "
@@ -46,11 +49,10 @@ public class LogChordNodesResources extends Event {
 								+ "\tsequence number: "
 								+ n.chordResources.get(c).getSequenceNumber()
 								+ "\tfilm: "
-								+ n.chordResources.get(c).getVideoName()
-								);
-		}
-		Collections.sort(n.chordResources, new MyComp(null));
-		getLogger().info("################################");
+								+ n.chordResources.get(c).getVideoName());
+			}
+			Collections.sort(n.chordResources, new MyComp(null));
+			getLogger().info("################################");
 	}
 }
 

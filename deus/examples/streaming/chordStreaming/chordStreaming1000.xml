@@ -111,7 +111,7 @@
 	
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 	
-	<aut:event id="logChordRingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordRingStatsEvent" />
+	<aut:event id="logChordSearchingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingStatsEvent" />
 	
 	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForPajekEvent" />
 	
@@ -129,7 +129,7 @@
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="10" />
+			<aut:param name="fingerTableSize" value="13" />
 			<aut:param name="maxConnections" value="5" />
 			<aut:param name="numPublishServer" value="4" />
 			<aut:param name="videoTitle1" value="KillBill" />
@@ -272,7 +272,7 @@
 		</aut:params>
 		<aut:events>
 		   <!-- <aut:reference id="logPopulationSize" />-->
-		    <aut:reference id="logChordRingStats" />
+		    <aut:reference id="logChordSearchingStats" />
 		    <aut:reference id="logChordOwnerStats" />
 		    <aut:reference id="logChordForNWB" />
 		    <aut:reference id="logChordFingerTable" />
