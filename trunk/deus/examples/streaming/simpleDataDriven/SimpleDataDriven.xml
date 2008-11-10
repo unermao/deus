@@ -8,9 +8,7 @@
 	<!-- *** EVENTS *** -->
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" oneShot="true"></aut:event>
-
 	
-
 	<aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 
 		schedulerListener="it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingBirthSchedulerListener" >
@@ -357,7 +355,7 @@
 
 	<!-- *** SIMULATION *** -->
 	
-	<aut:engine maxvt="5001" seed="567891236"> 
+	<aut:engine maxvt="5001" seed="567891234"> 
 
 		<aut:logger level="INFO" />
 		<aut:processes>
