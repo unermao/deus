@@ -111,7 +111,7 @@
 	
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 	
-	<aut:event id="logChordRingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordRingStatsEvent" />
+	<aut:event id="logChordSearchingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingStatsEvent" />
 	
 	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForPajekEvent" />
 	
@@ -267,7 +267,7 @@
 		</aut:params>
 		<aut:events>
 		   <!-- <aut:reference id="logPopulationSize" />-->
-		    <aut:reference id="logChordRingStats" />
+		    <aut:reference id="logChordSearchingStats" />
 		    <aut:reference id="logChordOwnerStats" />
 		    <aut:reference id="logChordForNWB" />
 		</aut:events>
