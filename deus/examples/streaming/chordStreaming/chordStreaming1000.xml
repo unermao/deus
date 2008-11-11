@@ -125,10 +125,12 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="fingerTableSize" value="13" />
-			<aut:param name="maxConnections" value="7" />
-			<aut:param name="numPublishServer" value="4" />
-			<aut:param name="bufferDimension" value="10" />
-			<aut:param name="totalResources" value="1500" />
+			<aut:param name="maxConnectionsFast" value="10" />
+			<aut:param name="maxConnectionsMedium" value="6" />
+			<aut:param name="maxConnectionsSlow" value="3" />
+			<aut:param name="numPublishServer" value="5" />
+			<aut:param name="bufferDimension" value="20" />
+			<aut:param name="totalResources" value="10000" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -206,7 +208,7 @@
 
 	<aut:process id="periodicStabilization" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="4" /> 
+			<aut:param name="period" value="5" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="stabilize" />
@@ -228,7 +230,7 @@
 	
 	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="9" /> 
+			<aut:param name="period" value="10" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -240,7 +242,7 @@
 	
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="8" /> 
+			<aut:param name="period" value="20" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="playVideo" />
@@ -279,7 +281,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="13000" seed="123456789" keyspacesize="40000"> 
+	<aut:engine maxvt="13000" seed="123456789" keyspacesize="20000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />

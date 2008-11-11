@@ -44,7 +44,7 @@ public class ChordDiscoveryEvent extends NodeEvent{
 					maxSeq = app.consumableResources.get(i).getSequenceNumber();
 			}
 			
-		System.out.println("maxSeq: " + maxSeq);
+		//System.out.println("maxSeq: " + maxSeq);
 			
 		if (maxSeq ==(int)((app.getTotalResources()-1)/app.videoList.size()))
 			{
