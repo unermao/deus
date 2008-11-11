@@ -130,7 +130,7 @@
 			<aut:param name="maxConnectionsSlow" value="3" />
 			<aut:param name="numPublishServer" value="5" />
 			<aut:param name="bufferDimension" value="20" />
-			<aut:param name="totalResources" value="10000" />
+			<aut:param name="totalResources" value="10002" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -141,9 +141,9 @@
 
 	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="4" />
+			<aut:param name="firstPeriodArrival" value="3" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="4000" />	
+			<aut:param name="vtThreshold" value="3000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -221,7 +221,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="12490" />
+			<aut:param name="vtThreshold" value="10000" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="publishServer" />
@@ -267,7 +267,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="12999" /> 
+			<aut:param name="period" value="11999" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logChordSearching" />
@@ -281,7 +281,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="13000" seed="123456789" keyspacesize="20000"> 
+	<aut:engine maxvt="12000" seed="123456789" keyspacesize="15000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />

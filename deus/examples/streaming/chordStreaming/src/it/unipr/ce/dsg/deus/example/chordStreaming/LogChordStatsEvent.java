@@ -37,6 +37,7 @@ public class LogChordStatsEvent extends Event {
 			double sumFastPeer = 0;
 			double sumMediumPeer = 0;
 			double sumSlowPeer = 0;
+			double sumMissingResources = 0;
 			
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
@@ -52,6 +53,7 @@ public class LogChordStatsEvent extends Event {
 				sumFastPeer+=t.getCountFastPeer();
 				sumMediumPeer+=t.getCountMediumPeer();
 				sumSlowPeer+=t.getCountSlowPeer();
+				sumMissingResources+=t.getCountMissingResources();
 		}
 			getLogger().info(
 					"N¡ of searches: " + sumSearches + " failed Searches: "
@@ -64,7 +66,7 @@ public class LogChordStatsEvent extends Event {
 							+ sumThirdVideo  + "FastPeer: " 
 							+ sumFastPeer 	+ "MediumPeer: "
 							+ sumMediumPeer + "SlowPeer: " 
-							+ sumSlowPeer  	 );
+							+ sumSlowPeer  	+ "MissingResources: " + sumMissingResources );
 			if(sumSearches!=0)
 			getLogger().info("% of Failed Searches: " + (sumFaleidSearches/sumSearches)*100 + "%");
 			getLogger().info("% of Finded Indirect Resource : " + (sumFindedOtherResource/sumFindedResource)*100 + "%");
@@ -74,6 +76,7 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("% of fastPeer: " + (sumFastPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
 			getLogger().info("% of mediumPeer: " + (sumMediumPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
 			getLogger().info("% of slowPeer: " + (sumSlowPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
+			getLogger().info("% of missingResources: " + (sumMissingResources/sumSearches)*100 + "%");
 			
 		getLogger().info("##########");
 		}
