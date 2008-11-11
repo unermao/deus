@@ -32,7 +32,6 @@ public class LogChordNodesResources extends Event {
 		getLogger().info("######################### ChordPeer Nodes Resources:" + Engine.getDefault().getVirtualTime());
 
 		Collections.sort(Engine.getDefault().getNodes());
-		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			ChordPeer n = (ChordPeer) it.next();

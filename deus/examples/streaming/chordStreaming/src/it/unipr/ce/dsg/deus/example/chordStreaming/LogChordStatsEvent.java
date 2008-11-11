@@ -1,13 +1,9 @@
 package it.unipr.ce.dsg.deus.example.chordStreaming;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Properties;
-
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
@@ -20,32 +16,16 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Matteo Agosti (matteo.agosti@unipr.it)
  * @author Marco Muro (marco.muro@studenti.unipr.it)
  */
-public class LogChordOwnerEvent extends Event {
+public class LogChordStatsEvent extends Event {
 
-	public LogChordOwnerEvent(String id, Properties params,
+	public LogChordStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
 
 	public void run() throws RunException {
-		getLogger().info("########## ChordPeer time Simulation:" + Engine.getDefault().getVirtualTime());
-		
-		Collections.sort(Engine.getDefault().getNodes());
-		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
-		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
-				.hasNext();) {
-			ChordPeer n = (ChordPeer) it.next();
-			getLogger().info(
-					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
-							+ n.getSuccessor());
-			
-			for (int y = 0; y < n.chordResources.size(); y++)
-					getLogger().info("\towner of resource: " + n.chordResources.get(y).getResource_key() + " seqNumber: " + n.chordResources.get(y).getSequenceNumber());		
-	
-			getLogger().info("\tnumero nodi serviti: " + n.servedPeers.size());
-			for(int j = 0; j < n.servedPeers.size(); j++)
-				getLogger().info("\tservito : " + n.servedPeers.get(j).getKey());
-		
+		getLogger().info("########## ChordPeer Stats:" + Engine.getDefault().getVirtualTime());
+		getLogger().info("Number of nodes in the Network: " + Engine.getDefault().getNodes().size());
 			double sumSearches = 0;
 			double sumFaleidSearches = 0 ;
 			double sumFindedResource = 0;
@@ -97,4 +77,4 @@ public class LogChordOwnerEvent extends Event {
 		}
 		
 	}
-}
+

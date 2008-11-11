@@ -20,29 +20,30 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Matteo Agosti (matteo.agosti@unipr.it)
  * @author Marco Muro (marco.muro@studenti.unipr.it)
  */
-public class LogChordFingerTable extends Event {
+public class LogChordServedPeers extends Event {
 
-	public LogChordFingerTable(String id, Properties params,
+	public LogChordServedPeers(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
 
 	public void run() throws RunException {
-		getLogger().info(
-				"######################### ChordPeer fingerTable:"
-						+ Engine.getDefault().getVirtualTime());
-
+		getLogger().info("########## ChordPeer ServedPeers:" + Engine.getDefault().getVirtualTime());
+		
 		Collections.sort(Engine.getDefault().getNodes());
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			ChordPeer n = (ChordPeer) it.next();
 			getLogger().info(
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
-							+ n.getSuccessor() + "\t server?: "
-							+ n.getServerId() + "\tarriva: " + n.getArrival());
-			for (int i = 0; i < n.getFingerTable().length; i++)
-				getLogger().info("\ti: " + i + "\tn: " + n.getFingerTable()[i]);
+							+ n.getSuccessor());
+			getLogger().info("\tnumero nodi serviti: " + n.servedPeers.size());
+			for(int j = 0; j < n.servedPeers.size(); j++)
+				getLogger().info("\til " + j + "¡ nodo servito : " + n.servedPeers.get(j).getKey());
 		}
-		getLogger().info("################################");
+			
+		}
+		
 	}
-}
+
+

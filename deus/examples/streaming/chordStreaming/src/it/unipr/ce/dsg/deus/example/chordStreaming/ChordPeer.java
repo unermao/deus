@@ -37,6 +37,7 @@ public class ChordPeer extends Peer {
 	private static final String VIDEO_TITLE_3 = "videoTitle3";
 	private static final String MAX_CONNECTIONS = "maxConnections";
 	private static final String NUM_PUBLISH_SERVER = "numPublishServer";
+	private static final String BUFFER_DIMENSION = "bufferDimension";
 	private int fingerTableSize = 0;
 	private ChordPeer predecessor = null;
 	public ChordPeer fingerTable[] = null;
@@ -53,6 +54,7 @@ public class ChordPeer extends Peer {
 	private int typePeer = 0;
 	private int maxConnections = -1;
 	private int numPublishServer = -1;
+	private int bufferDimension = -1;
 	
 	//variabili per statistiche
 	private int countFailedDiscovery = 0;
@@ -91,6 +93,10 @@ public class ChordPeer extends Peer {
 		if (params.getProperty(NUM_PUBLISH_SERVER) == null)
 			throw new InvalidParamsException(NUM_PUBLISH_SERVER
 					+ " param is expected.");
+		if (params.getProperty(BUFFER_DIMENSION) == null)
+			throw new InvalidParamsException(BUFFER_DIMENSION
+					+ " param is expected.");
+		
 		if (params.containsKey(VIDEO_TITLE_1))
 			this.videoList.add((params.getProperty(VIDEO_TITLE_1)));
 		if (params.containsKey(VIDEO_TITLE_2))
@@ -119,6 +125,13 @@ public class ChordPeer extends Peer {
 					.getProperty(NUM_PUBLISH_SERVER));
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(NUM_PUBLISH_SERVER
+					+ " must be a valid int value.");
+		}
+		try {
+			bufferDimension = Integer.parseInt(params
+					.getProperty(BUFFER_DIMENSION));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(BUFFER_DIMENSION
 					+ " must be a valid int value.");
 		}
 		
@@ -780,16 +793,16 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public void playVideoBuffer() {
 
-		if(this.bufferVideo.size() >=7)
+		if(this.bufferVideo.size() >=getBufferDimension())
 		{
-			setLastPlayingResource(this.bufferVideo.get(6).getSequenceNumber());
+			setLastPlayingResource(this.bufferVideo.get(getBufferDimension()-1).getSequenceNumber());
 			if (this.bufferVideo.get(this.bufferVideo.size() - 1)
 					.getSequenceNumber() == this.consumableResources.get(0)
 					.getSequenceNumber() || this.bufferVideo.get(this.bufferVideo.size() - 1)
 					.getSequenceNumber()+1 == this.consumableResources.get(0)
 					.getSequenceNumber())
 				this.setCountCorrectBuffer();
-			for(int i = 0; i < 7; i++)
+			for(int i = 0; i < getBufferDimension(); i++)
 				this.bufferVideo.remove(0);
 		}
 		
@@ -921,5 +934,9 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public int getNumPublishServer() {
 		return numPublishServer;
+	}
+
+	public int getBufferDimension() {
+		return bufferDimension;
 	}
 }
