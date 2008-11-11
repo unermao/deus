@@ -23,8 +23,6 @@ import it.unipr.ce.dsg.deus.core.RunException;
  */
 public class LogChordSearchingEvent extends Event {
 
-	private int numGeneratedResource = 0;
-
 	public LogChordSearchingEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
