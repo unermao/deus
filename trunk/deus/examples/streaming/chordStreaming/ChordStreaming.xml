@@ -109,13 +109,15 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
+	<aut:event id="logChordSearching" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingEvent" />
 	
-	<aut:event id="logChordSearchingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingStatsEvent" />
+	<aut:event id="logChordStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordStatsEvent" />
 	
-	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForPajekEvent" />
+	<aut:event id="logChordFingerTable" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordFingerTable" />
 	
-	<aut:event id="logChordOwnerStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordOwnerEvent" />
+	<aut:event id="logChordNodesResources" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordNodesResources" />
+	
+	<aut:event id="logChordServedPeers" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordServedPeers" />
 	
 	<aut:event id="logChordForNWB" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForNwbEvent" />
 	
@@ -124,9 +126,12 @@
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="9" />
-			<aut:param name="videoTitle1" value="Matrix" />
-			<aut:param name="videoTitle2" value="KillBill" />
+			<aut:param name="fingerTableSize" value="7" />
+			<aut:param name="maxConnections" value="5" />
+			<aut:param name="numPublishServer" value="4" />
+			<aut:param name="bufferDimension" value="7" />
+			<aut:param name="videoTitle1" value="KillBill" />
+			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
 		</aut:params>
 	</aut:node>
@@ -264,9 +269,11 @@
 			<aut:param name="period" value="49999" /> 
 		</aut:params>
 		<aut:events>
-		   <!-- <aut:reference id="logPopulationSize" />-->
-		    <aut:reference id="logChordSearchingStats" />
-		    <aut:reference id="logChordOwnerStats" />
+		    <aut:reference id="logChordSearching" />
+		    <aut:reference id="logChordStats" />
+		    <aut:reference id="logChordFingerTable" />
+		    <aut:reference id="logChordNodesResources" />
+		    <aut:reference id="logChordServedPeers" />
 		    <aut:reference id="logChordForNWB" />
 		</aut:events>
 	</aut:process>

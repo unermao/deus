@@ -29,9 +29,9 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		addOthersResources(searchedNode);
 		getServingNode().decrementNumConnections();
 	
-		if(searchedNode.consumableResources.size() >= 7)
+		if(searchedNode.consumableResources.size() >= searchedNode.getBufferDimension())
 			{
-			for(int c = 0; c<3; c++)
+			for(int c = 0; c<searchedNode.getBufferDimension()/2; c++)
 			{
 				if(!searchedNode.bufferVideo.contains(searchedNode.consumableResources.get(c)))
 				searchedNode.bufferVideo.add(searchedNode.consumableResources.get(c));

@@ -21,11 +21,11 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Matteo Agosti (matteo.agosti@unipr.it)
  * @author Marco Muro (marco.muro@studenti.unipr.it)
  */
-public class LogChordSearchingStatsEvent extends Event {
+public class LogChordSearchingEvent extends Event {
 
 	private int numGeneratedResource = 0;
 
-	public LogChordSearchingStatsEvent(String id, Properties params,
+	public LogChordSearchingEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
@@ -36,7 +36,6 @@ public class LogChordSearchingStatsEvent extends Event {
 						+ Engine.getDefault().getVirtualTime());
 
 		Collections.sort(Engine.getDefault().getNodes());
-		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			ChordPeer n = (ChordPeer) it.next();
@@ -44,7 +43,6 @@ public class LogChordSearchingStatsEvent extends Event {
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
 							+ n.getSuccessor() + "\t server?: "
 							+ n.getServerId() + "\tarriva: " + n.getArrival());
-			numGeneratedResource += n.chordResources.size();
 			getLogger().info(
 					"\tnumber of resources: " + n.chordResources.size()
 							+ "\tnum connections: " + n.getNumConnections()
@@ -71,8 +69,6 @@ public class LogChordSearchingStatsEvent extends Event {
 								+ n.getLastPlayingResource());
 
 		}
-
-		getLogger().info("\t generatedResources: = " + numGeneratedResource);
 		getLogger().info("################################");
 	}
 

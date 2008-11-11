@@ -109,20 +109,15 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
+	<aut:event id="logChordSearching" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingEvent" />
 	
-	<aut:event id="logChordSearchingStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingStatsEvent" />
-	
-	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForPajekEvent" />
-	
-	<aut:event id="logChordOwnerStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordOwnerEvent" />
-	
-	<aut:event id="logChordForNWB" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForNwbEvent" />
+	<aut:event id="logChordStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordStatsEvent" />
 	
 	<aut:event id="logChordFingerTable" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordFingerTable" />
 	
 	<aut:event id="logChordNodesResources" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordNodesResources" />
 	
+	<aut:event id="logChordServedPeers" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordServedPeers" />
 	
 	<!-- *** NODE SPECIES *** -->
 
@@ -130,8 +125,9 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="fingerTableSize" value="13" />
-			<aut:param name="maxConnections" value="5" />
+			<aut:param name="maxConnections" value="7" />
 			<aut:param name="numPublishServer" value="4" />
+			<aut:param name="bufferDimension" value="10" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -271,12 +267,11 @@
 			<aut:param name="period" value="12999" /> 
 		</aut:params>
 		<aut:events>
-		   <!-- <aut:reference id="logPopulationSize" />-->
-		    <aut:reference id="logChordSearchingStats" />
-		    <aut:reference id="logChordOwnerStats" />
-		    <aut:reference id="logChordForNWB" />
+		    <aut:reference id="logChordSearching" />
+		    <aut:reference id="logChordStats" />
 		    <aut:reference id="logChordFingerTable" />
 		    <aut:reference id="logChordNodesResources" />
+		    <aut:reference id="logChordServedPeers" />
 		</aut:events>
 	</aut:process>
 	
@@ -289,9 +284,9 @@
 			<aut:reference id="poissonBirthServer" />
 			<aut:reference id="poissonBirth" />
 			<aut:reference id="periodicPlayVideo" />
-			<!--<aut:reference id="poissonBirthForDeath" />-->
 			<aut:reference id="poissonBirthForDisconnection" />
 			<aut:reference id="periodicLog" />
+			<!--<aut:reference id="poissonBirthForDeath" />-->
 			<!--<aut:reference id="periodicDeath"/>-->
 		</aut:processes>
 	</aut:engine>
