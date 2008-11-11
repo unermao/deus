@@ -128,10 +128,13 @@
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="7" />
-			<aut:param name="maxConnections" value="5" />
-			<aut:param name="numPublishServer" value="4" />
-			<aut:param name="bufferDimension" value="7" />
+			<aut:param name="fingerTableSize" value="8" />
+			<aut:param name="maxConnectionsFast" value="10" />
+			<aut:param name="maxConnectionsMedium" value="6" />
+			<aut:param name="maxConnectionsSlow" value="3" />
+			<aut:param name="numPublishServer" value="5" />
+			<aut:param name="bufferDimension" value="20" />
+			<aut:param name="totalResources" value="1500" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -144,7 +147,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="4" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="320" />	
+			<aut:param name="vtThreshold" value="500" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -156,9 +159,9 @@
 	
 <aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="299" />
+			<aut:param name="firstPeriodArrival" value="100" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="300" />	
+			<aut:param name="vtThreshold" value="2000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -209,7 +212,7 @@
 
 	<aut:process id="periodicStabilization" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="4" /> 
+			<aut:param name="period" value="5" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="stabilize" />
@@ -222,7 +225,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="375" />
+			<aut:param name="vtThreshold" value="1500" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="publishServer" />
@@ -231,7 +234,7 @@
 	
 	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="9" /> 
+			<aut:param name="period" value="10" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -243,7 +246,7 @@
 	
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="8" /> 
+			<aut:param name="period" value="20" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="playVideo" />
@@ -268,7 +271,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="10" /> 
+			<aut:param name="period" value="4999" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logChordSearching" />
@@ -276,20 +279,20 @@
 		    <aut:reference id="logChordFingerTable" />
 		    <aut:reference id="logChordNodesResources" />
 		    <aut:reference id="logChordServedPeers" />
-		    <aut:reference id="logChordForNWB" />
+		    <!--<aut:reference id="logChordForNWB" />-->
 		</aut:events>
 	</aut:process>
 	
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1000" seed="123456789" keyspacesize="1200"> 
+	<aut:engine maxvt="5000" seed="123456789" keyspacesize="1500"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />
 			<aut:reference id="poissonBirth" />
 			<aut:reference id="periodicPlayVideo" />
-			<aut:reference id="poissonBirthForDeath" />
+			<!--<aut:reference id="poissonBirthForDeath" />-->
 			<aut:reference id="poissonBirthForDisconnection" />
 			<aut:reference id="periodicLog" />
 			<!--<aut:reference id="periodicDeath"/>-->

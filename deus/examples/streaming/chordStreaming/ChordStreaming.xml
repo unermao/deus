@@ -130,6 +130,7 @@
 			<aut:param name="maxConnections" value="5" />
 			<aut:param name="numPublishServer" value="4" />
 			<aut:param name="bufferDimension" value="7" />
+			<aut:param name="totalResources" value="1500" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />

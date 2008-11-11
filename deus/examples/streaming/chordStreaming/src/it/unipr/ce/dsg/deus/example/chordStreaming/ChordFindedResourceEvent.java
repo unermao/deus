@@ -23,22 +23,25 @@ public class ChordFindedResourceEvent extends NodeEvent{
 	public void run() throws RunException {
 		ChordPeer searchedNode = (ChordPeer) getAssociatedNode();
 		
-		searchedNode.setCountFindedResource();
-		
-		searchedNode.consumableResources.add(getFindedResource());
-		addOthersResources(searchedNode);
-		getServingNode().decrementNumConnections();
-	
+		if(getServingNode().isConnected())
+		{
+			searchedNode.setCountFindedResource();
+			searchedNode.consumableResources.add(getFindedResource());
+			addOthersResources(searchedNode);
+			getServingNode().decrementNumConnections();
+			
 		if(searchedNode.consumableResources.size() >= searchedNode.getBufferDimension())
 			{
-			for(int c = 0; c<searchedNode.getBufferDimension()/2; c++)
+			for(int c = 0; c<searchedNode.getBufferDimension()/4; c++)
 			{
 				if(!searchedNode.bufferVideo.contains(searchedNode.consumableResources.get(c)))
 				searchedNode.bufferVideo.add(searchedNode.consumableResources.get(c));
 			}
-			for(int i = 0; i < searchedNode.consumableResources.size()/2; i++)	
+			for(int i = 0; i < searchedNode.consumableResources.size()/4; i++)	
 				searchedNode.consumableResources.remove(0);
 			}
+		}
+		
 		}
 
 	private void addOthersResources(ChordPeer searchedNode) {

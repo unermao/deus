@@ -39,10 +39,12 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 
 		public void run() throws RunException {
 			
-			Random random = new Random();
+			//Random random = new Random();
 			int initialized_nodes = Engine.getDefault().getNodes().size();
-			int random_node = random.nextInt(initialized_nodes);
+			//int random_node = random.nextInt(initialized_nodes);
+			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
 			ChordPeer disconnectedNode = (ChordPeer) Engine.getDefault().getNodes().get(random_node);
+			if(!disconnectedNode.getServerId())
 			disconnectedNode.disconnectChordNode();
 		}
 
