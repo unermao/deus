@@ -35,6 +35,7 @@ public class LogChordNodesResources extends Event {
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			ChordPeer n = (ChordPeer) it.next();
+			Collections.sort(n.chordResources, new MyComp(null));
 			getLogger().info(
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
 							+ n.getSuccessor() + "\t server?: "
@@ -50,7 +51,6 @@ public class LogChordNodesResources extends Event {
 								+ "\tfilm: "
 								+ n.chordResources.get(c).getVideoName());
 			}
-			Collections.sort(n.chordResources, new MyComp(null));
 			getLogger().info("################################");
 	}
 }

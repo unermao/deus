@@ -31,9 +31,9 @@ public class ChordDiscoveryEvent extends NodeEvent{
 		@Override
 		public void run() throws RunException {
 
-			ChordPeer app = (ChordPeer) getAssociatedNode();
-			if(app.isPublished())
-				((ChordPeer) getAssociatedNode()).searchResources(app.getVideoName(),searchNextSequenceNumber(app));
+			ChordPeer searchingNode = (ChordPeer) getAssociatedNode();
+			if(searchingNode.isPublished())
+				((ChordPeer) getAssociatedNode()).searchResources(searchingNode.getVideoName(),searchNextSequenceNumber(searchingNode));
 		}
 		
 		private int searchNextSequenceNumber(ChordPeer app) {
@@ -43,8 +43,10 @@ public class ChordDiscoveryEvent extends NodeEvent{
 				if(app.consumableResources.get(i).getSequenceNumber() > maxSeq)
 					maxSeq = app.consumableResources.get(i).getSequenceNumber();
 			}
-		
-			if (maxSeq ==(Engine.getDefault().getKeySpaceSize()-1)/4/app.videoList.size())
+			
+		System.out.println("maxSeq: " + maxSeq);
+			
+		if (maxSeq ==(int)((app.getTotalResources()-1)/app.videoList.size()))
 			{
 				maxSeq = maxSeq-1;
 				return maxSeq;
