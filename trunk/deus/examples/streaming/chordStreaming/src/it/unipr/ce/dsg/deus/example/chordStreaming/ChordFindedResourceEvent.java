@@ -41,7 +41,8 @@ public class ChordFindedResourceEvent extends NodeEvent{
 				searchedNode.consumableResources.remove(0);
 			}
 		}
-		
+		else
+			searchedNode.setMissingResources();
 		}
 
 	private void addOthersResources(ChordPeer searchedNode) {

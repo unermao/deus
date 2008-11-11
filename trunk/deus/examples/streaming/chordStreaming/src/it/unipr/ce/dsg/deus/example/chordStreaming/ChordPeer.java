@@ -75,6 +75,7 @@ public class ChordPeer extends Peer {
 	private int countFastPeer = 0;
 	private int countMediumPeer = 0;
 	private int countSlowPeer = 0;
+	private int countMissingResources;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -1003,5 +1004,14 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public int getMaxConnectionsSlow() {
 		return maxConnectionsSlow;
+	}
+
+	public void setMissingResources() {
+		this.countMissingResources = countMissingResources+1;
+		
+	}
+
+	public int getCountMissingResources() {
+		return countMissingResources;
 	}
 }
