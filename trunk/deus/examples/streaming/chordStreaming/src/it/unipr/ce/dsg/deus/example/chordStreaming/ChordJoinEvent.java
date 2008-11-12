@@ -54,8 +54,6 @@ public class ChordJoinEvent extends NodeEvent {
 		connectingNode.initFingerTable(gatewayNode);
 		connectingNode.updateOthers();
 		connectingNode.setConnected(true);
-		//Random rand = new Random();
-		//int randomVideo = rand.nextInt(3);
 		
 		int randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);
 		

@@ -47,7 +47,7 @@ public class ChordFindedResourceEvent extends NodeEvent{
 
 	private void addOthersResources(ChordPeer searchedNode) {
 		
-		Collections.sort(getServingNode().consumableResources, new MyComp(null));
+		//Collections.sort(getServingNode().consumableResources, new MyComp(null));
 		if(getServingNode().getVideoName() == searchedNode.getVideoName())
 		{
 			for(int i = 0; i < getServingNode().consumableResources.size()-1; i++)

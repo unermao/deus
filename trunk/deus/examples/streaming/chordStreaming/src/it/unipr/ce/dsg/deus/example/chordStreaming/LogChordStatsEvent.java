@@ -77,6 +77,7 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("% of mediumPeer: " + (sumMediumPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
 			getLogger().info("% of slowPeer: " + (sumSlowPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + "%");
 			getLogger().info("% of missingResources: " + (sumMissingResources/sumSearches)*100 + "%");
+			getLogger().info("% of ResourceIndirect: " + (sumFindedResource/sumFindedOtherResource)*100 + "%");
 			
 		getLogger().info("##########");
 		}
