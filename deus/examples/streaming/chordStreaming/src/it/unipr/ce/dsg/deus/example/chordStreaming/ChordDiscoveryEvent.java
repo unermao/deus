@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.example.chordStreaming;
 
-import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -30,7 +29,7 @@ public class ChordDiscoveryEvent extends NodeEvent{
 
 		@Override
 		public void run() throws RunException {
-
+			
 			ChordPeer searchingNode = (ChordPeer) getAssociatedNode();
 			if(searchingNode.isPublished())
 				((ChordPeer) getAssociatedNode()).searchResources(searchingNode.getVideoName(),searchNextSequenceNumber(searchingNode));
@@ -44,7 +43,7 @@ public class ChordDiscoveryEvent extends NodeEvent{
 					maxSeq = app.consumableResources.get(i).getSequenceNumber();
 			}
 			
-		//System.out.println("maxSeq: " + maxSeq);
+//		System.out.println("maxSeq: " + maxSeq);
 			
 		if (maxSeq ==(int)((app.getTotalResources()-1)/app.videoList.size()))
 			{

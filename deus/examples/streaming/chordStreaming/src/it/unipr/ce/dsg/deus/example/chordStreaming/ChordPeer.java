@@ -497,7 +497,7 @@ public class ChordPeer extends Peer {
 		
 		if(this.getServerId())
 		{
-			System.out.println(counter + " "+Engine.getDefault().getVirtualTime());
+			
 			for(int i = counter; i < counter+getNumPublishServer(); i++)
 			{
 				resource = chordResources.get(i);
@@ -591,7 +591,7 @@ public class ChordPeer extends Peer {
 						{
 						if(possessorPeer.servedPeers.get(i).consumableResources.contains(resourceToFind))
 							{
-							isfinded = true;
+								isfinded = true;
 								possessorPeer.servedPeers.get(i).incrementNumConnections();
 								createFindedResourceEvent(this,possessorPeer.servedPeers.get(i),resourceToFind);
 								break;
@@ -599,6 +599,7 @@ public class ChordPeer extends Peer {
 						}
 					if(!isfinded)
 						{
+							//if(this.isStarted)
 							this.setCountFailedDiscovery();
 							max++;
 							setSequenceNumber(max);
@@ -606,6 +607,7 @@ public class ChordPeer extends Peer {
 				}
 		else
 		{	
+			//if(this.isStarted)
 			this.setCountFailedDiscovery();
 			max--;
 			setSequenceNumber(max);
@@ -614,21 +616,21 @@ public class ChordPeer extends Peer {
 
 	private void createExchangeResourceEvent(ChordPeer senderNode, ChordPeer receiverNode ,ChordResourceType resourceToExchange) {
 		
-		int exchange_time = 0;
+		double exchange_time = 0;
 		if (senderNode.getTypePeer() == 1 && receiverNode.getTypePeer() == 1)
-			exchange_time = 1;
+			exchange_time = 1.25;
 		else if(senderNode.getTypePeer() == 2 && receiverNode.getTypePeer() == 2)
-			exchange_time = 2;
+			exchange_time = 2.25;
 		else if (senderNode.getTypePeer() == 3 || receiverNode.getTypePeer() == 3)
-			exchange_time = 4;
+			exchange_time = 4.0;
 		else if ((senderNode.getTypePeer() == 1 && receiverNode.getTypePeer() == 2) || (senderNode.getTypePeer() == 2 && receiverNode.getTypePeer() == 1) )
-			exchange_time = 2;
+			exchange_time = 2.25;
 			
 		ChordDataExchangeEvent exchangeEv = (ChordDataExchangeEvent) Engine
 		.getDefault().createEvent(
 				ChordDataExchangeEvent.class,
 				Engine.getDefault().getVirtualTime()
-						+ expRandom(exchange_time));
+						+ expRandom((float) exchange_time));
    
 	exchangeEv.setAssociatedNode(senderNode);
 	exchangeEv.setHasSameAssociatedNode(true);
@@ -641,21 +643,21 @@ public class ChordPeer extends Peer {
 	
 private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer servingNode ,ChordResourceType findedResource) {
 	this.setCountSearch();
-	int exchange_time = 0;
+	double exchange_time = 0;
 	if (searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 1)
-		exchange_time = 1;
+		exchange_time = 1.25;
 	else if(searchedNode.getTypePeer() == 2 && servingNode.getTypePeer() == 2)
-		exchange_time = 2;
+		exchange_time = 2.25;
 	else if (searchedNode.getTypePeer() == 3 || servingNode.getTypePeer() == 3)
-		exchange_time = 4;
+		exchange_time = 4.0;
 	else if ((searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 2) || (searchedNode.getTypePeer() == 2 && servingNode.getTypePeer() == 1) )
-		exchange_time = 2;
+		exchange_time = 2.25;
 	
 	ChordFindedResourceEvent findedEv = (ChordFindedResourceEvent) Engine
 		.getDefault().createEvent(
 				ChordFindedResourceEvent.class,
 				Engine.getDefault().getVirtualTime()
-						+ expRandom(exchange_time));
+						+ expRandom((float) exchange_time));
    
 	findedEv.setAssociatedNode(searchedNode);
 	findedEv.setHasSameAssociatedNode(true);
@@ -856,7 +858,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 					.getSequenceNumber()+1 == this.consumableResources.get(0)
 					.getSequenceNumber())
 				this.setCountCorrectBuffer();
-			for(int i = 0; i < getBufferDimension(); i++)
+			for(int i = 0; i < getBufferDimension()/4; i++)
 				this.bufferVideo.remove(0);
 		}
 		

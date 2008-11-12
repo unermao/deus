@@ -59,7 +59,6 @@ public class ChordBirthEvent extends NodeEvent {
 
 		if(Engine.getDefault().getNodes().size() == 1)
 		{
-			System.out.println("SERVERRRRRR");
 			int count = 0;
 			for(int j = 0; j < birthPeer.videoList.size(); j++)
 			{

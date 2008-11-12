@@ -51,10 +51,6 @@ public class ChordResourceType extends ResourceAdv {
 		this.sequenceNumber = sequenceNumber;
 	}
 
-	public ArrayList<ChordPeer> getOwners() {
-		return Owners;
-	}
-
 	public void addOwners(ChordPeer owner) {
 		Owners.add(owner);
 	}

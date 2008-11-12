@@ -18,7 +18,7 @@ public class ChordPlayVideoEvent extends NodeEvent{
 
 	@Override
 	public void run() throws RunException {
-
+		System.out.println(Engine.getDefault().getVirtualTime());
 		for(int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 		{
 			ChordPeer playingVideoNode = (ChordPeer)Engine.getDefault().getNodes().get(i);
