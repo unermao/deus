@@ -115,6 +115,8 @@
 	
 	<aut:event id="logChordServedPeers" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordServedPeers" />
 	
+	<aut:event id="logChordVideoBuffer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordVideoBufferEvent" />
+	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
@@ -270,6 +272,7 @@
 		    <aut:reference id="logChordStats" />
 		    <aut:reference id="logChordFingerTable" />
 		    <aut:reference id="logChordNodesResources" />
+		    <aut:reference id="logChordVideoBuffer" />
 		    <aut:reference id="logChordServedPeers" />
 		</aut:events>
 	</aut:process>
