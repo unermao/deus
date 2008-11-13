@@ -615,6 +615,23 @@ public class ChordPeer extends Peer {
 			max--;
 			setSequenceNumber(max);
 		}
+			
+		for(int c = 0; c < servedPeers.size(); c++)
+		{
+			if(servedPeers.get(c).getVideoName() == this.getVideoName())
+			{
+				for(int d = 0; d < consumableResources.size(); d++)
+				{
+					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() <= max_connections)
+						{
+						this.setCountFindedOtherResource();
+						this.incrementNumConnections();
+						createFindedResourceEvent(servedPeers.get(c),this,consumableResources.get(d));
+						}
+				}
+			}
+		}			
+			
 	}
 
 	private void createExchangeResourceEvent(ChordPeer senderNode, ChordPeer receiverNode ,ChordResourceType resourceToExchange) {
@@ -853,7 +870,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	public void playVideoBuffer() {
 		
 		boolean flag = false;
-		if(this.bufferVideo.size() >=getBufferDimension())
+		if(this.bufferVideo.size() >=getBufferDimension() && this.isConnected())
 		{
 			setCountPlayVideo();
 			setLastPlayingResource(this.bufferVideo.get(getBufferDimension()-1).getSequenceNumber());
@@ -867,8 +884,8 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 				}
 				if(!flag)
 				{
-			for(int d = 0; d < getBufferDimension()/4; d++)
-				this.bufferVideo.remove(0);
+					for(int d = 0; d < getBufferDimension()/4; d++)
+						this.bufferVideo.remove(0);
 				}
 		}
 		
