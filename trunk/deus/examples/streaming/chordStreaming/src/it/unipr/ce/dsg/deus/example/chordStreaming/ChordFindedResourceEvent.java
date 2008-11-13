@@ -25,7 +25,7 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		
 		if(getServingNode().isConnected())
 		{
-			if(getFindedResource().getSequenceNumber()!=-1 && (!searchedNode.consumableResources.contains(getFindedResource())))
+			if (getFindedResource().getSequenceNumber() != -1 && (!searchedNode.consumableResources.contains(getFindedResource())))	
 			{
 			searchedNode.consumableResources.add(getFindedResource());
 			searchedNode.setCountFindedResource();
@@ -55,15 +55,11 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		{
 			for(int i = 0; i < getServingNode().consumableResources.size()-1; i++)
 			{
-				//int diff = getServingNode().consumableResources.get(i+1).getSequenceNumber() - getServingNode().consumableResources.get(i).getSequenceNumber();
-//				if( diff == 1){
-//					
-					if(!searchedNode.consumableResources.contains(getServingNode().consumableResources.get(i)))
-					{	
-						searchedNode.consumableResources.add(getServingNode().consumableResources.get(i));
-						searchedNode.setCountFindedOtherResource();
-					}
-//				}
+				if(!searchedNode.consumableResources.contains(getServingNode().consumableResources.get(i)))
+				{	
+					searchedNode.consumableResources.add(getServingNode().consumableResources.get(i));
+					searchedNode.setCountFindedOtherResource();
+				}
 		}
 		Collections.sort(searchedNode.consumableResources, new MyComp(null));	
 		
