@@ -54,7 +54,7 @@ public class ChordJoinEvent extends NodeEvent {
 		connectingNode.initFingerTable(gatewayNode);
 		connectingNode.updateOthers();
 		connectingNode.setConnected(true);
-		
+
 		int randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);
 		
 		if(randomVideo==1)
@@ -73,7 +73,7 @@ public class ChordJoinEvent extends NodeEvent {
 			connectingNode.setCountThirdVideo();
 		}
 		
-		randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);//rand.nextInt(3);
+		randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);
 		
 		if(randomVideo==1)
 		{
@@ -91,7 +91,7 @@ public class ChordJoinEvent extends NodeEvent {
 			connectingNode.setCountSlowPeer();
 		}
 		
-		getLogger().fine("Current: " + connectingNode.getKey() + "\tGateway: " + gatewayNode.getKey() + "\tSuccessor: " + connectingNode.getSuccessor().getKey() + "\tPredecessor; " + connectingNode.getPredecessor().getKey());
+		//getLogger().fine("Current: " + connectingNode.getKey() + "\tGateway: " + gatewayNode.getKey() + "\tSuccessor: " + connectingNode.getSuccessor().getKey() + "\tPredecessor; " + connectingNode.getPredecessor().getKey());
 	}
 
 }

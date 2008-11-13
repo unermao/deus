@@ -31,8 +31,9 @@ public class ChordDiscoveryEvent extends NodeEvent{
 		public void run() throws RunException {
 			
 			ChordPeer searchingNode = (ChordPeer) getAssociatedNode();
+			int sequenceNumber = searchNextSequenceNumber(searchingNode);
 			if(searchingNode.isPublished())
-				((ChordPeer) getAssociatedNode()).searchResources(searchingNode.getVideoName(),searchNextSequenceNumber(searchingNode));
+				((ChordPeer) getAssociatedNode()).searchResources(searchingNode.getVideoName(),sequenceNumber);
 		}
 		
 		private int searchNextSequenceNumber(ChordPeer app) {
