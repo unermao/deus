@@ -3,11 +3,14 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
+import it.unipr.ce.dsg.deus.example.chordStreaming.ChordFindedResourceEvent.MyComp;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -50,7 +53,7 @@ public class ChordPeer extends Peer {
 	private int counter= 0;
 	private boolean isPublished = false;
 	private boolean isStarted = false;
-	private Integer sequenceNumber = -1;
+	private Integer sequenceNumber;
 	private int arrivalNumber = -1;
 	private int numConnections = 0;
 	private int lastPlayingResource = -1;
@@ -68,14 +71,15 @@ public class ChordPeer extends Peer {
 	private int countIndirectServing = 0;
 	private int countFindedResource = 0;
 	private int countFindedOtherResource = 0;
-	private int countCorrectBuffer = 0;
+	private int countMissBuffer = 0;
 	private int countFirstVideo = 0;
 	private int countSecondVideo = 0;
 	private int countThirdVideo = 0;
 	private int countFastPeer = 0;
 	private int countMediumPeer = 0;
 	private int countSlowPeer = 0;
-	private int countMissingResources;
+	private int countMissingResources = 0;
+	private int countPlayVideo = 0;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -84,7 +88,7 @@ public class ChordPeer extends Peer {
 	public HashMap<String,Integer> KeyToSequenceNumber = new HashMap<String,Integer>();
 	public ArrayList<Integer> missingSequenceNumber = new ArrayList<Integer>();
 	public ArrayList<ChordResourceType> bufferVideo = new ArrayList<ChordResourceType>();
-	public ArrayList<ChordResourceType> rePublish = new ArrayList<ChordResourceType>();
+	static ArrayList<ChordResourceType> publishResources = new ArrayList<ChordResourceType>();
 	
 	
 	public ChordPeer(String id, Properties params, ArrayList<Resource> resources)
@@ -176,7 +180,6 @@ public class ChordPeer extends Peer {
 	public Object clone() {
 		
 		ChordPeer clone = (ChordPeer) super.clone();
-		clone.sequenceNumber = -1;
 		clone.arrivalNumber = -1;
 		clone.numConnections = 0;
 		clone.isPublished = false;
@@ -189,7 +192,7 @@ public class ChordPeer extends Peer {
 		clone.countFindedResource = 0;
 		clone.countIndirectServing = 0;
 		clone.countFindedOtherResource= 0;
-		clone.countCorrectBuffer= 0;
+		clone.countMissBuffer= 0;
 		clone.countFirstVideo = 0;
 		clone.countSecondVideo = 0;
 		clone.countThirdVideo = 0;
@@ -501,13 +504,11 @@ public class ChordPeer extends Peer {
 			for(int i = counter; i < counter+getNumPublishServer(); i++)
 			{
 				resource = chordResources.get(i);
+				publishResources.add(resource);
 				int resource_key = resource.getResource_key();
 				ChordPeer successorKey = findSuccessor(resource_key);
 				if(successorKey != this )
-					{
-					//if(!successorKey.chordResources.contains(resource))
 					createExchangeResourceEvent(this,successorKey,resource);
-					}
 				else
 				{
 					if(resource.getResource_key() != this.getKey())
@@ -547,7 +548,7 @@ public class ChordPeer extends Peer {
 	 */
 	public void searchResources(String videoName , int max) {
 	
-		
+		this.setCountSearch();
 		ChordPeer possessorPeer = null;
 		ChordResourceType resourceToFind= null;
 		max = max+1;
@@ -574,18 +575,20 @@ public class ChordPeer extends Peer {
 			
 			if(possessorPeer.chordResources.contains(resourceToFind) && possessorPeer.getNumConnections() < max_connections)
 			{
+
 				int index = possessorPeer.chordResources.indexOf(resourceToFind);
 				resourceToFind = possessorPeer.chordResources.get(index);
 				possessorPeer.incrementNumConnections();
-				createFindedResourceEvent(this,possessorPeer,resourceToFind);
+					createFindedResourceEvent(this,possessorPeer,resourceToFind);
 				
 					if(!possessorPeer.servedPeers.contains(this))
 						possessorPeer.servedPeers.add(this);
 					if(possessorPeer.servedPeers.size() > max_connections)
 						possessorPeer.servedPeers.remove(0);
 			}
-				else if(possessorPeer.getNumConnections() >= max_connections-1)
+				else if(possessorPeer.getNumConnections() >= max_connections-1 )
 				{
+
 					boolean isfinded = false;	
 					for(int i = 0; i < possessorPeer.servedPeers.size();i++)
 						{
@@ -599,7 +602,7 @@ public class ChordPeer extends Peer {
 						}
 					if(!isfinded)
 						{
-							//if(this.isStarted)
+							if(publishResources.contains(resourceToFind))
 							this.setCountFailedDiscovery();
 							max++;
 							setSequenceNumber(max);
@@ -607,7 +610,7 @@ public class ChordPeer extends Peer {
 				}
 		else
 		{	
-			//if(this.isStarted)
+			if(publishResources.contains(resourceToFind))
 			this.setCountFailedDiscovery();
 			max--;
 			setSequenceNumber(max);
@@ -642,7 +645,7 @@ public class ChordPeer extends Peer {
 	}
 	
 private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer servingNode ,ChordResourceType findedResource) {
-	this.setCountSearch();
+	
 	double exchange_time = 0;
 	if (searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 1)
 		exchange_time = 1.25;
@@ -848,18 +851,25 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	}
 
 	public void playVideoBuffer() {
-
+		
+		boolean flag = false;
 		if(this.bufferVideo.size() >=getBufferDimension())
 		{
+			setCountPlayVideo();
 			setLastPlayingResource(this.bufferVideo.get(getBufferDimension()-1).getSequenceNumber());
-			if (this.bufferVideo.get(this.bufferVideo.size() - 1)
-					.getSequenceNumber() == this.consumableResources.get(0)
-					.getSequenceNumber() || this.bufferVideo.get(this.bufferVideo.size() - 1)
-					.getSequenceNumber()+1 == this.consumableResources.get(0)
-					.getSequenceNumber())
-				this.setCountCorrectBuffer();
-			for(int i = 0; i < getBufferDimension()/4; i++)
+			Collections.sort(this.bufferVideo, new MyComp(null));
+			
+			for(int i = 0; i < this.bufferVideo.size()-1; i++)
+			{
+				int diff = this.bufferVideo.get(i+1).getSequenceNumber() - this.bufferVideo.get(i).getSequenceNumber();
+				if( diff > 1)
+					this.setCountMissBuffer();
+				}
+				if(!flag)
+				{
+			for(int d = 0; d < getBufferDimension()/4; d++)
 				this.bufferVideo.remove(0);
+				}
 		}
 		
 	}
@@ -920,12 +930,12 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		this.lastPlayingResource = lastPlayingResource;
 	}
 
-	public int getCountCorrectBuffer() {
-		return countCorrectBuffer;
+	public int getCountMissBuffer() {
+		return countMissBuffer;
 	}
 
-	public void setCountCorrectBuffer() {
-		this.countCorrectBuffer = countCorrectBuffer+1;
+	public void setCountMissBuffer() {
+		this.countMissBuffer = countMissBuffer+1;
 	}
 
 	public int getCountFirstVideo() {
@@ -1015,5 +1025,22 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public int getCountMissingResources() {
 		return countMissingResources;
+	}
+
+	public int getCountPlayVideo() {
+		return countPlayVideo;
+	}
+
+	public void setCountPlayVideo() {
+		this.countPlayVideo = countPlayVideo+1;
+	}
+	
+	class MyComp implements Comparator<ChordResourceType>{
+		public MyComp(Object object) {
+		}
+
+		public int compare(ChordResourceType o1, ChordResourceType o2) {
+			return o1.compareTo(o2);
+		}
 	}
 }

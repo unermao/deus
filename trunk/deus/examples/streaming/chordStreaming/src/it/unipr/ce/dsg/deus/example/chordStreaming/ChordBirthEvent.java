@@ -22,6 +22,7 @@ import java.util.Properties;
 public class ChordBirthEvent extends NodeEvent {
 	
 	private static int birth_sequence = 1;
+	static ChordPeer server;
 	static HashMap<String,Integer> KeysSequenceNumbersMap1 = new HashMap<String,Integer>();
 	static HashMap<String,Integer> KeysSequenceNumbersMap2 = new HashMap<String,Integer>();
 	static HashMap<String,Integer> KeysSequenceNumbersMap3 = new HashMap<String,Integer>();

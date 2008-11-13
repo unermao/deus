@@ -25,8 +25,11 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		
 		if(getServingNode().isConnected())
 		{
-			searchedNode.setCountFindedResource();
+			if(getFindedResource().getSequenceNumber()!=-1 && (!searchedNode.consumableResources.contains(getFindedResource())))
+			{
 			searchedNode.consumableResources.add(getFindedResource());
+			searchedNode.setCountFindedResource();
+			}
 			addOthersResources(searchedNode);
 			getServingNode().decrementNumConnections();
 			
@@ -47,20 +50,20 @@ public class ChordFindedResourceEvent extends NodeEvent{
 
 	private void addOthersResources(ChordPeer searchedNode) {
 		
-		//Collections.sort(getServingNode().consumableResources, new MyComp(null));
+		Collections.sort(getServingNode().consumableResources, new MyComp(null));
 		if(getServingNode().getVideoName() == searchedNode.getVideoName())
 		{
 			for(int i = 0; i < getServingNode().consumableResources.size()-1; i++)
 			{
-				int diff = getServingNode().consumableResources.get(i+1).getSequenceNumber() - getServingNode().consumableResources.get(i).getSequenceNumber();
-				if( diff == 1 ){
-					
+				//int diff = getServingNode().consumableResources.get(i+1).getSequenceNumber() - getServingNode().consumableResources.get(i).getSequenceNumber();
+//				if( diff == 1){
+//					
 					if(!searchedNode.consumableResources.contains(getServingNode().consumableResources.get(i)))
 					{	
 						searchedNode.consumableResources.add(getServingNode().consumableResources.get(i));
 						searchedNode.setCountFindedOtherResource();
 					}
-				}
+//				}
 		}
 		Collections.sort(searchedNode.consumableResources, new MyComp(null));	
 		
