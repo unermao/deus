@@ -39,6 +39,7 @@ public class LogChordStatsEvent extends Event {
 			double sumSlowPeer = 0;
 			double sumMissingResources = 0;
 			double sumPlayVideo = 0;
+			double sumDuplicateResources = 0;
 			
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
@@ -56,6 +57,7 @@ public class LogChordStatsEvent extends Event {
 				sumSlowPeer+=t.getCountSlowPeer();
 				sumMissingResources+=t.getCountMissingResources();
 				sumPlayVideo+=t.getCountPlayVideo();
+				sumDuplicateResources+=t.getCountDuplicateResources();
 		}
 			getLogger().info("SEARCHES: ");
 			getLogger().info("N¡ of Total searches: " + sumSearches);
@@ -64,11 +66,13 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("% of Failed Searches: " + (sumFaleidSearches/sumSearches)*100 + " %");
 			getLogger().info("RESOURCES: ");
 			getLogger().info("FindedResource: "+ sumFindedResource);
-			getLogger().info("FindedIndirectResource: "+ sumFindedOtherResource);
+			getLogger().info("DuplicateResources: "+ sumDuplicateResources);
+			getLogger().info("FindedOtherResource: "+ sumFindedOtherResource);
 			getLogger().info("% of IndirectResources: " + (sumFindedOtherResource/sumFindedResource)*100 + " %");
 			getLogger().info("% of IndirectResources2: " + (sumFindedOtherResource/(sumFindedResource+sumFindedOtherResource))*100 + " %");
 			getLogger().info("% of missingResourcesForDisconnection: " + (sumMissingResources/sumSearches)*100 + " %");
 			getLogger().info("% of numFindedResources/sumSearches: " + (sumSearches/(sumFindedResource+sumFindedOtherResource))*100 + " %");
+			getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumFindedResource+sumFindedOtherResource)*100 + " %");
 			getLogger().info("BUFFER: ");
 			getLogger().info("MissBuffer: " + sumMissBuffer);
 			getLogger().info("NumPlayingVideo: " + sumPlayVideo);

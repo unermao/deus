@@ -102,33 +102,41 @@
 	</aut:event>
 	
 	<aut:event id="playVideo" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPlayVideoEvent" >
-	<aut:logger level="OFF" />
+	<aut:logger level="INFO" />
+	</aut:event>
+	
+	<aut:event id="propagationVideo" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPropagationResourcesEvent" >
+	<aut:logger level="INFO" />
 	</aut:event>
 	
 	<aut:event id="logChordSearching" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingEvent" />
-	
-	<aut:event id="logChordStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordStatsEvent" />
 	
 	<aut:event id="logChordFingerTable" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordFingerTable" />
 	
 	<aut:event id="logChordNodesResources" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordNodesResources" />
 	
+	<aut:event id="logChordStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordStatsEvent" />
+	
 	<aut:event id="logChordServedPeers" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordServedPeers" />
 	
 	<aut:event id="logChordForNWB" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForNwbEvent" />
+	
+	<aut:event id="logChordForPajek" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordForPajekEvent" />
+	
+	<aut:event id="logChordVideoBuffer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordVideoBufferEvent" />
 	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="9" />
+			<aut:param name="fingerTableSize" value="8" />
 			<aut:param name="maxConnectionsFast" value="10" />
 			<aut:param name="maxConnectionsMedium" value="6" />
 			<aut:param name="maxConnectionsSlow" value="3" />
-			<aut:param name="numPublishServer" value="5" />
+			<aut:param name="numPublishServer" value="1" />
 			<aut:param name="bufferDimension" value="20" />
-			<aut:param name="totalResources" value="5016" />
+			<aut:param name="totalResources" value="1008" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -139,9 +147,9 @@
 
 	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="4" />
+			<aut:param name="firstPeriodArrival" value="2" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="2400" />	
+			<aut:param name="vtThreshold" value="500" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -153,9 +161,9 @@
 	
 <aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="20" />
+			<aut:param name="firstPeriodArrival" value="50" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="2000" />	
+			<aut:param name="vtThreshold" value="1000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -166,7 +174,7 @@
 	</aut:process>	
 
 
-	<aut:process id="poissonBirthForDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+<aut:process id="poissonBirthForDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="299" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
@@ -206,7 +214,7 @@
 
 	<aut:process id="periodicStabilization" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="5" /> 
+			<aut:param name="period" value="2.5" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="stabilize" />
@@ -217,9 +225,9 @@
 	
 	<aut:process id="publishVideo" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="5" />
+			<aut:param name="firstPeriodArrival" value="2.5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="5000" />
+			<aut:param name="vtThreshold" value="2500" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="publishServer" />
@@ -228,7 +236,7 @@
 	
 	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="10" /> 
+			<aut:param name="period" value="5" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -240,10 +248,19 @@
 	
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="25" /> 
+			<aut:param name="period" value="12.5" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="playVideo" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicPropagation" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="5" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="propagationVideo" />
 		</aut:events>
 	</aut:process>
 	
@@ -265,7 +282,7 @@
 	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="4999" /> 
+			<aut:param name="period" value="2499" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logChordSearching" />
@@ -273,6 +290,7 @@
 		    <aut:reference id="logChordFingerTable" />
 		    <aut:reference id="logChordNodesResources" />
 		    <aut:reference id="logChordServedPeers" />
+		    <aut:reference id="logChordVideoBuffer" />
 		    <!--<aut:reference id="logChordForNWB" />-->
 		</aut:events>
 	</aut:process>
@@ -280,12 +298,13 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="5000" seed="123456789" keyspacesize="6000"> 
+	<aut:engine maxvt="2500" seed="123456789" keyspacesize="4000"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />
 			<aut:reference id="poissonBirth" />
 			<aut:reference id="periodicPlayVideo" />
+			<aut:reference id="periodicPropagation" />
 			<!--<aut:reference id="poissonBirthForDeath" />-->
 			<aut:reference id="poissonBirthForDisconnection" />
 			<aut:reference id="periodicLog" />
