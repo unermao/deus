@@ -69,7 +69,7 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("DuplicateResources: "+ sumDuplicateResources);
 			getLogger().info("FindedOtherResource: "+ sumFindedOtherResource);
 			getLogger().info("% of IndirectResources: " + (sumFindedOtherResource/sumFindedResource)*100 + " %");
-			getLogger().info("% of IndirectResources2: " + (sumFindedOtherResource/(sumFindedResource+sumFindedOtherResource))*100 + " %");
+			getLogger().info("% of IndirectResourcesCorrect: " + (sumFindedOtherResource/(sumFindedResource+sumFindedOtherResource))*100 + " %");
 			getLogger().info("% of missingResourcesForDisconnection: " + (sumMissingResources/sumSearches)*100 + " %");
 			getLogger().info("% of numFindedResources/sumSearches: " + (sumSearches/(sumFindedResource+sumFindedOtherResource))*100 + " %");
 			getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumFindedResource+sumFindedOtherResource)*100 + " %");
