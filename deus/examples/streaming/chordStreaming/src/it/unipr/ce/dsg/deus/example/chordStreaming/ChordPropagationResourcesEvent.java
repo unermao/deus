@@ -33,8 +33,8 @@ public class ChordPropagationResourcesEvent extends NodeEvent{
 				
 						propagationVideoNode.propagationVideoBuffer(max_connections);
 					}	
-		}
+			}
 		}
 		
-	}
+}
 

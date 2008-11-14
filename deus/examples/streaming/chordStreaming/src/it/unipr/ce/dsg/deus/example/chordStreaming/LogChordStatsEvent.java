@@ -77,6 +77,7 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("MissBuffer: " + sumMissBuffer);
 			getLogger().info("NumPlayingVideo: " + sumPlayVideo);
 			getLogger().info("% of ErrorBuffer: " + (sumMissBuffer/sumPlayVideo)*100 + " %");
+			getLogger().info("% of ContinuityIndex: " + (100.00000000000000 - (sumMissBuffer/sumPlayVideo)*100) + " %");
 			getLogger().info("TYPE_VIDEO: ");
 			getLogger().info("Video KillBillVideo: " +sumFirstVideo);
 			getLogger().info("Video ArmaggeddonVideo: " +sumSecondVideo);

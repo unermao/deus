@@ -709,14 +709,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		successorNode.setPredecessor(predecessorNode);
 		
 		getLogger().fine("\tdisconnectedNode: " + this.getKey() + "\tsuccessorNode: " + this.getSuccessor().getKey() + "\tpredecessorNode: " + this.getPredecessor().getKey());
-		for(int c = 0; c < this.chordResources.size(); c++)
-		getLogger().fine("\tdisconnectedNode's resource " + c + "\t: " + this.chordResources.get(c).getResource_key());
-		
-		getLogger().fine("\tnew predecessor's successor: " + successorNode.getPredecessor().getKey() + "\tnew successor's predecessor: " + predecessorNode.getSuccessor().getKey());
-		
-		for(int d = 0; d < successorNode.chordResources.size(); d++)
-			getLogger().fine("\tsuccessortDisconnectedNode's resource " + d + "\t: " + successorNode.chordResources.get(d).getResource_key());	
-	}
+		}
 
 	/**
 	 * <p>
@@ -744,13 +737,6 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		successorNode.setPredecessor(predecessorNode);
 		
 		getLogger().fine("\tdyingNode: " + this.getKey() + "\tsuccessorNode: " + this.getSuccessor().getKey() + "\tpredecessorNode: " + this.getPredecessor().getKey());
-		for(int c = 0; c < this.chordResources.size(); c++)
-		getLogger().fine("\tdyingNode's resource " + c + "\t: " + this.chordResources.get(c).getResource_key());
-		
-		getLogger().fine("\tnew predecessor's successor: " + successorNode.getPredecessor().getKey() + "\tnew successor's predecessor: " + predecessorNode.getSuccessor().getKey());
-		
-		for(int d = 0; d < successorNode.chordResources.size(); d++)
-			getLogger().fine("\tsuccessorDyingNode's resource " + d + "\t: " + successorNode.chordResources.get(d).getResource_key());	
 	}
 
 	public boolean getServerId() {
@@ -864,7 +850,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 			for(int i = 0; i < this.bufferVideo.size()-1; i++)
 			{
 				int diff = this.bufferVideo.get(i+1).getSequenceNumber() - this.bufferVideo.get(i).getSequenceNumber();
-				if( diff > 1)
+					if (diff > 1)
 					this.setCountMissBuffer();
 				}
 				if(!flag)
@@ -1070,7 +1056,6 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 						}
 				}
 			}
-		}		
-		
+		}			
 	}
 }
