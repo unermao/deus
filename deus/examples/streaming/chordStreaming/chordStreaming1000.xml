@@ -18,18 +18,6 @@
 		</aut:events>
 	</aut:event>
 
-	<!--<aut:event id="birthDeath" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordBirthEvent" 
-		schedulerListener="it.unipr.ce.dsg.deus.example.chordStreaming.ChordBirthSchedulerListener" >
-	 	<aut:events>
-		    <aut:reference id="join" />
-		    <aut:reference id="publish" />
-		    <aut:reference id="stabilize" />
-		    <aut:reference id="fixFingers" />	  
-		    <aut:reference id="discovery" />
-		    <aut:reference id="death" />
-		</aut:events>
-	</aut:event>
--->
 	<aut:event id="birthServer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordBirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.chordStreaming.ChordBirthSchedulerListener" oneShot="true">
 	 	<aut:events>
@@ -40,7 +28,6 @@
 		</aut:events>
 	</aut:event>
 
-	
 	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordJoinEvent" oneShot="true" />
 
 	<aut:event id="publish" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPublishEvent">
@@ -62,13 +49,6 @@
 	</aut:event>
 	
 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordDiscoveryEvent">
-	<aut:logger level="OFF" />
-			<aut:params>
-			<aut:param name="hasSameAssociatedNode" value="true" />
-		</aut:params>
-	</aut:event>
-	
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordDeathEvent" >
 	<aut:logger level="OFF" />
 			<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
@@ -155,7 +135,7 @@
 		</aut:events>
 	</aut:process>
 	
-<aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+	<aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="20" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
@@ -168,21 +148,6 @@
 			<aut:reference id="disconnection" />		
 		</aut:events>
 	</aut:process>	
-
-
-<!--<aut:process id="poissonBirthForDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
-		<aut:params>
-			<aut:param name="firstPeriodArrival" value="299" />
-			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="300" />	
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="chordPeer" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="death" />		
-		</aut:events>
-	</aut:process>-->	
 
 	<aut:process id="poissonBirthServer" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
@@ -260,22 +225,6 @@
 		</aut:events>
 	</aut:process>
 	
-	<!-- ***cosi i nodi da disconnettere sono casuali *** -->
-	
-<!--	<aut:process id="periodicDeath" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
-			<aut:param name="period" value="300" /> 
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="chordPeer" />
-		</aut:nodes>
-		<aut:events>
-		    <aut:reference id="death" />
-		</aut:events>
-	</aut:process>
--->
-
-	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="49999" /> 
@@ -302,8 +251,6 @@
 			<aut:reference id="periodicPropagation" />
 			<aut:reference id="poissonBirthForDisconnection" />
 			<aut:reference id="periodicLog" />
-			<!--<aut:reference id="poissonBirthForDeath" />-->
-			<!--<aut:reference id="periodicDeath"/>-->
 		</aut:processes>
 	</aut:engine>
 
