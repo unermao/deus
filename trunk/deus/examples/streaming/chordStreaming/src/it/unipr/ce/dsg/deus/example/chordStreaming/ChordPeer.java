@@ -80,6 +80,7 @@ public class ChordPeer extends Peer {
 	private int countSlowPeer = 0;
 	private int countMissingResources = 0;
 	private int countPlayVideo = 0;
+	private int countDuplicateResources = 0;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -563,7 +564,7 @@ public class ChordPeer extends Peer {
 		}
 		
 			possessorPeer = this.findSuccessor(resourceKey);
-			
+
 			int max_connections = 0;
 			
 			if(possessorPeer.getTypePeer() == 1)
@@ -614,23 +615,7 @@ public class ChordPeer extends Peer {
 			this.setCountFailedDiscovery();
 			max--;
 			setSequenceNumber(max);
-		}
-			
-		for(int c = 0; c < servedPeers.size(); c++)
-		{
-			if(servedPeers.get(c).getVideoName() == this.getVideoName())
-			{
-				for(int d = 0; d < consumableResources.size(); d++)
-				{
-					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() <= max_connections)
-						{
-						this.setCountFindedOtherResource();
-						this.incrementNumConnections();
-						createFindedResourceEvent(servedPeers.get(c),this,consumableResources.get(d));
-						}
-				}
-			}
-		}			
+		}	
 			
 	}
 
@@ -667,7 +652,7 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	if (searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 1)
 		exchange_time = 1.25;
 	else if(searchedNode.getTypePeer() == 2 && servingNode.getTypePeer() == 2)
-		exchange_time = 2.25;
+		exchange_time =2.25;
 	else if (searchedNode.getTypePeer() == 3 || servingNode.getTypePeer() == 3)
 		exchange_time = 4.0;
 	else if ((searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 2) || (searchedNode.getTypePeer() == 2 && servingNode.getTypePeer() == 1) )
@@ -1059,5 +1044,33 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		public int compare(ChordResourceType o1, ChordResourceType o2) {
 			return o1.compareTo(o2);
 		}
+	}
+
+	public int getCountDuplicateResources() {
+		return countDuplicateResources;
+	}
+
+	public void setCountDuplicateResources() {
+		this.countDuplicateResources = countDuplicateResources+1;
+	}
+
+	public void propagationVideoBuffer(int max_connections) {
+		
+		for(int c = 0; c < servedPeers.size(); c++)
+		{
+			if(servedPeers.get(c).getVideoName() == this.getVideoName())
+			{
+				for(int d = 0; d < consumableResources.size(); d++)
+				{
+					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() <= max_connections)
+						{
+						this.setCountFindedOtherResource();
+						this.incrementNumConnections();
+						createFindedResourceEvent(servedPeers.get(c),this,consumableResources.get(d));
+						}
+				}
+			}
+		}		
+		
 	}
 }
