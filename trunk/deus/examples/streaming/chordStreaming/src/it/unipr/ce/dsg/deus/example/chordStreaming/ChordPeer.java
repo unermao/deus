@@ -86,6 +86,9 @@ public class ChordPeer extends Peer {
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> consumableResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordPeer> servedPeers = new ArrayList<ChordPeer>();
+	public ArrayList<ChordPeer> servingPeers = new ArrayList<ChordPeer>();
+	public ArrayList<ChordPeer> MyservingPeers = new ArrayList<ChordPeer>();
+	public ArrayList<ChordPeer> MyservedPeers = new ArrayList<ChordPeer>();
 	public HashMap<String,Integer> KeyToSequenceNumber = new HashMap<String,Integer>();
 	public ArrayList<Integer> missingSequenceNumber = new ArrayList<Integer>();
 	public ArrayList<ChordResourceType> bufferVideo = new ArrayList<ChordResourceType>();
@@ -204,7 +207,9 @@ public class ChordPeer extends Peer {
 		clone.missingSequenceNumber = new ArrayList<Integer>();
 		clone.bufferVideo = new ArrayList<ChordResourceType>();
 		clone.KeyToSequenceNumber = new HashMap<String,Integer>();
-	
+		clone.servingPeers = new ArrayList<ChordPeer>();
+		clone.MyservedPeers = new ArrayList<ChordPeer>();
+		clone.MyservingPeers = new ArrayList<ChordPeer>();
 		return clone;
 	}
 
@@ -565,14 +570,7 @@ public class ChordPeer extends Peer {
 		
 			possessorPeer = this.findSuccessor(resourceKey);
 
-			int max_connections = 0;
-			
-			if(possessorPeer.getTypePeer() == 1)
-				max_connections = getMaxConnectionsFast();
-			else if (possessorPeer.getTypePeer() == 2)
-				max_connections = getMaxConnectionsMedium();
-			else 
-				max_connections = getMaxConnectionsSlow();
+			int max_connections = setMax_connections(possessorPeer);
 			
 			if(possessorPeer.chordResources.contains(resourceToFind) && possessorPeer.getNumConnections() < max_connections)
 			{
@@ -580,12 +578,16 @@ public class ChordPeer extends Peer {
 				int index = possessorPeer.chordResources.indexOf(resourceToFind);
 				resourceToFind = possessorPeer.chordResources.get(index);
 				possessorPeer.incrementNumConnections();
+					this.setCountFindedResource();
 					createFindedResourceEvent(this,possessorPeer,resourceToFind);
 				
 					if(!possessorPeer.servedPeers.contains(this))
 						possessorPeer.servedPeers.add(this);
 					if(possessorPeer.servedPeers.size() > max_connections)
+					{
+						possessorPeer.servedPeers.get(0).servingPeers.remove(this);
 						possessorPeer.servedPeers.remove(0);
+					}
 			}
 				else if(possessorPeer.getNumConnections() >= max_connections-1 )
 				{
@@ -597,6 +599,7 @@ public class ChordPeer extends Peer {
 							{
 								isfinded = true;
 								possessorPeer.servedPeers.get(i).incrementNumConnections();
+								this.setCountFindedResource();
 								createFindedResourceEvent(this,possessorPeer.servedPeers.get(i),resourceToFind);
 								break;
 							}			
@@ -1046,6 +1049,8 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 		{
 			if(servedPeers.get(c).getVideoName() == this.getVideoName())
 			{
+				if(!servedPeers.get(c).servingPeers.contains(this))
+				servedPeers.get(c).servingPeers.add(this);
 				for(int d = 0; d < consumableResources.size(); d++)
 				{
 					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() <= max_connections)
@@ -1056,6 +1061,57 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 						}
 				}
 			}
-		}			
+		}	
 	}
+
+	public void updateVideoBuffer() {
+		Collections.sort(this.consumableResources, new MyComp(null));
+		
+			for(int i = 0; i < this.consumableResources.size()-1; i++)
+			{
+				int diff = this.consumableResources.get(i+1).getSequenceNumber() - this.consumableResources.get(i).getSequenceNumber();
+				if( diff > 1){
+					if(this.servingPeers.size()>0){						
+						int indexNode = Engine.getDefault().getSimulationRandom().nextInt(this.servingPeers.size());
+						ChordPeer servingNode = this.servingPeers.get(indexNode);
+						String hash = this.generateUUID(this.getVideoName() + (this.consumableResources.get(i).getSequenceNumber()+1));
+						int resourceKey = KeyToSequenceNumber.get(hash);
+						ChordResourceType resourceToFind = null;
+						try {
+							resourceToFind = new ChordResourceType(resourceKey);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					int max_connections = setMax_connections(servingNode);
+					
+					if(servingNode.consumableResources.contains(resourceToFind) && servingNode.getNumConnections() < max_connections)
+					{  
+						int index = servingNode.consumableResources.indexOf(resourceToFind);
+//						for (int k = index ; k < servingNode.consumableResources.size(); k++)
+//						{
+							resourceToFind = servingNode.consumableResources.get(index);
+							this.setCountFindedOtherResource();
+							servingNode.incrementNumConnections();
+							createFindedResourceEvent(this,servingNode,resourceToFind);
+//						}
+//					}
+					}
+				}
+			}
+		}
+	}
+	
+public int setMax_connections(ChordPeer Peer){
+	int max_connections = 0;
+	if(Peer.getTypePeer() == 1)
+		max_connections = getMaxConnectionsFast();
+	else if (Peer.getTypePeer() == 2)
+		max_connections = getMaxConnectionsMedium();
+	else 
+		max_connections = getMaxConnectionsSlow();
+	
+	return max_connections;
+	}
+
+	
 }
