@@ -22,16 +22,16 @@ public class ChordPropagationResourcesEvent extends NodeEvent{
 			for(int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
 				ChordPeer propagationVideoNode = (ChordPeer)Engine.getDefault().getNodes().get(i);
-				int max_connections = 0;
+				
 				if(propagationVideoNode.isPublished() && propagationVideoNode.isStarted()){
+					int max_connections = 0;
 					if(propagationVideoNode.getTypePeer() == 1)
 						max_connections = propagationVideoNode.getMaxConnectionsFast();
 					else if (propagationVideoNode.getTypePeer() == 2)
 						max_connections = propagationVideoNode.getMaxConnectionsMedium();
 					else 
 						max_connections = propagationVideoNode.getMaxConnectionsSlow();
-				
-						propagationVideoNode.propagationVideoBuffer(max_connections);
+					propagationVideoNode.propagationVideoBuffer(max_connections);
 					}	
 			}
 		}

@@ -30,9 +30,8 @@ public class ChordFindedResourceEvent extends NodeEvent{
 			if (getFindedResource().getSequenceNumber() != -1 && (!searchedNode.consumableResources.contains(getFindedResource())))	
 			{
 			searchedNode.consumableResources.add(getFindedResource());
-			searchedNode.setCountFindedResource();
 			}
-			addOthersResources(searchedNode);
+			orderResources(searchedNode);
 			getServingNode().decrementNumConnections();
 			
 		if(searchedNode.consumableResources.size() >= searchedNode.getBufferDimension())
@@ -50,26 +49,10 @@ public class ChordFindedResourceEvent extends NodeEvent{
 			searchedNode.setMissingResources();
 		}
 
-	private void addOthersResources(ChordPeer searchedNode) {
+	private void orderResources(ChordPeer searchedNode) {
 		
 		Collections.sort(getServingNode().consumableResources, new MyComp(null));
-		if(getServingNode().getVideoName() == searchedNode.getVideoName())
-		{
-			for(int i = 0; i < getServingNode().consumableResources.size()-1; i++)
-			{
-				int diff = getServingNode().consumableResources.get(i+1).getSequenceNumber() - getServingNode().consumableResources.get(i).getSequenceNumber();
-				if( diff == 1){
-				
-				if(!searchedNode.consumableResources.contains(getServingNode().consumableResources.get(i)))
-				{	
-					searchedNode.consumableResources.add(getServingNode().consumableResources.get(i));
-					searchedNode.setCountFindedOtherResource();
-				}
-			}
-		}
 		Collections.sort(searchedNode.consumableResources, new MyComp(null));	
-		
-		}	
 	}
 
 	public ChordPeer getServingNode() {
