@@ -81,14 +81,13 @@ public class ChordPeer extends Peer {
 	private int countMissingResources = 0;
 	private int countPlayVideo = 0;
 	private int countDuplicateResources = 0;
+	private int countFailedResources = 0;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> consumableResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordPeer> servedPeers = new ArrayList<ChordPeer>();
 	public ArrayList<ChordPeer> servingPeers = new ArrayList<ChordPeer>();
-	public ArrayList<ChordPeer> MyservingPeers = new ArrayList<ChordPeer>();
-	public ArrayList<ChordPeer> MyservedPeers = new ArrayList<ChordPeer>();
 	public HashMap<String,Integer> KeyToSequenceNumber = new HashMap<String,Integer>();
 	public ArrayList<Integer> missingSequenceNumber = new ArrayList<Integer>();
 	public ArrayList<ChordResourceType> bufferVideo = new ArrayList<ChordResourceType>();
@@ -208,8 +207,6 @@ public class ChordPeer extends Peer {
 		clone.bufferVideo = new ArrayList<ChordResourceType>();
 		clone.KeyToSequenceNumber = new HashMap<String,Integer>();
 		clone.servingPeers = new ArrayList<ChordPeer>();
-		clone.MyservedPeers = new ArrayList<ChordPeer>();
-		clone.MyservingPeers = new ArrayList<ChordPeer>();
 		return clone;
 	}
 
@@ -842,9 +839,8 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	}
 
 	public void playVideoBuffer() {
-		
-		boolean flag = false;
-		if(this.bufferVideo.size() >=getBufferDimension() && this.isConnected())
+
+		if(this.bufferVideo.size() >= getBufferDimension() && this.isPublished())
 		{
 			setCountPlayVideo();
 			setLastPlayingResource(this.bufferVideo.get(getBufferDimension()-1).getSequenceNumber());
@@ -854,13 +850,16 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 			{
 				int diff = this.bufferVideo.get(i+1).getSequenceNumber() - this.bufferVideo.get(i).getSequenceNumber();
 					if (diff > 1)
+					{
 					this.setCountMissBuffer();
-				}
-				if(!flag)
-				{
-					for(int d = 0; d < getBufferDimension()/4; d++)
+					for(int k = 0; k < i; k++)
 						this.bufferVideo.remove(0);
-				}
+					}
+			}
+
+			if(this.bufferVideo.size() >= getBufferDimension()){
+					for(int d = 0; d < getBufferDimension()/4; d++)
+						this.bufferVideo.remove(0);}
 		}
 		
 	}
@@ -1087,14 +1086,11 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 					if(servingNode.consumableResources.contains(resourceToFind) && servingNode.getNumConnections() < max_connections)
 					{  
 						int index = servingNode.consumableResources.indexOf(resourceToFind);
-//						for (int k = index ; k < servingNode.consumableResources.size(); k++)
-//						{
 							resourceToFind = servingNode.consumableResources.get(index);
 							this.setCountFindedOtherResource();
 							servingNode.incrementNumConnections();
 							createFindedResourceEvent(this,servingNode,resourceToFind);
-//						}
-//					}
+
 					}
 				}
 			}
@@ -1112,6 +1108,14 @@ public int setMax_connections(ChordPeer Peer){
 	
 	return max_connections;
 	}
+
+public int getCountFailedResources() {
+	return countFailedResources;
+}
+
+public void setCountFailedResources() {
+	this.countFailedResources = countFailedResources+1;
+}
 
 	
 }

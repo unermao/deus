@@ -43,8 +43,8 @@ public class LogChordNodesResources extends Event {
 							+ "\tchordResource size: "
 							+ n.chordResources.size());
 			for (int c = 0; c < n.chordResources.size(); c++) {
-//				if(n.chordResources.get(c).getResource_key() >= n.getSuccessor().getKey() || n.chordResources.get(c).getResource_key() <=  n.getPredecessor().getKey())
-//					n.setCountFailedResources();
+				if(n.chordResources.get(c).getResource_key() >= n.getSuccessor().getKey() || n.chordResources.get(c).getResource_key() <=  n.getPredecessor().getKey())
+					n.setCountFailedResources();
 				getLogger().info(
 						"\ti: " + c + "\tresourceKey: "
 								+ n.chordResources.get(c).getResource_key()
