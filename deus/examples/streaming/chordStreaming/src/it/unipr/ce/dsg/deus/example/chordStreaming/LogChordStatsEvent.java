@@ -59,7 +59,7 @@ public class LogChordStatsEvent extends Event {
 				sumMissingResources+=t.getCountMissingResources();
 				sumPlayVideo+=t.getCountPlayVideo();
 				sumDuplicateResources+=t.getCountDuplicateResources();
-				//sumFailedResources+=t.getCountFailedResources();
+				sumFailedResources+=t.getCountFailedResources();
 		}
 			getLogger().info("SEARCHES: ");
 			getLogger().info("N¡ of Total searches: " + sumSearches);
