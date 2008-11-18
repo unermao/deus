@@ -41,6 +41,9 @@ public class LogChordStatsEvent extends Event {
 			double sumPlayVideo = 0;
 			double sumDuplicateResources = 0;
 			double sumFailedResources = 0;
+			float sumStartingTime = 0;
+			float sumReproductionTime = 0;
+			int sumReceivedResources = 0;
 			
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
@@ -60,35 +63,35 @@ public class LogChordStatsEvent extends Event {
 				sumPlayVideo+=t.getCountPlayVideo();
 				sumDuplicateResources+=t.getCountDuplicateResources();
 				sumFailedResources+=t.getCountFailedResources();
+				sumStartingTime+=t.getCountStartingTime();
+				sumReproductionTime+=t.getCountReproductionTime();
+				sumReceivedResources+=t.getCountReceivedResources();
 		}
-			getLogger().info("SEARCHES: ");
-			getLogger().info("N¡ of Total searches: " + sumSearches);
-			getLogger().info("Failed Searches: " + sumFaleidSearches);
+			//getLogger().info("SEARCHES: ");
+			//getLogger().info("N¡ of Total searches: " + sumSearches);
+			//getLogger().info("Failed Searches: " + sumFaleidSearches);
 			if(sumSearches!=0)
-			getLogger().info("% of Failed Searches: " + (sumFaleidSearches/sumSearches)*100 + " %");
+			//getLogger().info("% of Failed Searches: " + (sumFaleidSearches/sumSearches)*100 + " %");
 			getLogger().info("RESOURCES: ");
-			getLogger().info("FindedResource: "+ sumFindedResource);
-			getLogger().info("DuplicateResources: "+ sumDuplicateResources);
-			getLogger().info("FindedOtherResource: "+ sumFindedOtherResource);
-			getLogger().info("FailedResources: "+ sumFailedResources);
-			getLogger().info("TotalResources: "+ (sumFindedResource+sumFindedOtherResource));
-			getLogger().info("% of IndirectResourcesCorrect: " + (sumFindedOtherResource/(sumFindedResource+sumFindedOtherResource))*100 + " %");
+			getLogger().info("TotalReceivedResources: " + sumReceivedResources);
+			getLogger().info("FindedSingleResource: "+ sumFindedResource);
+			getLogger().info("FindedPropagationResource: "+ sumFindedOtherResource);
+			//getLogger().info("DuplicateResources: "+ sumDuplicateResources);
+			//getLogger().info("FailedResources: "+ sumFailedResources);
+			getLogger().info("% of IndirectResources: " + (sumFindedOtherResource/(sumReceivedResources))*100 + " %");
 			getLogger().info("% of missingResourcesForDisconnection: " + (sumMissingResources/sumSearches)*100 + " %");
-			getLogger().info("% of numFindedResources/sumSearches: " + (sumSearches/(sumFindedResource+sumFindedOtherResource))*100 + " %");
-			getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumFindedResource+sumFindedOtherResource)*100 + " %");
-			getLogger().info("% of numFailedResources: " + sumFailedResources/(1000)*100 + " %");
+			//getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumReceivedResources)*100 + " %");
 			getLogger().info("BUFFER: ");
 			getLogger().info("MissBuffer: " + sumMissBuffer);
 			getLogger().info("NumPlayingVideo: " + sumPlayVideo);
-			getLogger().info("% of ErrorBuffer: " + (sumMissBuffer/sumPlayVideo)*100 + " %");
-			getLogger().info("% of ContinuityIndex: " + (100.00000000000000 - (sumMissBuffer/sumPlayVideo)*100) + " %");
+			getLogger().info("% of ContinuityIndex: " + ((sumReceivedResources-sumMissBuffer)/sumReceivedResources)*100);
 			getLogger().info("TYPE_VIDEO: ");
-			getLogger().info("Video KillBillVideo: " +sumFirstVideo);
-			getLogger().info("Video ArmaggeddonVideo: " +sumSecondVideo);
-			getLogger().info("Video Matrix: " +sumThirdVideo);
-			getLogger().info("% of firstVideo Resource : " + (sumFirstVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
-			getLogger().info("% of secondVideo Resource : " + (sumSecondVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
-			getLogger().info("% of thirdVideo Resource : " + (sumThirdVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
+//			getLogger().info("Video KillBillVideo: " +sumFirstVideo);
+//			getLogger().info("Video ArmaggeddonVideo: " +sumSecondVideo);
+//			getLogger().info("Video Matrix: " +sumThirdVideo);
+//			getLogger().info("% of firstVideo Resource : " + (sumFirstVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
+//			getLogger().info("% of secondVideo Resource : " + (sumSecondVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
+//			getLogger().info("% of thirdVideo Resource : " + (sumThirdVideo/(sumFirstVideo+sumSecondVideo+sumThirdVideo))*100 + " %");
 			getLogger().info("TYPE_NODE: ");
 			getLogger().info("FastPeer: "+sumFastPeer);
 			getLogger().info("MediumPeer: "+sumMediumPeer);
@@ -96,9 +99,28 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("% of fastPeer: " + (sumFastPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
 			getLogger().info("% of mediumPeer: " + (sumMediumPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
 			getLogger().info("% of slowPeer: " + (sumSlowPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
-			
-			
-		getLogger().info("##########");
+			getLogger().info("AverageStartingTime: " + (sumStartingTime/Engine.getDefault().getNodes().size()) + " %");
+			getLogger().info("AverageReproductionTime: " + (sumReproductionTime/Engine.getDefault().getNodes().size()) + " %");
+		getLogger().info("#####################################");
+		
+		sumSearches = 0;
+		sumFaleidSearches = 0 ;
+		sumFindedResource = 0;
+		sumFindedOtherResource = 0;
+		sumMissBuffer = 0;
+		sumFirstVideo = 0;
+		sumSecondVideo = 0;
+		sumThirdVideo = 0;
+		sumFastPeer = 0;
+		sumMediumPeer = 0;
+		sumSlowPeer = 0;
+		sumMissingResources = 0;
+		sumPlayVideo = 0;
+		sumDuplicateResources = 0;
+		sumFailedResources = 0;
+		sumStartingTime = 0;
+		sumReproductionTime = 0;
+		sumReceivedResources = 0;
 		}
 		
 	}

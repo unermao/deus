@@ -25,24 +25,27 @@ public class ChordFindedResourceEvent extends NodeEvent{
 		
 		if(getServingNode().isConnected())
 		{
-			if(searchedNode.consumableResources.contains(getFindedResource()))
+			if(searchedNode.consumableResources.contains(getFindedResource()) && getFindedResource().getSequenceNumber() != -1)
 					searchedNode.setCountDuplicateResources();
 			if (getFindedResource().getSequenceNumber() != -1 && (!searchedNode.consumableResources.contains(getFindedResource())))	
 			{
+			searchedNode.setCountReceivedResources();
+			if(searchedNode.isPropResources())
+				searchedNode.setCountFindedOtherResource();
+			else
+				searchedNode.setCountFindedResource();
 			searchedNode.consumableResources.add(getFindedResource());
 			}
 			orderResources(searchedNode);
 			getServingNode().decrementNumConnections();
 			
-		if(searchedNode.consumableResources.size() >= searchedNode.getBufferDimension())
+			if(searchedNode.consumableResources.size() >= searchedNode.getBufferDimension())
 			{
-			for(int c = 0; c<searchedNode.getBufferDimension()/4; c++)
-			{
-				if(!searchedNode.bufferVideo.contains(searchedNode.consumableResources.get(c)))
-				searchedNode.bufferVideo.add(searchedNode.consumableResources.get(c));
-			}
-			for(int i = 0; i < searchedNode.consumableResources.size()/4; i++)	
-				searchedNode.consumableResources.remove(0);
+				for(int c = 0; c<searchedNode.consumableResources.size(); c++)
+				{
+					if(!searchedNode.bufferVideo.contains(searchedNode.consumableResources.get(c)))
+						searchedNode.bufferVideo.add(searchedNode.consumableResources.get(c));
+				}
 			}
 		}
 		else

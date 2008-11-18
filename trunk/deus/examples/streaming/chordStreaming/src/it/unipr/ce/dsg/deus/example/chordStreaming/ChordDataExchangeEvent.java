@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 
 import java.util.Properties;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -39,6 +40,8 @@ public class ChordDataExchangeEvent extends NodeEvent {
 				}
 			
 			getReceiverNode().setIsPublished(true);
+			
+//			connectingNode.setCountArrivalTime(Engine.getDefault().getVirtualTime());
 			getResourceToExchange().addOwners(getReceiverNode());
 			getResourceToExchange().removeOwners(senderNode);
 		}
@@ -46,6 +49,9 @@ public class ChordDataExchangeEvent extends NodeEvent {
 		{
 			getReceiverNode().setSequenceNumber(getResourceToExchange().getSequenceNumber());
 			getReceiverNode().setStarted(true);
+			getReceiverNode().setCountStartingTime(Engine.getDefault().getVirtualTime());
+//			if(getResourceToExchange().getVideoName().equals(getReceiverNode().getVideoName()))
+//				getReceiverNode().consumableResources.add(getResourceToExchange());
 		}
 }
 

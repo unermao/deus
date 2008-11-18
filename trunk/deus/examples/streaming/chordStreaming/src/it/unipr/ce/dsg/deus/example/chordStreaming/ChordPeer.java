@@ -82,6 +82,12 @@ public class ChordPeer extends Peer {
 	private int countPlayVideo = 0;
 	private int countDuplicateResources = 0;
 	private int countFailedResources = 0;
+	private float countStartingTime = 0;
+	private float countArrivalTime = 0;
+	private float countReproductionTime = 0;
+	private int countReceivedResources = 0;
+	private boolean propResources = false;
+	private boolean controlBuffer = false;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -199,6 +205,11 @@ public class ChordPeer extends Peer {
 		clone.countFirstVideo = 0;
 		clone.countSecondVideo = 0;
 		clone.countThirdVideo = 0;
+		clone.countArrivalTime = 0;
+		clone.countStartingTime = 0;
+		clone.countReceivedResources = 0;
+		clone.propResources = false;
+		clone.controlBuffer = false;
 		clone.fingerTable = new ChordPeer[fingerTableSize];
 		clone.chordResources = new ArrayList<ChordResourceType>();
 		clone.consumableResources = new ArrayList<ChordResourceType>();
@@ -551,7 +562,7 @@ public class ChordPeer extends Peer {
 	 */
 	public void searchResources(String videoName , int max) {
 	
-		this.setCountSearch();
+		
 		ChordPeer possessorPeer = null;
 		ChordResourceType resourceToFind= null;
 		max = max+1;
@@ -571,11 +582,10 @@ public class ChordPeer extends Peer {
 			
 			if(possessorPeer.chordResources.contains(resourceToFind) && possessorPeer.getNumConnections() < max_connections)
 			{
-
+				this.setCountSearch();
 				int index = possessorPeer.chordResources.indexOf(resourceToFind);
 				resourceToFind = possessorPeer.chordResources.get(index);
 				possessorPeer.incrementNumConnections();
-					this.setCountFindedResource();
 					createFindedResourceEvent(this,possessorPeer,resourceToFind);
 				
 					if(!possessorPeer.servedPeers.contains(this))
@@ -586,35 +596,10 @@ public class ChordPeer extends Peer {
 						possessorPeer.servedPeers.remove(0);
 					}
 			}
-				else if(possessorPeer.getNumConnections() >= max_connections-1 )
-				{
-
-					boolean isfinded = false;	
-					for(int i = 0; i < possessorPeer.servedPeers.size();i++)
-						{
-						if(possessorPeer.servedPeers.get(i).consumableResources.contains(resourceToFind))
-							{
-								isfinded = true;
-								possessorPeer.servedPeers.get(i).incrementNumConnections();
-								this.setCountFindedResource();
-								createFindedResourceEvent(this,possessorPeer.servedPeers.get(i),resourceToFind);
-								break;
-							}			
-						}
-					if(!isfinded)
-						{
-							if(publishResources.contains(resourceToFind))
-							this.setCountFailedDiscovery();
-							max++;
-							setSequenceNumber(max);
-						}
-				}
 		else
 		{	
 			if(publishResources.contains(resourceToFind))
 			this.setCountFailedDiscovery();
-			max--;
-			setSequenceNumber(max);
 		}	
 			
 	}
@@ -840,6 +825,11 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public void playVideoBuffer() {
 
+		if(!this.isControlBuffer()){
+			this.setControlBuffer(true);
+			this.setCountReproductionTime(Engine.getDefault().getVirtualTime());
+		}
+		
 		if(this.bufferVideo.size() >= getBufferDimension() && this.isPublished())
 		{
 			setCountPlayVideo();
@@ -860,6 +850,9 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 			if(this.bufferVideo.size() >= getBufferDimension()){
 					for(int d = 0; d < getBufferDimension()/4; d++)
 						this.bufferVideo.remove(0);}
+			
+			for(int i = 0; i < this.consumableResources.size()/4; i++)	
+				this.consumableResources.remove(0);
 		}
 		
 	}
@@ -1052,9 +1045,9 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 				servedPeers.get(c).servingPeers.add(this);
 				for(int d = 0; d < consumableResources.size(); d++)
 				{
-					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() <= max_connections)
+					if(!servedPeers.get(c).consumableResources.contains(consumableResources.get(d)) && this.getNumConnections() < max_connections)
 						{
-						this.setCountFindedOtherResource();
+						this.setPropResources(true);
 						this.incrementNumConnections();
 						createFindedResourceEvent(servedPeers.get(c),this,consumableResources.get(d));
 						}
@@ -1086,11 +1079,18 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 					if(servingNode.consumableResources.contains(resourceToFind) && servingNode.getNumConnections() < max_connections)
 					{  
 						int index = servingNode.consumableResources.indexOf(resourceToFind);
-							resourceToFind = servingNode.consumableResources.get(index);
-							this.setCountFindedOtherResource();
-							servingNode.incrementNumConnections();
-							createFindedResourceEvent(this,servingNode,resourceToFind);
-
+						int num = Math.min(index+diff-1,servingNode.consumableResources.size());
+						
+						for(int k = index; k < num; k++)
+						{
+							resourceToFind = servingNode.consumableResources.get(k);
+							if(!this.consumableResources.contains(resourceToFind) && servingNode.getNumConnections() < max_connections)
+							{
+								this.setPropResources(true);
+								servingNode.incrementNumConnections();
+								createFindedResourceEvent(this,servingNode,resourceToFind);
+							}
+						}
 					}
 				}
 			}
@@ -1115,6 +1115,56 @@ public int getCountFailedResources() {
 
 public void setCountFailedResources() {
 	this.countFailedResources = countFailedResources+1;
+}
+
+public double getCountStartingTime() {
+	return countStartingTime;
+}
+
+public void setCountStartingTime(float virtualTime) {
+	if(countStartingTime <= 0)
+	this.countStartingTime = (float) (virtualTime - getCountArrivalTime());
+}
+
+public double getCountArrivalTime() {
+	return countArrivalTime;
+}
+
+public void setCountArrivalTime(float countArrivalTime) {
+	this.countArrivalTime = countArrivalTime;
+}
+
+public float getCountReproductionTime() {
+	return countReproductionTime;
+}
+
+public void setCountReproductionTime(float virtualTime) {
+	if(countReproductionTime <= 0)
+	this.countReproductionTime = (float) (virtualTime - getCountArrivalTime());
+}
+
+public int getCountReceivedResources() {
+	return countReceivedResources;
+}
+
+public void setCountReceivedResources() {
+	this.countReceivedResources = countReceivedResources+1;
+}
+
+public boolean isPropResources() {
+	return propResources;
+}
+
+public void setPropResources(boolean propResources) {
+	this.propResources = propResources;
+}
+
+public boolean isControlBuffer() {
+	return controlBuffer;
+}
+
+public void setControlBuffer(boolean controlBuffer) {
+	this.controlBuffer = controlBuffer;
 }
 
 	
