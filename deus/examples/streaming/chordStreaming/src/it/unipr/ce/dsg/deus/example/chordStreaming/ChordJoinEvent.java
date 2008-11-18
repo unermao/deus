@@ -54,7 +54,7 @@ public class ChordJoinEvent extends NodeEvent {
 		connectingNode.initFingerTable(gatewayNode);
 		connectingNode.updateOthers();
 		connectingNode.setConnected(true);
-
+		connectingNode.setCountArrivalTime(Engine.getDefault().getVirtualTime());
 		int randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);
 		
 		if(randomVideo==1)
@@ -74,13 +74,12 @@ public class ChordJoinEvent extends NodeEvent {
 		}
 		
 		randomVideo = Engine.getDefault().getSimulationRandom().nextInt(3);
-		
-		if(randomVideo==1)
+		if(connectingNode.getId().equals("ChordFastPeer"))
 		{
 			connectingNode.setTypePeer(1);
 			connectingNode.setCountFastPeer();
 		}
-		else if(randomVideo==2)
+		else if(connectingNode.getId().equals("ChordMediumPeer"))
 		{
 			connectingNode.setTypePeer(2);
 			connectingNode.setCountMediumPeer();
@@ -91,6 +90,22 @@ public class ChordJoinEvent extends NodeEvent {
 			connectingNode.setCountSlowPeer();
 		}
 		
+//		if(randomVideo==1)
+//		{
+//			connectingNode.setTypePeer(1);
+//			connectingNode.setCountFastPeer();
+//		}
+//		else if(randomVideo==2)
+//		{
+//			connectingNode.setTypePeer(2);
+//			connectingNode.setCountMediumPeer();
+//		}
+//		else
+//		{	
+//			connectingNode.setTypePeer(3);
+//			connectingNode.setCountSlowPeer();
+//		}
+		connectingNode.setCountArrivalTime(Engine.getDefault().getVirtualTime());
 		//getLogger().fine("Current: " + connectingNode.getKey() + "\tGateway: " + gatewayNode.getKey() + "\tSuccessor: " + connectingNode.getSuccessor().getKey() + "\tPredecessor; " + connectingNode.getPredecessor().getKey());
 	}
 

@@ -89,6 +89,10 @@
 	<aut:logger level="INFO" />
 	</aut:event>
 	
+	<aut:event id="updateVideoBuffer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordUpdateVideoBufferEvent" >
+	<aut:logger level="INFO" />
+	</aut:event>
+	
 	<aut:event id="logChordSearching" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordSearchingEvent" />
 	
 	<aut:event id="logChordStats" handler="it.unipr.ce.dsg.deus.example.chordStreaming.LogChordStatsEvent" />
@@ -106,13 +110,13 @@
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="13" />
+			<aut:param name="fingerTableSize" value="12" />
 			<aut:param name="maxConnectionsFast" value="10" />
 			<aut:param name="maxConnectionsMedium" value="6" />
 			<aut:param name="maxConnectionsSlow" value="3" />
 			<aut:param name="numPublishServer" value="1" />
 			<aut:param name="bufferDimension" value="20" />
-			<aut:param name="totalResources" value="10008" />
+			<aut:param name="totalResources" value="5008" />
 			<aut:param name="videoTitle1" value="KillBill" />
 			<aut:param name="videoTitle2" value="Matrix" />
 			<aut:param name="videoTitle3" value="Armaggeddon" />
@@ -188,7 +192,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="50000" />
+			<aut:param name="vtThreshold" value="25000" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="publishServer" />
@@ -225,9 +229,18 @@
 		</aut:events>
 	</aut:process>
 	
+	<aut:process id="updateVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="10" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="updateVideoBuffer" />
+		</aut:events>
+	</aut:process>
+	
 	<aut:process id="periodicLog" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="49999" /> 
+			<aut:param name="period" value="24999" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logChordSearching" />
@@ -242,7 +255,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="50000" seed="192837465" keyspacesize="12000"> 
+	<aut:engine maxvt="25000" seed="123456789" keyspacesize="12000"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="poissonBirthServer" />
