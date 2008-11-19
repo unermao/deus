@@ -314,7 +314,7 @@
 	
 	<aut:process id="publishVideo" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="5" />
+			<aut:param name="firstPeriodArrival" value="10" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
 			<aut:param name="vtThreshold" value="5000" />
 		</aut:params>
@@ -339,7 +339,7 @@
 	
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="25" /> 
+			<aut:param name="period" value="50" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="playVideo" />
@@ -385,12 +385,12 @@
 			<aut:param name="period" value="4999" /> 
 		</aut:params>
 		<aut:events>
-		    <!--<aut:reference id="logChordSearching" />-->
+		    <aut:reference id="logChordSearching" />
 		    <aut:reference id="logChordStats" />
-		    <!--<aut:reference id="logChordFingerTable" />-->
-		    <!--<aut:reference id="logChordNodesResources" />-->
-		   <!--<aut:reference id="logChordServedPeers" />-->
-		    <!--<aut:reference id="logChordVideoBuffer" />-->
+		    <aut:reference id="logChordFingerTable" />
+		    <aut:reference id="logChordNodesResources" />
+		    <aut:reference id="logChordServedPeers" />
+		    <aut:reference id="logChordVideoBuffer" />
 		    <!--<aut:reference id="logChordForNWB" />-->
 		</aut:events>
 	</aut:process>

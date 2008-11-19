@@ -38,8 +38,8 @@ public class ChordBirthSchedulerListener implements SchedulerListener {
 		}   else if (newEvent instanceof ChordDataExchangeEvent) {
 		((ChordDataExchangeEvent) newEvent).setAssociatedNode((ChordPeer) be
 			.getAssociatedNode());
-		}   else if (newEvent instanceof ChordFindedResourceEvent) {
-			((ChordFindedResourceEvent) newEvent).setAssociatedNode((ChordPeer) be
+		}   else if (newEvent instanceof ChordFoundResourceEvent) {
+			((ChordFoundResourceEvent) newEvent).setAssociatedNode((ChordPeer) be
 				.getAssociatedNode());	
 	}
 	}

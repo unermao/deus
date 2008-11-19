@@ -40,7 +40,7 @@ public class LogChordSearchingEvent extends Event {
 			getLogger().info(
 					"n: " + n + "\tp: " + n.getPredecessor() + "\ts: "
 							+ n.getSuccessor() + "\t server?: "
-							+ n.getServerId() + "\tarriva: " + n.getArrival() + "\tstartingTime: " + n.getCountStartingTime());
+							+ n.getServerId() + "\tarriva: " + n.getArrival() + "\tstartingTime: " + n.getCountReproductionTime());
 			getLogger().info(
 					"\tnumber of resources: " + n.chordResources.size()
 							+ "\tnum connections: " + n.getNumConnections()

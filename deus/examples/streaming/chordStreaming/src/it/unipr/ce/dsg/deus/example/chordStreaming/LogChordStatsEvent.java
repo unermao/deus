@@ -44,6 +44,9 @@ public class LogChordStatsEvent extends Event {
 			float sumStartingTime = 0;
 			float sumReproductionTime = 0;
 			int sumReceivedResources = 0;
+			double sumEmptybufferFast = 0;
+			double sumEmptybufferMedium = 0;
+			double sumEmptybufferSlow = 0;
 			
 			for (int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 			{
@@ -66,6 +69,9 @@ public class LogChordStatsEvent extends Event {
 				sumStartingTime+=t.getCountStartingTime();
 				sumReproductionTime+=t.getCountReproductionTime();
 				sumReceivedResources+=t.getCountReceivedResources();
+				sumEmptybufferFast+=t.getCountEmptyBufferFast();
+				sumEmptybufferMedium+=t.getCountEmptyBufferMedium();
+				sumEmptybufferSlow+=t.getCountEmptyBufferSlow();
 		}
 			//getLogger().info("SEARCHES: ");
 			//getLogger().info("N¡ of Total searches: " + sumSearches);
@@ -85,6 +91,9 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("MissBuffer: " + sumMissBuffer);
 			getLogger().info("NumPlayingVideo: " + sumPlayVideo);
 			getLogger().info("% of ContinuityIndex: " + ((sumReceivedResources-sumMissBuffer)/sumReceivedResources)*100);
+			getLogger().info("sumEmptybufferFast: "+ sumEmptybufferFast);
+			getLogger().info("sumEmptybufferMedium: "+ sumEmptybufferMedium);
+			getLogger().info("sumEmptybufferSlow: "+ sumEmptybufferSlow);
 			getLogger().info("TYPE_VIDEO: ");
 //			getLogger().info("Video KillBillVideo: " +sumFirstVideo);
 //			getLogger().info("Video ArmaggeddonVideo: " +sumSecondVideo);
@@ -99,8 +108,8 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("% of fastPeer: " + (sumFastPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
 			getLogger().info("% of mediumPeer: " + (sumMediumPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
 			getLogger().info("% of slowPeer: " + (sumSlowPeer/(sumFastPeer+sumMediumPeer+sumSlowPeer))*100 + " %");
-			getLogger().info("AverageStartingTime: " + (sumStartingTime/Engine.getDefault().getNodes().size()) + " %");
-			getLogger().info("AverageReproductionTime: " + (sumReproductionTime/Engine.getDefault().getNodes().size()) + " %");
+			getLogger().info("AverageStartingTime: " + (sumStartingTime/Engine.getDefault().getNodes().size()) );
+			getLogger().info("AverageReproductionTime: " + (sumReproductionTime/Engine.getDefault().getNodes().size()) );
 		getLogger().info("#####################################");
 		
 		sumSearches = 0;
