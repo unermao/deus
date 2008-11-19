@@ -22,7 +22,7 @@ public class ChordPlayVideoEvent extends NodeEvent{
 		for(int i = 0; i < Engine.getDefault().getNodes().size(); i++)
 		{
 			ChordPeer playingVideoNode = (ChordPeer)Engine.getDefault().getNodes().get(i);
-			if(playingVideoNode.isPublished())
+			if(playingVideoNode.isPublished() && playingVideoNode.isFindedResources())
 			playingVideoNode.playVideoBuffer();
 		}	
 	}

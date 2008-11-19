@@ -3,7 +3,7 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
-import it.unipr.ce.dsg.deus.example.chordStreaming.ChordFindedResourceEvent.MyComp;
+import it.unipr.ce.dsg.deus.example.chordStreaming.ChordFoundResourceEvent.MyComp;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.security.MessageDigest;
@@ -53,6 +53,7 @@ public class ChordPeer extends Peer {
 	private int counter= 0;
 	private boolean isPublished = false;
 	private boolean isStarted = false;
+	private boolean isFindedResources = false;
 	private Integer sequenceNumber;
 	private int arrivalNumber = -1;
 	private int numConnections = 0;
@@ -88,6 +89,9 @@ public class ChordPeer extends Peer {
 	private int countReceivedResources = 0;
 	private boolean propResources = false;
 	private boolean controlBuffer = false;
+	private int countEmptyBufferMedium = 0;
+	private int countEmptyBufferSlow = 0;
+	private int countEmptyBufferFast = 0;
 	
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
@@ -194,6 +198,7 @@ public class ChordPeer extends Peer {
 		clone.isPublished = false;
 		clone.serverId = false;
 		clone.isStarted = false;
+		clone.isFindedResources = false;
 		clone.predecessor = null;
 		clone.lastPlayingResource = -1;
 		clone.countFailedDiscovery = 0;
@@ -210,6 +215,9 @@ public class ChordPeer extends Peer {
 		clone.countReceivedResources = 0;
 		clone.propResources = false;
 		clone.controlBuffer = false;
+		clone.countEmptyBufferMedium = 0;
+		clone.countEmptyBufferSlow = 0;
+		clone.countEmptyBufferFast = 0;
 		clone.fingerTable = new ChordPeer[fingerTableSize];
 		clone.chordResources = new ArrayList<ChordResourceType>();
 		clone.consumableResources = new ArrayList<ChordResourceType>();
@@ -643,9 +651,9 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	else if ((searchedNode.getTypePeer() == 1 && servingNode.getTypePeer() == 2) || (searchedNode.getTypePeer() == 2 && servingNode.getTypePeer() == 1) )
 		exchange_time = 2.25;
 	
-	ChordFindedResourceEvent findedEv = (ChordFindedResourceEvent) Engine
+	ChordFoundResourceEvent findedEv = (ChordFoundResourceEvent) Engine
 		.getDefault().createEvent(
-				ChordFindedResourceEvent.class,
+				ChordFoundResourceEvent.class,
 				Engine.getDefault().getVirtualTime()
 						+ expRandom((float) exchange_time));
    
@@ -825,13 +833,20 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 
 	public void playVideoBuffer() {
 
-		if(!this.isControlBuffer()){
-			this.setControlBuffer(true);
-			this.setCountReproductionTime(Engine.getDefault().getVirtualTime());
-		}
+		if(this.bufferVideo.size() < getBufferDimension() && this.isControlBuffer() && this.getTypePeer() == 1)
+			this.setCountEmptyBufferFast();
 		
-		if(this.bufferVideo.size() >= getBufferDimension() && this.isPublished())
+		if(this.bufferVideo.size() < getBufferDimension() && this.isControlBuffer() && this.getTypePeer() == 2)
+			this.setCountEmptyBufferMedium();
+		
+		if(this.bufferVideo.size() < getBufferDimension() && this.isControlBuffer() && this.getTypePeer() == 3)
+			this.setCountEmptyBufferSlow();
+		
+		this.setCountReproductionTime(Engine.getDefault().getVirtualTime());
+			
+		if(this.bufferVideo.size() >= getBufferDimension())
 		{
+			this.controlBuffer = true;
 			setCountPlayVideo();
 			setLastPlayingResource(this.bufferVideo.get(getBufferDimension()-1).getSequenceNumber());
 			Collections.sort(this.bufferVideo, new MyComp(null));
@@ -1166,6 +1181,36 @@ public boolean isControlBuffer() {
 public void setControlBuffer(boolean controlBuffer) {
 	this.controlBuffer = controlBuffer;
 }
+public int getCountEmptyBufferFast() {
+	return countEmptyBufferFast;
+}
 
+public void setCountEmptyBufferFast() {
+	this.countEmptyBufferFast = countEmptyBufferFast+1;
+}
+
+public int getCountEmptyBufferMedium() {
+	return countEmptyBufferMedium;
+}
+
+public void setCountEmptyBufferMedium() {
+	this.countEmptyBufferMedium = countEmptyBufferMedium+1;
+}
+
+public int getCountEmptyBufferSlow() {
+	return countEmptyBufferSlow;
+}
+
+public void setCountEmptyBufferSlow() {
+	this.countEmptyBufferSlow = countEmptyBufferSlow+1;
+}
+
+public boolean isFindedResources() {
+	return isFindedResources;
+}
+
+public void setFindedResources(boolean isFindedResources) {
+	this.isFindedResources = isFindedResources;
+}
 	
 }

@@ -9,12 +9,12 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class ChordFindedResourceEvent extends NodeEvent{
+public class ChordFoundResourceEvent extends NodeEvent{
 
 	private ChordPeer servingNode = null;
 	private ChordResourceType findedResource = null;
 	
-	public ChordFindedResourceEvent(String id, Properties params,
+	public ChordFoundResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
@@ -35,6 +35,7 @@ public class ChordFindedResourceEvent extends NodeEvent{
 			else
 				searchedNode.setCountFindedResource();
 			searchedNode.consumableResources.add(getFindedResource());
+			searchedNode.setFindedResources(true);
 			}
 			orderResources(searchedNode);
 			getServingNode().decrementNumConnections();
