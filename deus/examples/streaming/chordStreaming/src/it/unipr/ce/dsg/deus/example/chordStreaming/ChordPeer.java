@@ -3,7 +3,6 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
-import it.unipr.ce.dsg.deus.example.chordStreaming.ChordFoundResourceEvent.MyComp;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.security.MessageDigest;

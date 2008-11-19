@@ -6,7 +6,6 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 	import it.unipr.ce.dsg.deus.core.RunException;
 	import it.unipr.ce.dsg.deus.core.Engine;
 	import java.util.Properties;
-	import java.util.Random;
 
 
 	/**
