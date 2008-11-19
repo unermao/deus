@@ -1,7 +1,6 @@
 package it.unipr.ce.dsg.deus.example.chordStreaming;
 
 import java.util.Properties;
-import java.util.Random;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
