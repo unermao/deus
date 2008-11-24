@@ -22,11 +22,8 @@ import it.unipr.ce.dsg.deus.core.RunException;
  */
 public class LogChordRingStatsEvent extends Event {
 
-	private int numGeneratedResource = 0;
-	private Integer conteggio[] = new Integer[500];
-	private int sum = 0;
-	private int average = 0;
-	
+	private double numGeneratedResource = 0.0;
+	private double numFailedResources = 0.0;
 	public LogChordRingStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
@@ -34,9 +31,6 @@ public class LogChordRingStatsEvent extends Event {
 
 	public void run() throws RunException {
 		getLogger().info("##### ChordPeer stats:");
-		
-		for(int b = 0; b < 500; b++)
-			conteggio[b]=0;
 		
 		Collections.sort(Engine.getDefault().getNodes());
 		getLogger().info("nodes: " + Engine.getDefault().getNodes().size());
@@ -51,28 +45,13 @@ public class LogChordRingStatsEvent extends Event {
 			numGeneratedResource +=  n.chordResources.size();
 			getLogger().info(
 					"\tnumber of resources: " + n.chordResources.size());
-			
-			for(int e = 0; e< 500; e++)
-			{
-				Integer f = 0;
-				if(n.chordResources.size() == e)
-				{
-					f = conteggio[n.chordResources.size()];
-					f++;
-					conteggio[e]=f;
-					f=0;
-				}
-				
-			}
-			
-			
-			
+	
 			for (int c = 0; c < n.chordResources.size(); c++) {
+				if(n.chordResources.get(c).getResource_key() >= n.getSuccessor().getKey() || n.chordResources.get(c).getResource_key() <=  n.getPredecessor().getKey())
+					setNumFailedResources();
 				getLogger().info(
 						"\ti: " + c + "\tresourceKey: "
 								+ n.chordResources.get(c).getResource_key()
-//								+ "\t name: "
-//								+ n.chordResources.get(c).getName()
 								+ "\towner: "
 								+ n.chordResources.get(c).getOwner().getKey());
 
@@ -83,16 +62,16 @@ public class LogChordRingStatsEvent extends Event {
 								+ n.searchResults.get(d).getResource_key());
 		}
 		getLogger().info("\t generatedResources: = " + numGeneratedResource);
-		
-		
-		for(int g=0; g<conteggio.length; g++)
-			{
-			getLogger().info("\tin a node ther are " + g + "\tresources in a number of occurences: " + conteggio[g]);
-			sum += g*conteggio[g];
-			
-			}
-		average = sum/Engine.getDefault().getNodes().size();
-		getLogger().info("\taverage is " + average);
+		getLogger().info("\t failedResources: = " + getNumFailedResources());
+		getLogger().info("\t % of failedResource: = " + (getNumFailedResources()/numGeneratedResource)*100.0);
+	}
+
+	public double getNumFailedResources() {
+		return numFailedResources;
+	}
+
+	public void setNumFailedResources() {
+		this.numFailedResources = numFailedResources+1.0;
 	}
 
 }
