@@ -57,13 +57,17 @@
 	
 	<aut:event id="logChordForNWB" handler="it.unipr.ce.dsg.deus.example.chord.LogChordForNwbEvent" />
 	
+	<aut:event id="time" handler="it.unipr.ce.dsg.deus.example.chord.LogChordTime" />
+	
+	<aut:event id="logChordLoadBalance" handler="it.unipr.ce.dsg.deus.example.chord.LogChordLoadBalance" />
+	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="chordPeer" handler="it.unipr.ce.dsg.deus.example.chord.ChordPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="fingerTableSize" value="8" />
-			<aut:param name="resourcesNode" value="5" />
+			<aut:param name="fingerTableSize" value="14" />
+			<aut:param name="resourcesNode" value="10" />
 		</aut:params>
 	</aut:node>
 
@@ -74,7 +78,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="0.5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="128" />	
+			<aut:param name="vtThreshold" value="5000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="chordPeer" />
@@ -169,15 +173,25 @@
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
 		    <aut:reference id="logChordRingStats" />
+		    <aut:reference id="logChordLoadBalance" />
 		    <aut:reference id="logChordForPajek" />
 		    <aut:reference id="logChordForNWB" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="time" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="25" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="time" />
 		</aut:events>
 	</aut:process>
 	
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1000" seed="123456789" keyspacesize="10000"> 
+	<aut:engine maxvt="1000" seed="123456789" keyspacesize="200000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
@@ -185,6 +199,7 @@
 			<aut:reference id="periodicLog" />
 			<aut:reference id="periodicDeath" />
 			<aut:reference id="periodicDisconnection" />
+			<aut:reference id="time" />
 		</aut:processes>
 	</aut:engine>
 
