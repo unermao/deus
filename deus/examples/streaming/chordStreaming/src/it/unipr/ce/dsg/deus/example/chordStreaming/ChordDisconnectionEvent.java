@@ -41,7 +41,7 @@ package it.unipr.ce.dsg.deus.example.chordStreaming;
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
 			ChordPeer disconnectedNode = (ChordPeer) Engine.getDefault().getNodes().get(random_node);
-			if(!disconnectedNode.getServerId())
+			if(!disconnectedNode.getServerId() && disconnectedNode.isConnected())
 			disconnectedNode.disconnectChordNode();
 		}
 

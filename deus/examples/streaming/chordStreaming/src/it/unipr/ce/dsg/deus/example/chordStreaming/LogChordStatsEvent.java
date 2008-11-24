@@ -82,11 +82,11 @@ public class LogChordStatsEvent extends Event {
 			getLogger().info("TotalReceivedResources: " + sumReceivedResources);
 			getLogger().info("FindedSingleResource: "+ sumFindedResource);
 			getLogger().info("FindedPropagationResource: "+ sumFindedOtherResource);
-			//getLogger().info("DuplicateResources: "+ sumDuplicateResources);
+			getLogger().info("DuplicateResources: "+ sumDuplicateResources);
 			//getLogger().info("FailedResources: "+ sumFailedResources);
 			getLogger().info("% of IndirectResources: " + (sumFindedOtherResource/(sumReceivedResources))*100 + " %");
 			getLogger().info("% of missingResourcesForDisconnection: " + (sumMissingResources/sumSearches)*100 + " %");
-			//getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumReceivedResources)*100 + " %");
+			getLogger().info("% of numDuplicateResources: "+ sumDuplicateResources/(sumReceivedResources)*100 + " %");
 			getLogger().info("BUFFER: ");
 			getLogger().info("MissBuffer: " + sumMissBuffer);
 			getLogger().info("NumPlayingVideo: " + sumPlayVideo);

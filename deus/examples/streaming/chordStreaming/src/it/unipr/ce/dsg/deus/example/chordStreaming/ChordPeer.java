@@ -95,6 +95,7 @@ public class ChordPeer extends Peer {
 	public ArrayList<String> videoList = new ArrayList<String>();
 	public ArrayList<ChordResourceType> chordResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordResourceType> consumableResources = new ArrayList<ChordResourceType>();
+	public ArrayList<ChordResourceType> askedResources = new ArrayList<ChordResourceType>();
 	public ArrayList<ChordPeer> servedPeers = new ArrayList<ChordPeer>();
 	public ArrayList<ChordPeer> servingPeers = new ArrayList<ChordPeer>();
 	public HashMap<String,Integer> KeyToSequenceNumber = new HashMap<String,Integer>();
@@ -220,6 +221,7 @@ public class ChordPeer extends Peer {
 		clone.fingerTable = new ChordPeer[fingerTableSize];
 		clone.chordResources = new ArrayList<ChordResourceType>();
 		clone.consumableResources = new ArrayList<ChordResourceType>();
+		clone.askedResources = new ArrayList<ChordResourceType>();
 		clone.servedPeers = new ArrayList<ChordPeer>();
 		clone.missingSequenceNumber = new ArrayList<Integer>();
 		clone.bufferVideo = new ArrayList<ChordResourceType>();
@@ -1048,12 +1050,16 @@ private void createFindedResourceEvent(ChordPeer searchedNode, ChordPeer serving
 	public void setCountDuplicateResources() {
 		this.countDuplicateResources = countDuplicateResources+1;
 	}
+	
+	public void decrementCountDuplicateResources() {
+		this.countDuplicateResources = countDuplicateResources-1;
+	}
 
 	public void propagationVideoBuffer(int max_connections) {
 		
 		for(int c = 0; c < servedPeers.size(); c++)
 		{
-			if(servedPeers.get(c).getVideoName() == this.getVideoName())
+			if(servedPeers.get(c).getVideoName().equals(this.getVideoName()))
 			{
 				if(!servedPeers.get(c).servingPeers.contains(this))
 				servedPeers.get(c).servingPeers.add(this);

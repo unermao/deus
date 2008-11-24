@@ -25,9 +25,9 @@ public class ChordFoundResourceEvent extends NodeEvent{
 		
 		if(getServingNode().isConnected())
 		{
-			if(searchedNode.consumableResources.contains(getFindedResource()) && getFindedResource().getSequenceNumber() != -1)
+			if(searchedNode.consumableResources.contains(getFindedResource()))
 					searchedNode.setCountDuplicateResources();
-			if (getFindedResource().getSequenceNumber() != -1 && (!searchedNode.consumableResources.contains(getFindedResource())))	
+			if (!searchedNode.consumableResources.contains(getFindedResource()))	
 			{
 			searchedNode.setCountReceivedResources();
 			if(searchedNode.isPropResources())
