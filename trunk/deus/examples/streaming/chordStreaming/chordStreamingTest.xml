@@ -116,7 +116,7 @@
 		</aut:params>
 	</aut:event>
 
-	<aut:event id="findedResource" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordFindedResourceEvent" oneShot="true">
+	<aut:event id="findedResource" handler="it.unipr.ce.dsg.deus.example.chordStreaming.ChordFoundResourceEvent" oneShot="true">
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
@@ -208,7 +208,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="3" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="222" />	
+			<aut:param name="vtThreshold" value="300" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="ChordFastPeer" />
@@ -222,7 +222,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="4" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="248" />	
+			<aut:param name="vtThreshold" value="340" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="ChordMediumPeer" />
@@ -236,7 +236,7 @@
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
-			<aut:param name="vtThreshold" value="320" />	
+			<aut:param name="vtThreshold" value="350" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="ChordSlowPeer" />
@@ -246,7 +246,7 @@
 		</aut:events>
 	</aut:process>
 	
-<aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+	<aut:process id="poissonBirthForDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="100" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
@@ -314,7 +314,7 @@
 	
 	<aut:process id="publishVideo" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="firstPeriodArrival" value="10" />
+			<aut:param name="firstPeriodArrival" value="5" />
 			<aut:param name="secondPeriodArrival" value="10000000000000000" />
 			<aut:param name="vtThreshold" value="5000" />
 		</aut:params>
@@ -339,7 +339,7 @@
 	
 	<aut:process id="periodicPlayVideo" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="50" /> 
+			<aut:param name="period" value="25" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="playVideo" />
