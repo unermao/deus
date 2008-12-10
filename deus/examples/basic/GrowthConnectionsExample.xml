@@ -67,7 +67,7 @@
 
 	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="20000" />
+			<aut:param name="meanArrival" value="200000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="supernode" />
@@ -80,7 +80,7 @@
 
 	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10" />
+			<aut:param name="meanArrival" value="20000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="supernode" />
