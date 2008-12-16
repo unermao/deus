@@ -3,8 +3,6 @@ package it.unipr.ce.dsg.deus.example.basic;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
 import it.unipr.ce.dsg.deus.impl.event.BirthEvent;
-import it.unipr.ce.dsg.deus.impl.event.DeathEvent;
-import it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent;
 import it.unipr.ce.dsg.deus.p2p.event.SingleConnectionEvent;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
