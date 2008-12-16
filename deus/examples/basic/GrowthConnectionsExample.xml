@@ -9,24 +9,27 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent"
 	 schedulerListener="it.unipr.ce.dsg.deus.example.basic.BirthSchedulerListener"><!-- when scheduled, creates a new node -->
-		<aut:events><!-- events to be scheduled on created node --><!-- come garantisco l'ordine? -->
+		<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <aut:reference id="disconnection" />
-			<aut:reference id="immediateDeath" />
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.SingleConnectionEvent" oneShot="true" >
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.SingleConnectionEvent" schedulerListener="it.unipr.ce.dsg.deus.example.basic.SingleConnectionSchedulerListener" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 		</aut:params>
+		<aut:events>
+			<aut:reference id="disconnection" />
+		</aut:events>
 	</aut:event>
 
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true" />
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" schedulerListener="it.unipr.ce.dsg.deus.example.basic.DisconnectionSchedulerListener" oneShot="true">
+		<aut:events>
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:event>
 
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" />
-
-	<aut:event id="immediateDeath" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
@@ -53,27 +56,15 @@
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="poisson1a" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="50" />
+			<aut:param name="meanArrival" value="5" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="supernode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
-		</aut:events>
-	</aut:process>
-
-	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
-		<aut:params>
-			<aut:param name="meanArrival" value="200000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="supernode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="disconnection" />
 			<aut:reference id="death" />
 		</aut:events>
 	</aut:process>
@@ -86,7 +77,7 @@
 			<aut:reference id="supernode" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="immediateDeath" />
+			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
 	
@@ -94,9 +85,6 @@
 		<aut:params>
 			<aut:param name="period" value="10000" />
 		</aut:params>
-		<aut:nodes>
-			<aut:reference id="supernode" />
-		</aut:nodes>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" />

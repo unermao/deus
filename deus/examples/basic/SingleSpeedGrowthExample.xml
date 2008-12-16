@@ -62,7 +62,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="100000"
+	<aut:engine maxvt="200000"
 		seed="123456789">
 		<aut:logger level="ALL" pathPrefix="log" />
 		<aut:processes>

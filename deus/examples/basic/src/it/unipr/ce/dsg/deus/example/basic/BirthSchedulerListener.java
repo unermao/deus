@@ -25,12 +25,7 @@ public class BirthSchedulerListener implements SchedulerListener {
 		if (newEvent instanceof SingleConnectionEvent) {
 			((SingleConnectionEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
 			((SingleConnectionEvent) newEvent).setNodeToConnectTo(null);
-		} else if (newEvent instanceof DisconnectionEvent) {
-			((DisconnectionEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
-			((DisconnectionEvent) newEvent).setNodeToDisconnectFrom(null);
-		} else if (newEvent instanceof DeathEvent) {
-			((DeathEvent) newEvent).setNodeToKill(be.getAssociatedNode());
-		}
+		} 
 	}
 
 }
