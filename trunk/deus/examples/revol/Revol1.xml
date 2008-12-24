@@ -64,6 +64,7 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
+			<aut:param name="fitnessFunction" value="F1" />
 			<!-- a0=100, a1=10, a2=5 are the values which give all genes he same weight -->
 			<aut:param name="a0" value="100" />
 			<aut:param name="a1" value="10" />
