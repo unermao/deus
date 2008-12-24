@@ -10,27 +10,31 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 public class RevolAdaptationEvent extends NodeEvent {
-	private static final String A_0 = "a0";
-	private static final String A_1 = "a1";
-	private static final String A_2 = "a2";
+	private static final String FITNESS_FUNCTION = "fitnessFunction";
+	private static final String PHI_0 = "phi0";
+	private static final String PHI_1 = "phi1";
+	private static final String PHI_2 = "phi2";
 	private static final String SELECTION_STRATEGY = "selectionStrategy";
 
+	private String fitnessFunction = "F1";
 	private double currentFitness = 0;
-	private int a0 = 0;
-	private int a1 = 0;
-	private int a2 = 0;
+	private int phi0 = 0;
+	private int phi1 = 0;
+	private int phi2 = 0;
 	private String selectionStrategy = null;
 	private double delta = 0.001;
 
 	public RevolAdaptationEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		if (params.containsKey(A_0))
-			a0 = Integer.parseInt(params.getProperty(A_0));
-		if (params.containsKey(A_1))
-			a1 = Integer.parseInt(params.getProperty(A_1));
-		if (params.containsKey(A_2))
-			a2 = Integer.parseInt(params.getProperty(A_2));
+		if (params.containsKey(FITNESS_FUNCTION))
+			fitnessFunction = params.getProperty(FITNESS_FUNCTION);
+		if (params.containsKey(PHI_0))
+			phi0 = Integer.parseInt(params.getProperty(PHI_0));
+		if (params.containsKey(PHI_1))
+			phi1 = Integer.parseInt(params.getProperty(PHI_1));
+		if (params.containsKey(PHI_2))
+			phi2 = Integer.parseInt(params.getProperty(PHI_2));
 		if (params.containsKey(SELECTION_STRATEGY))
 			selectionStrategy = params.getProperty(SELECTION_STRATEGY);
 	}
@@ -41,25 +45,30 @@ public class RevolAdaptationEvent extends NodeEvent {
 	}
 
 	private double computeFitness(RevolPeer node) {
-		double A = a0 * node.getFk() + a1 * node.getTtlMax() + a2
-				* node.getDMax();
+		double A = phi0 * node.getFk() + phi1 * node.getTtlMax() + phi2 * node.getDMax();
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		double qhr = node.getAvgNeighborsQhr();
 		getLogger().fine(node + " avg neighbor qhr = " + qhr);
 		
 		// F1
-		if (qhr < 0.99) 	  
-			return 1 / A;
-		else
-			return A;
+		if (fitnessFunction.equals("F1")) {
+			if (qhr < 0.99) 	  
+				return 1 / A;
+			else
+				return A;
+		}
+		else if (fitnessFunction.equals("F2")) {
+			return (1-qhr)/(delta*delta*A) + qhr*A;	
+		}
+		else if (fitnessFunction.equals("F3")) {
+			return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);
+		}
 		
-		// F2 return (1-qhr)/(delta*delta*A) + qhr*A;
-		// F3 
-		//return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		return -1; // error
 	}
 
 	private double computeFitness(int[] c, double qhr) {
-		double A = a0 * ((double) c[0]) / 6 + a1 * c[1] + a2 * c[2] * 2;
+		double A = phi0 * ((double) c[0]) / 6 + phi1 * c[1] + phi2 * c[2] * 2;
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		getLogger().fine("avg neighbor qhr = " + qhr);
 		
