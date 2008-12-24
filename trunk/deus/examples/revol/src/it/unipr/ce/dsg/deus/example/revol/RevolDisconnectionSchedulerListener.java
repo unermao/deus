@@ -13,7 +13,7 @@ import it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class DisconnectionSchedulerListener implements SchedulerListener {
+public class RevolDisconnectionSchedulerListener implements SchedulerListener {
 
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		DisconnectionEvent de = (DisconnectionEvent) parentEvent; 
