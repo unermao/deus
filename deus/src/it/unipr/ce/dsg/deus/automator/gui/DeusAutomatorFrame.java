@@ -45,6 +45,8 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     public DeusAutomatorFrame(String originalXmlPath, String outFileName) {
 		this.originalXmlPath = originalXmlPath;
 		this.outFileName = outFileName;
+		
+		initComponents();
 	}
 
 	/** This method is called from within the constructor to
@@ -292,11 +294,11 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		
 	//	System.out.println(xmlString);
 		
-		FileOutputStream fos = new FileOutputStream("automator.xml");
+		FileOutputStream fos = new FileOutputStream(this.outFileName);
 		
 		fos.write(xmlString.getBytes());
 		
-		Runner runner = new Runner("C:\\Users\\Marco\\Desktop\\CoolStreaming.xml", "automator.xml");
+		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
 		runner.setSimulationProgressBar(simulationProgressBar);
 		
 		Thread automatorRunner = new Thread(runner, "Media Controller Listener");
@@ -334,5 +336,20 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     private javax.swing.JLabel simulationStatusLabel;
     private javax.swing.JTabbedPane simulationTabbedPane;
     // End of variables declaration//GEN-END:variables
+	public String getOriginalXmlPath() {
+		return originalXmlPath;
+	}
+
+	public void setOriginalXmlPath(String originalXmlPath) {
+		this.originalXmlPath = originalXmlPath;
+	}
+
+	public String getOutFileName() {
+		return outFileName;
+	}
+
+	public void setOutFileName(String outFileName) {
+		this.outFileName = outFileName;
+	}
 
 }
