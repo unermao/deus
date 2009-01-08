@@ -28,13 +28,7 @@ public class CoolStreamingBirthSchedulerListener implements SchedulerListener {
 			((CoolStreamingDisconnectionEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
 		}else if (newEvent instanceof DeathEvent) {
 			((DeathEvent) newEvent).setNodeToKill(be.getAssociatedNode());
-		}
-		else if (newEvent instanceof CoolStreaming3GTo2GEvent) {
-			((CoolStreaming3GTo2GEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
-		}
-		else if (newEvent instanceof CoolStreaming2GTo3GEvent) {
-			((CoolStreaming2GTo3GEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
-		}
+		}		
 		else if (newEvent instanceof CoolStreamingServerNewVideoResourceEvent) {
 			((CoolStreamingServerNewVideoResourceEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
 		}

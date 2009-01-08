@@ -19,7 +19,7 @@ import java.util.Properties;
  *
  */
 public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
-
+	
 	private int maxPartnersNumber = 20;
 	
 	public CoolStreamingUpdateVideoBufferEvent(String id, Properties params,
@@ -45,13 +45,16 @@ public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
 
 		getLogger().fine("## Update Video Buffer Event ! ");
 	
+		System.out.println("Tempo : " + Engine.getDefault().getVirtualTime());
+		
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
 			
 			CoolStreamingPeer peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
-				peer.updateVideoBufferList(this.triggeringTime);
+				//peer.updateVideoBufferList(this.triggeringTime);
+				peer.updateVideoBufferListCoolStreaming(this.triggeringTime);
 		}
 			
 			
