@@ -222,8 +222,7 @@ public class Runner implements Runnable{
 		files = writeXML(simulations,originalXml);
 				
 		int numFile = 0;					
-		ArrayList<String> logFile = new ArrayList<String>();
-				
+		ArrayList<String> logFile = new ArrayList<String>();									
 		
 		if( simulationProgressBar != null)
 		{
@@ -285,8 +284,9 @@ public class Runner implements Runnable{
 		}
 		
 		if(files.size() == 0) 
-			new Deus(originalXml);
-		
+		{
+			new Deus(originalXml);		
+		}
 		//Rimuove tutti i file .xml utilizzati
 		for(int i = 0; i < files.size(); i++)
 			new File(files.get(i)).delete();
@@ -613,7 +613,7 @@ public class Runner implements Runnable{
 			
 			ArrayList<MyObjectSimulation> simulation = new ArrayList<MyObjectSimulation>(); 
 			
-			for (int w = 0; w < simulationLst.getLength(); w++) {
+			for (int w = 0; w < simulationLst.getLength(); w++) {						
 				
 				MyObjectSimulation sim = new MyObjectSimulation();
 			
@@ -811,10 +811,11 @@ public class Runner implements Runnable{
 
 						}
 				}
+				nodes2.add(s,nodes);
 				}
 								
 				//if(a==false)
-					nodes2.add(s,nodes);					
+										
 				
 				//System.out.println("DIM d " +nodes2.size());								
 			}	
@@ -919,10 +920,11 @@ public class Runner implements Runnable{
 						
 						}
 				
-				}				
+				}		
+				processes2.add(s,processes);
 				}			
 				//if(a==false)
-				processes2.add(s,processes);
+				
 			}
 			if(processes2.size()>0)
 			sim.setProcess(processes2);
@@ -1046,9 +1048,10 @@ public class Runner implements Runnable{
 					sim.getGnuplot().add(gnuplot);
 				}			
 		
-			}
-									
+			}									
+						
 			simulation.add(sim);
+			
 			}						
 			
 			
@@ -1238,8 +1241,9 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 			
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();										    
 		    
-		    doc.getDocumentElement().normalize();
-			
+		    doc.getDocumentElement().normalize();					    
+		    		    
+		    	
 		for(int j = 0; j < simulation.size(); j++)
 		{									 			
 
