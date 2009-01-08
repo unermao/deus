@@ -1,4 +1,5 @@
 package it.unipr.ce.dsg.deus.example.coolStreaming;
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -37,15 +38,20 @@ public class CoolStreamingDisconnectionEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		getLogger().fine("## new disconnection event");
+getLogger().fine("## new disconnection event");
 		
+//System.out.println("entro");
+		int index = 0;
+		CoolStreamingPeer peer = null;
 		
-		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
-	
+		int size = (Engine.getDefault().getNodes().size() - 1 );
 		
-		if(associatedStreamingNode.isConnected())
+		index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
+		peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(index);
+		
+		if(peer.isConnected())
 			//Disconnetto il nodo
-			associatedStreamingNode.disconnection(triggeringTime);
+			peer.disconnectionCoolStreaming(this.triggeringTime);
 		
 		
 		getLogger().fine("end disconnection event ##");

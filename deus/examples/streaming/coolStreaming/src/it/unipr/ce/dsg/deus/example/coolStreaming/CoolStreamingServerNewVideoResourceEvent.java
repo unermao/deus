@@ -53,11 +53,10 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		getLogger().fine("## new video resource");	
+getLogger().fine("## new video resource");	
 		
 		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
 		
-		//System.out.println("New SERVER Video Resource Event" + " (" + serverNode.getId() + ")" +" : " + serverNode.getServedPeers().size() + " (" + Engine.getDefault().getNodes().size() + " )");
 		
 		CoolStreamingVideoChunk newResource = null;
 		
@@ -69,17 +68,54 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 		
 	    //Imposto nel chunk le informazioni sul sorgente
 	    newResource.setSourceNode(serverNode);
+	    newResource.setOriginalTime(this.triggeringTime);
 	    
     	//Aggiungo la nuova porzione video al Server
 	    serverNode.addNewVideoResource(newResource);
 		
 		float time = 0;
-		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
-		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++)
-		{		
-			serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
+
+		//Invia solo a quelli relativi al k-esimo buffer trovato grazie all'indice della risorsa
+	
+		int i = serverNode.calculate_buffer_index(newResource);
+		
+		//serverNode.init();
+		
+		for(int index = 0 ; index < serverNode.getServedPeers2().get(i).size(); index++)
+		{
+			
+			CoolStreamingVideoChunk newResource2 = new CoolStreamingVideoChunk(newResource.getChunkIndex(),newResource.getChunkSize());
+			
+			//Imposto nel chunk le informazioni sul sorgente
+		    newResource2.setSourceNode(serverNode);
+		    newResource2.setOriginalTime(this.triggeringTime);
+			
+			newResource2.setDestNode(serverNode.getServedPeers2().get(i).get(index));
+			
+			//serverNode.getServedPeers2().get(i).get(index).getRequestChunkBuffer().get(i).add(newResource2);
+			
+			//TODO AGGIUNGERE CHE è STATO RICHIESTO
+			
+//			if(serverNode.getServedPeers2().get(i).get(index).getKey() == 531129312)
+//				System.out.println("INVIO " + newResource2.getChunkIndex());
+			
+			
+			//TODO TOGLIERE
+			if(newResource2.getChunkIndex() > serverNode.getServedPeers2().get(i).get(index).getInitChunk())
+			serverNode.getSendBuffer().get(i).add(newResource2);
+			//System.out.println("Sono " + serverNode.getKey() + " Invio " + newResource2.getChunkIndex() + " a " + serverNode.getServedPeers2().get(i).get(index).getKey());
+		//	if(serverNode.getServedPeers2().get(i).get(index).getKey() == 1602282472 )
+			//	 System.out.println("Sono " + serverNode.getKey() + " Invio " + newResource.getChunkIndex() + " a " + serverNode.getServedPeers2().get(i).get(index).getKey());
+			//serverNode.sendVideoChunk(serverNode.getServedPeers2().get(i).get(index), newResource, this.triggeringTime);
 		}
 		
+		//Innesca per i nodi forniti l'evento di aggiornamento risorsa
+//		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++){	
+//			
+//			//if(!serverNode.getServedPeers().get(index).getNeededChunk().contains(newResource.getChunkIndex()))
+//				serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
+//		}
+//			
 		getLogger().fine("end new video resource ##");
 	}
 

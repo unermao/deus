@@ -7,6 +7,8 @@ public class CoolStreamingVideoChunk {
 	private int chunkIndex;
 	private int chunkSize;
 	private Node sourceNode;
+	private Node destNode;
+	private float originalTime = 0;
 
 	public CoolStreamingVideoChunk(int chunkIndex, int chunkSize) {
 		super();
@@ -17,7 +19,8 @@ public class CoolStreamingVideoChunk {
 	@Override
 	public boolean equals(Object arg0) {
 		CoolStreamingVideoChunk chunk =(CoolStreamingVideoChunk) arg0;
-		if(chunk.getChunkIndex() == this.getChunkIndex())
+		if(chunk.getChunkIndex() == this.getChunkIndex() /*&& chunk.getSourceNode() == this.getSourceNode()
+				&& chunk.getDestNode() == this.getDestNode()*/)
 			return true;
 		else return false;		
 	}
@@ -45,6 +48,20 @@ public class CoolStreamingVideoChunk {
 	public void setSourceNode(Node sourceNode) {
 		this.sourceNode = sourceNode;
 	}
+	public float getOriginalTime() {
+		return originalTime;
+	}
 
+	public void setOriginalTime(float originalTime) {
+		this.originalTime = originalTime;
+	}
+
+	public Node getDestNode() {
+		return destNode;
+	}
+
+	public void setDestNode(Node destNode) {
+		this.destNode = destNode;
+	}
 
 }

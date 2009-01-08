@@ -50,31 +50,52 @@ public class LogCoolStreamingPeerVideoDataStatsEvent extends Event {
 				
 				//getLogger().info("Connessioni attive("+ peer.getId() + "): " + peer.getActiveConnection() + "/" + peer.getMaxAcceptedConnection());
 				
+				if(peer.isInit_bool() == false)
+						peer.init();
 				
-				for(int j = 0 ; j < peer.getVideoResource().size(); j++)
-					listaRisorse = listaRisorse + " " + peer.getVideoResource().get(j).getChunkIndex(); 
+				//for(int i=0;i<peer.getK_value();i++)
+				//for(int j = 0 ; j < peer.getK_buffer().get(i).size(); j++)
+					//listaRisorse = listaRisorse + " " + peer.getK_buffer().get(i).get(j).getChunkIndex(); 
+				
+				
+				for(int j = 0 ; j < peer.getPlayer().size(); j++)
+					listaRisorse = listaRisorse + " " + peer.getPlayer().get(j).getChunkIndex();
 				
 				String sourceId = "";
-				int sourceKey = -1;
+				String sourceKey = "";
 				
-				if(peer.getServerNode() != null){
+//				if(peer.getServerNode() != null){
+//					
+//					sourceId = peer.getServerNode().getId();	
+//					sourceKey = peer.getServerNode().getKey();
+//				}	
+//				else
+//					if(peer.getSourceStreamingNode() != null)
+//					{
+//						sourceId = peer.getSourceStreamingNode().getId();
+//						sourceKey = peer.getSourceStreamingNode().getKey();
+//					}
+				for(int i =0; i<peer.getK_value();i++)
+				if(peer.getServerByServer().get(i) != null){
 					
-					sourceId = peer.getServerNode().getId();	
-					sourceKey = peer.getServerNode().getKey();
+					sourceId = sourceId + " | " + peer.getServerByServer().get(i).getId();	
+					sourceKey = sourceKey + " | " +peer.getServerByServer().get(i).getKey();
 				}	
-				else
-					if(peer.getSourceStreamingNode() != null)
+				
+				for(int i =0; i<peer.getK_value();i++)
+					if(peer.getServerByPeer().get(i) != null)
 					{
-						sourceId = peer.getSourceStreamingNode().getId();
-						sourceKey = peer.getSourceStreamingNode().getKey();
+						sourceId = sourceId + " | " + peer.getServerByPeer().get(i).getId();
+						sourceKey = sourceKey + " | " +peer.getServerByPeer().get(i).getKey();
+						//sourceId = peer.getSourceStreamingNode().getId();
+						//sourceKey = peer.getSourceStreamingNode().getKey();
 					}
+
 				
 				if(peer.getId().equals("pcNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() + " -> " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);
-				if(peer.getId().equals("mobileNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() + " -> " + sourceId+"("+ sourceKey +")"+"):   " + listaRisorse);
-				if(peer.getId().equals("mobile3GNode"))
-					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() + " -> " + sourceId+"("+ sourceKey +")"+"): " + listaRisorse);
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() + " -> " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);				
+				else
+					getLogger().info("Nodo ("+ peer.getId() + " - " + peer.getKey() + " - " + peer.getNodeDepth() + " -> " + sourceId+"("+ sourceKey +")"+"):       " + listaRisorse);				
 				
 			}
 		}

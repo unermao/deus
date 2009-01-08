@@ -51,15 +51,15 @@ public class LogCoolStreamingNetGraphEvent extends Event {
 			
 			String color = "";
 			
-			//Se il nodo  connesso
+			//Se il nodo ï¿½ connesso
 			if(peer.isConnected())
 			{
 			
 				if(peer.getId().equals("pcNode"))
 					color = "blue";
 				
-				if(peer.getId().equals("mobileNode"))
-					color = "241,85,0";
+				if(peer.getId().equals("pcNodeHigh"))
+					color = "green";
 				
 				if(peer.getId().equals("mobile3GNode"))
 					color = "green";
@@ -87,29 +87,34 @@ public class LogCoolStreamingNetGraphEvent extends Event {
 
 				String color = "";
 				
-				if(peer.getServerNode() != null)
+				if(peer.getServerByPeer().size() + peer.getServerByServer().size() > 0)
+				{
+				
+				for(int i=0;i<peer.getK_value(); i++)
+				if(peer.getServerByServer().get(i) != null)
 				{
 					color = "red";
 					
-					getLogger().info(peer.getKey() + " " + peer.getServerNode().getKey()  + " " +  "\""+ color +"\"");
+					getLogger().info(peer.getKey() + " " + peer.getServerByServer().get(i).getKey()  + " " +  "\""+ color +"\"");
 				}
 
-				if(peer.getSourceStreamingNode() != null)
+				for(int i=0;i<peer.getK_value(); i++)
+				if(peer.getServerByPeer().get(i) != null)
 				{
 					
-					if(peer.getSourceStreamingNode().getId().equals("pcNode"))
+					if(peer.getServerByPeer().get(i).getId().equals("pcNode"))
 						color = "blue";
 					
-					if(peer.getSourceStreamingNode().getId().equals("mobileNode"))
+					/*if(peer.getServerByPeer().get(i).getId().equals("mobileNode"))
 						color = "241,85,0";
-					
-					if(peer.getSourceStreamingNode().getId().equals("mobile3GNode"))
+					*/
+					if(peer.getServerByPeer().get(i).getId().equals("pcNodeHigh"))
 						color = "green";
 					
-					getLogger().info(peer.getKey() + " " + peer.getSourceStreamingNode().getKey()  + " " +  "\""+ color +"\"");
+					getLogger().info(peer.getKey() + " " + peer.getServerByPeer().get(i).getKey()  + " " +  "\""+ color +"\"");
 					
 				}
-				
+				}
 			}
 		}
 
