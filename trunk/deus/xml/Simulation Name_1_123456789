@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><aut:automator xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
+
+
+	<!-- *** EVENTS *** -->
+
+    <!-- SERVER -->
+	<aut:event handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" id="birth" oneShot="true"/>
+
+    <!-- PEER -->
+	<aut:event handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" id="birth2" schedulerListener="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingBirthSchedulerListener">
+		<aut:events><!-- events to be scheduled on created node -->
+			<aut:reference id="connection"/>
+			<aut:reference id="discovery"/>
+		</aut:events>
+
+	</aut:event>
+
+
+  <!-- PEER -->
+	<aut:event handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" id="birth3" schedulerListener="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingBirthSchedulerListener">
+		<aut:events><!-- events to be scheduled on created node -->
+			<aut:reference id="connection"/>
+			<aut:reference id="discovery"/>
+		</aut:events>
+
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingConnectionEvent" id="connection" oneShot="true">
+		<aut:logger level="FINE"/>
+
+	</aut:event>
+
+
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingDiscoveryEvent" id="discovery" oneShot="true">
+
+		<aut:logger level="FINE"/>
+
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingServerNewVideoResourceEvent" id="newvideores">
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingPeerNewVideoResourceEvent" id="updateNodeVideoRes">
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingPlayVideoEvent" id="playVideo">
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingUpdateParentsEvent" id="updatelist">
+		<aut:logger level="FINE"/>
+	</aut:event>
+	
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingSendVideoChunkEvent" id="sendvideochunk">
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingUpdateVideoBufferEvent" id="updateVideoBuffer">
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingDisconnectionEvent" id="disconnection">
+
+		<aut:logger level="FINE"/>
+	</aut:event>
+
+
+	<aut:event handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" id="death" oneShot="true"/>
+
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.LogCoolStreamingPeerVideoDataStatsEvent" id="logNodeVideoData">
+		<aut:logger level="INFO"/>
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.LogCoolStreamingPeerConnectionStatsEvent" id="logNodeConnectionStat">
+		<aut:logger level="INFO"/>
+		<aut:params>
+			<aut:param name="filename" value="simulazione[25%pc_0.3][75%high_0.8].dat"/>
+		</aut:params>
+		
+	</aut:event>
+
+	<aut:event handler="it.unipr.ce.dsg.deus.example.coolStreaming.LogCoolStreamingNetGraphEvent" id="graphData">
+		<aut:logger level="INFO"/>
+	</aut:event>
+
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingServerPeer" id="serverNode">
+		<aut:logger level="FINE"/>
+		<aut:params>
+			<aut:param name="chunkSize" value="160"/>  <!-- 20 Kbyte -->
+			<aut:param name="uploadSpeed" value="10.0"/>
+			<aut:param name="downloadSpeed" value="20.0"/>
+			<aut:param name="k_value" value="4"/>
+			<aut:param name="isp" value="6"/>
+			<aut:param name="city" value="4"/>			
+		</aut:params>
+		<aut:resources>
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+				<aut:params>
+					<aut:param name="type" value="maxAcceptedConnection"/>
+					<aut:param name="amount" value="200"/>					
+				</aut:params>
+			</aut:resource>
+		</aut:resources>
+	</aut:node>
+
+	<aut:node handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingPeer" id="pcNode">
+		<aut:logger level="FINE"/>
+		<aut:params>
+			<aut:param name="battery" value="100"/>
+			<aut:param name="connectionType" value="adsl"/>
+			<aut:param name="uploadSpeed" value="0.20000000298023224"/>
+			<aut:param name="downloadSpeed" value="4.0"/>
+			<aut:param name="videoResourceBufferLimit" value="10"/>
+			<aut:param name="incentiveBased" value="false"/>
+			<aut:param name="k_value" value="4"/>
+			<aut:param name="maxPartnersNumber" value="20"/>
+		</aut:params>
+
+		<aut:resources>
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+				<aut:params>
+					<aut:param name="type" value="maxAcceptedConnection"/>
+					<aut:param name="amount" value="10"/>
+				</aut:params>
+			</aut:resource>
+		</aut:resources>
+	</aut:node>
+	
+	
+	<aut:node handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingPeer" id="pcNodeHigh">
+		<aut:logger level="FINE"/>
+		<aut:params>
+			<aut:param name="battery" value="100"/>
+			<aut:param name="connectionType" value="adsl"/>
+			<aut:param name="uploadSpeed" value="0.8"/>
+			<aut:param name="downloadSpeed" value="7.0"/>
+			<aut:param name="videoResourceBufferLimit" value="10"/>
+			<aut:param name="incentiveBased" value="false"/>
+			<aut:param name="k_value" value="4"/>
+			<aut:param name="maxPartnersNumber" value="20"/>
+		</aut:params>
+
+		<aut:resources>
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+				<aut:params>
+					<aut:param name="type" value="maxAcceptedConnection"/>
+					<aut:param name="amount" value="10"/>
+				</aut:params>
+			</aut:resource>
+		</aut:resources>
+	</aut:node>
+	
+
+	<!-- *** PROCESSES *** -->
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="serverPoisson1">
+		<aut:params>
+			<aut:param name="meanArrival" value="0"/>
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="serverNode"/>
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth"/>
+		</aut:events>
+	</aut:process>
+
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess" id="twospeedspoissonPcNode">
+		<aut:params>
+			<aut:param name="firstMeanArrival" value="8"/>
+			<aut:param name="secondMeanArrival" value="150"/>
+			<aut:param name="vtThreshold" value="1000"/>
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="pcNode"/>			
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth2"/>
+		</aut:events>
+	</aut:process>
+	
+	
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess" id="twospeedspoissonPcNodeHigh">
+		<aut:params>
+			<aut:param name="firstMeanArrival" value="8"/>
+			<aut:param name="secondMeanArrival" value="150"/>
+			<aut:param name="vtThreshold" value="1000"/>
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="pcNodeHigh"/>			
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth3"/>
+		</aut:events>
+	</aut:process>
+	
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="videoPoisson1">
+		<aut:params>
+			<aut:param name="period" value="5"/>
+		</aut:params>
+		<aut:events>
+			<aut:reference id="newvideores"/>
+		</aut:events>
+	</aut:process>
+	
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="SendChunk">
+		<aut:params>
+			<aut:param name="period" value="1"/>
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="pcNode"/>
+			<aut:reference id="pcNodeHigh"/>
+			<aut:reference id="serverNode"/>
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="sendvideochunk"/>
+		</aut:events>
+	</aut:process>
+	
+<!-- 
+	<aut:process id="videoPeerUpdate"
+		handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="10" />
+		</aut:params>
+		<aut:events>
+			<aut:reference id="updateNodeVideoRes" />
+		</aut:events>
+	</aut:process>
+ -->
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="updateListPoisson1">
+		<aut:params>
+			<aut:param name="meanArrival" value="50"/>
+		</aut:params>
+		<aut:events>
+			<aut:reference id="updatelist"/>
+			
+		</aut:events>
+	</aut:process>
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="connectionPoisson1">
+		<aut:params>
+			<aut:param name="meanArrival" value="0"/>
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="pcNode"/>
+			<aut:reference id="pcNodeHigh"/>
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="connection"/>
+			<aut:reference id="discovery"/>
+		</aut:events>
+	</aut:process>
+
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="disconnection">
+		<aut:params>
+			<aut:param name="period" value="200"/> 
+		</aut:params>
+		<aut:events>
+			<aut:reference id="disconnection"/>			
+		</aut:events>
+	</aut:process>
+
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="updateVideoBuffer">
+		<aut:params>
+			<aut:param name="period" value="50"/> 
+		</aut:params>
+		<aut:events>
+			<aut:reference id="updateVideoBuffer"/> 
+		</aut:events>
+	</aut:process>
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="periodic">
+		<aut:params>
+			<aut:param name="period" value="100"/>
+		</aut:params>
+		<aut:events>
+			<aut:reference id="logNodeVideoData"/>
+			<aut:reference id="logNodeConnectionStat"/>
+		</aut:events>
+	</aut:process>
+
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="periodicPlayVideo">
+		<aut:params>
+			<aut:param name="period" value="25"/>
+		</aut:params>
+		<aut:events>
+			<aut:reference id="playVideo"/>
+		</aut:events>
+	</aut:process>
+
+
+	<aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="graph">
+		<aut:params>
+			<aut:param name="period" value="1000"/>
+		</aut:params>
+		<aut:events>
+			<aut:reference id="graphData"/>
+		</aut:events>
+	</aut:process>
+
+	<!-- *** SIMULATION *** -->
+
+	<aut:engine maxvt="1001" seed="123456789">
+
+		<aut:logger level="INFO"/>
+		<aut:processes>
+			<aut:reference id="serverPoisson1"/>
+			<aut:reference id="twospeedspoissonPcNode"/>
+			<aut:reference id="twospeedspoissonPcNodeHigh"/>
+			<aut:reference id="SendChunk"/>
+			<aut:reference id="videoPoisson1"/>			
+			<aut:reference id="periodic"/>
+			<aut:reference id="updateListPoisson1"/>			
+			<aut:reference id="periodicPlayVideo"/>
+			<aut:reference id="disconnection"/>
+			<aut:reference id="updateVideoBuffer"/>
+			<aut:reference id="graph"/>
+
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>

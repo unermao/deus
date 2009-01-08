@@ -29,6 +29,8 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 	private ArrayList<ProcessParameter> processParameterList;
 	private ArrayList<EngineParameter> engineParameterList;
 	private javax.swing.JTabbedPane simulationTabbedPane;
+	private GnuPlotFileTableModel gnuPlotFileTableModel;
+	private ArrayList<GnuPlotFileElement> gnuPlotFileList;
 	/** Creates new form DeusSimulationPanel */
     public DeusSimulationPanel(javax.swing.JTabbedPane simulationTabbedPane) {
     	this.simulationTabbedPane = simulationTabbedPane;
@@ -47,11 +49,13 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		nodeResourceTableModel = new NodeResourceTableModel();
 		processParameterTableModel = new ProcessParameterTableModel();
 		engineParameterTableModel = new EngineParameterTableModel();
-    	
+		gnuPlotFileTableModel = new GnuPlotFileTableModel();
+		
 		nodeParameterList = new ArrayList<NodeParameter>();
 		nodeResourceList = new ArrayList<NodeResource>();
 		processParameterList = new ArrayList<ProcessParameter>();
 		engineParameterList = new ArrayList<EngineParameter>();
+		gnuPlotFileList = new ArrayList<GnuPlotFileElement>();
 		
         nodeParameterLabel = new javax.swing.JLabel();
         nodeResourceScrollPane = new javax.swing.JScrollPane();
@@ -124,19 +128,12 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		engineScrollPane.setViewportView(engineTable);
 
      
-
-        gnuPlotFileTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        gnuPlotFileScrollPane.setViewportView(gnuPlotFileTable);
+		
+		
+		gnuPlotFileList.add(new GnuPlotFileElement());
+		gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
+		gnuPlotFileTable.setModel(gnuPlotFileTableModel);
+		gnuPlotFileScrollPane.setViewportView(gnuPlotFileTable);
 
         removeNodeParameterLabel.setIcon(new javax.swing.ImageIcon(("res/remove.png"))); // NOI18N
         removeNodeParameterLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -590,7 +587,12 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_removeEngineLabelMouseReleased
 
     private void addGnuPlotLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addGnuPlotLabelMouseClicked
-        // TODO add your handling code here:
+    	gnuPlotFileList.add(new GnuPlotFileElement());
+
+		gnuPlotFileTableModel = new GnuPlotFileTableModel();
+		gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
+
+		gnuPlotFileTable.setModel(gnuPlotFileTableModel);
     }//GEN-LAST:event_addGnuPlotLabelMouseClicked
 
     private void addGnuPlotLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addGnuPlotLabelMousePressed
@@ -602,7 +604,32 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_addGnuPlotLabelMouseReleased
 
     private void removeGnuPlotLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeGnuPlotLabelMouseClicked
-        // TODO add your handling code here:
+    	int tableRow = this.gnuPlotFileTable.getSelectedRow();
+
+		int totalTableRow = this.gnuPlotFileTable.getSelectedRowCount();
+
+		if(totalTableRow == this.gnuPlotFileList.size())
+		{
+			gnuPlotFileList.clear();
+
+			gnuPlotFileTableModel = new GnuPlotFileTableModel();
+			gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
+
+			gnuPlotFileTable.setModel(gnuPlotFileTableModel);
+
+			tableRow = -1;
+
+		}
+
+		if(tableRow != -1)
+		{
+			gnuPlotFileList.remove(tableRow);
+
+			gnuPlotFileTableModel = new GnuPlotFileTableModel();
+			gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
+
+			gnuPlotFileTable.setModel(gnuPlotFileTableModel);
+		}
     }//GEN-LAST:event_removeGnuPlotLabelMouseClicked
 
     private void removeGnuPlotLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_removeGnuPlotLabelMousePressed
@@ -742,8 +769,17 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		 */
 	
 		xmlString = xmlString + "<resultVT outputLogFile=\"logger\"/>" + "\n\n";
-		xmlString = xmlString + "<resultXYFile fileName=\"prova\" axisX=\"VT\" axisY=\"Continuity Index\" />\n";
-		xmlString = xmlString + "<resultXYFile fileName=\"prova\" axisX=\"VT\" axisY=\"Duplicate %\" />\n";
+		
+		//Inserimento File Grafici GnuPlot
+		for(int index = 0 ; index < this.gnuPlotFileList.size(); index++)
+		{
+			GnuPlotFileElement gnuElem = this.gnuPlotFileList.get(index);
+			xmlString = xmlString + "<resultXYFile fileName=\"" + gnuElem.getFileName() +"\" axisX=\""+gnuElem.getXLabel()+"\" axisY=\""+ gnuElem.getYLabel() +"\" />\n";
+		}
+		
+//		xmlString = xmlString + "<resultXYFile fileName=\"prova\" axisX=\"VT\" axisY=\"Continuity Index\" />\n";
+//		xmlString = xmlString + "<resultXYFile fileName=\"prova\" axisX=\"VT\" axisY=\"Duplicate %\" />\n";
+		
 		xmlString = xmlString + "\n" +"</simulation>\n";
 		
 		simulations.add(i, app);

@@ -1,6 +1,7 @@
 package it.unipr.ce.dsg.deus.automator;
 
 
+import it.unipr.ce.dsg.deus.automator.gui.SimulationSummaryFrame;
 import it.unipr.ce.dsg.deus.core.Deus;
 import it.unipr.ce.dsg.deus.schema.Automator;
 
@@ -158,7 +159,7 @@ public class Runner implements Runnable{
 	 * @param automatorXml, nome del file che automatizza le simulazioni
 	 * @throws ParserConfigurationException 
 	 */
-	public void start(String originalXml , String automatorXml) throws DeusAutomatorException, JAXBException, SAXException, IOException, ParserConfigurationException{
+	public int start(String originalXml , String automatorXml) throws DeusAutomatorException, JAXBException, SAXException, IOException, ParserConfigurationException{
 				
 		DocumentBuilderFactory factory =
 		      DocumentBuilderFactory.newInstance();
@@ -223,6 +224,43 @@ public class Runner implements Runnable{
 				
 		int numFile = 0;					
 		ArrayList<String> logFile = new ArrayList<String>();									
+		
+		boolean condition = false;
+		
+		//Lettura dal file contenente le info sulla simulazione da eseguire
+		File simfile = new File("simulations");
+		FileInputStream simfileInputStream = new FileInputStream(simfile);
+		InputStreamReader isr = new InputStreamReader(simfileInputStream);
+		BufferedReader br = new BufferedReader(isr);
+		
+		char[] cbuf = new char[simfileInputStream.available()];
+		br.read(cbuf);
+		String summary = new String(cbuf);
+		
+		//Eseguo la GUI per il sommario sulla simulazione
+		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame();
+		simulationsummary.getSimulationSummaryTextArea().setText(summary);
+		simulationsummary.setVisible(true);
+		
+		while(!condition){
+			
+			if(simulationsummary.isClose() || !simulationsummary.isShowing() )
+			{
+				//Chiuso la GUI di riepilogo
+				simulationsummary.dispose();
+				
+				return -1;
+			}
+			
+			if(simulationsummary.isStart() || !simulationsummary.isShowing())
+			{
+				//Chiuso la GUI di riepilogo
+				simulationsummary.dispose();
+				condition = true;
+			}
+		}
+		
+		
 		
 		if( simulationProgressBar != null)
 		{
@@ -294,6 +332,8 @@ public class Runner implements Runnable{
 		if(new File(originalXML+".temp").exists() )
 			new File(originalXML+".temp").delete();
 		
+		
+		return 0;
 	}
 	
 	
@@ -811,9 +851,10 @@ public class Runner implements Runnable{
 
 						}
 				}
-				nodes2.add(s,nodes);
+				if(nodes.size()>0)
+					nodes2.add(s,nodes);
 				}
-								
+						
 				//if(a==false)
 										
 				
@@ -921,7 +962,8 @@ public class Runner implements Runnable{
 						}
 				
 				}		
-				processes2.add(s,processes);
+				if(processes.size()>0)
+					processes2.add(s,processes);
 				}			
 				//if(a==false)
 				
@@ -1553,7 +1595,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 //
 //			
 //		}	
-		
+		simul.close();
 		return xmlFile;
 		
 	}
