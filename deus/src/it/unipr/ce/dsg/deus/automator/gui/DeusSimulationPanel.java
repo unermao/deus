@@ -768,7 +768,7 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		 * </simulation>
 		 */
 	
-		xmlString = xmlString + "<resultVT outputLogFile=\"logger\"/>" + "\n\n";
+		xmlString = xmlString + "<resultVT outputLogFile=\"./temp/logger\"/>" + "\n\n";
 		
 		//Inserimento File Grafici GnuPlot
 		for(int index = 0 ; index < this.gnuPlotFileList.size(); index++)
