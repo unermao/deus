@@ -320,6 +320,9 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("-------------------- NODES DEPTH INFO ----------------------------------");
 		
 		
+		AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		
+		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		
 		for(int j = 0 ; j < maxNodeDepth; j++ )
 		{
@@ -341,6 +344,7 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 			//	System.out.println(chunkIndexAverage);
 				//System.out.println(chunkIndexAverage);
 				getLogger().info("Nodes Depth: " + (j+1) + " Chunk Average: " + chunkIndexAverage);		
+//				fileValue.add(new LoggerObject("Nodes Depth: " + (j+1) + " Chunk Average:", chunkIndexAverage));
 			}
 		}	
 		getLogger().info("------------------------------------------------------------------------");
@@ -379,13 +383,17 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("Average Start Up Time High: " + ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20);
 		getLogger().info("------------------------------------------------------------------------");
 			
-		AutomatorLogger a = new AutomatorLogger("logger");
 		
-		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 				
 		fileValue.add(new LoggerObject("Continuity Index", ((totalArrivedChunk-totalDeadlineNumber)/totalArrivedChunk)*100.0));
 		fileValue.add(new LoggerObject("Duplicate %", (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0));
-				
+		fileValue.add(new LoggerObject("Total Node", (double)( totalPcNode + totalPcNodeHigh)));
+		fileValue.add(new LoggerObject("Total Disconnected Node", serverPeer.getDisconnectedNodes()));
+		fileValue.add(new LoggerObject("Average Out-Degree pcNode:", out_degree_pcNode/(totalPcNode)));
+		fileValue.add(new LoggerObject("Average Out-Degree pcNodeHigh:",out_degree_pcNodeHigh/(totalPcNodeHigh)));
+		fileValue.add(new LoggerObject("Unstable Node", unstablesNode90pcNode + unstablesNode90pcNodeHigh));
+		
+		
 				//for(int vt = 10 ; vt < 100 ; vt = vt +10 )
 		a.write(Engine.getDefault().getVirtualTime(), fileValue);		
 
