@@ -31,13 +31,3 @@ per generarlo nel run() di un altro evento lo costruisco così (es.):
 
 Per qualsiasi evento che contenga riferimenti ad altri eventi, dopo la sua esecuzione 
 vengono eseguiti gli eventi referenziati, a patto che abbiano un processo associato (parentProcess). 
-
-
-SIMULATION AUTOMATOR
-1) RUN CONFIGURATIONS 
-	1.1) MAIN
-	PROJECT --> deus
-	MAIN CLASS --> it.unipr.ce.dsg.deus.automator.gui.DeusAutomatorFrame
-	1.2) ARGUMENTS
-	PROGRAM ARGUMENTS --> passare come primo parametro il path dell'XML del progetto e come secondo il path dove andare a scrivere l'XML per l'automatizzazione delle 			      simulazioni  
-	VM ARGUMENTS --> -Djava.util.logging.config.file=logging.properties -Xms256M -Xmx1000M
