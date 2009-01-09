@@ -1255,8 +1255,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 			}
 												       
 		simul.close();
-	
-		System.out.println(path);
+			
 		 if(new File(path+".temp").exists() )
 				new File(path+".temp").delete();
 		
@@ -1267,8 +1266,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 
 		e.printStackTrace();
 	}
-	
-	 System.out.println(path);
+		 
 	 if(new File(path+".temp").exists() )
 			new File(path+".temp").delete();
 		 
