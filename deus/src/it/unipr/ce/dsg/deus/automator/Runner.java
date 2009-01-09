@@ -587,8 +587,7 @@ public class Runner implements Runnable{
 				{				
 				parameters.add(i);
 				}		
-		
-		
+				
 		return parameters;
 	}
 	
@@ -655,9 +654,7 @@ public class Runner implements Runnable{
 			
 			for (int w = 0; w < simulationLst.getLength(); w++) {						
 				
-				MyObjectSimulation sim = new MyObjectSimulation();
-			
-				boolean a = false;
+				MyObjectSimulation sim = new MyObjectSimulation();				
 				
 				Node fstSimulation = simulationLst.item(w);
 
@@ -689,14 +686,14 @@ public class Runner implements Runnable{
 			ArrayList<ArrayList<MyObjectProcess>> processes2 = new ArrayList<ArrayList<MyObjectProcess>>();
 			
 			// Cerco tutti i tag node
-			for (int s = 0; s < nodeLst.getLength(); s++) {
-
-				ArrayList<MyObjectNode> nodes = new ArrayList<MyObjectNode>();
+			for (int s = 0; s < nodeLst.getLength(); s++) {				
 				
 				Node fstNode = nodeLst.item(s);
 				
 				if(fstNode.getParentNode().equals(simulationLst.item(w))){
-								
+				
+				ArrayList<MyObjectNode> nodes = new ArrayList<MyObjectNode>();	
+					
 				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();							
 
 				Element fstElmnt = (Element) fstNode;
@@ -736,9 +733,7 @@ public class Runner implements Runnable{
 						nodeToWrite.setObjectName(messageType);
 						nodeToWrite.getObjectParam().add(paramToWrite);						 
 						//System.out.println("SCRIVO SOLO IL NODO");
-						writeXmlNodeParam(nodeToWrite);
-						
-						a = true;
+						writeXmlNodeParam(nodeToWrite);						
 						
 					}
 					
@@ -811,9 +806,7 @@ public class Runner implements Runnable{
 						
 						MyObjectNode nodeToWrite = new MyObjectNode(); 
 						nodeToWrite.setObjectName(messageType);							 
-						nodeToWrite.getObjectResourceParam().add(resourceParam);						 
-							 
-						a = true;
+						nodeToWrite.getObjectResourceParam().add(resourceParam);						 							 					
     											 
 						//System.out.println("SCRIVO SOLO IL NODO");
 						writeXmlNodeResource(nodeToWrite);
@@ -851,22 +844,15 @@ public class Runner implements Runnable{
 
 						}
 				}
-				if(nodes.size()>0)
-					nodes2.add(s,nodes);
+
+					nodes2.add(nodes);
 				}
 						
-				//if(a==false)
-										
-				
-				//System.out.println("DIM d " +nodes2.size());								
 			}	
 			
 			if(nodes2.size()>0)
 			sim.setNode(nodes2);
 			
-			//numSim = 0;
-			
-			a = false;
 			
 			if(new Integer(sim.getNode().size())>0)
 				sim.setSimulationNumber(new Integer(sim.getNode().get(0).size()));
@@ -876,12 +862,12 @@ public class Runner implements Runnable{
 			//Cerco tutti i tag process
 			for (int s = 0; s < processLst.getLength(); s++) {
 			
-				Node fstNode = processLst.item(s);
-				
-				ArrayList<MyObjectProcess> processes = new ArrayList<MyObjectProcess>();
+				Node fstNode = processLst.item(s);								
 			
 				if(fstNode.getParentNode().equals(simulationLst.item(w))){								
 				
+				ArrayList<MyObjectProcess> processes = new ArrayList<MyObjectProcess>();	
+					
 				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();
 
 				Element fstElmnt = (Element) fstNode;
@@ -924,7 +910,6 @@ public class Runner implements Runnable{
 						processToWrite.setObjectName(messageType);
 						processToWrite.getObjectParam().add(param);						 												
 			
-						a = true;
 						//System.out.println("SCRIVO SOLO IL PROCESSO");
 						writeXmlProcess(processToWrite);
 						
@@ -963,7 +948,7 @@ public class Runner implements Runnable{
 				
 				}		
 				if(processes.size()>0)
-					processes2.add(s,processes);
+					processes2.add(processes);
 				}			
 				//if(a==false)
 				
