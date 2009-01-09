@@ -45,6 +45,7 @@ public class CoolStreamingPeer extends Peer {
 	
 	public static final String ADSL = "adsl";
 
+	private int overhead = 0;
 	private int battery = 0;
 	private String connectionType = "";
 	private boolean incentiveBased = false;
@@ -207,6 +208,7 @@ public void initialize() throws InvalidParamsException {
 		clone.cambio = new ArrayList<Boolean>();
 		clone.stop = 0;
 		clone.startUpTime = 0;	
+		clone.overhead = 0;
 		
 		return clone;
 	}
@@ -1171,20 +1173,40 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		else
 		{		
 		if(this.getNeighbors().size() < this.getMaxPartnersNumber())
-			this.getNeighbors().add(node);
+			{
+			if(this.isIncentiveBased())
+				this.getNeighbors().add(this.choiseBest(node));
+			else	
+				this.getNeighbors().add(node);
+			}
 
 		else
 		{
 		for(int k = 0; k < this.getNeighbors().size(); k++ )
 		{
-		//if(!this.getNeighbors().contains(node) && !this.getServerByPeer().contains((CoolStreamingPeer)this.getNeighbors().get(k)))
-		if(node.getPlayer().size()>0)	
-		if(node.getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
-	 			&& node.getUploadSpeed()/(node.getActiveConnection()+1) >((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
-		{
-			this.getNeighbors().remove(this.getNeighbors().get(k));
-			this.getNeighbors().add(node);
-		}
+			//if(!this.getNeighbors().contains(node) && !this.getServerByPeer().contains((CoolStreamingPeer)this.getNeighbors().get(k)))
+			if(this.isIncentiveBased())
+			{
+			 Peer best = this.choiseBest(node);
+			 if(((CoolStreamingPeer)best).getPlayer().size()>0)	
+				if(((CoolStreamingPeer)best).getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
+						&& ((CoolStreamingPeer)best).getUploadSpeed()/(((CoolStreamingPeer)best).getActiveConnection()+1) >((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
+					{
+					this.getNeighbors().remove(this.getNeighbors().get(k));
+					this.getNeighbors().add(best);
+					}
+			}
+			
+			else
+			{
+			if(node.getPlayer().size()>0)	
+				if(node.getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
+						&& node.getUploadSpeed()/(node.getActiveConnection()+1) >((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
+				{
+					this.getNeighbors().remove(this.getNeighbors().get(k));
+					this.getNeighbors().add(node);
+				}
+			}
 		}
 		}
 		}
@@ -1201,8 +1223,8 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		
 	for(int i = 0 ; i < param ; i++)
 	{
-		CoolStreamingPeer peer = (CoolStreamingPeer)this.getNeighbors().get(Engine.getDefault().getSimulationRandom().nextInt(this.getNeighbors().size()));
-	
+		CoolStreamingPeer peer = (CoolStreamingPeer)this.getNeighbors().get(Engine.getDefault().getSimulationRandom().nextInt(this.getNeighbors().size()));	
+		this.overhead++ ;		
 		peer.gossipProtocol(node,value);		
 	}
 	}
@@ -1300,6 +1322,20 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 //}
 
 
+
+private Peer choiseBest(CoolStreamingPeer node) {
+	
+	Peer best = node;
+	
+	for(int i = 0 ; i < node.getServerByPeer().size(); i++ )	
+		if(node.getServerByPeer().get(i).getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
+				&& node.getServerByPeer().get(i).getUploadSpeed()/(node.getServerByPeer().get(i).getActiveConnection()+1) >(((CoolStreamingPeer) best).getUploadSpeed()/(((CoolStreamingPeer) best).getActiveConnection()+1)) )
+		{
+		 best = node.getServerByPeer().get(i);
+		}
+	
+	return  best;
+}
 
 private boolean findProviderNodeFromLastSegment(float triggeringTime, int k) {
 		
