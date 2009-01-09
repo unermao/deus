@@ -183,42 +183,13 @@ public class Runner implements Runnable{
 		fis.close();
 		fos.close();
 
-//		SCRIVO IL FILE AUTOMETORLOGGER CHE POI SERVIRà PER LE MEDIE 
-//		
-//		AutomatorLogger a = new AutomatorLogger("logger");
-//
-//		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
-//		
-//		fileValue.add(new LoggerObject("Continuity Index", 50));
-//		fileValue.add(new LoggerObject("Duplicate", 70));
-//		
-//		for(int vt = 10 ; vt < 100 ; vt = vt +10 )
-//		 a.write(vt, fileValue);		
-		
-//		if(args.length > 2)
-//		{
-//			throw new DeusAutomatorException("Troppi argomenti [args] inseriti");
-//		}
-//		
-//		if(args.length == 0)
-//		{
-//			throw new DeusAutomatorException("Nessun argomento [args] inserito");
-//		}
-//							
 		
 		//Creo n file XML per le n simulazioni con DEUS
 		ArrayList<String> files = new ArrayList<String>();								
-		
-	//	if( args.length == 2 )
-	//	{
-		
+				
 		//Leggo il file xml automator e ricavo tutte le simulazioni da effettuare
-		ArrayList<MyObjectSimulation> simulations = readXML(automatorXml);	
-		
-	//	ArrayList<MyObjectSimulation> simulations2 = a(automatorXml);
+		ArrayList<MyObjectSimulation> simulations = readXML(automatorXml);			
 			
-		
-		//System.out.println(simulations.size());
 		//Inserisce nella ArrayList files i nomi dei file .xml da lanciare
 		files = writeXML(simulations,originalXml);
 				
@@ -269,8 +240,7 @@ public class Runner implements Runnable{
 		}
 		// Lancia le n simulazioni con i rispettivi n file
 		for(int j = 0; j < simulations.size(); j++)
-		{
-	//		System.out.println(simulations.get(j).getSimulationNumber());
+		{		
 			for(int k = 0; k < simulations.get(j).getSimulationNumber(); k++ )
 			{
 				for(int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++)
@@ -327,169 +297,12 @@ public class Runner implements Runnable{
 		}
 		//Rimuove tutti i file .xml utilizzati
 		for(int i = 0; i < files.size(); i++)
-			new File(files.get(i)).delete();
-		
-		if(new File(originalXML+".temp").exists() )
-			new File(originalXML+".temp").delete();
-		
+			new File(files.get(i)).delete();				
 		
 		return 0;
 	}
 	
 	
-//	private  ArrayList<MyObjectSimulation> a(String path) throws DeusAutomatorException, JAXBException, SAXException{
-//		
-//		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema.automator");
-//		SchemaFactory schemaFactory = SchemaFactory
-//				.newInstance("http://www.w3.org/2001/XMLSchema");
-//		Schema schema = schemaFactory
-//				.newSchema(new File("schema/automator/deusAutomator.xsd"));
-//		
-//		Unmarshaller unmarshaller = jc.createUnmarshaller();
-//		unmarshaller.setSchema(schema);
-//		unmarshaller.setEventHandler(new ValidationEventHandler() {
-//
-//			public boolean handleEvent(ValidationEvent ve) {
-//				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
-//						|| ve.getSeverity() == ValidationEvent.ERROR
-//						|| ve.getSeverity() == ValidationEvent.WARNING) {
-//					ValidationEventLocator locator = ve.getLocator();
-//					System.out.println("Invalid configuration file: "
-//							+ locator.getURL());
-//					System.out.println("Error at column "
-//							+ locator.getColumnNumber() + ", line "
-//							+ locator.getLineNumber());
-//					System.out.println("Error: " + ve.getMessage());
-//					return false;
-//				}
-//				return true;
-//			}
-//
-//		});
-//				
-//		unmarshaller.unmarshal(new File(path));				
-//		
-//		ArrayList<MyObjectSimulation> simulation = new ArrayList<MyObjectSimulation>(); 
-//		
-//		for(int i = 0 ; i < it.automator.gui.SimulationPanel.simulations.size(); i++)
-//		{
-//			ArrayList<MyObjectNode> nodes = new ArrayList<MyObjectNode>();
-//			ArrayList<MyObjectProcess> processes = new ArrayList<MyObjectProcess>();			
-//			MyObjectSimulation sim = new MyObjectSimulation();
-//			MyObjectEngine myengine = new MyObjectEngine();
-//						
-//			//sim.setSimulationName(simulationName);
-//			for( int j =0 ; j < it.automator.gui.SimulationPanel.simulations.get(i).size(); j++)
-//			{				
-//				//System.out.println(it.automator.gui.SimulationPanel.simulations.get(i).get(j));				
-//				if(it.automator.gui.SimulationPanel.simulations.get(i).get(j).getClass().toString().equals("class it.automator.gui.Node"))
-//					{
-//					it.automator.gui.Node node = ((it.automator.gui.Node)(it.automator.gui.SimulationPanel.simulations.get(i).get(j)));
-//					
-//					if(node.getNodeParameterList().size() > 0 && node.getNodeResourceList().size() > 0 && node.getNodeResourceList().size()!=node.getNodeParameterList().size())
-//						throw new DeusAutomatorException("Errore");
-//					else
-//					{
-//						ArrayList<Double> value;
-//						for(int k = 0; k < node.getNodeParameterList().size(); k++)							
-//							{
-//								value = calculateParameters(node.getNodeParameterList().get(k).getInitialValue().toString(),node.getNodeParameterList().get(k).getFinalValue().toString(),node.getNodeParameterList().get(k).getStepValue().toString());
-//								for( int z = 0; z < value.size(); z++ )
-//								{
-//									MyObjectParam param = new MyObjectParam();								
-//									
-//									param.setObjectParam("paramName");
-//									param.setObjectName(node.getNodeParameterList().get(k).getParamName());
-//									param.setObjectValue(value.get(z));						 
-//									 if(nodes.size()>z)						 					
-//										 nodes.get(z).getObjectParam().add(param);
-//									 						 
-//									 else 
-//									 {
-//										 MyObjectNode mynode = new MyObjectNode(); 
-//										 mynode.setObjectName(node.getNodeId());
-//										 mynode.getObjectParam().add(param);						 
-//										 nodes.add(mynode);
-//			    					 }
-//								}
-//							}
-//			
-//						for(int k = 0; k < node.getNodeResourceList().size(); k++)							
-//						{
-//							value = calculateParameters(node.getNodeResourceList().get(k).getInitialValue().toString(),node.getNodeResourceList().get(k).getFinalValue().toString(),node.getNodeResourceList().get(k).getStepValue().toString());
-//							
-//							for( int z = 0; z < value.size(); z++ )
-//							{
-//							MyObjectResourceParam resourceParam = new MyObjectResourceParam();								
-//							
-//							resourceParam.setObjectParam("resourceParamName");		 
-//
-//							resourceParam.setObjectHandlerName(node.getNodeResourceList().get(k).getHandlerName());
-//							resourceParam.setResParamValue(node.getNodeResourceList().get(k).getResParamValue());
-//							
-//							 resourceParam.setObjectValue(value.get(z));
-//							 if(nodes.size()>z)						 						
-//								 nodes.get(z).getObjectResourceParam().add(resourceParam);
-//							 
-//							 else 
-//							 {
-//								 MyObjectNode mynode = new MyObjectNode(); 
-//								 mynode.setObjectName(node.getNodeId());							 
-//								 mynode.getObjectResourceParam().add(resourceParam);						 
-//								 nodes.add(mynode);
-//	    					 }
-//							}
-//						}
-//					}
-//								
-//					}
-//							
-//				
-//				if(it.automator.gui.SimulationPanel.simulations.get(i).get(j).getClass().toString().equals("class it.automator.gui.ProcessParameter"))
-//				{
-//					it.automator.gui.ProcessParameter process = ((it.automator.gui.ProcessParameter)(it.automator.gui.SimulationPanel.simulations.get(i).get(j)));
-//					ArrayList<Double> value;					
-//					value = calculateParameters(process.getInitialValue().toString(),process.getFinalValue().toString(),process.getStepValue().toString());
-//			
-//					for(int k = 0; k < value.size(); k++ )
-//					{						
-//					MyObjectParam param = new MyObjectParam();								
-//					
-//					param.setObjectParam("paramName");
-//
-//					param.setObjectName(process.getParamName());
-//					
-//					param.setObjectValue(value.get(k));
-//					
-//					if(processes.size()>k)						 						
-//						 processes.get(k).getObjectParam().add(param);
-//				
-//					else 
-//					 {
-//						 MyObjectProcess myprocess = new MyObjectProcess(); 
-//						 myprocess.setObjectName(process.getProcessId());
-//						 myprocess.getObjectParam().add(param);						 
-//						 processes.add(myprocess);
-//					 }
-//					
-//					}
-//					
-//					}									
-//					
-//				if(it.automator.gui.SimulationPanel.simulations.get(i).get(j).getClass().toString().equals("class it.automator.gui.EngineParameter"))
-//					{			
-//					it.automator.gui.EngineParameter engine = ((it.automator.gui.EngineParameter)(it.automator.gui.SimulationPanel.simulations.get(i).get(j)));										
-//					myengine.getSeed().add(engine.getSeedValue());
-//					}				
-//			}
-//			sim.setSimulationNumberSeed(String.valueOf(myengine.getSeed().size()));
-//			sim.getProcess().add(processes);
-//			sim.getEngine().add(myengine);
-//			sim.getNode().add(nodes);
-//			simulation.add(sim);
-//		}
-//		return simulation;
-//	}
 	
 	/**
 	 * Funzione che si occupa di scrivere i file per gnuplot
@@ -1187,7 +1000,6 @@ private  void writeXmlProcess(MyObjectProcess processToWrite) throws IOException
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	     // System.out.println(writer.toString());
 	
 		 fos.write(writer.toString().getBytes());
 
@@ -1240,8 +1052,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 		 catch (TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	     // System.out.println(writer.toString());
+		}	
 	
 		 fos.write(writer.toString().getBytes());
 
@@ -1280,32 +1091,6 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 			 
 		    DocumentBuilder builder = factory.newDocumentBuilder();
 		    Document doc = builder.parse(f);		      
-
-			//System.out.println("SIM "+ j );
-						
-			
-//			if(simulation.get(j).getNode().size()>0) 
-//		try{
-//				end = simulation.get(j).getNode().get(0).size();
-//		}
-//		catch(IndexOutOfBoundsException e){
-//			e.printStackTrace();
-//		}
-//			//System.out.println("A " + end);
-//			
-//			if(simulation.get(j).getProcess().size()>0 && end==0) 
-//				try{
-//				end = simulation.get(j).getProcess().get(0).size();
-//				}
-//			catch(IndexOutOfBoundsException e){
-//				e.printStackTrace();
-//			}
-//			
-//			if(simulation.get(j).getNode().size()>j && end == 0)
-//				end = simulation.get(j).getNode().get(j).size();
-//			
-//			if(simulation.get(j).getProcess().size()>j && end==0)
-//				end = simulation.get(j).getProcess().get(j).size();
 
 			end = simulation.get(j).getStep();
 			
@@ -1421,10 +1206,8 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 					}
 				      
 					
-					// System.out.println(writer.toString());
 					 String filename = "./xml/" + simulation.get(j).getSimulationName() + "_" + k + "_" + simulation.get(j).getEngine().get(j).getSeed().get(seed);
-					 FileOutputStream file = new FileOutputStream(filename);
-					 //System.out.println(filename);
+					 FileOutputStream file = new FileOutputStream(filename);					
 					 
 					 file.write(writer.toString().getBytes());
 					 file.close();
@@ -1468,119 +1251,15 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 				 file.write(writer.toString().getBytes());
 			     xmlFile.add(filename);
 			}
-			//f.delete();
+			
 			}
-			
-					
-			
-	       
-//		for(int j=0; j<simulation.size(); j++)
-//		{			
-//			if(simulation.get(j).getProcess().size()>0)
-//			for(int k=0; k<simulation.get(j).getProcess().get(0).size(); k++){
-//				simul.write(("\n" + simulation.get(j).getSimulationName() + "-" + k + "\n").getBytes());	
-//				for(int u=0; u<simulation.get(j).getProcess().size(); u++)
-//				{			
-//				NodeList process = document.getElementsByTagName("aut:process");
-//				for(int i = 0 ; i < process.getLength(); i++ ){										
-//					 if(process.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(simulation.get(j).getProcess().get(u).get(k).getObjectName()))
-//						{
-//						 simul.write(("Process : " + process.item(i).getAttributes().getNamedItem("id").getNodeValue() + "\n").getBytes());
-//						 for(int l=0; l<simulation.get(j).getProcess().get(u).get(k).getObjectParam().size(); l++)
-//							 for(int m = 0 ; m < process.item(i).getChildNodes().getLength(); m++ ){
-//								 if(process.item(i).getChildNodes().item(m).getNodeName().equals("aut:params"))
-//									 for(int b = 0; b < process.item(i).getChildNodes().item(m).getChildNodes().getLength(); b++)
-//										 if(process.item(i).getChildNodes().item(m).getChildNodes().item(b).getNodeName().equals("aut:param"))
-//										 {
-//											// System.out.println(process.item(i).getAttributes().getNamedItem("id").getNodeValue());
-//											 if(process.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("name").getNodeValue().equals(simulation.get(j).getProcess().get(u).get(k).getObjectParam().get(l).getObjectName()))
-//												 {
-//												 simul.write(("Parameter : " + process.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("name").getNodeValue() + " ").getBytes());
-//						    					  simul.write((((Double)simulation.get(j).getProcess().get(u).get(k).getObjectParam().get(l).getObjectValue()).toString() + "\n").getBytes());
-//												  process.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("value").setNodeValue(((Double)simulation.get(j).getProcess().get(u).get(k).getObjectParam().get(l).getObjectValue()).toString());
-//												 }
-//										 }
-//				}
-//				
-//						}
-//				}
-//				
-//				 
-//				}
-//				
-//				for(int seed = 0 ; seed < simulation.get(j).getEngine().get(j).getSeed().size(); seed++ )				
-//				{
-//					NodeList engine = document.getElementsByTagName("aut:engine");
-//					for(int i = 0 ; i < engine.getLength(); i++ ){
-//						engine.item(i).getAttributes().getNamedItem("seed").setNodeValue(simulation.get(j).getEngine().get(j).getSeed().get(seed));
-//					}
-//					
-//				 DOMSource domSource = new DOMSource(document);
-//			       StringWriter writer = new StringWriter();
-//			       StreamResult result = new StreamResult(writer);
-//			       TransformerFactory tf = TransformerFactory.newInstance();
-//			       Transformer transformer;
-//				try {
-//					transformer = tf.newTransformer();
-//				
-//			      
-//					transformer.transform(domSource, result);
-//				} catch (TransformerConfigurationException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				 catch (TransformerException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} 
-//			     String filename = "./xml/" + simulation.get(j).getSimulationName() + "_" + k + "_" + simulation.get(j).getEngine().get(j).getSeed().get(seed);
-//				 FileOutputStream file = new FileOutputStream(filename);
-//					
-//				 file.write(writer.toString().getBytes());
-//			      xmlFile.add(filename);
-//				
-//				}
-//				
-//			}
-//		
-//			if(simulation.get(j).getProcess().size()==0 && simulation.get(j).getNode().size()==0)
-//			 for(int seed = 0 ; seed < simulation.get(j).getEngine().get(j).getSeed().size(); seed++ )
-//					
-//				{					 					 							
-//					NodeList engine = document.getElementsByTagName("aut:engine");
-//					for(int i = 0 ; i < engine.getLength(); i++ ){
-//						engine.item(i).getAttributes().getNamedItem("seed").setNodeValue(simulation.get(j).getEngine().get(j).getSeed().get(seed));
-//					}
-//					
-//				 DOMSource domSource = new DOMSource(document);
-//			       StringWriter writer = new StringWriter();
-//			       StreamResult result = new StreamResult(writer);
-//			       TransformerFactory tf = TransformerFactory.newInstance();
-//			       Transformer transformer;
-//				try {
-//					transformer = tf.newTransformer();
-//				
-//			      
-//					transformer.transform(domSource, result);
-//				} catch (TransformerConfigurationException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				 catch (TransformerException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//		
-//				 String filename = "./xml/" + simulation.get(j).getSimulationName() + "_0" + "_" + simulation.get(j).getEngine().get(j).getSeed().get(seed);
-//				 FileOutputStream file = new FileOutputStream(filename);
-//			
-//				 file.write(writer.toString().getBytes());
-//			     xmlFile.add(filename);
-//			}
-//
-//			
-//		}	
+												       
 		simul.close();
+	
+		System.out.println(path);
+		 if(new File(path+".temp").exists() )
+				new File(path+".temp").delete();
+		
 		return xmlFile;
 		
 	}
@@ -1589,6 +1268,11 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 		e.printStackTrace();
 	}
 	
+	 System.out.println(path);
+	 if(new File(path+".temp").exists() )
+			new File(path+".temp").delete();
+		 
+	 
 	return null;
 }
 
