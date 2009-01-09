@@ -153,6 +153,21 @@ public class Runner implements Runnable{
 	}
 */
 
+	private static boolean DelDir2(File dir)
+	  {
+	    if (dir.isDirectory())
+	    {
+	      String[] contenuto = dir.list();
+	      for (int i=0; i<contenuto.length; i++)
+	      {	    	    		    	  
+	        if(new File(dir + "/" + contenuto[i]).exists())	        		        
+	        	new File(dir + "/" + contenuto[i]).delete();	        		       
+	      }
+	    }
+	    return true;
+	  }
+
+	
 	/**
 	 * Funzione che si occupa di lanciare Deus
 	 * @param originalXml, nome del file di base di Deus 
@@ -183,6 +198,7 @@ public class Runner implements Runnable{
 		fis.close();
 		fos.close();
 
+		DelDir2(new File("./xml"));
 		
 		//Creo n file XML per le n simulazioni con DEUS
 		ArrayList<String> files = new ArrayList<String>();								
@@ -238,6 +254,9 @@ public class Runner implements Runnable{
 			simulationProgressBar.setMaximum(files.size());
 			simulationProgressBar.setMinimum(0);
 		}
+					    
+	    DelDir2(new File("./temp"));	    	   
+		
 		// Lancia le n simulazioni con i rispettivi n file
 		for(int j = 0; j < simulations.size(); j++)
 		{		
@@ -249,11 +268,11 @@ public class Runner implements Runnable{
 						
 					File log = new File(simulations.get(j).getFileLog());																		
 					
-					log.renameTo(new File(simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));																			
+					log.renameTo(new File("./temp/" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));																			
 					
 					log.delete();
 					
-					logFile.add(simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
+					logFile.add("./temp/" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
 					
 					numFile++;
 				
