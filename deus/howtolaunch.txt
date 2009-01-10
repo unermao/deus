@@ -22,5 +22,5 @@ Simulation Execution in Eclipse con Automator
 	Project: deus
 	Main Class: it.unipr.ce.dsg.deus.automator.gui.DeusAutomatorFrame
 	1.2) ARGUMENTS
-	Program Arguments: passare come primo parametro il path dell'XML del progetto e come secondo il path dove andare a scrivere l'XML per l'automatizzazione delle 			      simulazioni  
+	Program Arguments: passare come primo parametro il path dell'XML del progetto e come secondo il path dove andare a scrivere l'XML per l'automatizzazione delle simulazioni  
 	VM Arguments: -Djava.util.logging.config.file=logging.properties -Xms256M -Xmx1000M	
