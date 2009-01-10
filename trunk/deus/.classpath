@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="examples/streaming/coolStreaming/src"/>
+	<classpathentry kind="src" path="examples/streaming/chordStreaming/src"/>
+	<classpathentry kind="src" path="examples/streaming/simpleDataDriven/src"/>
+	<classpathentry kind="src" path="examples/chord/src"/>
+	<classpathentry kind="src" path="examples/energy/src"/>
+	<classpathentry kind="src" path="examples/basic/src"/>
+	<classpathentry kind="src" path="examples/revol/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/activation.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-xjc.jar"/>
+	<classpathentry kind="lib" path="lib/jsr173_1.0_api.jar"/>
+	<classpathentry kind="lib" path="lib/swing-layout.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
