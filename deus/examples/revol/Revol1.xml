@@ -65,10 +65,10 @@
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
 			<aut:param name="fitnessFunction" value="F1" />
-			<!-- a0=100, a1=10, a2=5 are the values which give all genes he same weight -->
-			<aut:param name="a0" value="100" />
-			<aut:param name="a1" value="10" />
-			<aut:param name="a2" value="5" />
+			<!-- phi0=100, phi1=10, phi2=5 are the values which give all genes he same weight -->
+			<aut:param name="phi0" value="100" />
+			<aut:param name="phi1" value="10" />
+			<aut:param name="phi2" value="5" />
 			<aut:param name="selectionStrategy" value="proportional" /> 
 			<!-- selection strategies: bestFitness, proportional, random, tournament, rank-based -->
 		</aut:params>
@@ -214,11 +214,11 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000001" seed="123456789"> 
+	<aut:engine maxvt="20000001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<!-- aut:reference id="twospeedspoisson" / --> 
-			<aut:reference id="poisson1" />
+			<aut:reference id="twospeedspoisson" /> 
+			<!-- aut:reference id="poisson1" / -->
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
