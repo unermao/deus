@@ -11,7 +11,7 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		    <!-- aut:reference id="adaptation" / --> 
+		    <aut:reference id="adaptation" /> 
 		   	<aut:reference id="discoveryA" />
 		   	<aut:reference id="discoveryB" />
 		</aut:events>
@@ -67,6 +67,7 @@
 			<aut:param name="disk" value="10000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="200000" />
+			<aut:param name="numInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
 	
@@ -79,10 +80,10 @@
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
 			<aut:param name="fitnessFunction" value="F1" />
-			<!-- a0=100, a1=10, a2=5 are the values which give all genes he same weight -->
-			<aut:param name="a0" value="100" />
-			<aut:param name="a1" value="10" />
-			<aut:param name="a2" value="5" />
+			<!-- phi0=100, phi1=10, phi2=5 are the values which give all genes he same weight -->
+			<aut:param name="phi0" value="100" />
+			<aut:param name="phi1" value="10" />
+			<aut:param name="phi2" value="5" />
 			<aut:param name="selectionStrategy" value="proportional" /> 
 			<!-- selection strategies: bestFitness, proportional, random, tournament, rank-based -->
 		</aut:params>
@@ -193,7 +194,7 @@
 	<aut:process id="poisson4a" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="50000000" />
-			<aut:param name="secondMeanArrival" value="500000" />
+			<aut:param name="secondMeanArrival" value="250000" />
 			<aut:param name="vtThreshold" value="5000000" />
 		</aut:params>
 		<aut:nodes>
@@ -206,7 +207,7 @@
 	
 	<aut:process id="poisson4b" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="500000" />
+			<aut:param name="firstMeanArrival" value="250000" />
 			<aut:param name="secondMeanArrival" value="50000000" />
 			<aut:param name="vtThreshold" value="5000000" />
 		</aut:params>
@@ -220,7 +221,7 @@
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="50000" />
+			<aut:param name="period" value="100000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -244,7 +245,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000001" seed="456789123"> 
+	<aut:engine maxvt="20000001" seed="567891234"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="twospeedspoisson" />
