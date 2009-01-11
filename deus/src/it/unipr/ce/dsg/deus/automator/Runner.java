@@ -67,91 +67,6 @@ public class Runner implements Runnable{
 		this.automatorXml = automatorXml;
 	}
 	
-	/*public  void main(String[] args) throws DeusAutomatorException, JAXBException, SAXException, IOException{		
-		
-		if(args.length > 2)
-		{
-			throw new DeusAutomatorException("Troppi argomenti [args] inseriti");
-		}
-		
-		if(args.length == 0)
-		{
-			throw new DeusAutomatorException("Nessun argomento [args] inserito");
-		}
-							
-		
-		//Creo n file XML per le n simulazioni con DEUS
-		ArrayList<String> files = new ArrayList<String>();								
-		
-		if( args.length == 2 )
-		{
-		
-		//Leggo il file xml automator e ricavo tutte le simulazioni da effettuare
-		ArrayList<MyObjectSimulation> simulations = readXML(args[1]);	
-			
-		files = writeXML(simulations,args[0]);
-				
-		int numFile = 0;			
-		
-		ArrayList<String> logFile = new ArrayList<String>();
-		//ArrayList<String> averageFile = new ArrayList<String>();
-		
-		for(int j = 0; j < simulations.size(); j++)
-			for(int k = 0; k < simulations.get(j).getSimulationNumber(); k++ )
-			{
-				for(int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++)
-				{																								
-					new Deus(files.get(numFile));
-						
-					File log = new File(simulations.get(j).getFileLog());								
-					
-					log.renameTo(new File(simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));										
-					
-					log.delete();
-					
-					logFile.add(simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
-					
-					numFile++;
-				
-				}				
-								
-			 //System.out.println("PRENDO LA LISTA E FACCIO MEDIA FILE AZZERO LA LISTA E LI METTO IN UNA NUOVA LISTA");			 			
-			 
-			 //TODO Controllare il nome del file
-			 ResultAutomator resultAutomator = new ResultAutomator(logFile);
-			 
-			 String averageFileName = "";
-			 String varFileName = "";
-//			 
-			 try {
-					resultAutomator.readTotalResults();
-					averageFileName = "./results//Average_" + simulations.get(j).getSimulationName()+"-"+k;
-					varFileName = "./results//Var_" + simulations.get(j).getSimulationName()+"-"+k;
-					resultAutomator.resultsAverage(averageFileName);
-					resultAutomator.resultsVar(varFileName,averageFileName);
-				} 
-			 catch (IOException e) {
-					e.printStackTrace();
-				}
-			 
-			 logFile.removeAll(logFile);									
-			 
-			 for(int z = 0; z < simulations.get(j).getGnuplot().size(); z++)
-				 {
-				 // System.out.println("FACCIO GNUPLOT IN " + simulations.get(j).getGnuplot().get(z).getFileName() + " asse x : " + simulations.get(j).getGnuplot().get(z).getAxisX() + " asse y : " + simulations.get(j).getGnuplot().get(z).getAxisY() );				
-				  writeGnuPlot( averageFileName, simulations.get(j).getGnuplot().get(z).getFileName()+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());
-				 }
-			}			
-		}
-		
-		else 
-			new Deus(args[0]);
-		
-		for(int i = 0; i < files.size(); i++)
-			new File(files.get(i)).delete();
-		
-	}
-*/
 
 	private static boolean DelDir2(File dir)
 	  {
@@ -198,7 +113,7 @@ public class Runner implements Runnable{
 		fis.close();
 		fos.close();
 
-		DelDir2(new File("./xml"));
+		//DelDir2(new File("./xml"));
 		
 		//Creo n file XML per le n simulazioni con DEUS
 		ArrayList<String> files = new ArrayList<String>();								
@@ -255,7 +170,8 @@ public class Runner implements Runnable{
 			simulationProgressBar.setMinimum(0);
 		}
 					    
-	    DelDir2(new File("./temp"));	    	   
+		simulationProgressBar.setValue(0);
+	    //DelDir2(new File("./temp"));	    	   
 		
 		// Lancia le n simulazioni con i rispettivi n file
 		for(int j = 0; j < simulations.size(); j++)
@@ -297,15 +213,15 @@ public class Runner implements Runnable{
 					e.printStackTrace();
 				}
 			 
-			 for(int i = 0; i < logFile.size(); i++)
-					new File(logFile.get(i)).delete();	
+			// for(int i = 0; i < logFile.size(); i++)
+				//	new File(logFile.get(i)).delete();	
 			 
-			 logFile.clear();
+			// logFile.clear();			 
 			 
 			 // Scrive i file gnuplot 
 			 for(int z = 0; z < simulations.get(j).getGnuplot().size(); z++)
 				 {			
-				  writeGnuPlot( averageFileName, simulations.get(j).getGnuplot().get(z).getFileName()+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());
+				  writeGnuPlot( averageFileName, simulations.get(j).getGnuplot().get(z).getFileName()+"-"+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());
 				 }
 			}			
 		}
@@ -337,21 +253,25 @@ public class Runner implements Runnable{
 			FileInputStream fis = new FileInputStream(f);
 			InputStreamReader isr = new InputStreamReader(fis);
 			BufferedReader br = new BufferedReader(isr);
-								
-			FileOutputStream fos = new FileOutputStream("./results//gnuplot//" + destinationFile);
+						
+			FileOutputStream fos = new FileOutputStream("./results/gnuplot/" + destinationFile);
 			
 			
 			String linea=br.readLine();
+			
+	
 			String app="";
 			boolean assex = false;
 			boolean assey = false;
 			
-			while(linea!=null) {					
+			while(linea!=null) {
+				
 			       if(linea.contains(axisX) && assey==false) 
-			       {			    	   
+			       {
+			    	   
 			    	   assex = true;
 			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   val = val + " ";
+			    	   val = val + " ";			    	  
 			    	   fos.write(val.getBytes());			    	   
 			       }
 			      
@@ -359,7 +279,7 @@ public class Runner implements Runnable{
 			       {
 			    	   assey = true;
 			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   val = val + " ";
+			    	   val = val + " ";			    	   
 			    	   fos.write(val.getBytes());
 			    	   fos.write("\n".getBytes());			    	   
 			    	   assex=false;
@@ -370,7 +290,7 @@ public class Runner implements Runnable{
 			       {			    	 
 			    	   assey = true;
 			    	   app = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   app = app + " ";				  
+			    	   app = app + " ";						    	   
 			       }
 			       
 			       else if(linea.contains(axisX) && assey==true){
@@ -898,7 +818,7 @@ public class Runner implements Runnable{
 				
 					MyObjectGnuplot gnuplot = new MyObjectGnuplot();									
 					
-					gnuplot.setFileName(GnuPlotNode.getAttributes().getNamedItem("fileName").getNodeValue()+"_"+"asseX"+GnuPlotNode.getAttributes().getNamedItem("axisX").getNodeValue()+"asseY"+GnuPlotNode.getAttributes().getNamedItem("axisY").getNodeValue()+"_"+sim.getSimulationName()+"-");
+					gnuplot.setFileName(GnuPlotNode.getAttributes().getNamedItem("fileName").getNodeValue());
 					
 					gnuplot.setAxisX(GnuPlotNode.getAttributes().getNamedItem("axisX").getNodeValue());
 					
