@@ -113,7 +113,7 @@ public class Runner implements Runnable{
 		fis.close();
 		fos.close();
 
-		//DelDir2(new File("./xml"));
+		DelDir2(new File("./xml"));
 		
 		//Creo n file XML per le n simulazioni con DEUS
 		ArrayList<String> files = new ArrayList<String>();								
@@ -171,7 +171,7 @@ public class Runner implements Runnable{
 		}
 					    
 		simulationProgressBar.setValue(0);
-	    //DelDir2(new File("./temp"));	    	   
+	    DelDir2(new File("./temp"));	    	   
 		
 		// Lancia le n simulazioni con i rispettivi n file
 		for(int j = 0; j < simulations.size(); j++)
