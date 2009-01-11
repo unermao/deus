@@ -171,6 +171,7 @@ public class Runner implements Runnable{
 		}
 					    
 		simulationProgressBar.setValue(0);
+		
 	    DelDir2(new File("./temp"));	    	   
 		
 		// Lancia le n simulazioni con i rispettivi n file
