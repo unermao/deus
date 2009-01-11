@@ -29,7 +29,7 @@ public class AutomatorLogger {
 	 * @param f, Tempo del simulatore
 	 * @param fileValue, insieme dei parametri <nome,valore> da scrivere sul file 
 	 */
-	public void write(float f, ArrayList<LoggerObject> fileValue){
+	public void write(float f, ArrayList<LoggerObject> fileValue){				
 		
 		String write = "";
 		
