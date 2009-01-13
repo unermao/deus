@@ -12,19 +12,41 @@
 package it.unipr.ce.dsg.deus.automator.gui;
 
 import it.unipr.ce.dsg.deus.automator.DeusAutomatorException;
+import it.unipr.ce.dsg.deus.automator.MyObjectEngine;
+import it.unipr.ce.dsg.deus.automator.MyObjectGnuplot;
+import it.unipr.ce.dsg.deus.automator.MyObjectNode;
+import it.unipr.ce.dsg.deus.automator.MyObjectParam;
+import it.unipr.ce.dsg.deus.automator.MyObjectProcess;
+import it.unipr.ce.dsg.deus.automator.MyObjectResourceParam;
+import it.unipr.ce.dsg.deus.automator.MyObjectSimulation;
 import it.unipr.ce.dsg.deus.automator.Runner;
 
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.ValidationEventLocator;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -352,4 +374,313 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		this.outFileName = outFileName;
 	}
 
+	/**
+	 * Funzione che si occupa di leggere il file .xml per l'automazione delle simulazioni
+	 * @param path, percorso del file da leggere
+	 * @return un ArrayList<> contenete tutte le varie simulazioni da effettuare
+	 * @throws DeusAutomatorException
+	 * @throws JAXBException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	private  void readXML(String path) throws DeusAutomatorException, JAXBException, SAXException, IOException{
+		
+		
+		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema.automator");
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		Schema schema = schemaFactory
+				.newSchema(new File("schema/automator/deusAutomator.xsd"));
+		
+		Unmarshaller unmarshaller = jc.createUnmarshaller();
+		unmarshaller.setSchema(schema);
+		unmarshaller.setEventHandler(new ValidationEventHandler() {
+
+			public boolean handleEvent(ValidationEvent ve) {
+				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
+						|| ve.getSeverity() == ValidationEvent.ERROR
+						|| ve.getSeverity() == ValidationEvent.WARNING) {
+					ValidationEventLocator locator = ve.getLocator();
+					System.out.println("Invalid configuration file: "
+							+ locator.getURL());
+					System.out.println("Error at column "
+							+ locator.getColumnNumber() + ", line "
+							+ locator.getLineNumber());
+					System.out.println("Error: " + ve.getMessage());
+					return false;
+				}
+				return true;
+			}
+
+		});
+				
+		unmarshaller.unmarshal(new File(path));
+				
+		
+		try {
+
+			DocumentBuilderFactory factory =
+			      DocumentBuilderFactory.newInstance();
+			
+			 File f = new File(path);
+			 
+		     DocumentBuilder builder = factory.newDocumentBuilder();
+		      
+		    Document document = builder.parse(f);		      
+			
+			document.getDocumentElement().normalize();
+			
+			//Elemento root
+			NodeList simulationLst = document.getElementsByTagName("simulation");
+						
+			
+			//LISTA DELLE SIMULAZIONI
+			for (int w = 0; w < simulationLst.getLength(); w++) {																									
+				
+				Node fstSimulation = simulationLst.item(w);
+
+				if(fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue() == null || fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue() == null)
+					throw new DeusAutomatorException("Errore manca simulationNumberSeed e/o simulationName nel tag simulation");
+
+//				String resultFolder = null;
+//				String inputFolder = null;
+//				
+//				String simulationNumberSeed = fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue();
+				
+				// NOME DELLA SIMULAZIONE
+				String simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
+				
+				
+				
+//				if(fstSimulation.getAttributes().getNamedItem("resultFolder") != null)
+//					resultFolder = fstSimulation.getAttributes().getNamedItem("resultFolder").getNodeValue();
+//				
+//				if(fstSimulation.getAttributes().getNamedItem("inputFolder") != null)
+//					inputFolder = fstSimulation.getAttributes().getNamedItem("inputFolder").getNodeValue();
+				
+								
+								
+				
+			NodeList nodeLst = document.getElementsByTagName("node");
+												
+			//LISTA DEI NODI
+			for (int s = 0; s < nodeLst.getLength(); s++) {				
+				
+				Node fstNode = nodeLst.item(s);
+				
+				if(fstNode.getParentNode().equals(simulationLst.item(w))){									
+					
+				//NOME DEL NODO
+				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();							
+
+				Element fstElmnt = (Element) fstNode;
+				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");							
+				
+				//Ricavo tutti i parametri in ParamName di node
+				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
+				{										
+
+					Element paramElement = (Element)fstNmElmntLst.item(j);
+
+					//NOME DEL PARAMETRO
+					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();															
+
+					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
+
+					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
+	
+					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
+
+					if(initialValue == null || finalValue == null || stepValue == null)
+					{
+					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node " + messageType + " in " + paramName);	
+					}
+					
+					//VALORE PARAMETRI
+					String init = initialValue.item(0).getTextContent();
+					String fin = finalValue.item(0).getTextContent();
+					String step = stepValue.item(0).getTextContent();									
+					
+				}
+				
+				
+				NodeList paramName = fstElmnt.getElementsByTagName("resourceParamName");							
+
+				//Ricavo tutti i parametri in resourceParamName di node 
+				for( int j = 0 ; j < paramName.getLength() ; j++)
+				{				
+					
+					Element paramElement = (Element)paramName.item(j);
+
+					//NOME HANDLER
+					String handlerName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("handlerName").getNodeValue();
+					
+					//NOME PARAMETRO RESOURCE
+					String resParamValueName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("resParamValue").getNodeValue();
+
+					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
+
+					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
+					
+					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
+					
+					if(initialValue == null || finalValue == null || stepValue == null)
+					{
+					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node" + messageType + " in " + paramName );	
+					}
+					
+					//VALORE PARAMETRI
+					String init = initialValue.item(0).getTextContent();
+					String fin = finalValue.item(0).getTextContent();
+					String step = stepValue.item(0).getTextContent();						
+					}
+					
+				}
+						
+			}	
+			
+			NodeList processLst = document.getElementsByTagName("process");						
+
+			//LISTA DEI PROCESSI
+			for (int s = 0; s < processLst.getLength(); s++) {
+			
+				Node fstNode = processLst.item(s);								
+			
+				if(fstNode.getParentNode().equals(simulationLst.item(w))){																	
+					
+				// NOME PROCESSO
+				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();
+
+				Element fstElmnt = (Element) fstNode;
+				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");
+								
+				//Ricavo tutti i parametri in ParamName di process
+				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
+				{				
+					
+					Element paramElement = (Element)fstNmElmntLst.item(j);
+
+					//NOME PARAMETRO PROCESSO
+					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();
+					
+					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
+					
+					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
+					
+					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
+					
+					//VALORE PARAMETRI
+					String init = initialValue.item(0).getTextContent();
+					String fin = finalValue.item(0).getTextContent();
+					String step = stepValue.item(0).getTextContent();
+					
+					}
+					
+				}							
+				
+			}
+			
+			NodeList engineLst = document.getElementsByTagName("engine");						
+
+			//ENGINE
+			for (int s = 0; s < engineLst.getLength(); s++) {
+							
+				Node fstNode = engineLst.item(s);
+				
+				if(fstNode.getParentNode().equals(simulationLst.item(w))){
+
+				String startVt = "";
+				String endVt = "";
+				String stepVt = "";
+								
+				boolean vt = true;
+				
+				if(fstNode.getAttributes().getNamedItem("startVT") != null )	
+					startVt = fstNode.getAttributes().getNamedItem("startVT").getNodeValue();
+				
+				else vt = false;
+				
+				if(fstNode.getAttributes().getNamedItem("endVT") != null )	
+					endVt = fstNode.getAttributes().getNamedItem("endVT").getNodeValue();
+				 
+				else vt = false;
+				
+				if(fstNode.getAttributes().getNamedItem("stepVT") != null )
+					stepVt = fstNode.getAttributes().getNamedItem("stepVT").getNodeValue();
+				
+				else vt = false;
+				
+								
+				Element fstElmnt = (Element) fstNode;
+				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("seed");
+
+				//Ricavo tutti i seedValue presenti in seed
+				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
+				{					
+					
+					Element paramElement = (Element)fstNmElmntLst.item(j);
+								
+					NodeList seedValue = paramElement.getElementsByTagName("seedValue");
+										
+					for( int o = 0 ; o < seedValue.getLength() ; o++)
+					{						
+						// VALORI DEI SEED
+						String seedvalue = seedValue.item(o).getTextContent();										
+					}									
+
+				}
+				
+				}	
+			
+			}			
+						
+//			NodeList resultLogLst = document.getElementsByTagName("resultVT");						
+//			
+//			for (int i = 0; i < resultLogLst.getLength(); i++) {			
+//				
+//				Node fileLog = resultLogLst.item(i);
+//				
+//				if(fileLog.getParentNode().equals(simulationLst.item(w))){									
+//					
+//					sim.setFileLog(fileLog.getAttributes().getNamedItem("outputLogFile").getNodeValue());
+//				}			
+//		
+//			}
+//			
+			//GNUPLOT
+			NodeList GnuPlotLst = document.getElementsByTagName("resultXYFile");						
+
+			for (int i = 0; i < GnuPlotLst.getLength(); i++) {			
+				
+				Node GnuPlotNode = GnuPlotLst.item(i);
+				
+				if(GnuPlotNode.getParentNode().equals(simulationLst.item(w))){
+																			
+					String fileName = GnuPlotNode.getAttributes().getNamedItem("fileName").getNodeValue();
+					
+					String asseX = GnuPlotNode.getAttributes().getNamedItem("axisX").getNodeValue();
+					
+					String asseY = GnuPlotNode.getAttributes().getNamedItem("axisY").getNodeValue();
+										
+				}			
+		
+			}															
+			
+			}						
+			
+	}
+	 catch (SAXException e) {
+
+		e.printStackTrace();
+	} catch (IOException e) {
+
+		e.printStackTrace();
+	} catch (ParserConfigurationException e) {
+
+		e.printStackTrace();
+	}
+
+}
+
+	
 }
