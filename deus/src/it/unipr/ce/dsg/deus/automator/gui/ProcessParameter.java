@@ -17,6 +17,20 @@ public class ProcessParameter {
 		this.stepValue = 1.0;
 	}
 	
+	
+	
+	public ProcessParameter(String processId, String paramName,
+			Double initialValue, Double finalValue, Double stepValue) {
+		super();
+		this.processId = processId;
+		this.paramName = paramName;
+		this.initialValue = initialValue;
+		this.finalValue = finalValue;
+		this.stepValue = stepValue;
+	}
+
+
+
 	public String getProcessId() {
 		return processId;
 	}
