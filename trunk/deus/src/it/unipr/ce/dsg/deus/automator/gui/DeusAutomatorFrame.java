@@ -21,6 +21,9 @@ import it.unipr.ce.dsg.deus.automator.MyObjectResourceParam;
 import it.unipr.ce.dsg.deus.automator.MyObjectSimulation;
 import it.unipr.ce.dsg.deus.automator.Runner;
 
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,6 +31,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -58,7 +63,14 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     private int simulationCount = 0;
 	private JLabel removeSimulationLabel;
 	private String originalXmlPath;
-	private String outFileName;
+	
+	//Nome del file per l'XML dell'automator 
+	private String outFileName = "automator.xml";
+	
+	private JFrame chooser_frame;
+	private JFileChooser chooser;
+	protected String fileName = null;
+	protected String saveFileName;
 	/** Creates new form DeusAutomator */
     public DeusAutomatorFrame() {
         initComponents();
@@ -263,10 +275,76 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 	}
 
 	private void openLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openLabelMouseClicked
-        // TODO add your handling code here:
+		
+		chooser_frame = new JFrame();
+		chooser_frame.setBounds(0, 0, 450, 450);
+		chooser = new JFileChooser();
+		
+		chooser.addActionListener ( new ActionListener() { 
+			public void actionPerformed(ActionEvent e) 
+		   	{
+				if(chooser.getSelectedFile() != null)
+				{	
+				 String app = chooser.getSelectedFile().toString();
+				 
+				 if( app.indexOf('/') != -1 )
+					 app = app + "/";
+				 else
+					 app = app + "\\";
+				
+				 fileName = app;
+				 
+				 if(fileName != null)
+				 {	 
+				 chooser_frame.removeAll();
+				 chooser_frame.setVisible(false);
+				 
+				 clearAllSimulation();
+					
+					//Imposto il titolo della finestra
+					setTitle("Deus Automator - DSG Parma " + fileName);
+					
+					try {
+						readXML(fileName);
+					} catch (DeusAutomatorException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (JAXBException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SAXException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				 }
+		   	}
+				else
+					chooser_frame.dispose();
+		   	}
+		   });
+		
+		chooser_frame.setLayout(new BorderLayout());
+		chooser_frame.add(chooser,BorderLayout.NORTH);
+		chooser.setVisible(true);
+		chooser_frame.setVisible(true);
+		
     }//GEN-LAST:event_openLabelMouseClicked
 
-    private void openLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openLabelMousePressed
+    private void clearAllSimulation() {
+    	
+    	for(int index = 0; index < this.simulationTabbedPane.getComponentCount(); index++)
+    	{
+    		((DeusSimulationPanel)this.simulationTabbedPane.getComponentAt(index)).clearAllData();
+    	}
+    	
+		//Chiudo tutti i tab delle simulazioni che sono gia' attivi
+		this.simulationTabbedPane.removeAll();
+	}
+
+	private void openLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_openLabelMousePressed
     	openLabel.setIcon(new javax.swing.ImageIcon(("res/open_BN.png")));
     }//GEN-LAST:event_openLabelMousePressed
 
@@ -275,7 +353,46 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_openLabelMouseReleased
 
     private void saveLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveLabelMouseClicked
-        // TODO add your handling code here:
+    	chooser_frame = new JFrame();
+		chooser_frame.setBounds(0, 0, 450, 450);
+		chooser = new JFileChooser();
+		
+		chooser.addActionListener ( new ActionListener() { 
+			public void actionPerformed(ActionEvent e) 
+		   	{
+				if(chooser.getSelectedFile() != null)
+				{	
+				 String app = chooser.getSelectedFile().toString();
+				 
+				 if( app.indexOf('/') != -1 )
+					 app = app + "/";
+				 else
+					 app = app + "\\";
+				
+				 saveFileName = app;
+				 
+				 if(saveFileName != null)
+				 {	 
+				 chooser_frame.removeAll();
+				 chooser_frame.setVisible(false);
+				 
+				 try {
+					writeAutomatorXML(saveFileName);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				 
+				 }
+				else
+					chooser_frame.dispose();
+		   	}
+		   }});
+		
+		chooser_frame.setLayout(new BorderLayout());
+		chooser_frame.add(chooser,BorderLayout.NORTH);
+		chooser.setVisible(true);
+		chooser_frame.setVisible(true);
     }//GEN-LAST:event_saveLabelMouseClicked
 
     private void saveLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveLabelMousePressed
@@ -300,6 +417,17 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addSimulationLabelMouseReleased
 
     private void runLabelMouseClicked(java.awt.event.MouseEvent evt) throws IOException {//GEN-FIRST:event_runLabelMouseClicked
+    	writeAutomatorXML(this.outFileName);
+    	
+    	//Eseguo il file salvato
+		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
+		runner.setSimulationProgressBar(simulationProgressBar);
+		
+		Thread automatorRunner = new Thread(runner, "Media Controller Listener");
+		automatorRunner.start();	
+    }//GEN-LAST:event_runLabelMouseClicked
+
+    private void writeAutomatorXML(String fileName) throws IOException {
     	int tabCount = simulationTabbedPane.getTabCount();
     	
 		String xmlString = "";
@@ -316,18 +444,13 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		
 	//	System.out.println(xmlString);
 		
-		FileOutputStream fos = new FileOutputStream(this.outFileName);
+		FileOutputStream fos = new FileOutputStream(fileName);
 		
 		fos.write(xmlString.getBytes());
-		
-		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
-		runner.setSimulationProgressBar(simulationProgressBar);
-		
-		Thread automatorRunner = new Thread(runner, "Media Controller Listener");
-		automatorRunner.start();
-    }//GEN-LAST:event_runLabelMouseClicked
 
-    private void runLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runLabelMousePressed
+	}
+
+	private void runLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_runLabelMousePressed
     	runLabel.setIcon(new javax.swing.ImageIcon(("res/run_BN.png")));
     }//GEN-LAST:event_runLabelMousePressed
 
@@ -437,6 +560,9 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 			//LISTA DELLE SIMULAZIONI
 			for (int w = 0; w < simulationLst.getLength(); w++) {																									
 				
+				//DeusSimulationPanel sul quale aggiungere i valori letti dal File
+				DeusSimulationPanel deusSimulationPanel = null;
+				
 				Node fstSimulation = simulationLst.item(w);
 
 				if(fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue() == null || fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue() == null)
@@ -450,8 +576,9 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				// NOME DELLA SIMULAZIONE
 				String simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
 				
-				
-				
+				//Creo il nuovo Panel e lo imposto per poterlo modificare con i nuovi dati letti dal file XML
+				deusSimulationPanel = this.addSimulationPanel(simulationName);
+
 //				if(fstSimulation.getAttributes().getNamedItem("resultFolder") != null)
 //					resultFolder = fstSimulation.getAttributes().getNamedItem("resultFolder").getNodeValue();
 //				
@@ -497,9 +624,14 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					}
 					
 					//VALORE PARAMETRI
-					String init = initialValue.item(0).getTextContent();
-					String fin = finalValue.item(0).getTextContent();
-					String step = stepValue.item(0).getTextContent();									
+					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
+					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
+					Double step = Double.parseDouble(stepValue.item(0).getTextContent());									
+				
+					//Creo il nuovo oggetto da inserire nella GUI
+					NodeParameter nodeParameter = new NodeParameter(fin,init,messageType,paramName,step);
+					
+					deusSimulationPanel.addNodeParameter(nodeParameter);
 					
 				}
 				
@@ -530,9 +662,14 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					}
 					
 					//VALORE PARAMETRI
-					String init = initialValue.item(0).getTextContent();
-					String fin = finalValue.item(0).getTextContent();
-					String step = stepValue.item(0).getTextContent();						
+					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
+					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
+					Double step = Double.parseDouble(stepValue.item(0).getTextContent());	
+					
+					NodeResource nodeResource = new NodeResource(fin,handlerName,init,messageType,resParamValueName,step);
+					
+					deusSimulationPanel.addNodeResource(nodeResource);
+					
 					}
 					
 				}
@@ -570,10 +707,13 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
 					
 					//VALORE PARAMETRI
-					String init = initialValue.item(0).getTextContent();
-					String fin = finalValue.item(0).getTextContent();
-					String step = stepValue.item(0).getTextContent();
+					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
+					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
+					Double step = Double.parseDouble(stepValue.item(0).getTextContent());
 					
+					ProcessParameter processParameter = new ProcessParameter(messageType,paramName,init,fin,step);
+					
+					deusSimulationPanel.addProcessParameter(processParameter);
 					}
 					
 				}							
@@ -625,9 +765,13 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					for( int o = 0 ; o < seedValue.getLength() ; o++)
 					{						
 						// VALORI DEI SEED
-						String seedvalue = seedValue.item(o).getTextContent();										
+						String seedvalue = seedValue.item(o).getTextContent();
+						
+						EngineParameter engineParameter = new EngineParameter(seedvalue);
+						
+						deusSimulationPanel.addEngineParameter(engineParameter);
 					}									
-
+					
 				}
 				
 				}	
@@ -661,7 +805,10 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					String asseX = GnuPlotNode.getAttributes().getNamedItem("axisX").getNodeValue();
 					
 					String asseY = GnuPlotNode.getAttributes().getNamedItem("axisY").getNodeValue();
-										
+							
+					GnuPlotFileElement gnuPlotFileElement = new GnuPlotFileElement(fileName,asseX,asseY);
+					
+					deusSimulationPanel.addGnuPlotFileElement(gnuPlotFileElement);
 				}			
 		
 			}															
@@ -681,6 +828,32 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 	}
 
 }
+	
+	public DeusSimulationPanel addSimulationPanel(String simulationName){
+		
+		int oldIndex = this.simulationTabbedPane.indexOfTab(simulationName);
+		
+		if(oldIndex == -1)
+		{
+			//Aggiungo il Tab Simulazione
+			simulationCount++;
+			simulationTabbedPane.addTab(simulationName, new DeusSimulationPanel(simulationTabbedPane));
+			
+		}
+		else
+		{
+			JFrame errorFrame = new JFrame();
+			errorFrame.setTitle("ERROR !");
+			errorFrame.setBounds(0, 0, 350, 80);
+			errorFrame.setVisible(true);
+			
+			errorFrame.add(new JLabel("ERROR ! Simulations with the same name ! Only the first was loaded "));
+		}
+		
+	   	int tabIndex = this.simulationTabbedPane.indexOfTab(simulationName);
+	   	
+	   	return (DeusSimulationPanel) this.simulationTabbedPane.getComponentAt(tabIndex);
+	}
 
 	
 }

@@ -8,6 +8,14 @@ public class EngineParameter {
 		this.seedValue = "123456789";
 	}
 	
+	
+	public EngineParameter(String seedValue) {
+		super();
+		this.seedValue = seedValue;
+	}
+
+
+
 	public String getSeedValue() {
 		return seedValue;
 	}

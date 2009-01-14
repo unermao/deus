@@ -88,8 +88,6 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 
         nodeParameterLabel.setText("Node Parameter");
 
-        nodeParameterList.add(new NodeParameter());
-
 		nodeParameterTableModel.set_FileTableModel(nodeParameterList);
 
 		nodeParameterTable.setModel(nodeParameterTableModel);
@@ -97,7 +95,6 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 
 
         nodeResourceLabel.setText("Node Resource");
-        nodeResourceList.add(new NodeResource());
 
 		nodeResourceTableModel.set_FileTableModel(nodeResourceList);
 		nodeResourceTable.setModel(nodeResourceTableModel);
@@ -116,13 +113,11 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
         });
 
         processLabel.setText("Process");
-    	processParameterList.add(new ProcessParameter());
 		processParameterTableModel.set_FileTableModel(processParameterList);
 		processTable.setModel(processParameterTableModel);
 		processScrollPane.setViewportView(processTable);
 
         engineLabel.setText("Engine");
-    	engineParameterList.add(new EngineParameter());
 		engineParameterTableModel.set_FileTableModel(engineParameterList);
 		engineTable.setModel(engineParameterTableModel);
 		engineScrollPane.setViewportView(engineTable);
@@ -130,7 +125,6 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
      
 		
 		
-		gnuPlotFileList.add(new GnuPlotFileElement());
 		gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
 		gnuPlotFileTable.setModel(gnuPlotFileTableModel);
 		gnuPlotFileScrollPane.setViewportView(gnuPlotFileTable);
@@ -369,12 +363,7 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addNodeParameterLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addNodeParameterLabelMouseClicked
-		nodeParameterList.add(new NodeParameter());
-
-		nodeParameterTableModel = new NodeParameterTableModel();
-		nodeParameterTableModel.set_FileTableModel(nodeParameterList);
-
-		nodeParameterTable.setModel(nodeParameterTableModel);
+    	addNodeParameter(new NodeParameter());
     }//GEN-LAST:event_addNodeParameterLabelMouseClicked
 
     private void addNodeParameterLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addNodeParameterLabelMousePressed
@@ -423,15 +412,10 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_removeNodeParameterLabelMouseReleased
 
     private void addNodeResourceLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addNodeResourceLabelMouseClicked
-		nodeResourceList.add(new NodeResource());
-
-		nodeResourceTableModel = new NodeResourceTableModel();
-		nodeResourceTableModel.set_FileTableModel(nodeResourceList);
-
-		nodeResourceTable.setModel(nodeResourceTableModel);
+    	addNodeResource(new NodeResource());
     }//GEN-LAST:event_addNodeResourceLabelMouseClicked
 
-    private void addNodeResourceLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addNodeResourceLabelMousePressed
+	private void addNodeResourceLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addNodeResourceLabelMousePressed
     	addNodeResourceLabel.setIcon(new javax.swing.ImageIcon(("res/add_BN.png")));
     }//GEN-LAST:event_addNodeResourceLabelMousePressed
 
@@ -477,15 +461,10 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_removeNodeResourceLabelMouseReleased
 
     private void addProcessLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addProcessLabelMouseClicked
-		processParameterList.add(new ProcessParameter());
-
-		processParameterTableModel = new ProcessParameterTableModel();
-		processParameterTableModel.set_FileTableModel(processParameterList);
-
-		processTable.setModel(processParameterTableModel);
+    	addProcessParameter(new ProcessParameter());
     }//GEN-LAST:event_addProcessLabelMouseClicked
 
-    private void addProcessLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addProcessLabelMousePressed
+	private void addProcessLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addProcessLabelMousePressed
     	addProcessLabel.setIcon(new javax.swing.ImageIcon(("res/add_BN.png")));
     }//GEN-LAST:event_addProcessLabelMousePressed
 
@@ -531,15 +510,10 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_removeProcessLabelMouseReleased
 
     private void addEngineLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEngineLabelMouseClicked
-    	engineParameterList.add(new EngineParameter());
-
-		engineParameterTableModel = new EngineParameterTableModel();
-		engineParameterTableModel.set_FileTableModel(engineParameterList);
-
-		engineTable.setModel(engineParameterTableModel);
+    	addEngineParameter(new EngineParameter());
     }//GEN-LAST:event_addEngineLabelMouseClicked
 
-    private void addEngineLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEngineLabelMousePressed
+	private void addEngineLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addEngineLabelMousePressed
     	addEngineLabel.setIcon(new javax.swing.ImageIcon(("res/add_BN.png")));
     }//GEN-LAST:event_addEngineLabelMousePressed
 
@@ -587,15 +561,10 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_removeEngineLabelMouseReleased
 
     private void addGnuPlotLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addGnuPlotLabelMouseClicked
-    	gnuPlotFileList.add(new GnuPlotFileElement());
-
-		gnuPlotFileTableModel = new GnuPlotFileTableModel();
-		gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
-
-		gnuPlotFileTable.setModel(gnuPlotFileTableModel);
+    	addGnuPlotFileElement(new GnuPlotFileElement());
     }//GEN-LAST:event_addGnuPlotLabelMouseClicked
 
-    private void addGnuPlotLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addGnuPlotLabelMousePressed
+	private void addGnuPlotLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addGnuPlotLabelMousePressed
     	addGnuPlotLabel.setIcon(new javax.swing.ImageIcon(("res/add_BN.png")));
     }//GEN-LAST:event_addGnuPlotLabelMousePressed
 
@@ -787,6 +756,86 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		return xmlString;
 	}
 
+	/**
+	 * Aggiunge un nuovo NodeParameter alla Tabella
+	 * @param nodeParameter
+	 */
+	public void addNodeParameter(NodeParameter nodeParameter) {
+		nodeParameterList.add(nodeParameter);
+
+		nodeParameterTableModel = new NodeParameterTableModel();
+		nodeParameterTableModel.set_FileTableModel(nodeParameterList);
+
+		nodeParameterTable.setModel(nodeParameterTableModel);
+	}
+	
+	/**
+	 * Aggiunge un nuovo NodeResource alla tabella
+	 * 
+	 * @param nodeResource
+	 */
+	public void addNodeResource(NodeResource nodeResource) {
+    	nodeResourceList.add(nodeResource);
+
+		nodeResourceTableModel = new NodeResourceTableModel();
+		nodeResourceTableModel.set_FileTableModel(nodeResourceList);
+
+		nodeResourceTable.setModel(nodeResourceTableModel);	
+	}
+
+    /**
+     * Aggiunge un nuovo ProcessParameter alla tabella
+     * 
+     * @param processParameter
+     */
+	public void addProcessParameter(ProcessParameter processParameter) {
+		processParameterList.add(processParameter);
+
+		processParameterTableModel = new ProcessParameterTableModel();
+		processParameterTableModel.set_FileTableModel(processParameterList);
+
+		processTable.setModel(processParameterTableModel);
+	}
+	
+    /**
+     * Aggiunge un nuovo EngineParameter alla tabella
+     * 
+     * @param engineParameter
+     */
+	public void addEngineParameter(EngineParameter engineParameter) {
+    	engineParameterList.add(engineParameter);
+
+		engineParameterTableModel = new EngineParameterTableModel();
+		engineParameterTableModel.set_FileTableModel(engineParameterList);
+
+		engineTable.setModel(engineParameterTableModel);
+	}
+
+    /**
+     * Aggiunge un GnuPlotFileElement alla tabella
+     * 
+     * @param gnuPlotFileElement
+     */
+    public void addGnuPlotFileElement(GnuPlotFileElement gnuPlotFileElement) {
+    	gnuPlotFileList.add(gnuPlotFileElement);
+
+		gnuPlotFileTableModel = new GnuPlotFileTableModel();
+		gnuPlotFileTableModel.set_FileTableModel(gnuPlotFileList);
+
+		gnuPlotFileTable.setModel(gnuPlotFileTableModel);
+	}
+    
+    /**
+     * Rimuove tutti gli elementi presenti nel Panel e nelle table
+     */
+	public void clearAllData() {
+		this.gnuPlotFileList.clear();
+		//this.nodeList.clear();
+		this.nodeParameterList.clear();
+		this.processParameterList.clear();
+		this.engineParameterList.clear();
+	}
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel addEngineLabel;
     private javax.swing.JLabel addGnuPlotLabel;
