@@ -53,7 +53,7 @@ public class CoolStreamingUpdateParentsEvent extends NodeEvent {
 			if(peer.isConnected())
 			{
 				//peer.updateParentsList(this.triggeringTime);			
-				//peer.updateParentsListCoolStreaming(this.triggeringTime);
+			//	peer.updateParentsListCoolStreaming(this.triggeringTime);
 				peer.gossipProtocol(peer, 1);
 			}
 		}

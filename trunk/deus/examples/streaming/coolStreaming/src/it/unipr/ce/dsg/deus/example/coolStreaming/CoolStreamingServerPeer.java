@@ -209,14 +209,14 @@ public class CoolStreamingServerPeer extends Peer {
 				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((CoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
-			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 1;
+			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 5;
 		}
 		
 		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
 				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((CoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
-			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 5;
+			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 1;
 		}
 		
 		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()

@@ -50,26 +50,42 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		double activeConnectionTotal = 0.0;
 		double activeConnectionPercentTotalPcNode = 0.0;
 		double activeConnectionPercentTotalPcNodeHigh = 0.0;
+		double activeConnectionPercentTotalSuperNode = 0.0;
 		double activeConnectionServer = 0.0;
+		
+		int PcISP0 = 0;
+		int HighISP0 = 0;
+		int SuperISP0 = 0;
+		int PcISP1 = 0;
+		int HighISP1 = 0;
+		int SuperISP1 = 0;
+		int PcISP2 = 0;
+		int HighISP2 = 0;
+		int SuperISP2 = 0;
 		
 		double totalPcNode = 0.0;
 		double totalPcNodeHigh = 0.0;
+		double totalSuperNode = 0.0;
 		
 		float totalReceivedChunk = 0;
 		float totalPcReceivedChunk = 0;
 		float totalPcHighReceivedChunk = 0;
+		float totalSuperNodeReceivedChunk = 0;
 
 		int unstablesNode90pcNode = 0;
 		int unstablesNode90pcNodeHigh = 0;
+		int unstablesNode90superNode = 0;
 		//int unstablesNode80 = 0;
 		
 		float totalArrivalTime = 0;
 		float totalPcArrivalTime = 0;
 		float totalPcHighArrivalTime = 0;
+		float totalSuperNodeArrivalTime = 0;
 		
 		float averageArrivalTime = 0;
 		float averagePcArrivalTime = 0;
 		float averagePcHighArrivalTime = 0;
+		double totalOverheadMessage = 0;
 		
 		float totalStartUpTimePc = 0;
 		int numberPlayerPcNode = 0;
@@ -78,6 +94,11 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		
 		int out_degree_pcNode = 0;//new ArrayList<Integer>();
 		int out_degree_pcNodeHigh = 0;
+		int out_degree_superNode = 0;
+		
+		double uploadPc = 0.0;
+		double uploadHigh = 0.0;
+		double uploadSuper = 0.0;
 		
 		float PctotalReceivedChunkReal = 0;
 		double PctotalDeadlineNumberReal = 0;
@@ -95,6 +116,9 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		
 		//Variabili per calcolare le deadLine
 		double totalDeadlineNumber = 0;
+		
+		double totalInternalISP = 0;
+		double totalExternalISP = 0;
 		
 		CoolStreamingServerPeer serverPeer = (CoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
 		
@@ -162,6 +186,10 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 			
 			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);						
 			
+			totalOverheadMessage += peer.getOverhead();
+			totalInternalISP += peer.getExchangeInternalISP();
+			totalExternalISP += peer.getExchangeExternalISP();
+			
 			if(peer.getStartUpTime() != 0)
 			{
 				if(peer.getId().equals("pcNode"))
@@ -196,24 +224,60 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 				//Incremento il numero di nodi instabili
 				if(peer.getId().equals("pcNode"))
 				{	
-				if( nodeContinuityIndex <= 95.0 && nodeContinuityIndex !=0)
+				if( nodeContinuityIndex <= 90.0 && nodeContinuityIndex !=0)
 					unstablesNode90pcNode ++;
-								
+		
+				uploadPc = peer.getUploadSpeed();
+				
+					if(peer.getIsp() == 0)
+						PcISP0++;						
+					if(peer.getIsp() == 1)
+						PcISP1++;	
+					if(peer.getIsp() == 2)
+						PcISP2++;
+				
 				//for(int ind=0; ind<peer.getK_value();ind++)										{
 					out_degree_pcNode += peer.getActiveConnection();
 				//System.out.println("Pc "+ peer.getServedPeers2().get(ind).size());
 				//	}
 				}
 				
-				else 
+				if(peer.getId().equals("pcNodeHigh")) 
 				{									
 				//	for(int ind=0; ind<peer.getK_value();ind++)	{
 					//	System.out.println("High "+ peer.getServedPeers2().get(ind).size());
 						out_degree_pcNodeHigh += peer.getActiveConnection();
 				//	}
+						uploadHigh = peer.getUploadSpeed();
 						
-					if( nodeContinuityIndex <= 95.0 && nodeContinuityIndex !=0)
+						if(peer.getIsp() == 0)
+							HighISP0++;						
+						if(peer.getIsp() == 1)
+							HighISP1++;	
+						if(peer.getIsp() == 2)
+							HighISP2++;	
+						
+					if( nodeContinuityIndex <= 90.0 && nodeContinuityIndex !=0)
 						unstablesNode90pcNodeHigh ++;
+				}	
+				
+				if(peer.getId().equals("superNode")) 
+				{									
+				//	for(int ind=0; ind<peer.getK_value();ind++)	{
+					//	System.out.println("High "+ peer.getServedPeers2().get(ind).size());
+						out_degree_superNode += peer.getActiveConnection();
+				//	}
+						uploadSuper = peer.getUploadSpeed();
+						
+						if(peer.getIsp() == 0)
+							SuperISP0++;						
+						if(peer.getIsp() == 1)
+							SuperISP1++;	
+						if(peer.getIsp() == 2)
+							SuperISP2++;
+						
+					if( nodeContinuityIndex <= 90.0 && nodeContinuityIndex !=0)
+						unstablesNode90superNode++;
 				}	
 					//System.out.println(out_degree);
 //				if( nodeContinuityIndex <= 80.0 )
@@ -249,6 +313,8 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 			if(peer.getId().equals("pcNodeHigh"))
 				totalPcHighReceivedChunk = totalPcHighReceivedChunk + peer.getArrivalTimes().size();
 			
+			if(peer.getId().equals("superNode"))
+				totalSuperNodeReceivedChunk = totalSuperNodeReceivedChunk + peer.getArrivalTimes().size();
 			
 			for( int k = 0 ; k < peer.getArrivalTimes().size(); k++ ){
 				
@@ -261,6 +327,9 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 						
 				if(peer.getId().equals("pcNodeHigh"))
 					totalPcHighArrivalTime = totalPcHighArrivalTime + localValue;
+				
+				if(peer.getId().equals("superNode"))
+					totalSuperNodeArrivalTime = totalSuperNodeArrivalTime + localValue;
 			}
 			
 			//CALCOLO PERCENTUALI CONNESSIONI ATTIVE
@@ -277,6 +346,12 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 			{
 				activeConnectionPercentTotalPcNodeHigh = activeConnectionPercentTotalPcNodeHigh + ( (double)peer.getActiveConnection());
 				totalPcNodeHigh++;
+			}
+			
+			if(peer.getId().equals("superNode"))
+			{
+				activeConnectionPercentTotalSuperNode = activeConnectionPercentTotalSuperNode + ( (double)peer.getActiveConnection());
+				totalSuperNode++;
 			}
 			
 		}
@@ -383,15 +458,33 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("Average Start Up Time High: " + ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20);
 		getLogger().info("------------------------------------------------------------------------");
 			
-		
-				
+		fileValue.add(new LoggerObject("Tot Pc in Isp 0", PcISP0));
+		fileValue.add(new LoggerObject("Tot High Pc in Isp 0", HighISP0));
+		fileValue.add(new LoggerObject("Tot Super in Isp 0", SuperISP0));
+		fileValue.add(new LoggerObject("Tot Pc in Isp 1", PcISP1));
+		fileValue.add(new LoggerObject("Tot High Pc in Isp 1", HighISP1));
+		fileValue.add(new LoggerObject("Tot Super in Isp 1", SuperISP1));
+		fileValue.add(new LoggerObject("Tot Pc in Isp 2", PcISP2));
+		fileValue.add(new LoggerObject("Tot High Pc in Isp 2", HighISP2));
+		fileValue.add(new LoggerObject("Tot Super in Isp 2", SuperISP2));
+		fileValue.add(new LoggerObject("Overhead [Byte]%", (double)(totalOverheadMessage)/((totalInternalISP + totalExternalISP)*1365)));
+		fileValue.add(new LoggerObject("Average bandwidth", (((double)totalPcNode*uploadPc + (double)totalPcNodeHigh*uploadHigh + (double)totalSuperNode*uploadSuper)) / (totalSuperNode+totalPcNodeHigh+totalPcNode)));
+		fileValue.add(new LoggerObject("Overhead message%", (double)totalOverheadMessage/(totalInternalISP + totalExternalISP)));
+		fileValue.add(new LoggerObject("Exchange Internal ISP %", (double)totalInternalISP/(totalInternalISP + totalExternalISP)*100));
+		fileValue.add(new LoggerObject("Exchange External ISP %", (double)totalExternalISP/(totalInternalISP + totalExternalISP)*100));
+		fileValue.add(new LoggerObject("Total PC Node", (double) totalPcNode ));
+		fileValue.add(new LoggerObject("Total PC Node High", (double) totalPcNodeHigh ));
+		fileValue.add(new LoggerObject("Total SuperNode", (double) totalSuperNode ));
+		fileValue.add(new LoggerObject("Average Start Up Time Pc", ((totalStartUpTimePc/((double)( numberPlayerPcNode))))/20));
+		fileValue.add(new LoggerObject("Average Start Up Time High" , ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20));
 		fileValue.add(new LoggerObject("Continuity Index", ((totalArrivedChunk-totalDeadlineNumber)/totalArrivedChunk)*100.0));
 		fileValue.add(new LoggerObject("Duplicate %", (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0));
-		fileValue.add(new LoggerObject("Total Node", (double)( totalPcNode + totalPcNodeHigh)));
+		fileValue.add(new LoggerObject("Total Node", (double)( totalPcNode + totalPcNodeHigh + totalSuperNode)));
 		fileValue.add(new LoggerObject("Total Disconnected Node", serverPeer.getDisconnectedNodes()));
-		fileValue.add(new LoggerObject("Average Out-Degree pcNode:", out_degree_pcNode/(totalPcNode)));
-		fileValue.add(new LoggerObject("Average Out-Degree pcNodeHigh:",out_degree_pcNodeHigh/(totalPcNodeHigh)));
-		fileValue.add(new LoggerObject("Unstable Node", unstablesNode90pcNode + unstablesNode90pcNodeHigh));
+		fileValue.add(new LoggerObject("Average Out-Degree superNode", out_degree_superNode/(totalSuperNode)));
+		fileValue.add(new LoggerObject("Average Out-Degree pcNode", out_degree_pcNode/(totalPcNode)));
+		fileValue.add(new LoggerObject("Average Out-Degree pcNodeHigh",out_degree_pcNodeHigh/(totalPcNodeHigh)));
+		fileValue.add(new LoggerObject("Unstable Node", unstablesNode90pcNode + unstablesNode90pcNodeHigh + unstablesNode90superNode));
 		
 		
 				//for(int vt = 10 ; vt < 100 ; vt = vt +10 )
