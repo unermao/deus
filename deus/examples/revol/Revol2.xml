@@ -245,7 +245,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="20000001" seed="567891234"> 
+	<aut:engine maxvt="20000001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="twospeedspoisson" />
