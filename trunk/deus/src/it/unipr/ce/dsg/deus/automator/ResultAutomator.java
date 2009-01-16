@@ -162,7 +162,7 @@ public class ResultAutomator {
 	 * @param averageFileName
 	 * @throws IOException
 	 */
-	public void resultsVar(String fileName, String averageFileName) throws IOException{
+	public void resultsVar(String fileName, String fileName2, String averageFileName) throws IOException{
 		
 		this.readedResults.clear();
 		this.finalResults.clear();
@@ -210,12 +210,17 @@ public class ResultAutomator {
 		 try {
 			if(new File(fileName).exists())
 				 new File(fileName).delete();
-			 
+			
+			if(new File(fileName2).exists())
+				 new File(fileName2).delete();
+			
 			FileOutputStream file = new FileOutputStream(fileName);
+			FileOutputStream file2 = new FileOutputStream(fileName2);
 			 		
 			for( int i = 0 ; i < this.finalResults.size(); i++ ){
 			
 			String outputLine = "VT=" + this.finalResults.get(i).getVT() + "\n";
+			String outputLine2 = "VT=" + this.finalResults.get(i).getVT() + "\n";
 			
 			for(int resultIndex = 0 ; resultIndex < this.finalResults.get(i).getVtResultsList().size(); resultIndex++ )
 			{
@@ -225,12 +230,16 @@ public class ResultAutomator {
 				String name = result.getName();
 				Double value= result.getValue()/((double)this.filesList.size());
 				
+				outputLine2 = outputLine2 + name + "=" + Math.sqrt(value) + "\n";
 				outputLine = outputLine + name + "=" + value + "\n";
 			}
 			
 			try {
+				
 				file.write(outputLine.getBytes());
+				file2.write(outputLine2.getBytes());
 				outputLine = "";
+				outputLine2 = "";
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

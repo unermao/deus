@@ -201,14 +201,16 @@ public class Runner implements Runnable{
 				 
 			String averageFileName = "";
 			String varFileName = "";
+			String sqrtvarFileName = "";
 
 			//Calcola la media e la varianza ( con i vari seed ) dei dati presenti nei file di log
 			 try {
 					resultAutomator.readTotalResults();
 					averageFileName = "./results//Average_" + simulations.get(j).getSimulationName()+"-"+k;
 					varFileName = "./results//Var_" + simulations.get(j).getSimulationName()+"-"+k;
+					sqrtvarFileName = "./results//SqrtVar_" + simulations.get(j).getSimulationName()+"-"+k;
 					resultAutomator.resultsAverage(averageFileName);
-					resultAutomator.resultsVar(varFileName,averageFileName);
+					resultAutomator.resultsVar(varFileName,sqrtvarFileName,averageFileName);
 				} 
 			 catch (IOException e) {
 					e.printStackTrace();
