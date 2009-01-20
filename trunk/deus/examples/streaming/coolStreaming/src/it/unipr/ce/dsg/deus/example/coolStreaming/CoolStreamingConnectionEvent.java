@@ -66,31 +66,57 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 		
 		
 		if(associatedStreamingNode.getId().equals("pcNode")){
-			// con probablità 0.84 va in ISP 0
-			// con probablità 0.16 va in ISP 1
+			// con probablità 0.84 va in ISP 0 / 0.77
+			// con probablità 0.16 va in ISP 1 / 0.23
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
-			if( random < 84 )
+			
+//			if( random < 84 )
+//				associatedStreamingNode.setIsp(0);
+//			else associatedStreamingNode.setIsp(1);
+			
+			
+			if( random < 73 )
 				associatedStreamingNode.setIsp(0);
 			else associatedStreamingNode.setIsp(1);
+			
+//			if(random < 70)
+//			associatedStreamingNode.setIsp(0);
+//		else if(random >= 70 && random <= 98)
+//			associatedStreamingNode.setIsp(1);
+//		else associatedStreamingNode.setIsp(2);
+			
 		}
 		if(associatedStreamingNode.getId().equals("pcNodeHigh")){			
-			// con probablità 0.78 va in ISP 0
-			// con probablità 0.21 va in ISP 1
-			// con probablità 0.01 va in ISP 2
+			// con probablità 0.78 va in ISP 0 / 0.58
+			// con probablità 0.21 va in ISP 1 / 0.41
+			// con probablità 0.01 va in ISP 2 / 0.01
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
-			if(random < 78)
+			
+//			if(random < 78)
+//				associatedStreamingNode.setIsp(0);
+//			else if(random >= 78 && random <= 98)
+//				associatedStreamingNode.setIsp(1);
+//			else associatedStreamingNode.setIsp(2);
+			
+			
+			if(random < 53)
 				associatedStreamingNode.setIsp(0);
-			else if(random >= 78 && random <= 98)
+			else //if(random >= 53 )
 				associatedStreamingNode.setIsp(1);
-			else associatedStreamingNode.setIsp(2);
+			//else associatedStreamingNode.setIsp(2);
+			
 		}
 		if(associatedStreamingNode.getId().equals("superNode")){
-			// con probablità 0.93 va in ISP 1
-			// con probablità 0.07 va in ISP 2
+			// con probablità 0.93 va in ISP 1 / 0.73
+			// con probablità 0.07 va in ISP 2 / 0.27
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
-			if(random < 93)
-				associatedStreamingNode.setIsp(1);
-			else associatedStreamingNode.setIsp(2);
+			
+//			if(random < 93)
+//				associatedStreamingNode.setIsp(1);
+//			else associatedStreamingNode.setIsp(2);
+			
+			
+			associatedStreamingNode.setIsp(2);
 		}
 		//TODO ISP Decidere come assegnare i vicini in base all'ISP e alla città
 		if(associatedStreamingNode.isIncentiveBased())
@@ -230,7 +256,9 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 					 CoolStreamingPeer peerApp = (CoolStreamingPeer)appList.get(j);	    					 
 					 
 					 // Ordino in base alla presenza del chunk tra i miei vicini
-					 if( calculateGeographicDistance(associatedStreamingNode,peer) <= calculateGeographicDistance(associatedStreamingNode,peerApp)/* peer + vicino di peerApp*/)
+					 if( calculateGeographicDistance(associatedStreamingNode,peer) <= calculateGeographicDistance(associatedStreamingNode,peerApp)
+						&& peer.getUploadSpeed()/peer.getActiveConnection() >= peerApp.getUploadSpeed()/peerApp.getActiveConnection() 	 
+					 /* peer + vicino di peerApp*/)
 					 {	 					
 						 appList.add(j, peer);//add(j,chunkOriginal);
 						 break;

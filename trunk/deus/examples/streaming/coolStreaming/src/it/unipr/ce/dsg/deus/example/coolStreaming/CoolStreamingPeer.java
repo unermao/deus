@@ -1137,6 +1137,8 @@ public void gossipProtocol2(float triggeringTime,ArrayList<Peer> nodes){
  */
 public void gossipProtocol(CoolStreamingPeer node, int value){				
 	
+	boolean good = false;
+	
 	if(!this.equals(node))
 	{
 		if(value == -1)
@@ -1157,31 +1159,27 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		{
 		if(this.getNeighbors().size()>0)	
 		for(int k = this.getNeighbors().size() - 1; k >= 0; k-- )
-		{
-			//if(!this.getNeighbors().contains(node) && !this.getServerByPeer().contains((CoolStreamingPeer)this.getNeighbors().get(k)))
+		{			
+
 //			if(this.isIncentiveBased())
-//			{
-//			 Peer best = this.choiseBest(node);
-//			 if(((CoolStreamingPeer)best).getPlayer().size()>0)	
-//				if(((CoolStreamingPeer)best).getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
-//						&& ((CoolStreamingPeer)best).getUploadSpeed()/(((CoolStreamingPeer)best).getActiveConnection()+1) >((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection()
-//						&& ((CoolStreamingPeer)best).calculateGeographicDistance(this,(CoolStreamingPeer)best) > ((CoolStreamingPeer)this.getNeighbors().get(k)).calculateGeographicDistance(this, (CoolStreamingPeer)this.getNeighbors().get(k)))
-//					{
+//			if(node.getPlayer().size()>0)	
+//				if( this.calculateGeographicDistance(this, node) <= this.calculateGeographicDistance(this,(CoolStreamingPeer)this.getNeighbors().get(k)) 
+//						&&	node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
+//				{					
 //					this.getNeighbors().remove(this.getNeighbors().get(k));
-//					this.getNeighbors().add(best);
-//					}
-//			}
+//					this.getNeighbors().add(node);
+//					break;
+//				}
+//			if(!this.isIncentiveBased())
+				if(node.getPlayer().size()>0)	
+					if(node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
+					{				
+						this.getNeighbors().remove(this.getNeighbors().get(k));
+						this.getNeighbors().add(node);
+						good = true;
+						break;
+					}
 			
-//			else
-//			{
-			if(node.getPlayer().size()>0)	
-				if(node.getPlayer().contains(this.getIndexOfLastReceivedChunk()) 
-						&& node.getUploadSpeed()/(node.getActiveConnection()+1) >((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
-				{
-					this.getNeighbors().remove(this.getNeighbors().get(k));
-					this.getNeighbors().add(node);
-					break;
-				}
 			}
 		//}
 		}
@@ -1197,16 +1195,25 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 	if(this.getNeighbors().size() < param)
 		param = this.getNeighbors().size();	
 		
+	
 	for(int i = 0 ; i < param ; i++)
 	{
 		CoolStreamingPeer peer = (CoolStreamingPeer)this.getNeighbors().get(Engine.getDefault().getSimulationRandom().nextInt(this.getNeighbors().size()));	
 
+		//MODIFICARE GOSSIP LO RIINVIO SOLO SE MI è SERVITO
+		
 		//AGGINGURE NUOVO GOSSIP
 		if(this.isIncentiveBased())
 		{
+//			if(good)
+//			{
+//			  this.overhead++;
+//			  peer.gossipProtocol(node,value);				
+//			}
+			
 			if(peer.getServedPeers2().size() > 3)
 			{
-			this.overhead++ ;
+			this.overhead++;
 			peer.gossipProtocol(node,value);
 			}
 		}
@@ -2348,6 +2355,12 @@ public boolean playVideoBufferCoolStreaming(){
 //    				 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
 //    			  }
         	
+        	if(this.getK_buffer().get(i).size()==0)
+        		{
+        		//this.first=true;
+        		this.stop++;
+        		}
+        	
         	this.choiseNewProvider(i);
         	
       //  	System.out.println(app);
@@ -2479,9 +2492,9 @@ public boolean playVideoBufferCoolStreaming(){
 									
 			int initChunk = this.indexOfLastPlayedChunk;
 			
-			System.out.println("BUFFERING:.....");
+			//System.out.println("BUFFERING:.....");
 			
-		//	this.first = true;
+			this.first = true;
 			
 			
 //			System.out.println("last play 2 " + this.indexOfLastPlayedChunk + " deadline " + this.deadlineNumber);
@@ -2569,7 +2582,7 @@ public boolean playVideoBufferCoolStreaming(){
 		//	System.out.println( this + " " + this.getNodeDepth() + " PREGHIAMO!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			
 		//	System.out.println("last play 2 " + this.indexOfLastPlayedChunk + " deadline " + this.deadlineNumber);
-			this.stop ++;
+			//this.stop ++;
 		}
 }
 	//Non posso riprodurre
@@ -2584,7 +2597,7 @@ public boolean playVideoBufferCoolStreaming(){
 		
 		if(this.getK_buffer().get(i).size()==0 && this.getServerByPeer().get(i) != null && app!=null)
 		{
-		 this.stop++;	
+		// this.stop++;	
 		// this.first = true;	
 		 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
 		 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
@@ -3433,6 +3446,14 @@ public boolean playVideoBufferCoolStreaming(){
 
 	public void setOverhead(int overhead) {
 		this.overhead = overhead;
+	}
+
+	public int getStop() {
+		return stop;
+	}
+
+	public void setStop(int stop) {
+		this.stop = stop;
 	}
 
 	
