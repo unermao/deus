@@ -192,6 +192,7 @@ public void initialize() throws InvalidParamsException {
 		clone.player = new ArrayList<CoolStreamingVideoChunk>();
 		clone.k_buffer = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();
 		clone.servedPeers = new ArrayList<ArrayList<CoolStreamingPeer>>();
+		clone.servedPeers = new ArrayList<ArrayList<CoolStreamingPeer>>();
 		clone.serverByPeer = new ArrayList<CoolStreamingPeer>();
 		clone.serverByServer = new ArrayList<CoolStreamingServerPeer>();
 		clone.arrivalTimes = new ArrayList<Float>(); 
@@ -1137,15 +1138,21 @@ public void gossipProtocol2(float triggeringTime,ArrayList<Peer> nodes){
  */
 public void gossipProtocol(CoolStreamingPeer node, int value){				
 	
-	boolean good = false;
+	int good = 0;
+	
+//	System.out.println("this" + this);
+//	System.out.println("node" + node);
 	
 	if(!this.equals(node))
 	{
+		
 		if(value == -1)
-			this.getNeighbors().remove(node);
+			this.getNeighbors().remove(node);					
 		
 		else if (node!=null)
-		{		
+		{
+			
+		
 		if(this.getNeighbors().size() < this.getMaxPartnersNumber())
 			{
 //			if(this.isIncentiveBased()){					
@@ -1171,12 +1178,13 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 //					break;
 //				}
 //			if(!this.isIncentiveBased())
-				if(node.getPlayer().size()>0)	
+				//if(node.getPlayer().size()>0)	
 					if(node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
-					{				
+					{		
+						//System.out.println("CACA");
 						this.getNeighbors().remove(this.getNeighbors().get(k));
 						this.getNeighbors().add(node);
-						good = true;
+						good = 1;
 						break;
 					}
 			
@@ -1186,15 +1194,20 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		}
 	}
 	
+		
+	
 	if(this.gossipNode != node)
 	{
 	this.gossipNode = node;
 	
-	int param = Engine.getDefault().getSimulationRandom().nextInt(6); 
+	int param = 4;//Engine.getDefault().getSimulationRandom().nextInt(6); 
+	
+	//System.out.println(param);
 	
 	if(this.getNeighbors().size() < param)
 		param = this.getNeighbors().size();	
 		
+	//System.out.println(param);
 	
 	for(int i = 0 ; i < param ; i++)
 	{
@@ -1205,17 +1218,17 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		//AGGINGURE NUOVO GOSSIP
 		if(this.isIncentiveBased())
 		{
-//			if(good)
-//			{
-//			  this.overhead++;
-//			  peer.gossipProtocol(node,value);				
-//			}
-			
-			if(peer.getServedPeers2().size() > 3)
-			{
-			this.overhead++;
-			peer.gossipProtocol(node,value);
+			if(good==1 || this.equals(node))
+			{				
+			  this.overhead++;
+			  peer.gossipProtocol(node,value);				
 			}
+			
+//			if(peer.getServedPeers2().size() > 3)
+//			{				
+//			this.overhead++;
+//			peer.gossipProtocol(node,value);
+//			}
 		}
 		// Vecchio gossip
 		else
