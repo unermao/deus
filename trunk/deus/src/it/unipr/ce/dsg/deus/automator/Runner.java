@@ -903,7 +903,7 @@ private  void writeXmlProcess(MyObjectProcess processToWrite) throws IOException
 	
 		NodeList process = doc.getElementsByTagName("aut:process");
 		for(int i = 0 ; i < process.getLength(); i++ )
-		{	
+		{				
 			 if(process.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(processToWrite.getObjectName()))
 				{				
 				 for(int l=0; l<processToWrite.getObjectParam().size(); l++)
@@ -1083,8 +1083,8 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 				    	}
 				    }				  							
 				  }
-				} 
-			
+				} 						
+				
 				if(simulation.get(j).getProcess().size()>0)
 				{
 					//simul.write(("\n" + simulation.get(j).getSimulationName() + "-" + k + "\n").getBytes());	
