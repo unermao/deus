@@ -117,6 +117,8 @@ public class CoolStreamingPeer extends Peer {
 	private boolean first = true;
 	private int stop = 0;
 	private ArrayList<Boolean> cambio = new ArrayList<Boolean>();
+	private int firstChunk;
+	
 	private static ArrayList<CoolStreamingPeer> updated = new ArrayList<CoolStreamingPeer>();
 	
 	public CoolStreamingPeer(String id, Properties params, ArrayList<Resource> resources)
@@ -925,53 +927,38 @@ public void initialize() throws InvalidParamsException {
 
 	
 	
-public void addNewVideoResourceCoolStreaming(CoolStreamingVideoChunk newVideoRes, float triggeringTime){
-		
-	//System.out.println("Aggiungo risorsa");
-//       if(this.getKey() == 755464161 )
-//		{
-//		System.out.println("Arrivato pezzo " + newVideoRes.getChunkIndex() + " da " + newVideoRes.getSourceNode());
-//		}
-	
+public void addNewVideoResourceCoolStreaming(CoolStreamingVideoChunk newVideoRes, float triggeringTime){		
 	
 		//Salvo il tempo in cui e' arrivato il chunk
 		float arrivalValue = triggeringTime - newVideoRes.getOriginalTime(); 
 		this.arrivalTimes.add(arrivalValue);					
 		
+		if(this.firstChunk != 0)
+			firstChunk = newVideoRes.getChunkIndex();
 		
 		int index = this.calculate_buffer_index(newVideoRes);		
 		
 		//Controllo se si e' verificata un eventuale deadline
 		if( newVideoRes.getChunkIndex() <= this.indexOfLastPlayedChunk )
-			this.missingChunkNumber--;
+			this.missingChunkNumber--;			
 		
 		else
 		if(!this.k_buffer.get(index).contains(newVideoRes))
 		{
-			//if(this.getKey() == 1425199765 )
-				//System.out.println("Aggiungo pezzo " + newVideoRes.getChunkIndex());
 			if(this.getLastIndexOfChunk().get(index) < newVideoRes.getChunkIndex())
 				this.getLastIndexOfChunk().set(index, newVideoRes.getChunkIndex());
 			//Incremento il numero totale di chunk ricevuti
-			this.totalChunkReceived ++;
+			this.totalChunkReceived++;
 		
 			//Inserisco il chunk nel k_buffer appropriato e lo ordino
 			this.k_buffer.get(index).add(newVideoRes);							
 			this.k_buffer.get(index).addAll(this.sort(this.getK_buffer().get(index)));
-			//if(this.getKey() == 863778027)
-			//this.printK_Buffer();
+		
 		}
 		else{
-//			if(this.getKey() == 1439607443)
-//		System.out.println(this + " Doppio : " + newVideoRes.getChunkIndex() +" da :" + newVideoRes.getSourceNode());
 			this.duplicateChunkNumber ++; //Incremento il numero di duplicati		
 		}
-		
-		//if(this.getKey() == 1437437965)
-			//this.printK_Buffer();
-		
 	}
-
 
 
 /**
@@ -980,7 +967,6 @@ public void addNewVideoResourceCoolStreaming(CoolStreamingVideoChunk newVideoRes
  */
 public void updateParentsListCoolStreaming(float triggeringTime){
 		
-	//System.out.println("Aggiorno parents");
 	if(!this.isInit_bool())
 		this.init();
 	
@@ -1168,17 +1154,18 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 		for(int k = this.getNeighbors().size() - 1; k >= 0; k-- )
 		{			
 
-//			if(this.isIncentiveBased())
-//			if(node.getPlayer().size()>0)	
-//				if( this.calculateGeographicDistance(this, node) <= this.calculateGeographicDistance(this,(CoolStreamingPeer)this.getNeighbors().get(k)) 
-//						&&	node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
-//				{					
-//					this.getNeighbors().remove(this.getNeighbors().get(k));
-//					this.getNeighbors().add(node);
-//					break;
-//				}
-//			if(!this.isIncentiveBased())
-				//if(node.getPlayer().size()>0)	
+			if(this.isIncentiveBased())
+			//if(node.getPlayer().size()>0)	
+				if( this.calculateGeographicDistance(this, node) <= this.calculateGeographicDistance(this,(CoolStreamingPeer)this.getNeighbors().get(k)) 
+						&&	node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
+				{					
+					this.getNeighbors().remove(this.getNeighbors().get(k));
+					this.getNeighbors().add(node);
+					good = 1;
+					break;
+				}
+			if(!this.isIncentiveBased())
+//				if(node.getPlayer().size()>0)	
 					if(node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection())
 					{		
 						//System.out.println("CACA");
@@ -2111,92 +2098,11 @@ public boolean playVideoBufferCoolStreaming(){
 			 this.getPlayer().add(this.getK_buffer().get(i).get(j));
 			}
 	
-	this.getPlayer().addAll(this.sort(this.getPlayer()));
-	
-	int difftot = 0;
-	
-	/*if(this.getKey() == 747329007)
-	{
-		this.printVideoBuffer(this.getPlayer());
-		System.out.println(continuityTrialCount);
-	}*/
-	
-	//this.getPlayer().clear();
-	
-	//Se il numero di tentativi di trovare 5 chunk continui e' fallito
-/*	if( continuityTrialCount >= 1 )
-	{
-		//Azzero il contatore
-		continuityTrialCount = 0;						
+	this.getPlayer().addAll(this.sort(this.getPlayer()));	
 		
-		ArrayList<CoolStreamingVideoChunk> appList = new ArrayList<CoolStreamingVideoChunk>();
-		appList.addAll(this.player);
-		
-		//Rimuovo i segmenti non continui all'interno dei primi 5 e dopo procedo normalmente nella ricerca
-		for(int index = 0 ; index < 5 ; index++){
-			
-			int diff = appList.get(index+1).getChunkIndex() - appList.get(index).getChunkIndex();
-		
-			//diff = diff/this.k_value;
-			
-			//Se la diff e' maggiore di 1 significa che non ho continuita' e aspetto prima di riprodurre
-			if( diff > 1 ){
-				
-				difftot = difftot + diff - 1 ;
-				//System.out.println("TROPPI TENTATIVI! RIMUOVO:" + this.videoResource.get(index).getChunkIndex());
-				
-				//Rimuovo l'elemento non continuo
-			//	int a = this.calculate_buffer_index(appList.get(index));							
-			//	this.getK_buffer().get(a).remove(appList.get(index));
-				
-			//	this.indexOfLastPlayedChunk = appList.get(index).getChunkIndex();
-								
-			//	this.player.remove(index);
-				//Incremento il numero di missing, ovvero di volte che sono costretto a rimuovere dei segmenti per mancanza di continuita'
-			//	this.missingChunkNumber += diff - 1;	
-			
-				//Incremento il numero di deadline in quanto non posso riprodurre questi segmenti per mancanza di continuitˆ
-			//	this.deadlineNumber += diff - 1 ;
-			}				
-			
-		}
-		
-		this.indexOfLastPlayedChunk = this.player.get(4).getChunkIndex();
-		
-	
-		//this.printK_Buffer();
-			//System.out.println(difftot);
-			
-	//	}
-		
-		
-		for(int k = 0 ; k < 5 ; k++)
-		{	
-		//	list = list + "," + this.player.get(0).getChunkIndex();
-			//System.out.println("Rimuovo");
-			int a = this.calculate_buffer_index(this.player.get(0));							
-			this.getK_buffer().get(a).remove(this.player.get(0));
-			this.player.remove(0);												
-		}
-	
-		this.deadlineNumber += difftot;
-		this.missingChunkNumber += difftot;
-		
-		//difftot = 0;
-	}
-	*/
-	
-	//System.out.println(this.player.size());
-	//Se ci sono un numero sufficente di elementi nel buffer
-//	if(this.getKey() == 860184998)
-//	if( this.key == 820502299)
-//	{
-//	//	this.printFornitori();
-//		this.printK_Buffer();
-//	}
 	if(first)
 	{
-	if( this.player.size() >= 5*this.getK_value() ){			
+	if( this.player.size() >= 4*this.getK_value() ){			
 		
 //		if(this.getK_buffer().get(0).size()>10 && this.getK_buffer().get(1).size()>10 
 //				&& this.getK_buffer().get(2).size()>10 && this.getK_buffer().get(3).size()>10)
@@ -2204,87 +2110,13 @@ public boolean playVideoBufferCoolStreaming(){
 		if(this.startUpTime == 0)
 			this.startUpTime = Engine.getDefault().getVirtualTime() - this.connectionTime;
 		
-		first = false;
-		/*
-		String origin = "";
-		for(int k = 0 ; k < 5 ; k++)
-			origin = origin + "," + this.videoResource.get(k).getChunkIndex();
-			
-		System.out.println("Id: " + this.getKey() + " Primi Elementi:" + origin);
-		*/
-		
-		//Verifichiamo la continuita' dei primi elementi che voglio mandare in esecuzione
-//		for(int index = 0 ; index < 4 ; index++){
-//			
-//			int diff = this.player.get(index+1).getChunkIndex() - this.player.get(index).getChunkIndex();
-//		
-//			//diff = diff/this.k_value;
-//			
-//			//Se la diff e' maggiore di 1 significa che non ho continuita' e aspetto prima di riprodurre
-//			if( diff > 1 ){
-//					
-//				difftot = difftot + diff - 1 ;
-//	//			difftot = difftot + diff - 1 ;		
-//				/*	String list = "";
-//					
-//					for(int k = 0 ; k < 5 ; k++)
-//						list = list + "," + this.player.get(k).getChunkIndex();*/
-//						
-//				//	System.out.println("Attendo ! Id: " + this.getKey() + " Primi Elementi:" + list + "\n");
-//					
-//					//Incremento il numero di tentativi di trovare delle sequenze continue
-//					//continuityTrialCount  ++;
-//					
-//					//return false;
-//			}
-//		}
-//				
+		first = false;			
 		
 		
 		//Se sono arrivato qua ho la continuita' del primo blocco di elementi e posso riprodurli		
-		this.indexOfLastPlayedChunk = this.player.get(0).getChunkIndex();
-		
-		//Memorizzo l'ultimo indice riprodotto		
-		//this.indexOfLastPlayedChunk = this.player.get((5-difftot)-1).getChunkIndex();				
-		
-		//this.deadlineNumber += difftot;
-		//this.missingChunkNumber += difftot;
+		this.indexOfLastPlayedChunk = this.player.get(0).getChunkIndex();			
 		
 		int initChunk = this.indexOfLastPlayedChunk; 
-		
-//		if(this.getKey() == 820502299)
-//			System.out.println("init " + initChunk);
-		
-		//String list = "";		
-		
-//		for(int k = 0 ; k < 5 ; k++)
-//		{	
-//			//list = list + "," + this.player.get(0).getChunkIndex();
-//			//System.out.println("Rimuovo");			
-//			int a = this.calculate_buffer_index(this.player.get(0));
-//		
-//			int diff = this.player.get(0).getChunkIndex() - this.indexOfLastPlayedChunk;
-//			
-////			if(this.getKey() == 820502299)
-////				System.out.println("diff " + (diff));
-//			
-//			if( this.player.get(0).getChunkIndex() - initChunk < 5 )
-//			{	
-//				if((diff ) != 0)
-//				{
-//				this.deadlineNumber += (diff );
-//				this.missingChunkNumber +=(diff);
-//				this.indexOfLastPlayedChunk += (diff );
-//				}
-//				this.indexOfLastPlayedChunk += (1);
-//				this.getK_buffer().get(a).remove(this.player.get(0));
-//				this.player.remove(0);				
-//			}
-//			
-////			if(this.getKey() == 820502299)
-////				System.out.println("last play " + this.indexOfLastPlayedChunk);
-//			
-//		}				
 		
 		int count = 0;
 		
@@ -2304,170 +2136,30 @@ public boolean playVideoBufferCoolStreaming(){
 			this.player.remove(0);			
 		}
 		
-		this.indexOfLastPlayedChunk = initChunk+5;
-		
-//		if(this.getKey() == 820502299)
-//		{
-//		System.out.println(this.deadlineNumber );
-//		this.printK_Buffer();
-//		}
-		//System.out.println("Riproduco ! Id: " + this.getKey() + " Primi Elementi:" + list + "\n");
+		this.indexOfLastPlayedChunk = initChunk+5;	
 			
 	}
 	
 	}
-	else{
-		//this.printK_Buffer();
-//		if(this.getKey() == 600835441){
-//			this.printFornitori();
-//			this.printK_Buffer();
-//			}
-//
-//		
-//		if(this.getKey() == 865088624){
-//			this.printFornitori();
-//			
-//			for(int i=0;i<this.getK_value();i++)
-//				{
-//				if(this.getServerByPeer().get(i)!=null)
-//					System.out.println( this.getServerByPeer().get(i).getUploadSpeed()/this.getServerByPeer().get(i).getActiveConnection());
-//				//this.getServerByPeer().get(i).printK_Buffer();}
-//				else
-//					System.out.println( this.getServerByServer().get(i).getUploadSpeed()/this.getServerByServer().get(i).getActiveConnection());
-//				
-//				}
-//			this.printK_Buffer();
-//		System.out.println(this.deadlineNumber);	
-//		}
-////			}
-			
+	else{				
 		
-		//this.printK_Buffer();
-        for(int i=0;i<this.getK_value();i++)
-		 //if(this.getK_buffer().get(i).size() < 5 )
+        for(int i=0;i<this.getK_value();i++)		 
 			 {
-			//if(this.getK_buffer().size()>0)
-		//	{
-//           app = this.cchoise()()(;        	
-//        	 if(this.getServerByPeer().get(i) != null && app!=null)				 
-//    			 if(!app.equals(this.getServerByPeer().get(i)))			 
-//    				if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection())  
-//    			  {
-//    	//			if(this.getKey() ==1387824271)	
-//    				//System.out.println(this + " CAMBIO");	
-//    		//		 System.out.println("Vecchio " + (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection());
-//    				 
-//    	//			 this.getServerByPeer().get(i).printK_Buffer();
-////    				 System.out.println("Nuovo " + (double)app.getUploadSpeed()/((double)app.getActiveConnection()+1));
-//
-//    				// System.out.println((double) (0.640/(double)this.k_value));				 				 
-//    				 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
-//    				 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
-//    				 this.getServerByPeer().set(i, null);
-//    				 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
-//    				 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
-//    			  }
         	
         	if(this.getK_buffer().get(i).size()==0)
         		{
-        		//this.first=true;
         		this.stop++;
         		}
         	
         	this.choiseNewProvider(i);
         	
-      //  	System.out.println(app);
-       // 	System.out.println(this.getServerByPeer().get(i));
-			 //this.printFornitori();
-			
-			   
-			 /* else if(this.getServerByServer().get(i) != null) 
-				 if(this.getServerByServer().get(i).getUploadSpeed()/this.getServerByServer().get(i).getActiveConnection() < (double) (0.640/(double)this.k_value))
-					  if(app!=null)
-					//		if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByServer().get(i).getUploadSpeed()/(double)this.getServerByServer().get(i).getActiveConnection())  
-
-				  {				  
-				  this.getServerByServer().get(i).getServedPeers2().get(i).remove(this);
-				  this.getServerByServer().get(i).setActiveConnection(this.getServerByServer().get(i).getActiveConnection()-1);
-				  this.getServerByServer().set(i, null);
-				  this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
-				  this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
-				  }
-				*/		  			  			 
-			 // System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-		
-			  //this.printFornitori();
-			//  this.cambio.set(i, true);
 			 }
 		
 		if(this.player.size()>5){
 			
-			
-//			for(int index = 0 ; index < 5 ; index++){
-//			
-//			int diff = this.player.get(index+1).getChunkIndex() - this.player.get(index).getChunkIndex();
-//		
-//			//diff = diff/this.k_value;
-//			
-//			//Se la diff e' maggiore di 1 significa che non ho continuita' e aspetto prima di riprodurre
-//			if( diff > 1 ){
-//					
-//				difftot = difftot + diff - 1 ;
-//	//			difftot = difftot + diff - 1 ;		
-//				/*	String list = "";
-//					
-//					for(int k = 0 ; k < 5 ; k++)
-//						list = list + "," + this.player.get(k).getChunkIndex();*/
-//						
-//				//	System.out.println("Attendo ! Id: " + this.getKey() + " Primi Elementi:" + list + "\n");
-//					
-//					//Incremento il numero di tentativi di trovare delle sequenze continue
-//					//continuityTrialCount  ++;
-//					
-//					//return false;
-//			}
-//		}
-//		
-		//Se sono arrivato qua ho la continuita' del primo blocco di elementi e posso riprodurli
-			
-			//this.indexOfLastPlayedChunk = this.player.get(0).getChunkIndex();
-					
+								
 			int initChunk = this.indexOfLastPlayedChunk; 
 			
-			//String list = "";	
-//			if(this.getKey() == 820502299)
-//			System.out.println("init 2 " + initChunk);
-			
-//			for(int k = 0 ; k < 5 ; k++)
-//			{	
-//				//list = list + "," + this.player.get(0).getChunkIndex();
-//				//System.out.println("Rimuovo");			
-//				int a = this.calculate_buffer_index(this.player.get(0));
-//			
-////				if(this.getKey() == 820502299)
-////					System.out.println("first 2 " + this.player.get(0).getChunkIndex());
-//				
-//				int diff = this.player.get(0).getChunkIndex() - this.indexOfLastPlayedChunk;
-//				
-////				if(this.getKey() == 820502299)
-////					System.out.println("diff 2 " + (diff ));
-//				
-//				if( this.player.get(0).getChunkIndex() - initChunk < 5 )
-//				{	
-//					if((diff) != 0)
-//					{
-//					this.deadlineNumber += (diff);
-//					this.missingChunkNumber +=(diff);
-//					this.indexOfLastPlayedChunk += ( diff);
-//					}
-//					this.indexOfLastPlayedChunk += (1);
-//					this.getK_buffer().get(a).remove(this.player.get(0));
-//					this.player.remove(0);				
-//				}
-////				if(this.getKey() == 820502299)
-////					System.out.println("last play 2 " + this.indexOfLastPlayedChunk);
-//				
-//			}
 			
 			int count = 0;
 			
@@ -2488,75 +2180,17 @@ public boolean playVideoBufferCoolStreaming(){
 			}	
 			
 			this.indexOfLastPlayedChunk = initChunk + 5;
-//			if(this.getKey() == 1770719569)
-//				{
-//				System.out.println(this.deadlineNumber );
-//				this.printFornitori();
-//				this.printK_Buffer();
-//				}
+
 		}
 		else {
-		//	this.indexOfLastPlayedChunk = this.player.get(this.player.size()-1).getChunkIndex();
-		//	System.out.println(this);
-		//	this.deadlineNumber += (5 - this.player.size());
-		//	this.missingChunkNumber += (5 - this.player.size());
-			//TODO Cercare nuovi fornitori ???????
-			//this.first = true;
 									
 			int initChunk = this.indexOfLastPlayedChunk;
 			
 			//System.out.println("BUFFERING:.....");
 			
-			this.first = true;
+			//this.first = true;
 			
 			
-//			System.out.println("last play 2 " + this.indexOfLastPlayedChunk + " deadline " + this.deadlineNumber);
-//			this.printK_Buffer();
-			//String list = "";	
-//			if(this.getKey() == 820502299)
-//			System.out.println("init 2 " + initChunk);
-			
-//			for(int k = 0 ; k < this.player.size() ; k++)
-//			{	
-//				//list = list + "," + this.player.get(0).getChunkIndex();
-//				//System.out.println("Rimuovo");			
-//				int a = this.calculate_buffer_index(this.player.get(0));
-//			
-////				if(this.getKey() == 820502299)
-////					System.out.println("first 2 " + this.player.get(0).getChunkIndex());
-//				
-//				int diff = this.player.get(0).getChunkIndex() - this.indexOfLastPlayedChunk;
-//				
-////				if(this.getKey() == 820502299)
-//					System.out.println("primo nel buffer " + (this.player.get(0).getChunkIndex() ));
-//					//System.out.println("diff " + (this.player.get(0).getChunkIndex() - initChunk ));
-//					
-//				if( k==0 && diff > 5)
-//				{
-//					this.deadlineNumber += (5);
-//					this.missingChunkNumber +=(5);
-//					this.indexOfLastPlayedChunk += (5);
-//				}
-//				
-//				
-//				
-//				if( this.player.get(0).getChunkIndex() - initChunk <= 5 )
-//				{	
-//					if((diff) != 0)
-//					{
-//					this.deadlineNumber += (diff);
-//					this.missingChunkNumber +=(diff);
-//					this.indexOfLastPlayedChunk += ( diff);
-//					}
-//					this.indexOfLastPlayedChunk += (1);
-//					this.getK_buffer().get(a).remove(this.player.get(0));
-//					this.player.remove(0);				
-//				}
-////				if(this.getKey() == 820502299)
-////					System.out.println("last play 2 " + this.indexOfLastPlayedChunk);
-//				
-//			}
-
 			
 			int count = 0;
 			
@@ -2575,27 +2209,10 @@ public boolean playVideoBufferCoolStreaming(){
 				int a = this.calculate_buffer_index(this.player.get(0));
 				this.getK_buffer().get(a).remove(this.player.get(0));
 				this.player.remove(0);			
-			}
-			
-//			if(this.getKey() == 820502299)			
+			}					
 
 			this.indexOfLastPlayedChunk = initChunk + 5;
 		
-//			
-			
-//			for(int i=0;i<this.getK_value();i++)
-//				{
-//				if(this.getServerByPeer().get(i)!=null){
-//					System.out.println( this.getServerByPeer().get(i).nodeDepth + this.getServerByPeer().get(i).getId());
-//				this.getServerByPeer().get(i).printK_Buffer();}
-//				else{
-//					System.out.println( this.getServerByServer().get(i).getNodeDepth()+  this.getServerByServer().get(i).getId());
-//				this.getServerByServer().get(i).printK_Buffer();}
-//				}
-		//	System.out.println( this + " " + this.getNodeDepth() + " PREGHIAMO!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			
-		//	System.out.println("last play 2 " + this.indexOfLastPlayedChunk + " deadline " + this.deadlineNumber);
-			//this.stop ++;
 		}
 }
 	//Non posso riprodurre
@@ -3467,6 +3084,14 @@ public boolean playVideoBufferCoolStreaming(){
 
 	public void setStop(int stop) {
 		this.stop = stop;
+	}
+
+	public int getFirstChunk() {
+		return firstChunk;
+	}
+
+	public void setFirstChunk(int firstChunk) {
+		this.firstChunk = firstChunk;
 	}
 
 	

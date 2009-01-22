@@ -70,14 +70,14 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.16 va in ISP 1 / 0.23
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-//			if( random < 84 )
-//				associatedStreamingNode.setIsp(0);
-//			else associatedStreamingNode.setIsp(1);
-			
-			
-			if( random < 73 )
+			if( random < 84 )
 				associatedStreamingNode.setIsp(0);
 			else associatedStreamingNode.setIsp(1);
+			
+			
+//			if( random < 73 )
+//				associatedStreamingNode.setIsp(0);
+//			else associatedStreamingNode.setIsp(1);
 			
 //			if(random < 70)
 //			associatedStreamingNode.setIsp(0);
@@ -92,17 +92,17 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.01 va in ISP 2 / 0.01
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-//			if(random < 78)
-//				associatedStreamingNode.setIsp(0);
-//			else if(random >= 78 && random <= 98)
-//				associatedStreamingNode.setIsp(1);
-//			else associatedStreamingNode.setIsp(2);
-			
-			
-			if(random < 53)
+			if(random < 78)
 				associatedStreamingNode.setIsp(0);
-			else //if(random >= 53 )
+			else if(random >= 78 && random <= 98)
 				associatedStreamingNode.setIsp(1);
+			else associatedStreamingNode.setIsp(2);
+			
+			
+//			if(random < 53)
+//				associatedStreamingNode.setIsp(0);
+//			else //if(random >= 53 )
+//				associatedStreamingNode.setIsp(1);
 			//else associatedStreamingNode.setIsp(2);
 			
 		}
@@ -111,12 +111,12 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.07 va in ISP 2 / 0.27
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-//			if(random < 93)
-//				associatedStreamingNode.setIsp(1);
-//			else associatedStreamingNode.setIsp(2);
+			if(random < 93)
+				associatedStreamingNode.setIsp(1);
+			else associatedStreamingNode.setIsp(2);
 			
 			
-			associatedStreamingNode.setIsp(2);
+//			associatedStreamingNode.setIsp(2);
 		}
 		//TODO ISP Decidere come assegnare i vicini in base all'ISP e alla città
 		if(associatedStreamingNode.isIncentiveBased())

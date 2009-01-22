@@ -212,12 +212,9 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 				double nodeContinuityIndex = 0;
 				if(!peer.isFirst()){
 					nodeContinuityIndex = (((double)peer.getTotalChunkReceived()-(double)peer.getDeadlineNumber())/(double)peer.getTotalChunkReceived())*100.0;
-					if(peer.getId().equals("pcNode")){
-					PctotalReceivedChunkReal += peer.getTotalChunkReceived();
-					PctotalDeadlineNumberReal += peer.getDeadlineNumber();}
-					else {
-						HightotalReceivedChunkReal += peer.getTotalChunkReceived();
-					HightotalDeadlineNumberReal += peer.getDeadlineNumber();}
+				if(nodeContinuityIndex < 0)
+					nodeContinuityIndex=0;
+						
 				}
 					
 				totalstop+= peer.getStop();			
