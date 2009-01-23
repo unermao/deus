@@ -185,6 +185,7 @@ public class CoolStreamingServerPeer extends Peer {
 		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
 		time = (chunkMbitSize / minSpeed);
 		
+		float floatTime = (float)( time + Engine.getDefault().getSimulationRandom().nextDouble()*time);
 		//float floatTime = expRandom((float)time);
 		
 		//float floatTime = expRandom((float)7.5);
@@ -231,7 +232,7 @@ public class CoolStreamingServerPeer extends Peer {
 	//	if((int)time*20/2 > 1)
 	//	 sec = Engine.getDefault().getSimulationRandom().nextInt((int)time*20/2);
 		//else sec = 0;
-		return (float) (time*(20)+sec);
+		return (float) (floatTime*(20)+sec);
 		//else return floatTime*7;// + expRandom();
 	}
 	

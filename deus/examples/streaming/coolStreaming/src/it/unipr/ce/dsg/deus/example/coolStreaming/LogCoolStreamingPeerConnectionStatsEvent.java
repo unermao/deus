@@ -97,6 +97,10 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		int out_degree_pcNodeHigh = 0;
 		int out_degree_superNode = 0;
 		
+		int superConnection = 0;
+		int pcConnection = 0;
+		int highConnection = 0 ;
+		
 		double uploadPc = 0.0;
 		double uploadHigh = 0.0;
 		double uploadSuper = 0.0;
@@ -188,6 +192,7 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);						
 			
 			totalOverheadMessage += peer.getOverhead();
+			
 			totalInternalISP += peer.getExchangeInternalISP();
 			totalExternalISP += peer.getExchangeExternalISP();
 			
@@ -235,6 +240,8 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 					if(peer.getIsp() == 2)
 						PcISP2++;
 				
+				pcConnection += peer.getExchangeExternalISP();	
+					
 				//for(int ind=0; ind<peer.getK_value();ind++)										{
 					out_degree_pcNode += peer.getActiveConnection();
 				//System.out.println("Pc "+ peer.getServedPeers2().get(ind).size());
@@ -255,6 +262,8 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 							HighISP1++;	
 						if(peer.getIsp() == 2)
 							HighISP2++;	
+				
+						highConnection += peer.getExchangeExternalISP();	
 						
 					if( (((double)peer.getTotalChunkReceived()-(double)peer.getDeadlineNumber())/(double)peer.getTotalChunkReceived())*100.0 <= 90.0 && (((double)peer.getTotalChunkReceived()-(double)peer.getDeadlineNumber())/(double)peer.getTotalChunkReceived())*100.0 !=0)
 						unstablesNode90pcNodeHigh ++;
@@ -274,6 +283,8 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 							SuperISP1++;	
 						if(peer.getIsp() == 2)
 							SuperISP2++;
+						
+						superConnection += peer.getExchangeExternalISP();
 						
 					if( (((double)peer.getTotalChunkReceived()-(double)peer.getDeadlineNumber())/(double)peer.getTotalChunkReceived())*100.0 <= 90.0 && (((double)peer.getTotalChunkReceived()-(double)peer.getDeadlineNumber())/(double)peer.getTotalChunkReceived())*100.0 !=0)
 						unstablesNode90superNode++;
@@ -468,6 +479,12 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		fileValue.add(new LoggerObject("Tot Super in Isp 2", SuperISP2));
 		fileValue.add(new LoggerObject("Buffering", totalstop/(totalPcNode + totalPcNodeHigh + totalSuperNode)));
 		//Paccheti di overhead di 30byte
+		fileValue.add(new LoggerObject("pcConnection", (double)((pcConnection+highConnection)/totalExternalISP)));
+	//	fileValue.add(new LoggerObject("highConenction", (double)(highConnection/totalPcNodeHigh)));
+		fileValue.add(new LoggerObject("superConnection", (double)(superConnection/totalExternalISP)));
+//		fileValue.add(new LoggerObject("pcConnectionsuPcOver", (double)((pcConnection/totalPcNode))/2.0));
+//		fileValue.add(new LoggerObject("highConenctionOver", (double)((highConnection/totalPcNodeHigh)/2.0)));
+//		fileValue.add(new LoggerObject("superConnectionOver", (double)((superConnection/totalSuperNode)/2.0)));
 		fileValue.add(new LoggerObject("Overhead [Byte]%", (double)((totalOverheadMessage)/((totalInternalISP + totalExternalISP)*682+ totalOverheadMessage) )*100));
 		fileValue.add(new LoggerObject("Average bandwidth", (((double)totalPcNode*uploadPc + (double)totalPcNodeHigh*uploadHigh + (double)totalSuperNode*uploadSuper)) / (totalSuperNode+totalPcNodeHigh+totalPcNode)));
 		fileValue.add(new LoggerObject("Overhead message%", (double)(totalOverheadMessage/(totalInternalISP + totalExternalISP+totalOverheadMessage))*100));
