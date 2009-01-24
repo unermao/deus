@@ -260,7 +260,7 @@ public class CoolStreamingServerPeer extends Peer {
 	//	if((int)time*20/2 > 1)
 	//	 sec = Engine.getDefault().getSimulationRandom().nextInt((int)time*20/2);
 		//else sec = 0;
-		return (float) (floatTime*(20)+sec);
+		return (float) (time*(20)+sec);
 		//else return floatTime*7;// + expRandom();
 	}
 	
