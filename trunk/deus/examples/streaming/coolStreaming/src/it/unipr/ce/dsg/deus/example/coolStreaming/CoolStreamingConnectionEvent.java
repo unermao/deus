@@ -254,7 +254,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 				 for(int j = 0 ; j < appList.size(); j++)
 				 {		    
 					 CoolStreamingPeer peerApp = (CoolStreamingPeer)appList.get(j);	    					 					
-					 
+					  
 					 // Ordino in base alla presenza del chunk tra i miei vicini
 					 if( calculateGeographicDistance(associatedStreamingNode,peer) <= calculateGeographicDistance(associatedStreamingNode,peerApp)
 						&& peer.getUploadSpeed()/peer.getActiveConnection() >= peerApp.getUploadSpeed()/peerApp.getActiveConnection() 	 
