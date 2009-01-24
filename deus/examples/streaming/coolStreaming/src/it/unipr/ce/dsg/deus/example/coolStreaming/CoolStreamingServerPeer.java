@@ -23,7 +23,7 @@ import java.util.Properties;
  * 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
- */
+ * */
 public class CoolStreamingServerPeer extends Peer {
 
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
