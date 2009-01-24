@@ -26,7 +26,7 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * <li>number of searchers (i.e. peers with at least 1 query sent)</li>
  * <li>average QHR (query hit ratio)</li>
  * </ol>
- * 
+ *
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

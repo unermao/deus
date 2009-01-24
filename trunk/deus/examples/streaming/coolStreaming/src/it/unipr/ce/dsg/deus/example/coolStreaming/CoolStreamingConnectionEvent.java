@@ -22,7 +22,7 @@ import java.util.Properties;
  *
  */
 public class CoolStreamingConnectionEvent extends NodeEvent {
-	
+
 	public CoolStreamingConnectionEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
