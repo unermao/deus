@@ -15,7 +15,7 @@ import java.util.Properties;
  * consumed resource, by updating the corresponding value 
  * on the resource owner.
  * </p>
- * 
+ *  
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
