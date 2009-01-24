@@ -1170,6 +1170,7 @@ public void gossipProtocol(CoolStreamingPeer node, int value){
 					break;
 				}
 			
+			
 			if(!this.isIncentiveBased())
 //				if(node.getPlayer().size()>0)	
 					if(node.getUploadSpeed()/(node.getActiveConnection()+1) > ((CoolStreamingPeer)this.getNeighbors().get(k)).getUploadSpeed()/((CoolStreamingPeer)this.getNeighbors().get(k)).getActiveConnection()
