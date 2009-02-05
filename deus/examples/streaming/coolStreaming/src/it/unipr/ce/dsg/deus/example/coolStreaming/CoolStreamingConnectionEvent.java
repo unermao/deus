@@ -70,20 +70,27 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.16 va in ISP 1 / 0.23
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-			if( random < 84 )
-				associatedStreamingNode.setIsp(0);
-			else associatedStreamingNode.setIsp(1);
+			//0.9
+//			if( random < 84 )
+//				associatedStreamingNode.setIsp(0);
+//			else associatedStreamingNode.setIsp(1);
 			
-			
+			//0.3
 //			if( random < 73 )
 //				associatedStreamingNode.setIsp(0);
 //			else associatedStreamingNode.setIsp(1);
 			
+			//0.2
 //			if(random < 70)
 //			associatedStreamingNode.setIsp(0);
 //		else if(random >= 70 && random <= 98)
 //			associatedStreamingNode.setIsp(1);
 //		else associatedStreamingNode.setIsp(2);
+			
+			//0.6
+			if( random < 80 )
+				associatedStreamingNode.setIsp(0);
+			else associatedStreamingNode.setIsp(1);
 			
 		}
 		if(associatedStreamingNode.getId().equals("pcNodeHigh")){			
@@ -92,18 +99,27 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.01 va in ISP 2 / 0.01
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-			if(random < 78)
-				associatedStreamingNode.setIsp(0);
-			else if(random >= 78 && random <= 98)
-				associatedStreamingNode.setIsp(1);
-			else associatedStreamingNode.setIsp(2);
+			//0.9
+//			if(random < 78)
+//				associatedStreamingNode.setIsp(0);
+//			else if(random >= 78 && random <= 98)
+//				associatedStreamingNode.setIsp(1);
+//			else associatedStreamingNode.setIsp(2);
 			
-			
+			//0.3
 //			if(random < 53)
 //				associatedStreamingNode.setIsp(0);
 //			else //if(random >= 53 )
 //				associatedStreamingNode.setIsp(1);
 			//else associatedStreamingNode.setIsp(2);
+			
+			//0.6
+			if(random < 34)
+			associatedStreamingNode.setIsp(0);
+		else if(random >= 34 && random <= 93)
+			associatedStreamingNode.setIsp(1);
+		else associatedStreamingNode.setIsp(2);
+//			
 			
 		}
 		if(associatedStreamingNode.getId().equals("superNode")){
@@ -111,23 +127,25 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			// con probablità 0.07 va in ISP 2 / 0.27
 			int random = Engine.getDefault().getSimulationRandom().nextInt(100);
 			
-			if(random < 93)
+			//0.9
+//			if(random < 93)
+//				associatedStreamingNode.setIsp(1);
+//			else associatedStreamingNode.setIsp(2);
+//			
+			//0.3
+//			associatedStreamingNode.setIsp(2);
+			
+			//0.6
+			if(random < 41)
 				associatedStreamingNode.setIsp(1);
 			else associatedStreamingNode.setIsp(2);
 			
-			
-//			associatedStreamingNode.setIsp(2);
 		}
 		//TODO ISP Decidere come assegnare i vicini in base all'ISP e alla città
 		if(associatedStreamingNode.isIncentiveBased())
 		{
 		 	ArrayList<Peer> neighbors = bootstrap(associatedStreamingNode);		 			 	
-		 			 		 	
-//		 	System.out.print("MY ISP " + associatedStreamingNode.getIsp() +" MY CITY " + associatedStreamingNode.getCity() );
-//		 	for(int h = 0; h < neighbors.size(); h++)
-//		 		System.out.println("NEIGHBORS ISP " +((CoolStreamingPeer) neighbors.get(h)).getIsp() +" NEIGHBORS CITY " + ((CoolStreamingPeer)neighbors.get(h)).getCity() );
-		 	
-		 	
+		 			 		 			 	
 		 	if( neighbors.size() - 1 > associatedStreamingNode.getMaxPartnersNumber())
 			{
 				getLogger().fine("Ci sono : " + Engine.getDefault().getNodes().size() +" elementi");
@@ -222,9 +240,6 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			}
 		}			
 		
-		//for(int i=0 ; i<associatedStreamingNode.getNeighbors().size(); i++)
-			//associatedStreamingNode.getNeighborTrust().add(new NeighborTrust(associatedStreamingNode.getNeighbors().get(i).getKey(),0));
-		
 		}
 		
 		getLogger().fine("end Connection ##");
@@ -257,10 +272,9 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 					  
 					 // Ordino in base alla presenza del chunk tra i miei vicini
 					 if( calculateGeographicDistance(associatedStreamingNode,peer) <= calculateGeographicDistance(associatedStreamingNode,peerApp)
-						&& peer.getUploadSpeed()/peer.getActiveConnection() >= peerApp.getUploadSpeed()/peerApp.getActiveConnection() 	 
-					 /* peer + vicino di peerApp*/)
+						&& peer.getUploadSpeed()/peer.getActiveConnection() >= peerApp.getUploadSpeed()/peerApp.getActiveConnection() 	 )
 					 {	 					
-						 appList.add(j, peer);//add(j,chunkOriginal);
+						 appList.add(j, peer);
 						 break;
 					 }// Se alla fine non ho trovato un elemento minore aggiungo l'elemento in coda
 					 else if( j == appList.size() - 1)
@@ -284,7 +298,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 		
 		if(myPeer.getIsp() == otherPeer.getIsp() 
 				&& myPeer.getCity() != otherPeer.getCity())
-			return 2;
+			return 2; //0
 		
 		if(myPeer.getIsp() != otherPeer.getIsp() 
 				&& myPeer.getCity() == otherPeer.getCity())
@@ -292,7 +306,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 		
 		if(myPeer.getIsp() != otherPeer.getIsp() 
 				&& myPeer.getCity() != otherPeer.getCity())
-			return 3;
+			return 3; //1
 			
 		return 4;
 	}
