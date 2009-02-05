@@ -31,6 +31,16 @@
 
 	</aut:event>
 
+	 <!-- PEER -->
+	<aut:event id="birth4" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent"
+		schedulerListener="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingBirthSchedulerListener">
+		<aut:events>
+			<aut:reference id="connection" />
+			<aut:reference id="discovery" />
+		</aut:events>
+	</aut:event>
+	
+	
 	<aut:event id="connection"
 		handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingConnectionEvent"
 		oneShot="true">
@@ -118,8 +128,13 @@
 			<aut:param name="uploadSpeed" value="10.0" />
 			<aut:param name="downloadSpeed" value="20.0" />
 			<aut:param name="k_value" value="4" />
-			<aut:param name="isp" value="6" />
-			<aut:param name="city" value="4" />			
+			<aut:param name="isp" value="3" />
+			<aut:param name="city" value="0" />			
+			<!--
+			ISP 0 = TISCALI
+			ISP 1 = FASTWEB
+			ISP 2 = GARR
+			-->
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -137,10 +152,10 @@
 		<aut:params>
 			<aut:param name="battery" value="100" />
 			<aut:param name="connectionType" value="adsl" />
-			<aut:param name="uploadSpeed" value="0.2" />
+			<aut:param name="uploadSpeed" value="0.256" />
 			<aut:param name="downloadSpeed" value="4.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
-			<aut:param name="incentiveBased" value="false" />
+			<aut:param name="incentiveBased" value="true" />
 			<aut:param name="k_value" value="4" />
 			<aut:param name="maxPartnersNumber" value="20" />
 		</aut:params>
@@ -161,11 +176,11 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="battery" value="100" />
-			<aut:param name="connectionType" value="adsl" />
+			<aut:param name="connectionType" value="adslplus" />
 			<aut:param name="uploadSpeed" value="0.8" />
 			<aut:param name="downloadSpeed" value="7.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
-			<aut:param name="incentiveBased" value="false" />
+			<aut:param name="incentiveBased" value="true" />
 			<aut:param name="k_value" value="4" />
 			<aut:param name="maxPartnersNumber" value="20" />
 		</aut:params>
@@ -180,6 +195,30 @@
 		</aut:resources>
 	</aut:node>
 	
+	
+	<aut:node id="superNode"
+		handler="it.unipr.ce.dsg.deus.example.coolStreaming.CoolStreamingPeer">
+		<aut:logger level="FINE" />
+		<aut:params>
+			<aut:param name="battery" value="100" />
+			<aut:param name="connectionType" value="superpeer" />
+			<aut:param name="uploadSpeed" value="5.0" />
+			<aut:param name="downloadSpeed" value="20.0" />
+			<aut:param name="videoResourceBufferLimit" value="10" />
+			<aut:param name="incentiveBased" value="true" />
+			<aut:param name="k_value" value="4" />
+			<aut:param name="maxPartnersNumber" value="20" />
+		</aut:params>
+
+		<aut:resources>
+			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+				<aut:params>
+					<aut:param name="type" value="maxAcceptedConnection" />
+					<aut:param name="amount" value="30" />
+				</aut:params>
+			</aut:resource>
+		</aut:resources>
+	</aut:node>
 
 	<!-- *** PROCESSES *** -->
 
@@ -196,13 +235,13 @@
 		</aut:events>
 	</aut:process>
 
-
+	<!-- 9 (0.9)/ 6 (0.3)/ 5 (0.2)/ 9(0.6)-->
 	<aut:process id="twospeedspoissonPcNode"
 		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="8" />
-			<aut:param name="secondMeanArrival" value="150" />
-			<aut:param name="vtThreshold" value="1000" />
+			<aut:param name="firstMeanArrival" value="9" />
+			<aut:param name="secondMeanArrival" value="1000" />
+			<aut:param name="vtThreshold" value="5000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNode" />			
@@ -212,13 +251,13 @@
 		</aut:events>
 	</aut:process>
 	
-	
+	<!-- 17 (0.9)/ 40 (0.3) / 100000000 (0.2)/ 14 (0.6)-->
 	<aut:process id="twospeedspoissonPcNodeHigh"
 		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="8" />
-			<aut:param name="secondMeanArrival" value="150" />
-			<aut:param name="vtThreshold" value="1000" />
+			<aut:param name="firstMeanArrival" value="14" />
+			<aut:param name="secondMeanArrival" value="1500" />
+			<aut:param name="vtThreshold" value="5000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNodeHigh" />			
@@ -228,10 +267,26 @@
 		</aut:events>
 	</aut:process>
 	
+	<!-- 46 (0.9) / 500 (0.3)/ 100000000 (0.2)/ 90 (0.6)-->
+	<aut:process id="twospeedspoissonSuperNode"
+		handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
+		<aut:params>
+			<aut:param name="firstMeanArrival" value="90" />
+			<aut:param name="secondMeanArrival" value="1500" />
+			<aut:param name="vtThreshold" value="5000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="superNode" />			
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth4" />
+		</aut:events>
+	</aut:process>
+	
 	<aut:process id="videoPoisson1"
 		handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="5" />
+			<aut:param name="period" value="5" /> <!--5-->
 		</aut:params>
 		<aut:events>
 			<aut:reference id="newvideores" />
@@ -326,7 +381,7 @@
 	<aut:process id="periodicPlayVideo"
 		handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="25" />
+			<aut:param name="period" value="25" /> <!--25-->
 		</aut:params>
 		<aut:events>
 			<aut:reference id="playVideo" />
@@ -337,7 +392,7 @@
 	<aut:process id="graph"
 		handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="1000" />
+			<aut:param name="period" value="10000" />
 		</aut:params>
 		<aut:events>
 			<aut:reference id="graphData" />
@@ -346,13 +401,14 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1001" seed="123456000">
+	<aut:engine maxvt="10001" seed="123456000">
 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="serverPoisson1" />
 			<aut:reference id="twospeedspoissonPcNode" />
 			<aut:reference id="twospeedspoissonPcNodeHigh" />
+			<aut:reference id="twospeedspoissonSuperNode" />
 			<aut:reference id="SendChunk" />
 			<aut:reference id="videoPoisson1" />			
 			<aut:reference id="periodic" />
