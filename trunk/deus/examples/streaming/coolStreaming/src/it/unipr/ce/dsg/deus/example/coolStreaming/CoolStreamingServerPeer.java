@@ -98,7 +98,7 @@ public class CoolStreamingServerPeer extends Peer {
 			k_value = Integer.parseInt(params.getProperty(K_VALUE));		
 		
 		if (params.containsKey(ISP))
-			isp = Integer.parseInt(params.getProperty(ISP));
+			isp = Integer.parseInt(params.getProperty(ISP));		
 		
 		if (params.containsKey(CITY))
 			city = Integer.parseInt(params.getProperty(CITY));
@@ -181,19 +181,11 @@ public class CoolStreamingServerPeer extends Peer {
 		
 		double time = 0.0;
 		double minSpeed = Math.min(  (providerUploadSpeed  / (double) this.getActiveConnection()) , clientDownloadSpeed);
-	//	minSpeed = Math.min(minSpeed,0.625 );
+
 		double chunkMbitSize = (double)( (double) chunk.getChunkSize() / 1024.0 );
 		time = (chunkMbitSize / minSpeed);
 		
 		float floatTime = (float)( time + Engine.getDefault().getSimulationRandom().nextDouble()*time);
-		//float floatTime = expRandom((float)time);
-		
-		//float floatTime = expRandom((float)7.5);
-		//float floatTime = expRandom((float)time);
-//		float floatTime = (float) Engine.getDefault().getSimulationRandom().nextInt(10);
-		
-	//	System.out.println("Server New Chunk Time : " + minSpeed + " - time " + time); 
-		//if(time > floatTime)
 
 		float sec=0;
 				
@@ -255,30 +247,15 @@ public class CoolStreamingServerPeer extends Peer {
 //			sec = Engine.getDefault().getSimulationRandom().nextInt(7) + 2;
 //		}
 		
-	//	int a = Engine.getDefault().getSimulationRandom().nextInt(2);
-		//if(a == 1)
-	//	if((int)time*20/2 > 1)
-	//	 sec = Engine.getDefault().getSimulationRandom().nextInt((int)time*20/2);
-		//else sec = 0;
-		return (float) (time*(20)+sec);
-		//else return floatTime*7;// + expRandom();
+		return (float) (floatTime*(20)+sec);
+
 	}
-	
-//	private float expRandom(float meanValue) {
-//		float myRandom = (float) (-Math.log(Engine.getDefault()
-//				.getSimulationRandom().nextFloat()) * meanValue);
-//		return myRandom;
-//	}
-	
-	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
 		
-		/*if(this.init_bool==false)
-			init();*/
+	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
 		
 		//Inserisco il chunk nel k_buffer appropriato e lo ordino
 		int index = this.calculate_buffer_index(newVideoRes);
 		this.k_buffer.get(index).add(newVideoRes);		
-	//	printK_Buffer();
 		
 		this.videoResource.add(newVideoRes);
 
@@ -317,14 +294,9 @@ public class CoolStreamingServerPeer extends Peer {
 			this.getK_buffer().add(i,new ArrayList<CoolStreamingVideoChunk>());
 			this.getServedPeers2().add(i,new ArrayList<CoolStreamingPeer>());
 			this.getSendBuffer().add(i,new ArrayList<CoolStreamingVideoChunk>());
-		//	this.getNumOfChunkSended().add(i,new ArrayList<ChunkHash>());
 		}
 		
 		new ChunkHash(2*this.k_value + 1,0);
-		
-//		for(int i=0;i<this.getK_value();i++)
-//			for(int j=0; j<10000; j++)
-//				this.getNumOfChunkSended().get(i).add(j, new ChunkHash(j*this.k_value + i,0));
 		
 		this.init_bool  = true;
 	}
@@ -336,66 +308,6 @@ public class CoolStreamingServerPeer extends Peer {
 		else
 			System.out.println("ERRORE SERVER PEER ! Connessioni Attive = "+ this.maxAcceptedConnection  +" non posso incrementare");
 	}
-	
-	
-//	public ArrayList<ArrayList<CoolStreamingVideoChunk>> sortSendBuffer() {
-//		 
-//		 ArrayList<ArrayList<CoolStreamingVideoChunk>> appList = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();
-//		 for(int i=0;i<this.k_value;i++)
-//			 appList.add(i, new ArrayList<CoolStreamingVideoChunk>());
-//		 
-//		 
-//		 for(int k=0 ; k<this.getK_value();k++)
-//		 { 		 			 
-//		 for(int i = 0 ; i < this.getSendBuffer().get(k).size() ; i++)
-//		 {
-//			 CoolStreamingVideoChunk chunkOriginal = (CoolStreamingVideoChunk)this.getSendBuffer().get(k).get(i);
-//		  
-//			 if(appList.get(k).size() == 0){
-//				 appList.get(k).add(chunkOriginal);
-//			 }
-//				
-//			 else
-//			 {
-//				 for(int j = 0 ; j < appList.get(k).size(); j++)
-//				 {		    
-//					 CoolStreamingVideoChunk chunkApp = (CoolStreamingVideoChunk)appList.get(k).get(j);		    					 
-//					 
-//					 // In base al numero di volte che l'ho inviato
-//					 if(this.getNumOfSend(chunkOriginal) < this.getNumOfSend(chunkApp))
-//					 {	 
-//						 appList.get(k).add(j, chunkOriginal);//add(j,chunkOriginal);
-//						 break;
-//					 }// Se alla fine non ho trovato un elemento minore aggiungo l'elemento in coda
-//					 else if( j == appList.get(k).size() - 1)
-//					 {
-//						 appList.get(k).add(chunkOriginal);
-//						 break;
-//					 }
-//				 }
-//			 }
-//		 }
-//
-//		 }
-//		 this.getSendBuffer().clear();
-//		 
-//		 return appList;
-//		 
-//	}
-	
-	//Ritorna il numero di volte che il chunk è stato inviato
-//	private int getNumOfSend(CoolStreamingVideoChunk chunk) {
-//		
-//		int index = this.calculate_buffer_index(chunk);
-//		int pos = chunk.getChunkIndex()%this.k_value + chunk.getChunkIndex()/this.k_value - index;
-//		
-//		return this.getNumOfChunkSended().get(index).get(pos).getNumberOfSend();
-//	}
-	
-//	public void addServedPeer(CoolStreamingPeer peer){
-//		if(!this.getServedPeers().contains(peer) && !this.equals(peer))
-//			this.getServedPeers().add(peer);
-//	}
 	
 	public CoolStreamingVideoChunk getLastChunk() {
 		return this.getVideoResource().get(this.getVideoResource().size()-1);
@@ -417,14 +329,6 @@ public class CoolStreamingServerPeer extends Peer {
 	public int getActiveConnection() {
 		return activeConnection;
 	}
-
-//	public ArrayList<CoolStreamingPeer> getServedPeers() {
-//		return servedPeers;
-//	}
-//
-//	public void setServedPeers(ArrayList<CoolStreamingPeer> servedPeers) {
-//		this.servedPeers = servedPeers;
-//	}
 
 	public ArrayList<CoolStreamingVideoChunk> getVideoResource() {
 		return videoResource;
@@ -572,14 +476,6 @@ public class CoolStreamingServerPeer extends Peer {
 			ArrayList<ArrayList<CoolStreamingVideoChunk>> sendBuffer) {
 		this.sendBuffer = sendBuffer;
 	}
-
-//	public ArrayList<ArrayList<ChunkHash>> getNumOfChunkSended() {
-//		return numOfChunkSended;
-//	}
-//
-//	public void setNumOfChunkSended(ArrayList<ArrayList<ChunkHash>> numOfChunkSended) {
-//		this.numOfChunkSended = numOfChunkSended;
-//	}
 
 	public float getStartUpTime() {
 		return totalstartUpTime;
