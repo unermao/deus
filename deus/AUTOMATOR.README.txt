@@ -1,7 +1,0 @@
-AutomatorLogger a = new AutomatorLogger("logger");
-		
-ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
-				
-fileValue.add(new LoggerObject("nome", valore));
-				
-a.write(Engine.getDefault().getVirtualTime(), fileValue);	
