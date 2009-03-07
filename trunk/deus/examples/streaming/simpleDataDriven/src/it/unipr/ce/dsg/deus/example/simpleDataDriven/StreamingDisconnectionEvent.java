@@ -10,14 +10,9 @@ import java.util.Random;
 
 
 /**
- * <p>
- * This event is related to the release of a previously 
- * consumed resource, by updating the corresponding value 
- * on the resource owner.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class StreamingDisconnectionEvent extends NodeEvent {
 

@@ -8,6 +8,11 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
 
+/**
+ * 
+ * @author Picone Marco
+ * 
+ */
 public class StreamingPlayVideoEvent extends NodeEvent {
 	
 	public StreamingPlayVideoEvent(String id, Properties params,
@@ -30,6 +35,8 @@ public class StreamingPlayVideoEvent extends NodeEvent {
 		
 		getLogger().fine("## new play video event");
 	
+		System.out.println("Time: " + Engine.getDefault().getVirtualTime() );
+		
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
 			

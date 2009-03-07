@@ -8,21 +8,8 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import java.util.Properties;
 
 /**
- * <p>
- * Each StreamingDiscoveryEvent must be associated to a StreamingPeer and to a
- * ResourceAdv. If the latter has not been set previously it is set by the
- * StreamingDiscoveryEvent itself, with randomly generated resource name and amount,
- * meaning that it is the first discovery attempt for that resource.
- * </p>
- * <p>
- * The discovery algorithm is flooding-based (like Gnutella), but the
- * propagation range and the TTL are not the same for each node: they depend on
- * the current value of the chromosome of the associated StreamingPeer. The
- * discovery process also takes into account the ResourceAdv cache of the
- * associated StreamingPeer.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * @author Picone Marco
  * 
  */
 public class StreamingDiscoveryEvent extends NodeEvent {
