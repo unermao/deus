@@ -9,14 +9,9 @@ import java.util.Properties;
 
 
 /**
- * <p>
- * This event is related to the release of a previously 
- * consumed resource, by updating the corresponding value 
- * on the resource owner.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class Streaming2GTo3GEvent extends NodeEvent {
 
@@ -76,8 +71,10 @@ public class Streaming2GTo3GEvent extends NodeEvent {
 		
 		StreamingPeer associatedStreamingNode = (StreamingPeer) associatedNode;
 		
+		if( associatedStreamingNode.getConnectionType().equals("2g") && Engine.getDefault().getSimulationRandom().nextInt(10) > 5 ){
+			
 		associatedStreamingNode.change2GTo3G(StreamingPeer.G3, this.newUploadSpeed, this.newMaxAcceptedConnection);
-		
+		}
 		getLogger().fine("end new 2G --> 3G Event ##");
 	}
 	

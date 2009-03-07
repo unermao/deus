@@ -10,14 +10,9 @@ import java.util.Properties;
 
 
 /**
- * <p>
- * This event is related to the release of a previously 
- * consumed resource, by updating the corresponding value 
- * on the resource owner.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 
@@ -73,6 +68,7 @@ public class StreamingPeerNewVideoResourceEvent extends NodeEvent {
 			{
 				   //getLogger().fine("Sono : " + associatedStreamingNode.getKey() + " Invio a: " + associatedStreamingNode.getServedPeers().get(index).getKey() + " Chunk: " + videoChunk.getChunkIndex());
 				   //if( !associatedStreamingNode.getServedPeers().get(index).getNeededChunk().contains(newVideoChunk.getChunkIndex()) )
+				if( newVideoChunk.getChunkIndex() >  associatedStreamingNode.getServedPeers().get(index).getInitChunk())		
 					associatedStreamingNode.sendVideoChunk(associatedStreamingNode.getServedPeers().get(index), newVideoChunk, this.triggeringTime);
 			}
 		}

@@ -54,6 +54,7 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="newMaxAcceptedConnection" value="1" />
+			<aut:param name="newUploadSpeed" value="0.0025" />
 		</aut:params>
 	</aut:event>
 	
@@ -61,6 +62,7 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="newMaxAcceptedConnection" value="2" />
+			<aut:param name="newUploadSpeed" value="0.05" />
 		</aut:params>
 	</aut:event>
 	
@@ -100,6 +102,9 @@
 	
 	<aut:event id="logNodeConnectionStat" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.LogStreamingPeerConnectionStatsEvent" >
 		<aut:logger level="INFO" />
+		<aut:params>
+ 			 <aut:param name="filename" value="567891236_simulazione_lowPC_NOfitness" />
+ 		</aut:params>
 	</aut:event>
 	
 	<aut:event id="graphData" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.LogStreamingNetGraphEvent" >
@@ -111,7 +116,7 @@
 	<aut:node id="serverNode" handler="it.unipr.ce.dsg.deus.example.simpleDataDriven.ServerPeer">
 			<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="chunkSize" value="20" />  <!-- 20 Kbit -->
+			<aut:param name="chunkSize" value="50" />  <!-- 20 Kbit -->
 			<aut:param name="uploadSpeed" value="10.0" />
 			<aut:param name="downloadSpeed" value="20.0" />
 		</aut:params>
@@ -130,10 +135,10 @@
 		<aut:params>
 			<aut:param name="battery" value="100" />
 			<aut:param name="connectionType" value="adsl" />
-			<aut:param name="uploadSpeed" value="1.0" />
+			<aut:param name="uploadSpeed" value="0.3" />
 			<aut:param name="downloadSpeed" value="4.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
-			<aut:param name="fitnessSort" value="false" />
+			<aut:param name="fitnessSort" value="true" />
 			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 
@@ -152,10 +157,10 @@
 		<aut:params>
 			<aut:param name="battery" value="80" />
 			<aut:param name="connectionType" value="wifi" />
-			<aut:param name="uploadSpeed" value="0.8" />
+			<aut:param name="uploadSpeed" value="0.1" />
 			<aut:param name="downloadSpeed" value="2.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
-			<aut:param name="fitnessSort" value="false" />
+			<aut:param name="fitnessSort" value="true" />
 			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 		<aut:resources>
@@ -173,10 +178,10 @@
 		<aut:params>
 			<aut:param name="battery" value="60" />
 			<aut:param name="connectionType" value="3g" />
-			<aut:param name="uploadSpeed" value="0.2" />
+			<aut:param name="uploadSpeed" value="0.05" />
 			<aut:param name="downloadSpeed" value="0.4" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
-			<aut:param name="fitnessSort" value="false" />
+			<aut:param name="fitnessSort" value="true" />
 			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
 		<aut:resources>
@@ -207,7 +212,7 @@
 
 	<aut:process id="twospeedspoissonPcNode" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="10" />
+			<aut:param name="firstMeanArrival" value="80" />
 			<aut:param name="secondMeanArrival" value="2000" />
 			<aut:param name="vtThreshold" value="3000" />
 		</aut:params>
@@ -237,7 +242,7 @@
 	
 	<aut:process id="twospeedspoissonMobile3GNode" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="30" />
+			<aut:param name="firstMeanArrival" value="10" />
 			<aut:param name="secondMeanArrival" value="2000" />
 			<aut:param name="vtThreshold" value="3000" />
 		</aut:params>
@@ -280,7 +285,7 @@
 	
 	<aut:process id="connectionChangePoisson" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="4000" />
+			<aut:param name="meanArrival" value="6000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="mobile3GNode" />
@@ -293,7 +298,7 @@
 	
 	<aut:process id="connectionPoisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="1" />
+			<aut:param name="meanArrival" value="0" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNode" />
@@ -309,7 +314,7 @@
 	
 	<aut:process id="disconnection" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="50" /> 
+			<aut:param name="period" value="80" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="disconnection" /> 
@@ -318,7 +323,7 @@
 	 	
 	<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="30" /> 
+			<aut:param name="period" value="20" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="logNodeVideoData" /> 
@@ -346,7 +351,7 @@
 	
 	<aut:process id="graph" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="5000" /> 
+			<aut:param name="period" value="8000" /> 
 		</aut:params>
 		<aut:events>
 			<aut:reference id="graphData" /> 
@@ -355,7 +360,7 @@
 
 	<!-- *** SIMULATION *** -->
 	
-	<aut:engine maxvt="5001" seed="567891234"> 
+	<aut:engine maxvt="8001" seed="567891235"> 
 
 		<aut:logger level="INFO" />
 		<aut:processes>

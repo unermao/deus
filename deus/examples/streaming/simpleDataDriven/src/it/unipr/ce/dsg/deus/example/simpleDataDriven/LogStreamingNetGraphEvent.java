@@ -9,17 +9,8 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import java.util.Properties;
 
 /**
- * <p>
- * This Event logs a number of statistics related to the current "snapshot" of
- * the StreamingPeer network:
- * <ol>
- * <li>mean value and variance of the chromosomes</li>
- * <li>initial and mean Streaming value</li>
- * <li>number of searchers (i.e. peers with at least 1 query sent)</li>
- * <li>average QHR (query hit ratio)</li>
- * </ol>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * @author Picone Marco
  * 
  */
 public class LogStreamingNetGraphEvent extends Event {

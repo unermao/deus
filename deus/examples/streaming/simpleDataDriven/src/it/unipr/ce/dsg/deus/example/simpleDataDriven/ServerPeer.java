@@ -11,18 +11,9 @@ import java.util.Iterator;
 import java.util.Properties;
 
 /**
- * <p>
- * EnergyPeers are characterized by one kind of consumable resource: energy.
- * Moreover, each EnergyPeer has a chromosome, i.e.
- * a set of parameters whose values are randomly initialized when the
- * RevolPeer is instantiated, and may change during its lifetime, depending
- * on external events. The EnergyPeer keeps track of the number of sent queries (Q)
- * and of the number of query hits (QH). The query hit ratio (QHR = QH/Q) is 
- * initialized to 0.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class ServerPeer extends Peer {
 
@@ -153,7 +144,7 @@ public class ServerPeer extends Peer {
 		
 		float floatTime = expRandom((float)time);
 		
-		return floatTime*100;
+		return floatTime*10;
 	}
 	
 	private float expRandom(float meanValue) {

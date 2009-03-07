@@ -11,18 +11,9 @@ import java.util.Iterator;
 import java.util.Properties;
 
 /**
- * <p>
- * EnergyPeers are characterized by one kind of consumable resource: energy.
- * Moreover, each EnergyPeer has a chromosome, i.e.
- * a set of parameters whose values are randomly initialized when the
- * RevolPeer is instantiated, and may change during its lifetime, depending
- * on external events. The EnergyPeer keeps track of the number of sent queries (Q)
- * and of the number of query hits (QH). The query hit ratio (QHR = QH/Q) is 
- * initialized to 0.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class StreamingPeer extends Peer {
 
@@ -38,10 +29,10 @@ public class StreamingPeer extends Peer {
 	public static final String ADSL = "adsl";
 	public static final String WIFI = "wifi";
 	public static final String G3 = "3g";
-	public static final String G2 = "3g"; 
+	public static final String G2 = "2g"; 
 	public static final String GPRS = "gprs";
 	
-	private int battery = 0;
+	private double battery = 0.0;
 	private String connectionType = "";
 	private double uploadSpeed = 0.0;
 	private double downloadSpeed = 0.0;
@@ -77,6 +68,7 @@ public class StreamingPeer extends Peer {
 	//Array per le statistiche dei tempi di ricezione
 	private ArrayList<Float> arrivalTimes = new ArrayList<Float>();
 	private int continuityTrialCount = 0;
+	private Integer initChunk = 0;
 	
 	public StreamingPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -87,7 +79,7 @@ public class StreamingPeer extends Peer {
 	public void initialize() throws InvalidParamsException {
 		
 		if (params.containsKey(BATTERY))
-			battery = Integer.parseInt(params.getProperty(BATTERY));
+			battery = Double.parseDouble(params.getProperty(BATTERY));
 		
 		if (params.containsKey(CONNECTION_TYPE))
 			connectionType = new String(params.getProperty(CONNECTION_TYPE));
@@ -149,6 +141,7 @@ public class StreamingPeer extends Peer {
 		clone.neededChunk = new ArrayList<Integer>();
 		clone.deadlineNumber = 0;
 		clone.isConnected = true;
+		clone.initChunk = 0;
 		
 		return clone;
 	}
@@ -559,33 +552,76 @@ public class StreamingPeer extends Peer {
 	 */
 	public boolean playVideoBuffer(){
 		
+		int difftot = 0;
+		
 		//Se il numero di tentativi di trovare 5 chunk continui e' fallito
 		if( continuityTrialCount >= 3 )
 		{
+			
+			
 			//Azzero il contatore
 			continuityTrialCount = 0;
 			
 			//Incremento il numero di missing, ovvero di volte che sono costretto a rimuovere dei segmenti per mancanza di continuita'
 			this.missingChunkNumber++;
 			
+			ArrayList<VideoChunk> appList = new ArrayList<VideoChunk>();
+			appList.addAll(this.videoResource);
+			
 			//Rimuovo i segmenti non continui all'interno dei primi 5 e dopo procedo normalmente nella ricerca
 			for(int index = 0 ; index < 5 ; index++){
 				
-				int diff = this.videoResource.get(index+1).getChunkIndex() - this.videoResource.get(index).getChunkIndex();
+				int diff = appList.get(index+1).getChunkIndex() - appList.get(index).getChunkIndex();
 			
 				//Se la diff e' maggiore di 1 significa che non ho continuita' e aspetto prima di riprodurre
 				if( diff > 1 ){
-					
-					//System.out.println("TROPPI TENTATIVI! RIMUOVO:" + this.videoResource.get(index).getChunkIndex());
-					
-					//Rimuovo l'elemento non continuo
-					this.videoResource.remove(index);
-				
-					//Incremento il numero di deadline in quanto non posso riprodurre questi segmenti per mancanza di continuitˆ
-					this.deadlineNumber ++;
+					difftot = difftot + diff -1;
 				}
-			
 			}
+			
+			//Memorizzo l'ultimo indice riprodotto
+			this.indexOfLastReceivedChunk = this.videoResource.get(4).getChunkIndex();
+			
+			//String list = "";
+			
+			for(int k = 0 ; k < 5 ; k++)
+			{	
+				//list = list + "," + this.videoResource.get(0).getChunkIndex();
+				this.videoResource.remove(0);
+			}
+			
+			this.deadlineNumber += difftot;
+			this.missingChunkNumber += difftot;
+			
+			
+			
+//			//Azzero il contatore
+//			continuityTrialCount = 0;
+//			
+//			//Incremento il numero di missing, ovvero di volte che sono costretto a rimuovere dei segmenti per mancanza di continuita'
+//			this.missingChunkNumber++;
+//			
+//			//ArrayList<VideoChunk> appList = new ArrayList<VideoChunk>();
+//			//appList.addAll(this.videoResource);
+//			
+//			//Rimuovo i segmenti non continui all'interno dei primi 5 e dopo procedo normalmente nella ricerca
+//			for(int index = 0 ; index < 5 ; index++){
+//				
+//				int diff = this.videoResource.get(index+1).getChunkIndex() - this.videoResource.get(index).getChunkIndex();
+//			
+//				//Se la diff e' maggiore di 1 significa che non ho continuita' e aspetto prima di riprodurre
+//				if( diff > 1 ){
+//			
+//					//Rimuovo i segmenti non contigui
+//					for(int j = 0 ; j < 5 ; j ++)
+//						this.videoResource.remove(0);
+//				
+//					//Incremento il numero di deadline in quanto non posso riprodurre questi segmenti per mancanza di continuitˆ
+//					this.deadlineNumber += 5;
+//					
+//					break;
+//				}
+//			}
 		}
 		
 		//Se ci sono un numero sufficente di elementi nel buffer
@@ -665,6 +701,47 @@ public class StreamingPeer extends Peer {
 			this.getServedPeers().add(peer);
 	}
 	
+	public ArrayList<Integer> sort(ArrayList<Integer> arrayList) {
+		  
+		 
+		 //System.out.println("Ordino");
+		 
+		  ArrayList<Integer> appList = new ArrayList<Integer>();
+		  
+		  //Ordinamento dei vicini in base al loro valore di fitness
+		  for(int i = 0 ; i < arrayList.size() ; i++)
+		  {
+			  Integer chunkOriginal = (Integer)arrayList.get(i);
+		   
+		   if(appList.size() == 0)
+		    appList.add(chunkOriginal);
+		   else
+		   {
+		    for(int j = 0 ; j < appList.size(); j++)
+		    {
+		     
+		    	Integer chunkApp = (Integer)appList.get(j);
+		     
+		     
+		     if(chunkOriginal <= chunkApp)
+		     {  
+		      appList.add(j,chunkOriginal);
+		      break;
+		     }// Se alla fine non ho trovato un elemento minore aggiungo l'elemento in coda
+		     else if( j == appList.size() - 1)
+		     {
+		      appList.add(chunkOriginal);
+		      break;
+		     }
+		    }
+		   }
+		  }
+		  
+		  arrayList.clear();
+		  return appList;
+		  
+		}
+	
 	public void findFirstProviderNode(float triggeringTime){
 		
 		//System.out.println("findFirstProviderNode");
@@ -730,6 +807,12 @@ public class StreamingPeer extends Peer {
 			}
 		}
 		
+		//Ordino il buffer dei segmenti richiesti
+		this.neededChunk.addAll(this.sort(this.neededChunk));
+		
+		//Salvo il primo elemento
+		if(this.neededChunk.size() > 0)
+			this.initChunk = this.neededChunk.get(0);
 	}
 	
 	public boolean findProviderNodeFromLastSegment(float triggeringTime) {
@@ -881,10 +964,12 @@ public class StreamingPeer extends Peer {
 			 for(int index = startIndex ; index < source.getVideoResource().size(); index++)
 			  if(!this.getVideoResource().contains(source.getVideoResource().get(index)))
 			  {
-				  //Aggiungo l'indice del chunk nella lista di quelli che ho gia' richiesto
-				  this.neededChunk.add(source.getVideoResource().get(index).getChunkIndex());
-				  
-				  source.sendVideoChunk(this, source.getVideoResource().get(index), triggeringTime);
+				  if( !this.neededChunk.contains(source.getVideoResource().get(index).getChunkIndex()) )
+				  {
+					  //Aggiungo l'indice del chunk nella lista di quelli che ho gia' richiesto
+					  this.neededChunk.add(source.getVideoResource().get(index).getChunkIndex());
+					  source.sendVideoChunk(this, source.getVideoResource().get(index), triggeringTime);
+				  }
 			  }
 		
 		}
@@ -901,10 +986,13 @@ public class StreamingPeer extends Peer {
 			 for(int index = startIndex ; index < source.getVideoResource().size(); index++)
 			  if(!this.getVideoResource().contains(source.getVideoResource().get(index)))
 			  {
-				  //Aggiungo l'indice del chunk nella lista di quelli che ho gia' richiesto
-				  this.neededChunk.add(source.getVideoResource().get(index).getChunkIndex());
+				  if( !this.neededChunk.contains(source.getVideoResource().get(index).getChunkIndex()) )
+				  {
+					  //Aggiungo l'indice del chunk nella lista di quelli che ho gia' richiesto
+					  this.neededChunk.add(source.getVideoResource().get(index).getChunkIndex());
 				  
-				  source.sendVideoChunk(this, source.getVideoResource().get(index), triggeringTime);
+					  source.sendVideoChunk(this, source.getVideoResource().get(index), triggeringTime);
+				  }
 			  }
 		
 		}
@@ -959,7 +1047,7 @@ public class StreamingPeer extends Peer {
 		
 		//System.out.println("Server New Chunk Time :"+ time*100 +"-" + floatTime*100);
 		
-		return floatTime*100;
+		return floatTime*10;
 	}
 	
 	private float expRandom(float meanValue) {
@@ -1034,7 +1122,9 @@ public class StreamingPeer extends Peer {
 			{		
 				chunk.setSourceNode(this.sourceStreamingNode);
 				chunk.setOriginalTime(triggeringTime);
-				this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
+				
+				if( !this.neededChunk.contains(chunk.getChunkIndex()) )
+					this.sourceStreamingNode.sendVideoChunk(this, chunk, triggeringTime);
 				
 				return true;
 			}
@@ -1048,7 +1138,9 @@ public class StreamingPeer extends Peer {
 			{		
 				chunk.setSourceNode(this.serverNode);
 				chunk.setOriginalTime(triggeringTime);
-				this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
+				
+				if( !this.neededChunk.contains(chunk.getChunkIndex()) )
+					this.serverNode.sendVideoChunk(this, chunk, triggeringTime);
 				
 				return true;
 			}
@@ -1169,7 +1261,7 @@ public class StreamingPeer extends Peer {
 		return GPRS;
 	}
 
-	public int getBattery() {
+	public double getBattery() {
 		return battery;
 	}
 
@@ -1327,6 +1419,14 @@ public class StreamingPeer extends Peer {
 
 	public void setDeadlineNumber(int deadlineNumber) {
 		this.deadlineNumber = deadlineNumber;
+	}
+
+	public Integer getInitChunk() {
+		return initChunk;
+	}
+
+	public void setInitChunk(Integer initChunk) {
+		this.initChunk = initChunk;
 	}
 
 	

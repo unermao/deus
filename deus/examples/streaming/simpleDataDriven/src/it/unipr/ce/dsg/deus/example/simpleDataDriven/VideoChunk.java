@@ -2,6 +2,11 @@ package it.unipr.ce.dsg.deus.example.simpleDataDriven;
 
 import it.unipr.ce.dsg.deus.core.Node;
 
+/**
+ * 
+ * @author Picone Marco
+ * 
+ */
 public class VideoChunk {
 	
 	private int chunkIndex;

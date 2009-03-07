@@ -9,14 +9,9 @@ import java.util.Properties;
 
 
 /**
- * <p>
- * This event is related to the release of a previously 
- * consumed resource, by updating the corresponding value 
- * on the resource owner.
- * </p>
  * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
+ * @author Picone Marco
+ * 
  */
 public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 
@@ -78,6 +73,7 @@ public class StreamingServerNewVideoResourceEvent extends NodeEvent {
 		for(int index = 0 ; index < serverNode.getServedPeers().size(); index++){	
 			
 			//if(!serverNode.getServedPeers().get(index).getNeededChunk().contains(newResource.getChunkIndex()))
+			if( newResource.getChunkIndex() >  serverNode.getServedPeers().get(index).getInitChunk())	
 				serverNode.sendVideoChunk(serverNode.getServedPeers().get(index), newResource, this.triggeringTime);
 		}
 			
