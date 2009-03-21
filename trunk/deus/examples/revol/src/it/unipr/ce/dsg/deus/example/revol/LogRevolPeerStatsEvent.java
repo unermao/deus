@@ -42,7 +42,7 @@ public class LogRevolPeerStatsEvent extends Event {
 
 	public void run() throws RunException {
 		
-		AutomatorLogger a = new AutomatorLogger("logger");
+		AutomatorLogger a = new AutomatorLogger("./temp/logger");
 		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		
 		int numNodes = Engine.getDefault().getNodes().size();
