@@ -30,7 +30,9 @@ The schema.. The configuration XML..
 == Two Speeds Growth ==
 
 
-How to run the simulations (we suggest to import deus in Eclipse and to run the simulations from there):
+= Running simulations =
+
+We suggest to import deus in Eclipse and to run the simulations from there.
 
 Project: deus
 
