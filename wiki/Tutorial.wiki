@@ -21,6 +21,18 @@ Sources include the following packages:
 The schema.. The configuration XML..
 
 
+= Writing logs =
+
+In you logger event, use the following code:
+
+AutomatorLogger a = new AutomatorLogger("logger");
+ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
+fileValue.add(new LoggerObject("name", value));
+a.write(Engine.getDefault().getVirtualTime(), fileValue);
+
+TODO: an example
+
+
 = Basic examples =
 
 == Growth Connections ==
