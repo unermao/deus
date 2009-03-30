@@ -63,7 +63,7 @@ public class RevolPeer extends Peer {
 
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(AVG_INIT_CHROMOSOME))
-			avgInitChromosome = Integer.parseInt(params.getProperty(AVG_INIT_CHROMOSOME));
+			avgInitChromosome = (int) Double.parseDouble(params.getProperty(AVG_INIT_CHROMOSOME));
 		if (params.containsKey(IS_RANDOM_INIT))
 			isRandomInit = Boolean.parseBoolean(params.getProperty(IS_RANDOM_INIT));
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
@@ -276,7 +276,7 @@ public class RevolPeer extends Peer {
 		if (numResourceAdvs <= dMax)
 			return;
 		ArrayList<ResourceAdv> newResourceAdvsList = new ArrayList<ResourceAdv>();
-		// mantengo solo le più recenti
+		// mantengo solo le piï¿½ recenti
 		for (int i = (numResourceAdvs - dMax); i < numResourceAdvs; i++)
 			newResourceAdvsList.add((ResourceAdv) cache.get(i));
 		cache = newResourceAdvsList;
