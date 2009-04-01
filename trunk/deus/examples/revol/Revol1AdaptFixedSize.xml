@@ -74,8 +74,8 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
-			<aut:param name="avgInitChromosome" value="1" />
-			<aut:param name="isRandomInit" value="false" />
+			<aut:param name="avgInitChromosome" value="3" />
+			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -198,7 +198,6 @@
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="twospeedspoisson" /> 
-			<!-- aut:reference id="poisson1" / -->
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
