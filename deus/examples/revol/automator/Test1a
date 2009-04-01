@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
+
+<simulation simulationNumberSeed="0" simulationName="Test1a">
+
+<node id="revolNode">
+	<paramName name="avgInitChromosome">
+		<initialValue>1.0</initialValue>
+		<finalValue>5.0</finalValue>
+		<stepValue>2.0</stepValue>
+	</paramName>
+	
+</node>
+
+<engine>
+	<seed>
+	</seed>
+</engine>
+
+<resultVT outputLogFile="./temp/logger"/>
+
+<resultXYFile fileName="Test1a-mean" axisX="VT" axisY="QHR (searchers): mean" />
+<resultXYFile fileName="Test1a-variance" axisX="VT" axisY="QHR (searchers): variance" />
+
+</simulation>
+
+</deusAutomator>
