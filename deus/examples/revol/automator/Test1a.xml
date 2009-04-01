@@ -2,7 +2,7 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="0" simulationName="Test1a">
+<simulation simulationNumberSeed="5" simulationName="Test1a">
 
 <node id="revolNode">
 	<paramName name="avgInitChromosome">
@@ -15,6 +15,11 @@
 
 <engine>
 	<seed>
+		<seedValue>123456789</seedValue>
+		<seedValue>234567891</seedValue>
+		<seedValue>345678912</seedValue>
+		<seedValue>456789123</seedValue>
+		<seedValue>567891234</seedValue>
 	</seed>
 </engine>
 
