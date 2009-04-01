@@ -134,9 +134,10 @@ public class ResultAutomator {
 				Result result = this.finalResults.get(i).getVtResultsList().get(resultIndex);
 	
 				String name = result.getName();
-				Double value= result.getValue()/((double)this.filesList.size());
 				
+				Double value= result.getValue()/((double)this.filesList.size());
 				outputLine = outputLine + name + "=" + value + "\n";
+				
 			}
 					
 			try {
