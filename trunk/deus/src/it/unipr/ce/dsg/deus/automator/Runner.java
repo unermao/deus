@@ -219,7 +219,7 @@ public class Runner implements Runnable{
 			// for(int i = 0; i < logFile.size(); i++)
 				//	new File(logFile.get(i)).delete();	
 			 
-			// logFile.clear();			 
+			 logFile.clear();			 
 			 
 			 // Scrive i file gnuplot 
 			 for(int z = 0; z < simulations.get(j).getGnuplot().size(); z++)
