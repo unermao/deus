@@ -28,16 +28,19 @@ The XML schema.. The configuration file.. The automator..
 
 = Writing logs =
 
-In you logger event, use the following code:
+In your Log event, use the following code:
 
 {{{
 AutomatorLogger a = new AutomatorLogger("logger");
 ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
-fileValue.add(new LoggerObject("name", value));
-a.write(Engine.getDefault().getVirtualTime(), fileValue);
 }}}
 
-TODO: an example
+then, if you want to log the value of a variable called "var", use:
+
+{{{
+fileValue.add(new LoggerObject("var", value));
+a.write(Engine.getDefault().getVirtualTime(), fileValue);
+}}}
 
 
 = Basic examples =
