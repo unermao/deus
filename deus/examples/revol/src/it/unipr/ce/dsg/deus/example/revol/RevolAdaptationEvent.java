@@ -10,13 +10,12 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 public class RevolAdaptationEvent extends NodeEvent {
-	private static final String FITNESS_FUNCTION = "fitnessFunction";
 	private static final String PHI_0 = "phi0";
 	private static final String PHI_1 = "phi1";
 	private static final String PHI_2 = "phi2";
 	private static final String SELECTION_STRATEGY = "selectionStrategy";
 
-	private String fitnessFunction = "F1";
+	private String fitnessFunction = null;
 	private double currentFitness = 0;
 	private int phi0 = 0;
 	private int phi1 = 0;
@@ -27,8 +26,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 	public RevolAdaptationEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		if (params.containsKey(FITNESS_FUNCTION))
-			fitnessFunction = params.getProperty(FITNESS_FUNCTION);
+		fitnessFunction = ((RevolPeer) ((Peer) associatedNode)).getFitnessFunction();
 		if (params.containsKey(PHI_0))
 			phi0 = Integer.parseInt(params.getProperty(PHI_0));
 		if (params.containsKey(PHI_1))
