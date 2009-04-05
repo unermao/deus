@@ -44,7 +44,6 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
-			<aut:param name="fitnessFunction" value="F1" />
 			<!-- phi0=100, phi1=10, phi2=5 are the values which give all genes he same weight -->
 			<aut:param name="phi0" value="100" />
 			<aut:param name="phi1" value="10" />
@@ -74,6 +73,7 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
+		    <aut:param name="fitnessFunction" value="1" />
 			<aut:param name="avgInitChromosome" value="3" />
 			<aut:param name="isRandomInit" value="true" />
 		</aut:params>

@@ -28,11 +28,13 @@ import java.util.Random;
  */
 public class RevolPeer extends Peer {
 
+	private static final String FITNESS_FUNCTION = "fitnessFunction";
 	private static final String AVG_INIT_CHROMOSOME = "avgInitChromosome";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
+	private String fitnessFunction = null;
 	private int avgInitChromosome = 0;
 	private boolean isRandomInit = false;
 	private int cpuFactor = 0;
@@ -62,6 +64,8 @@ public class RevolPeer extends Peer {
 	}
 
 	public void initialize() throws InvalidParamsException {
+		if (params.containsKey(FITNESS_FUNCTION))
+			fitnessFunction = "F"+params.getProperty(FITNESS_FUNCTION);
 		if (params.containsKey(AVG_INIT_CHROMOSOME))
 			avgInitChromosome = (int) Double.parseDouble(params.getProperty(AVG_INIT_CHROMOSOME));
 		if (params.containsKey(IS_RANDOM_INIT))
@@ -101,6 +105,10 @@ public class RevolPeer extends Peer {
 		return clone;
 	}
 
+	public String getFitnessFunction() {
+		return fitnessFunction;
+	}
+	
 	public double getFk() {
 		return ((double) c[0])/6;
 	}

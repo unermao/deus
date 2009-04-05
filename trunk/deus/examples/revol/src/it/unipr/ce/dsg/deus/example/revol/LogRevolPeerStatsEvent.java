@@ -68,6 +68,7 @@ public class LogRevolPeerStatsEvent extends Event {
 				cTot[i] += currentNode.getC()[i];
 			if (currentNode.getQ() > 0) {
 				numSearchers++;
+				//System.out.println("Log current node qhr: " + currentNode.getQhr());
 				qhrSearchersTot += currentNode.getQhr();
 			}
 			qhrTot += currentNode.getQhr();
@@ -80,20 +81,29 @@ public class LogRevolPeerStatsEvent extends Event {
 		}
 
 		double qhrMean = qhrTot / numPeers;
+		//System.out.println("Log qhrSearchersTot: " + qhrSearchersTot);
+		//System.out.println("Log numSearchers: " + numSearchers);
 		double qhrSearchersMean = qhrSearchersTot / numSearchers;
+		//System.out.println("Log qhrSearchersMean: " + qhrSearchersMean);
 
 		double qhrTotBiased = 0;
 		double qhrSearchersBiased = 0;
+		double sommaScarti = 0;
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			currentNode = (RevolPeer) it.next();
 			qhrTotBiased += (currentNode.getQhr() - qhrMean) * (currentNode.getQhr() - qhrMean);
 			if (currentNode.getQ() > 0) {
+				if (currentNode.getQhr() > 1)
+					System.out.println("qhr > 1!!");
 				qhrSearchersBiased += (currentNode.getQhr() - qhrSearchersMean) * (currentNode.getQhr() - qhrSearchersMean);
+				sommaScarti += currentNode.getQhr() - qhrSearchersMean;
 			}
 		}
 		double qhrVariance = (double) qhrTotBiased / (numPeers - 1);
 		double qhrSearchersVariance = (double) qhrSearchersBiased / (numSearchers - 1);
+		//System.out.println("Log qhrSearchersVariance: " + qhrSearchersVariance);
+		//System.out.println("Log sommaScarti: " + sommaScarti);
 		
 		//getLogger().info("num peers = " + numPeers + " ** num searchers = " + numSearchers);
 		//getLogger().info("QHR (total): mean = " + qhrMean + ", variance = " + qhrVariance);
@@ -109,8 +119,8 @@ public class LogRevolPeerStatsEvent extends Event {
 		double[] cMean = new double[3];
 		for (int i = 0; i < 3; i++) {
 			cMean[i] = (double) cTot[i] / numNodes;
-			fileValue.add(new LoggerObject("mean value of c" + i, cMean[i]));
-			//getLogger().info("mean value of c" + i + " is " + cMean[i]);
+			fileValue.add(new LoggerObject("mean value of C" + i, cMean[i]));
+			//getLogger().info("mean value of C" + i + " is " + cMean[i]);
 		}
 
 		double[] cTotBiased = new double[3];
@@ -126,8 +136,8 @@ public class LogRevolPeerStatsEvent extends Event {
 		double[] cVariance = new double[3];
 		for (int i = 0; i < 3; i++) {
 			cVariance[i] = (double) cTotBiased[i] / (numNodes - 1);
-			fileValue.add(new LoggerObject("variance of c" + i, cVariance[i]));
-			//getLogger().info("variance of c" + i + " is " + cVariance[i]);
+			fileValue.add(new LoggerObject("variance of C" + i, cVariance[i]));
+			//getLogger().info("variance of C" + i + " is " + cVariance[i]);
 		}
 
 		fileValue.add(new LoggerObject("mean initial CPU value", (double) initialCpuTot / numNodes));
