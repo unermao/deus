@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
+
+<simulation simulationNumberSeed="5" simulationName="Test2a">
+
+<node id="revolNode">
+	<paramName name="fitnessFunction">
+		<initialValue>1.0</initialValue>
+		<finalValue>3.0</finalValue>
+		<stepValue>1.0</stepValue>
+	</paramName>
+	
+</node>
+
+<engine>
+	<seed>
+		<seedValue>123456789</seedValue>
+		<seedValue>234567891</seedValue>
+		<seedValue>345678912</seedValue>
+		<seedValue>456789123</seedValue>
+		<seedValue>567891234</seedValue>
+	</seed>
+</engine>
+
+<resultVT outputLogFile="./temp/logger"/>
+
+<resultXYFile fileName="Test2a-qhr-mean" axisX="VT" axisY="QHR (searchers): mean" />
+<resultXYFile fileName="Test2a-qhr-variance" axisX="VT" axisY="QHR (searchers): variance" />
+<resultXYFile fileName="Test2a-C0-mean" axisX="VT" axisY="mean value of C0" />
+<resultXYFile fileName="Test2a-C0-variance" axisX="VT" axisY="variance of C0" />
+<resultXYFile fileName="Test2a-C1-mean" axisX="VT" axisY="mean value of C1" />
+<resultXYFile fileName="Test2a-C1-variance" axisX="VT" axisY="variance of C1" />
+<resultXYFile fileName="Test2a-C2-mean" axisX="VT" axisY="mean value of C2" />
+<resultXYFile fileName="Test2a-C2-variance" axisX="VT" axisY="variance of C2" />
+
+</simulation>
+
+</deusAutomator>
