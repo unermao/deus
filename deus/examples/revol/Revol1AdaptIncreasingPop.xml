@@ -128,7 +128,6 @@
 			<aut:reference id="revolNode" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="connection" />
 			<aut:reference id="connection2" />
 			<aut:reference id="death" />
 		</aut:events>
