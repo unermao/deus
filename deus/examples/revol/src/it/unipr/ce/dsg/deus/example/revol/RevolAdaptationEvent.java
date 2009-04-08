@@ -25,8 +25,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 
 	public RevolAdaptationEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
-		super(id, params, parentProcess);
-		fitnessFunction = ((RevolPeer) ((Peer) associatedNode)).getFitnessFunction();
+		super(id, params, parentProcess);	
 		if (params.containsKey(PHI_0))
 			phi0 = Integer.parseInt(params.getProperty(PHI_0));
 		if (params.containsKey(PHI_1))
@@ -47,18 +46,19 @@ public class RevolAdaptationEvent extends NodeEvent {
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		double qhr = node.getAvgNeighborsQhr();
 		getLogger().fine(node + " avg neighbor qhr = " + qhr);
-		
+		fitnessFunction = ((RevolPeer) ((Peer) associatedNode)).getFitnessFunction();
+		System.out.println("fitnessFunction = " + fitnessFunction);
 		// F1
-		if (fitnessFunction.equals("F1")) {
+		if (fitnessFunction.equals("F1.0")) {
 			if (qhr < 0.99) 	  
 				return 1 / A;
 			else
 				return A;
 		}
-		else if (fitnessFunction.equals("F2")) {
+		else if (fitnessFunction.equals("F2.0")) {
 			return (1-qhr)/(delta*delta*A) + qhr*A;	
 		}
-		else if (fitnessFunction.equals("F3")) {
+		else if (fitnessFunction.equals("F3.0")) {
 			return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);
 		}
 		
