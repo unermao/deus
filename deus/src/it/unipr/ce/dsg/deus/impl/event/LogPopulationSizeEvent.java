@@ -1,7 +1,10 @@
 package it.unipr.ce.dsg.deus.impl.event;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
+import it.unipr.ce.dsg.deus.automator.AutomatorLogger;
+import it.unipr.ce.dsg.deus.automator.LoggerObject;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -23,12 +26,21 @@ public class LogPopulationSizeEvent extends Event {
 		super(id, params, parentProcess);
 	}
 
-	@Override
 	public void run() throws RunException {
+		
+		AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
+		
+		fileValue.add(new LoggerObject("N", (double) Engine.getDefault().getNodes().size()));
+		
+		a.write(Engine.getDefault().getVirtualTime(), fileValue);
+		
+		/*
 		getLogger().info(
 				"## Network size: "
 						+ Integer.toString(Engine.getDefault().getNodes()
 								.size()));
+		*/
 	}
 
 }
