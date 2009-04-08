@@ -47,7 +47,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 		double qhr = node.getAvgNeighborsQhr();
 		getLogger().fine(node + " avg neighbor qhr = " + qhr);
 		fitnessFunction = ((RevolPeer) ((Peer) associatedNode)).getFitnessFunction();
-		System.out.println("fitnessFunction = " + fitnessFunction);
+
 		// F1
 		if (fitnessFunction.equals("F1.0")) {
 			if (qhr < 0.99) 	  
