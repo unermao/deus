@@ -53,15 +53,6 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true"
-	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolDisconnectionSchedulerListener">
-		<aut:events>
-			<aut:reference id="death" />
-		</aut:events>
-	</aut:event>
-	
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
-	 
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
@@ -127,19 +118,6 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
-			<aut:reference id="death" />
-		</aut:events>
-	</aut:process>
-
-	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
-		<aut:params>
-			<aut:param name="meanArrival" value="5000000" /> 
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
 
