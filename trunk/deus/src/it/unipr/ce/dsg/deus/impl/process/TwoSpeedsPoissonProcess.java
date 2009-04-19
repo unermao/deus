@@ -11,9 +11,9 @@ import java.util.Properties;
 
 /**
  * This class represents a generic Poisson process with two speed. The process
- * start with the first speed and after the current simulation virtual time
+ * starts with the first speed and after the current simulation virtual time
  * reached a defined threshold the process will change to the second speed. It
- * accept parameters called "firstMeanArrival" (float) that is used to generate
+ * accepts parameters called "firstMeanArrival" (float) that is used to generate
  * the first speed, "secondMeanArrival" (float) that is used to generate the
  * second speed, "vtThreshold" (float) that is used to determine when change
  * from first to second speed. Each time the process receives a request for
@@ -85,7 +85,7 @@ public class TwoSpeedsPoissonProcess extends Process {
 	}
 
 	public float getNextTriggeringTime(float virtualTime) {
-		if (Engine.getDefault().getVirtualTime() < vtThreshold)
+		if (virtualTime < vtThreshold)
 			return virtualTime + expRandom((float) 1 / firstMeanArrival);
 		else
 			return virtualTime + expRandom((float) 1 / secondMeanArrival);
