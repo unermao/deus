@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 /**
- * This class represents a generic Periodic process with two speed. The process
- * start with the first speed and after the current simulation virtual time
+ * This class represents a generic Periodic process with two speeds. The process
+ * starts with the first speed and after the current simulation virtual time
  * reached a defined threshold the process will change to the second speed. It
- * accept parameters called "firstPeriodicArrival" (float) that is used to generate
+ * accepts parameters called "firstPeriodicArrival" (float) that is used to generate
  * the first speed, "secondPeriodicArrival" (float) that is used to generate the
  * second speed, "vtThreshold" (float) that is used to determine when change
  * from first to second speed. Each time the process receives a request for
@@ -84,9 +84,8 @@ public class TwoSpeedsPeriodicProcess extends Process {
 		}
 	}
 
-	public float getNextTriggeringTime(float virtualTime) {
-		
-		if (Engine.getDefault().getVirtualTime() < vtThreshold)
+	public float getNextTriggeringTime(float virtualTime) {	
+		if (virtualTime < vtThreshold)
 			return virtualTime + firstPeriodArrival;
 		else
 			return virtualTime + secondPeriodArrival;
