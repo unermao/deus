@@ -204,6 +204,15 @@ public final class Engine extends SimulationObject {
 	}
 
 	/**
+	 * Returns the max simulation virtual time.
+	 * 
+	 * @return the max simulation virtual time.
+	 */
+	public float getMaxVirtualTime() {
+		return maxVirtualTime;
+	}
+	
+	/**
 	 * Runs the simulation.
 	 * 
 	 * @throws SimulationException
