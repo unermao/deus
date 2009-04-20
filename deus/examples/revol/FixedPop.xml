@@ -65,7 +65,7 @@
 		<aut:params>
 			<aut:param name="meanArrival" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
-			<aut:param name="stopVtThreshold" value="50000" />
+			<aut:param name="stopVtThreshold" value="100000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
