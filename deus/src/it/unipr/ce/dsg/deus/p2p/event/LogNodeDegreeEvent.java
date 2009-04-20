@@ -1,5 +1,7 @@
 package it.unipr.ce.dsg.deus.p2p.event;
 
+import it.unipr.ce.dsg.deus.automator.AutomatorLogger;
+import it.unipr.ce.dsg.deus.automator.LoggerObject;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -8,6 +10,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -36,6 +39,10 @@ public class LogNodeDegreeEvent extends Event {
 		int nodeDegree[] = new int[Engine.getDefault().getNodes().size()];
 		int nodeIndex = 0;
 		int kMax = 0;
+		
+		AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
+		
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			Node n = it.next();
@@ -52,9 +59,10 @@ public class LogNodeDegreeEvent extends Event {
 		for (int i = 0; i < nodeDegree.length; i++)
 			kValues[nodeDegree[i]]++;
 
-		getLogger().info("## Node degree distribution:");
 		for (int i = 0; i < kValues.length; i++)
-			getLogger().info(i + " " + kValues[i]);
+			fileValue.add(new LoggerObject("k("+i+")", kValues[i]));
+		
+		a.write(Engine.getDefault().getVirtualTime(), fileValue);
 	}
 
 }
