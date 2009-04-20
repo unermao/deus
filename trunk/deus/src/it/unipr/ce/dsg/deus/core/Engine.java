@@ -222,7 +222,7 @@ public final class Engine extends SimulationObject {
 		getLogger().info(
 				"Starting simulation with maxVirtualTime = " + maxVirtualTime);
 
-		while (virtualTime < maxVirtualTime && eventsList.size() > 0) {
+		while (virtualTime <= maxVirtualTime && eventsList.size() > 0) {
 			getLogger().fine(
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
