@@ -25,9 +25,9 @@
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="cpu" value="1000" /><!-- MHz -->
-			<aut:param name="ram" value="500" /><!-- MB -->
-			<aut:param name="disk" value="50000" /><!-- MB -->
+			<aut:param name="cpu" value="2000" /><!-- MHz -->
+			<aut:param name="ram" value="1000" /><!-- MB -->
+			<aut:param name="disk" value="100000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 			<aut:param name="numInitialConnections" value="3" />
@@ -121,7 +121,7 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="5000" />
+			<aut:param name="meanArrival" value="50" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -148,16 +148,16 @@
 			<aut:param name="period" value="1000000" /> 
 		</aut:params>
 		<aut:events>
+			<!-- aut:reference id="logNodeDegree" / -->
+			<aut:reference id="logRevolPeerStats" />  
 		    <aut:reference id="logPopulationSize" />
-			<aut:reference id="logNodeDegree" /> 
-			<aut:reference id="logRevolPeerStats" /> 
 		</aut:events>
 	</aut:process>
 
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="20000000" seed="123456789"> 
+	<aut:engine maxvt="10000000" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="rectpulsepoisson" /> 
