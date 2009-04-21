@@ -54,15 +54,24 @@ public class ResultAutomator {
 		    	   String name = lineSlipts[0];
 		    	   Double value = Double.parseDouble(lineSlipts[1]);
 		    	   
-		    	   if(name.equals("VT")){
-		    		   
+		    	   if(name.equals("VT")) {
+		    		   if(vtResultValue != null && !vtResultValue.getVT().equals(value))           
+		    		   {                              
+		    			   this.readedResults.add(vtResultValue);           
+		               }
+		               
+		               if(vtResultValue == null)
+		            	   vtResultValue = new VTResults(value);
+		               else if(!vtResultValue.getVT().equals(value))
+		            	   vtResultValue = new VTResults(value);
+		    		   /*
 		    		   if(vtResultValue != null)
 		    		   {   
 		    			   this.readedResults.add(vtResultValue);
 		    		   }
 		    		   
 		    		   vtResultValue = new VTResults(value);
-		    		   
+		    		   */
 		    	   }
 		    	   else{
 		    		   vtResultValue.addResult(new Result(name,value));
