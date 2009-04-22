@@ -320,7 +320,7 @@ public class ChordPeer extends Peer {
 	public void fixFingers() {
 		int i = Engine.getDefault().getSimulationRandom().nextInt(
 				fingerTableSize - 1) + 1;
-		fingerTable[i] = findSuccessor(calculateNextNodeId(getKey(), i + 1));
+		fingerTable[i] = findSuccessor(calculateNextNodeId(getKey(), i));
 	}
 
 	/**
