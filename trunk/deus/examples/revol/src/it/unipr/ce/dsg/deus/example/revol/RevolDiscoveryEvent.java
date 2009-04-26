@@ -201,9 +201,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 										.nextInt(
 												Engine.getDefault().getNodes()
 														.size()));
-			} else if (isPropagation) { // associate this discovery to a
+			} else if (isPropagation) { // associate this discovery to a neighbor of the interested node
 				getLogger().fine("!!!! associated node is null AND is propagation !!!!");
-				// neighbor of the interested node
 				do {
 					associatedRevolNode = (RevolPeer) res.getInterestedNode()
 							.getNeighbors().get(
@@ -324,8 +323,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * Searches locally for the resource associated to this discovery event. If
 	 * the requested resource is locally available, updates the resource
 	 * advertisement adding the resource owner (i.e. the node associated to this
-	 * event), notifies the interested node (QH++), connects the interested node
-	 * and the resource owner, stores the resource adv. in the cache of the
+	 * event), notifies the interested node (QH++), stores the resource adv. in the cache of the
 	 * interested node, occupies the resource and puts a free resource event in
 	 * the event queue.
 	 * 
@@ -365,11 +363,13 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				associatedRevolNode.setDisk(associatedRevolNode.getDisk()
 						- res.getAmount());
 
-			//if (!associatedRevolNode.getId().equals(interestedNode.getId())) {
+			// this connection changes the topology!
+			/*
 			if (isPropagation) {
 				interestedNode.addNeighbor(associatedRevolNode);
 				associatedRevolNode.addNeighbor(interestedNode);
 			}
+			*/
 
 			// create and enqueue an event that will free the resource
 			getLogger().fine(
