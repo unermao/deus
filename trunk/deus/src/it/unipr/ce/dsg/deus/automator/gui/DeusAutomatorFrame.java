@@ -95,20 +95,10 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     	
     	try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (Exception e) {
+			System.err.println("Unsupported Windows Look And Feel !");
 		}
-    	
+		
         dsgLogoLabel = new javax.swing.JLabel();
         simulationTabbedPane = new javax.swing.JTabbedPane();
         openLabel = new javax.swing.JLabel();
@@ -353,13 +343,49 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_openLabelMouseReleased
 
     private void saveLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveLabelMouseClicked
+    	
     	chooser_frame = new JFrame();
 		chooser_frame.setBounds(0, 0, 450, 450);
 		chooser = new JFileChooser();
+		int result = chooser.showSaveDialog(null);
 		
+		if (result == JFileChooser.APPROVE_OPTION)
+		{	
+		
+			if(chooser.getSelectedFile() != null)
+			{	
+			 String app = chooser.getSelectedFile().toString();
+			 
+			 if( app.indexOf('/') != -1 )
+				 app = app + "/";
+			 else
+				 app = app + "\\";
+			
+			 saveFileName = app;
+			 
+			 if(saveFileName != null)
+			 {	 
+			 chooser_frame.removeAll();
+			 chooser_frame.setVisible(false);
+			 
+			 try {
+				writeAutomatorXML(saveFileName);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			 
+			 }
+			else
+				chooser_frame.dispose();
+	   	}
+		}
+		
+		/*
 		chooser.addActionListener ( new ActionListener() { 
 			public void actionPerformed(ActionEvent e) 
 		   	{
+				System.out.println("Salvo");
+				
 				if(chooser.getSelectedFile() != null)
 				{	
 				 String app = chooser.getSelectedFile().toString();
@@ -388,11 +414,12 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					chooser_frame.dispose();
 		   	}
 		   }});
+		   */
 		
 		chooser_frame.setLayout(new BorderLayout());
 		chooser_frame.add(chooser,BorderLayout.NORTH);
 		chooser.setVisible(true);
-		chooser_frame.setVisible(true);
+		//chooser_frame.setVisible(true);
     }//GEN-LAST:event_saveLabelMouseClicked
 
     private void saveLabelMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_saveLabelMousePressed
@@ -423,7 +450,8 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
 		runner.setSimulationProgressBar(simulationProgressBar);
 		
-		Thread automatorRunner = new Thread(runner, "Media Controller Listener");
+		Thread automatorRunner = new Thread(runner, "Automator Thread Runner");
+		automatorRunner.setPriority(10);
 		automatorRunner.start();	
     }//GEN-LAST:event_runLabelMouseClicked
 
