@@ -2319,12 +2319,12 @@ public boolean playVideoBufferCoolStreaming(){
 		{
 			FitnessCoolStreamingPeer peerOriginal = (FitnessCoolStreamingPeer)this.neighbors.get(i);
 			
-			//La lista è vuota aggiungo direttamente l'elemento
+			//La lista e' vuota aggiungo direttamente l'elemento
 			if(appList.size() == 0)
 				appList.add(peerOriginal);
 			else
 			{
-				//Cerco se c'è un Peer con fitness minore
+				//Cerco se c'e' un Peer con fitness minore
 				for(int j = 0 ; j < appList.size(); j++)
 				{
 					
@@ -2420,13 +2420,13 @@ public boolean playVideoBufferCoolStreaming(){
 				}			
 				else{
 				*/		
-						if(this.getServedPeers2().get(j).get(i).getServerByPeer().get(j) == null && this.getServedPeers2().get(j).get(i).getServerByServer().get(j) == null)
-							//Lancio l'evento per l'aggiornamento dei fornitori per quel nodo
-							{							
+				if(this.getServedPeers2().get(j).get(i).getServerByPeer().get(j) == null && this.getServedPeers2().get(j).get(i).getServerByServer().get(j) == null)
+				//Lancio l'evento per l'aggiornamento dei fornitori per quel nodo
+				{							
 							
-							 this.getServedPeers2().get(j).get(i).findProviderNodeFromLastSegment(triggeringTime,j);
+				 this.getServedPeers2().get(j).get(i).findProviderNodeFromLastSegment(triggeringTime,j);
 							 
-							}
+				}
 				//	}
 				
 				
