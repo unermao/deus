@@ -523,6 +523,9 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 		
 		 fileCreated = true;
 		}
+		
+		System.out.println("Tempo : " + Engine.getDefault().getVirtualTime() + " Nodi:" + Engine.getDefault().getNodes().size() + " ("+totalPcNode+" , "+totalPcNodeHigh+" , "+totalSuperNode+" ) ");
+		
 		getLogger().info("\n");
 		getLogger().info("########################################################################");
 		

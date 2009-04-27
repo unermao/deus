@@ -45,7 +45,7 @@ public class FitnessCoolStreamingUpdateVideoBufferEvent extends NodeEvent {
 
 		getLogger().fine("## Update Video Buffer Event ! ");
 	
-		System.out.println("Tempo : " + Engine.getDefault().getVirtualTime());
+		//System.out.println("Tempo : " + Engine.getDefault().getVirtualTime() + " Numero Di Nodi nel Sistema: " + Engine.getDefault().getNodes().size());
 		
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
