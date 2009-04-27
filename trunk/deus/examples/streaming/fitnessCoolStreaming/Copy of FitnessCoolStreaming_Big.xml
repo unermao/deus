@@ -420,7 +420,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="50001" seed="123456000">
+	<aut:engine maxvt="110001" seed="123456000">
 
 		<aut:logger level="INFO" />
 		<aut:processes>
