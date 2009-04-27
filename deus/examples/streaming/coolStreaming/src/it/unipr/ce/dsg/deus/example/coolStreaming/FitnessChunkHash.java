@@ -1,11 +1,11 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
-public class ChunkHash{
+public class FitnessChunkHash{
 	
 	private int chunkIndex;
 	private int numberOfSend;
 	
-	public ChunkHash(int chunkIndex, int numberOfSend) {
+	public FitnessChunkHash(int chunkIndex, int numberOfSend) {
 		super();
 		this.chunkIndex = chunkIndex;
 		this.numberOfSend = numberOfSend;

@@ -1,8 +1,8 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.Node;
 
-public class CoolStreamingVideoChunk {
+public class FitnessCoolStreamingVideoChunk {
 	
 	private int chunkIndex;
 	private int chunkSize;
@@ -10,7 +10,7 @@ public class CoolStreamingVideoChunk {
 	private Node destNode;
 	private float originalTime = 0;
 
-	public CoolStreamingVideoChunk(int chunkIndex, int chunkSize) {
+	public FitnessCoolStreamingVideoChunk(int chunkIndex, int chunkSize) {
 		super();
 		this.chunkIndex = chunkIndex;
 		this.chunkSize = chunkSize;
@@ -18,7 +18,7 @@ public class CoolStreamingVideoChunk {
 	
 	@Override
 	public boolean equals(Object arg0) {
-		CoolStreamingVideoChunk chunk =(CoolStreamingVideoChunk) arg0;
+		FitnessCoolStreamingVideoChunk chunk =(FitnessCoolStreamingVideoChunk) arg0;
 		if(chunk.getChunkIndex() == this.getChunkIndex() /*&& chunk.getSourceNode() == this.getSourceNode()
 				&& chunk.getDestNode() == this.getDestNode()*/)
 			return true;

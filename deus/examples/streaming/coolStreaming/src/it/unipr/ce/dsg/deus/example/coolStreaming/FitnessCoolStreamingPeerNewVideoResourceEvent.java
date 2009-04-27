@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -19,11 +19,11 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
+public class FitnessCoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 
-	private CoolStreamingVideoChunk videoChunk = null;
+	private FitnessCoolStreamingVideoChunk videoChunk = null;
 	
-	public CoolStreamingPeerNewVideoResourceEvent(String id, Properties params,
+	public FitnessCoolStreamingPeerNewVideoResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,7 +34,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 	
 	public Object clone() {
 		
-		CoolStreamingPeerNewVideoResourceEvent clone = (CoolStreamingPeerNewVideoResourceEvent) super.clone();
+		FitnessCoolStreamingPeerNewVideoResourceEvent clone = (FitnessCoolStreamingPeerNewVideoResourceEvent) super.clone();
 		clone.videoChunk = this.videoChunk;
 		return clone;
 	}
@@ -43,7 +43,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		
 		getLogger().fine("## new node video resource");
 		
-		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
+		FitnessCoolStreamingPeer associatedStreamingNode = (FitnessCoolStreamingPeer) associatedNode;
 		
 		Peer sourcePeer = (Peer) videoChunk.getSourceNode();
 		
@@ -63,7 +63,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		//	System.out.println("INVIO");
 			associatedStreamingNode.addNewVideoResourceCoolStreaming(videoChunk,this.triggeringTime);
 			
-			CoolStreamingVideoChunk newVideoChunk = new CoolStreamingVideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
+			FitnessCoolStreamingVideoChunk newVideoChunk = new FitnessCoolStreamingVideoChunk(videoChunk.getChunkIndex(),videoChunk.getChunkSize());
 			
 			//Imposto il nuovo nodo sorgente sulla porzione video
 			newVideoChunk.setSourceNode(associatedNode);
@@ -92,7 +92,7 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 //				if(associatedStreamingNode.getKey() == 1376590870 )
 //				System.out.println("Sono " + associatedStreamingNode.getKey() + " Invio " + newVideoChunk.getChunkIndex() + " a " + associatedStreamingNode.getServedPeers2().get(i).get(index).getKey());	
 				
-				CoolStreamingVideoChunk newResource2 = new CoolStreamingVideoChunk(newVideoChunk.getChunkIndex(),newVideoChunk.getChunkSize());
+				FitnessCoolStreamingVideoChunk newResource2 = new FitnessCoolStreamingVideoChunk(newVideoChunk.getChunkIndex(),newVideoChunk.getChunkSize());
 				
 				//Imposto nel chunk le informazioni sul sorgente
 			    newResource2.setSourceNode(associatedStreamingNode);
@@ -124,11 +124,11 @@ public class CoolStreamingPeerNewVideoResourceEvent extends NodeEvent {
 		getLogger().fine("end new node video resource ##");
 	}
 
-	public CoolStreamingVideoChunk getResourceValue() {
+	public FitnessCoolStreamingVideoChunk getResourceValue() {
 		return videoChunk;
 	}
 
-	public void setResourceValue(CoolStreamingVideoChunk newResource) {
+	public void setResourceValue(FitnessCoolStreamingVideoChunk newResource) {
 		this.videoChunk = newResource;
 	}
 

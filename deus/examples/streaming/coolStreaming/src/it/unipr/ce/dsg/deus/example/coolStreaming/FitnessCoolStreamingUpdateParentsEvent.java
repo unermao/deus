@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -18,11 +18,11 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
-	
+public class FitnessCoolStreamingUpdateParentsEvent extends NodeEvent {
+
 	private int maxPartnersNumber = 20;
 	
-	public CoolStreamingUpdateVideoBufferEvent(String id, Properties params,
+	public FitnessCoolStreamingUpdateParentsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,7 +34,7 @@ public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		CoolStreamingUpdateVideoBufferEvent clone = (CoolStreamingUpdateVideoBufferEvent) super.clone();
+		FitnessCoolStreamingUpdateParentsEvent clone = (FitnessCoolStreamingUpdateParentsEvent) super.clone();
 	
 		clone.maxPartnersNumber = this.maxPartnersNumber;
 		
@@ -43,18 +43,21 @@ public class CoolStreamingUpdateVideoBufferEvent extends NodeEvent {
 
 	public void run() throws RunException {
 
-		getLogger().fine("## Update Video Buffer Event ! ");
+		getLogger().fine("## Update Parents List Event ! ");
 	
-		System.out.println("Tempo : " + Engine.getDefault().getVirtualTime());
-		
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(i);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
-				//peer.updateVideoBufferList(this.triggeringTime);
-				peer.updateVideoBufferListCoolStreaming(this.triggeringTime);
+			{
+				//peer.updateParentsList(this.triggeringTime);			
+			//	peer.updateParentsListCoolStreaming(this.triggeringTime);
+				peer.gossipProtocol(peer, 1);
+				
+				peer.updateFitnessValue();
+			}
 		}
 			
 			
