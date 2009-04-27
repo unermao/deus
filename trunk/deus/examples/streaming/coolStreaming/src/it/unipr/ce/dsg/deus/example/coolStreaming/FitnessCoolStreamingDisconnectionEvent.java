@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -18,9 +18,9 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingDisconnectionEvent extends NodeEvent {
+public class FitnessCoolStreamingDisconnectionEvent extends NodeEvent {
 
-	public CoolStreamingDisconnectionEvent(String id, Properties params,
+	public FitnessCoolStreamingDisconnectionEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -32,7 +32,7 @@ public class CoolStreamingDisconnectionEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		CoolStreamingDisconnectionEvent clone = (CoolStreamingDisconnectionEvent) super.clone();
+		FitnessCoolStreamingDisconnectionEvent clone = (FitnessCoolStreamingDisconnectionEvent) super.clone();
 		return clone;
 	}
 
@@ -42,12 +42,12 @@ getLogger().fine("## new disconnection event");
 		
 //System.out.println("entro");
 		int index = 0;
-		CoolStreamingPeer peer = null;
+		FitnessCoolStreamingPeer peer = null;
 		
 		int size = (Engine.getDefault().getNodes().size() - 1 );
 		
 		index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-		peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(index);
+		peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(index);
 		
 		if(peer.isConnected())
 			//Disconnetto il nodo

@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,11 +30,11 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
+public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 
 	private boolean fileCreated = false;
 
-	public LogCoolStreamingPeerConnectionStatsEvent(String id, Properties params,
+	public LogFitnessCoolStreamingPeerConnectionStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -125,7 +125,7 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		double totalInternalISP = 0;
 		double totalExternalISP = 0;
 		
-		CoolStreamingServerPeer serverPeer = (CoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
+		FitnessCoolStreamingServerPeer serverPeer = (FitnessCoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
 		
 				
 
@@ -145,7 +145,7 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		//Trovo il massimo grado di nodo
 		int maxNodeDepth = 0;
 		for(int k = 1; k < Engine.getDefault().getNodes().size(); k++ ){
-		CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(k);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(k);
 			
 			maxNodeDepth = Math.max(maxNodeDepth, peer.getNodeDepth());
 		}
@@ -189,7 +189,7 @@ public class LogCoolStreamingPeerConnectionStatsEvent extends Event {
 		//Controllo le connessioni attie dei diversi nodi
 		for(int index = 1; index < Engine.getDefault().getNodes().size(); index++ ){												
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);						
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);						
 			
 			totalOverheadMessage += peer.getOverhead();
 			

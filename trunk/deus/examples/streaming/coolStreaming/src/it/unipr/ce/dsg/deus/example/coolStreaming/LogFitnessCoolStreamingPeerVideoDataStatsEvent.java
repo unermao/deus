@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import java.util.Iterator;
 import java.util.Properties;
@@ -24,9 +24,9 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class LogCoolStreamingPeerVideoDataStatsEvent extends Event {
+public class LogFitnessCoolStreamingPeerVideoDataStatsEvent extends Event {
 
-	public LogCoolStreamingPeerVideoDataStatsEvent(String id, Properties params,
+	public LogFitnessCoolStreamingPeerVideoDataStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -42,7 +42,7 @@ public class LogCoolStreamingPeerVideoDataStatsEvent extends Event {
 		
 		//Stampo la lista delle risorse di ogni nodo
 		for(int index = 1; index < Engine.getDefault().getNodes().size(); index++ ){
-			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);
 			
 			if(peer.isConnected())
 			{

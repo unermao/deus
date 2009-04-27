@@ -1,14 +1,14 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.Node;
 
-public class NeighborTrust {
+public class FitnessNeighborTrust {
 
 	private int key;
 	private int trust_value;
 		
 	
-	public NeighborTrust(int key, int trust_value) {
+	public FitnessNeighborTrust(int key, int trust_value) {
 		super();
 		this.key = key;
 		this.trust_value = trust_value;

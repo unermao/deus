@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
@@ -21,9 +21,9 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingConnectionEvent extends NodeEvent {
+public class FitnessCoolStreamingConnectionEvent extends NodeEvent {
 
-	public CoolStreamingConnectionEvent(String id, Properties params,
+	public FitnessCoolStreamingConnectionEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		
@@ -39,7 +39,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 	
 	public Object clone() {
 		
-		CoolStreamingConnectionEvent clone = (CoolStreamingConnectionEvent) super.clone();
+		FitnessCoolStreamingConnectionEvent clone = (FitnessCoolStreamingConnectionEvent) super.clone();
 		
 		return clone;
 	}
@@ -48,7 +48,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 		
 		getLogger().fine("## Connection Event of: " +  associatedNode.getId() +" (" + associatedNode.getKey()  + ")");
 		
-		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
+		FitnessCoolStreamingPeer associatedStreamingNode = (FitnessCoolStreamingPeer) associatedNode;
 		associatedStreamingNode.setConnected(true);
 			
 		//System.out.println(((CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getIsp());
@@ -59,8 +59,28 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 //		else 	
 //			associatedStreamingNode.setIsp(0);
 		
-		if(((CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getCity()!=0)
-			associatedStreamingNode.setCity(Engine.getDefault().getSimulationRandom().nextInt(((CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getCity()));
+		//BATTERY
+		if(associatedStreamingNode.getId().equals("pcNodeHigh"))
+		{
+			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 80.0;
+			if(randomBattey > 100.0)
+				randomBattey = 100.0;
+			
+			associatedStreamingNode.setBattery(randomBattey);
+		}
+		
+		if(associatedStreamingNode.getId().equals("pcNode"))
+		{
+			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 80.0;
+			if(randomBattey > 100.0)
+				randomBattey = 100.0;
+			
+			associatedStreamingNode.setBattery(randomBattey);
+		}
+		
+		
+		if(((FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getCity()!=0)
+			associatedStreamingNode.setCity(Engine.getDefault().getSimulationRandom().nextInt(((FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getCity()));
 		else 	
 			associatedStreamingNode.setCity(0);
 		
@@ -152,7 +172,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			
 				int index = 0;
 								
-				CoolStreamingPeer peer = (CoolStreamingPeer)neighbors.get(index);								
+				FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)neighbors.get(index);								
 				
 				//Associo Casualmente i Vicini fino al massimo consentito!
 				while( associatedStreamingNode.getNeighbors().size() < associatedStreamingNode.getMaxPartnersNumber() )
@@ -168,7 +188,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 					}
 					
 					index ++ ;
-					peer = (CoolStreamingPeer)neighbors.get(index);
+					peer = (FitnessCoolStreamingPeer)neighbors.get(index);
 				}
 				
 					
@@ -178,7 +198,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 				for(int i = 1; i<neighbors.size(); i++)
 				{
 						
-					CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(i);
+					FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(i);
 					
 					if(!associatedStreamingNode.equals(Engine.getDefault().getNodes().get(i)) && peer.isConnected()){
 						
@@ -199,12 +219,12 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			getLogger().fine("Ci sono : " + Engine.getDefault().getNodes().size() +" elementi");
 		
 			int index = 0;
-			CoolStreamingPeer peer = null;
+			FitnessCoolStreamingPeer peer = null;
 			
 			int size = (Engine.getDefault().getNodes().size() - 1 );
 			
 			index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-			peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(index);								
+			peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(index);								
 			
 			//Associo Casualmente i Vicini fino al massimo consentito!
 			while( associatedStreamingNode.getNeighbors().size() < associatedStreamingNode.getMaxPartnersNumber() )
@@ -220,7 +240,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 				}
 				
 				index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-				peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(index);
+				peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(index);
 			}
 			
 				
@@ -230,7 +250,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			for(int i = 1; i<Engine.getDefault().getNodes().size(); i++)
 			{
 					
-				CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(i);
+				FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(i);
 				
 				if(!associatedStreamingNode.equals(Engine.getDefault().getNodes().get(i)) && peer.isConnected()){
 					getLogger().fine("Nodo:" + Engine.getDefault().getNodes().get(i).getKey() + " (" + peer.isConnected() + ")");
@@ -250,7 +270,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 	}
 
 	
-	private ArrayList<Peer> bootstrap(CoolStreamingPeer associatedStreamingNode) {
+	private ArrayList<Peer> bootstrap(FitnessCoolStreamingPeer associatedStreamingNode) {
 
 		ArrayList<Node> nodes = Engine.getDefault().getNodes();
 		
@@ -258,7 +278,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 				 
 		for(int i = 1 ; i < nodes.size() ; i++)
 		 {
-			 CoolStreamingPeer peer = (CoolStreamingPeer)nodes.get(i);
+			 FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)nodes.get(i);
 		  
 			 if(appList.size() == 0){				 
 				 appList.add(peer);
@@ -268,7 +288,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 			 {
 				 for(int j = 0 ; j < appList.size(); j++)
 				 {		    
-					 CoolStreamingPeer peerApp = (CoolStreamingPeer)appList.get(j);	    					 					
+					 FitnessCoolStreamingPeer peerApp = (FitnessCoolStreamingPeer)appList.get(j);	    					 					
 					  
 					 // Ordino in base alla presenza del chunk tra i miei vicini
 					 if( calculateGeographicDistance(associatedStreamingNode,peer) <= calculateGeographicDistance(associatedStreamingNode,peerApp)
@@ -290,7 +310,7 @@ public class CoolStreamingConnectionEvent extends NodeEvent {
 	}
 
 	
-	private int calculateGeographicDistance(CoolStreamingPeer myPeer, CoolStreamingPeer otherPeer) {
+	private int calculateGeographicDistance(FitnessCoolStreamingPeer myPeer, FitnessCoolStreamingPeer otherPeer) {
 		
 		if(myPeer.getIsp() == otherPeer.getIsp() 
 				&& myPeer.getCity() == otherPeer.getCity())

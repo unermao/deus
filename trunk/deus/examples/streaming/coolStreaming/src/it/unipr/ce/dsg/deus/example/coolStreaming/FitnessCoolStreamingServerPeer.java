@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -24,7 +24,7 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  * */
-public class CoolStreamingServerPeer extends Peer {
+public class FitnessCoolStreamingServerPeer extends Peer {
 
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
 	private static final String UPLOAD_SPEED = "uploadSpeed";
@@ -56,12 +56,12 @@ public class CoolStreamingServerPeer extends Peer {
 	private ArrayList<Float> arrivalTimesPcNodeHigh = new ArrayList<Float>();
 	private ArrayList<Float> arrivalTimesMobile3GNode = new ArrayList<Float>();
 	//K-Buffer
-	private ArrayList<ArrayList<CoolStreamingVideoChunk>> k_buffer = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();
-	private ArrayList<ArrayList<CoolStreamingPeer>> servedPeers = new ArrayList<ArrayList<CoolStreamingPeer>>();
+	private ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> k_buffer = new ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>>();
+	private ArrayList<ArrayList<FitnessCoolStreamingPeer>> servedPeers = new ArrayList<ArrayList<FitnessCoolStreamingPeer>>();
 	
 	
 	//Lista contenente le richieste di chunk
-	private ArrayList<ArrayList<CoolStreamingVideoChunk>> sendBuffer = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();
+	private ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> sendBuffer = new ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>>();
 	//private ArrayList<ArrayList<ChunkHash>> numOfChunkSended = new ArrayList<ArrayList<ChunkHash>>();  
 	
 	public double getTotalDeadline() {
@@ -72,12 +72,12 @@ public class CoolStreamingServerPeer extends Peer {
 		this.totalDeadline = totalDeadine;
 	}
 
-	//private ArrayList<CoolStreamingPeer> servedPeers = new ArrayList<CoolStreamingPeer>();
-	private ArrayList<CoolStreamingVideoChunk> videoResource = new ArrayList<CoolStreamingVideoChunk>();
+	//private ArrayList<FitnessCoolStreamingPeer> servedPeers = new ArrayList<FitnessCoolStreamingPeer>();
+	private ArrayList<FitnessCoolStreamingVideoChunk> videoResource = new ArrayList<FitnessCoolStreamingVideoChunk>();
 	private boolean init_bool = false;
 	
 	
-	public CoolStreamingServerPeer(String id, Properties params, ArrayList<Resource> resources)
+	public FitnessCoolStreamingServerPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
 		initialize();
@@ -119,18 +119,18 @@ public class CoolStreamingServerPeer extends Peer {
 	
 	public Object clone() {
 		
-		CoolStreamingServerPeer clone = (CoolStreamingServerPeer) super.clone();
+		FitnessCoolStreamingServerPeer clone = (FitnessCoolStreamingServerPeer) super.clone();
 		
 		clone.activeConnection = this.activeConnection;
 		clone.maxAcceptedConnection = this.maxAcceptedConnection;
-		clone.servedPeers = new ArrayList<ArrayList<CoolStreamingPeer>>();
+		clone.servedPeers = new ArrayList<ArrayList<FitnessCoolStreamingPeer>>();
 	//	clone.numOfChunkSended = new ArrayList<ArrayList<ChunkHash>>();
 	//	clone.servedPeers = this.servedPeers;
 		clone.videoResource = this.videoResource;
-		clone.k_buffer = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();
+		clone.k_buffer = new ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>>();
 		clone.nodeDepth = 0;
 		clone.init_bool = this.init_bool;
-		clone.sendBuffer = new ArrayList<ArrayList<CoolStreamingVideoChunk>>();		
+		clone.sendBuffer = new ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>>();		
 		
 		return clone;
 	}
@@ -143,7 +143,7 @@ public class CoolStreamingServerPeer extends Peer {
 	 * @param newResource
 	 * @param triggeringTime
 	 */
-	public void sendVideoChunk(CoolStreamingPeer clientNode,CoolStreamingVideoChunk newResource, float triggeringTime){
+	public void sendVideoChunk(FitnessCoolStreamingPeer clientNode,FitnessCoolStreamingVideoChunk newResource, float triggeringTime){
 		
 		//Verifico se devo degradare la velocitˆ di download del nodo client in base alle
 		//sue connessioni in ingresso attive
@@ -163,7 +163,7 @@ public class CoolStreamingServerPeer extends Peer {
 		
 		//System.out.println("Server Invia: " + newResource.getChunkIndex() + " At: " + time + " To:" + clientNode.getKey());
 		
-		CoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (CoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(CoolStreamingPeerNewVideoResourceEvent.class,time);
+		FitnessCoolStreamingPeerNewVideoResourceEvent newPeerResEvent = (FitnessCoolStreamingPeerNewVideoResourceEvent)Engine.getDefault().createEvent(FitnessCoolStreamingPeerNewVideoResourceEvent.class,time);
 		newPeerResEvent.setOneShot(true);
 		newPeerResEvent.setAssociatedNode(clientNode);
 		newPeerResEvent.setResourceValue(newResource);
@@ -177,7 +177,7 @@ public class CoolStreamingServerPeer extends Peer {
 	 * @param clientDownloadSpeed
 	 * @return
 	 */
-	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, CoolStreamingVideoChunk chunk) {
+	private float nextChunkArrivalTime(double providerUploadSpeed, double clientDownloadSpeed, FitnessCoolStreamingVideoChunk chunk) {
 		
 		double time = 0.0;
 		double minSpeed = Math.min(  (providerUploadSpeed  / (double) this.getActiveConnection()) , clientDownloadSpeed);
@@ -191,57 +191,57 @@ public class CoolStreamingServerPeer extends Peer {
 				
 		
 		//TODO ISP aggiungere latenza in base all'ISP e città
-		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
 			sec = Engine.getDefault().getSimulationRandom().nextInt(2);
 		}
 		
-		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
 			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 5;
 		}
 		
-		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
 			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 1;
 		}
 		
-		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 		{
 			// IMPOSTO UNA LATENZA
 			sec = Engine.getDefault().getSimulationRandom().nextInt(2) + 6;
 		}
 		
-//		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-//				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+//		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+//				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 //		{
 //			// IMPOSTO UNA LATENZA
 //			sec = Engine.getDefault().getSimulationRandom().nextInt(2);
 //		}
 //		
-//		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-//				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+//		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+//				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 //		{
 //			// IMPOSTO UNA LATENZA
 //			sec = Engine.getDefault().getSimulationRandom().nextInt(2);
 //		}
 //		
-//		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-//				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+//		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+//				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() == ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 //		{
 //			// IMPOSTO UNA LATENZA
 //			sec = Engine.getDefault().getSimulationRandom().nextInt(7) + 2;
 //		}
 //		
-//		if(((CoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((CoolStreamingPeer)chunk.getDestNode()).getIsp()
-//				&& ((CoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((CoolStreamingPeer)chunk.getDestNode()).getCity())
+//		if(((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getIsp() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getIsp()
+//				&& ((FitnessCoolStreamingServerPeer)chunk.getSourceNode()).getCity() != ((FitnessCoolStreamingPeer)chunk.getDestNode()).getCity())
 //		{
 //			// IMPOSTO UNA LATENZA
 //			sec = Engine.getDefault().getSimulationRandom().nextInt(7) + 2;
@@ -251,7 +251,7 @@ public class CoolStreamingServerPeer extends Peer {
 
 	}
 		
-	public void addNewVideoResource(CoolStreamingVideoChunk newVideoRes){
+	public void addNewVideoResource(FitnessCoolStreamingVideoChunk newVideoRes){
 		
 		//Inserisco il chunk nel k_buffer appropriato e lo ordino
 		int index = this.calculate_buffer_index(newVideoRes);
@@ -282,7 +282,7 @@ public class CoolStreamingServerPeer extends Peer {
 			System.out.println("ERRORE SERVER PEER ! Connessioni Attive = 0 non posso decrementare");
 	}
 	
-	public int calculate_buffer_index(CoolStreamingVideoChunk chunk)
+	public int calculate_buffer_index(FitnessCoolStreamingVideoChunk chunk)
 	{	 	
 	 return (chunk.getChunkIndex()%this.getK_value());	
 	}
@@ -291,12 +291,12 @@ public class CoolStreamingServerPeer extends Peer {
 	{
 		for(int i=0;i<this.getK_value();i++)
 		{
-			this.getK_buffer().add(i,new ArrayList<CoolStreamingVideoChunk>());
-			this.getServedPeers2().add(i,new ArrayList<CoolStreamingPeer>());
-			this.getSendBuffer().add(i,new ArrayList<CoolStreamingVideoChunk>());
+			this.getK_buffer().add(i,new ArrayList<FitnessCoolStreamingVideoChunk>());
+			this.getServedPeers2().add(i,new ArrayList<FitnessCoolStreamingPeer>());
+			this.getSendBuffer().add(i,new ArrayList<FitnessCoolStreamingVideoChunk>());
 		}
 		
-		new ChunkHash(2*this.k_value + 1,0);
+		new FitnessChunkHash(2*this.k_value + 1,0);
 		
 		this.init_bool  = true;
 	}
@@ -309,7 +309,7 @@ public class CoolStreamingServerPeer extends Peer {
 			System.out.println("ERRORE SERVER PEER ! Connessioni Attive = "+ this.maxAcceptedConnection  +" non posso incrementare");
 	}
 	
-	public CoolStreamingVideoChunk getLastChunk() {
+	public FitnessCoolStreamingVideoChunk getLastChunk() {
 		return this.getVideoResource().get(this.getVideoResource().size()-1);
 	}
 	
@@ -330,11 +330,11 @@ public class CoolStreamingServerPeer extends Peer {
 		return activeConnection;
 	}
 
-	public ArrayList<CoolStreamingVideoChunk> getVideoResource() {
+	public ArrayList<FitnessCoolStreamingVideoChunk> getVideoResource() {
 		return videoResource;
 	}
 
-	public void setVideoResource(ArrayList<CoolStreamingVideoChunk> videoResource) {
+	public void setVideoResource(ArrayList<FitnessCoolStreamingVideoChunk> videoResource) {
 		this.videoResource = videoResource;
 	}
 
@@ -444,19 +444,19 @@ public class CoolStreamingServerPeer extends Peer {
 		this.k_value = k_value;
 	}
 
-	public ArrayList<ArrayList<CoolStreamingVideoChunk>> getK_buffer() {
+	public ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> getK_buffer() {
 		return k_buffer;
 	}
 
-	public void setK_buffer(ArrayList<ArrayList<CoolStreamingVideoChunk>> k_buffer) {
+	public void setK_buffer(ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> k_buffer) {
 		this.k_buffer = k_buffer;
 	}
 
-	public ArrayList<ArrayList<CoolStreamingPeer>> getServedPeers2() {
+	public ArrayList<ArrayList<FitnessCoolStreamingPeer>> getServedPeers2() {
 		return servedPeers;
 	}
 
-	public void setServedPeers2(ArrayList<ArrayList<CoolStreamingPeer>> servedPeers2) {
+	public void setServedPeers2(ArrayList<ArrayList<FitnessCoolStreamingPeer>> servedPeers2) {
 		this.servedPeers = servedPeers2;
 	}
 
@@ -468,12 +468,12 @@ public class CoolStreamingServerPeer extends Peer {
 		this.init_bool = init_bool;
 	}
 
-	public ArrayList<ArrayList<CoolStreamingVideoChunk>> getSendBuffer() {
+	public ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> getSendBuffer() {
 		return sendBuffer;
 	}
 
 	public void setSendBuffer(
-			ArrayList<ArrayList<CoolStreamingVideoChunk>> sendBuffer) {
+			ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> sendBuffer) {
 		this.sendBuffer = sendBuffer;
 	}
 
@@ -485,7 +485,7 @@ public class CoolStreamingServerPeer extends Peer {
 		this.totalstartUpTime = f;
 		
 	}
-	public void printVideoBuffer(ArrayList<CoolStreamingVideoChunk> arrayList)
+	public void printVideoBuffer(ArrayList<FitnessCoolStreamingVideoChunk> arrayList)
 	{
 		String my ="";
 		for(int j = 0 ; j < arrayList.size(); j++)

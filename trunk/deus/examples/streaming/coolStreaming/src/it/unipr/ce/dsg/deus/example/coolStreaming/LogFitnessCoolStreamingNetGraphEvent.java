@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
@@ -22,9 +22,9 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class LogCoolStreamingNetGraphEvent extends Event {
+public class LogFitnessCoolStreamingNetGraphEvent extends Event {
 
-	public LogCoolStreamingNetGraphEvent(String id, Properties params,
+	public LogFitnessCoolStreamingNetGraphEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -40,14 +40,14 @@ public class LogCoolStreamingNetGraphEvent extends Event {
 		getLogger().info("*Nodes "+ Engine.getDefault().getNodes().size());
 		getLogger().info("id*int label*string color*string");
 		
-		CoolStreamingServerPeer serverPeer = (CoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
+		FitnessCoolStreamingServerPeer serverPeer = (FitnessCoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
 
 		getLogger().info(serverPeer.getKey()+ " "+ "\""+serverPeer.getId()+"\"" + " "+ "\""+ "red" +"\"");
 		
 		//Controllo le connessioni attive dei diversi nodi
 		for(int index = 1; index < Engine.getDefault().getNodes().size(); index++ ){
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);
 			
 			String color = "";
 			
@@ -80,7 +80,7 @@ public class LogCoolStreamingNetGraphEvent extends Event {
 		//Controllo le connessioni attie dei diversi nodi
 		for(int index = 1; index < Engine.getDefault().getNodes().size(); index++ ){
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer) Engine.getDefault().getNodes().get(index);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);
 
 			if(peer.isConnected())
 			{

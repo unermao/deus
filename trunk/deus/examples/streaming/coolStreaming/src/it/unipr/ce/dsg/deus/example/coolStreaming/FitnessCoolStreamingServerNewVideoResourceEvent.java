@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -18,12 +18,12 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
+public class FitnessCoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 
 	private static final String MEAN_ARRIVAL_TRIGGERED_DISCOVERY = "meanArrivalTriggeredDiscovery";
 	private float meanArrivalTriggeredDiscovery = 0;
 	
-	public CoolStreamingServerNewVideoResourceEvent(String id, Properties params,
+	public FitnessCoolStreamingServerNewVideoResourceEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -46,7 +46,7 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 	
 	public Object clone() {
 		
-		CoolStreamingServerNewVideoResourceEvent clone = (CoolStreamingServerNewVideoResourceEvent) super.clone();
+		FitnessCoolStreamingServerNewVideoResourceEvent clone = (FitnessCoolStreamingServerNewVideoResourceEvent) super.clone();
 	
 		return clone;
 	}
@@ -55,16 +55,16 @@ public class CoolStreamingServerNewVideoResourceEvent extends NodeEvent {
 		
 getLogger().fine("## new video resource");	
 		
-		CoolStreamingServerPeer serverNode = (CoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+FitnessCoolStreamingServerPeer serverNode = (FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
 		
 		
-		CoolStreamingVideoChunk newResource = null;
+FitnessCoolStreamingVideoChunk newResource = null;
 		
 		//Creo la nuova risorsa video
 	    if(serverNode.getVideoResource().size() == 0)
-	    	newResource = new CoolStreamingVideoChunk(0,serverNode.getChunkSize());
+	    	newResource = new FitnessCoolStreamingVideoChunk(0,serverNode.getChunkSize());
 	    else 
-	    	newResource = new CoolStreamingVideoChunk(serverNode.getLastChunk().getChunkIndex()+1,serverNode.getChunkSize());
+	    	newResource = new FitnessCoolStreamingVideoChunk(serverNode.getLastChunk().getChunkIndex()+1,serverNode.getChunkSize());
 		
 	    //Imposto nel chunk le informazioni sul sorgente
 	    newResource.setSourceNode(serverNode);
@@ -84,7 +84,7 @@ getLogger().fine("## new video resource");
 		for(int index = 0 ; index < serverNode.getServedPeers2().get(i).size(); index++)
 		{
 			
-			CoolStreamingVideoChunk newResource2 = new CoolStreamingVideoChunk(newResource.getChunkIndex(),newResource.getChunkSize());
+			FitnessCoolStreamingVideoChunk newResource2 = new FitnessCoolStreamingVideoChunk(newResource.getChunkIndex(),newResource.getChunkSize());
 			
 			//Imposto nel chunk le informazioni sul sorgente
 		    newResource2.setSourceNode(serverNode);

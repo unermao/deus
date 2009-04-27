@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -25,9 +25,9 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class CoolStreamingDiscoveryEvent extends NodeEvent {
+public class FitnessCoolStreamingDiscoveryEvent extends NodeEvent {
 	
-	public CoolStreamingDiscoveryEvent(String id, Properties params,
+	public FitnessCoolStreamingDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	
@@ -36,7 +36,7 @@ public class CoolStreamingDiscoveryEvent extends NodeEvent {
 	}
 
 	public Object clone() {
-		CoolStreamingDiscoveryEvent clone = (CoolStreamingDiscoveryEvent) super.clone();
+		FitnessCoolStreamingDiscoveryEvent clone = (FitnessCoolStreamingDiscoveryEvent) super.clone();
 
 		return clone;
 	}
@@ -48,7 +48,7 @@ public class CoolStreamingDiscoveryEvent extends NodeEvent {
 		getLogger().fine("####### disc event time: " + triggeringTime);
 		
 		
-		CoolStreamingPeer associatedStreamingNode = (CoolStreamingPeer) associatedNode;
+		FitnessCoolStreamingPeer associatedStreamingNode = (FitnessCoolStreamingPeer) associatedNode;
 		//associatedStreamingNode.findFirstProviderNode(this.triggeringTime);
 		
 		if(associatedStreamingNode.isConnected())

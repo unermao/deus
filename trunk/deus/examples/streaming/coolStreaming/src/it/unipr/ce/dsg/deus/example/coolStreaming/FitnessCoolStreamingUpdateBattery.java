@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
@@ -18,23 +18,22 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class CoolStreamingUpdateParentsEvent extends NodeEvent {
+public class FitnessCoolStreamingUpdateBattery extends NodeEvent {
 
 	private int maxPartnersNumber = 20;
 	
-	public CoolStreamingUpdateParentsEvent(String id, Properties params,
+	public FitnessCoolStreamingUpdateBattery(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
 		
-		System.out.println("StreamingUpdateParentsEvent");
 	}
 
 	public void initialize() throws InvalidParamsException {
 	}
 	
 	public Object clone() {
-		CoolStreamingUpdateParentsEvent clone = (CoolStreamingUpdateParentsEvent) super.clone();
+		FitnessCoolStreamingUpdateBattery clone = (FitnessCoolStreamingUpdateBattery) super.clone();
 	
 		clone.maxPartnersNumber = this.maxPartnersNumber;
 		
@@ -42,19 +41,17 @@ public class CoolStreamingUpdateParentsEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-
-		getLogger().fine("## Update Parents List Event ! ");
 	
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(i);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
 			{
-				//peer.updateParentsList(this.triggeringTime);			
-			//	peer.updateParentsListCoolStreaming(this.triggeringTime);
-				peer.gossipProtocol(peer, 1);
+				//Aggiorno, se necessario, il livello di batteria del nodo
+				if(peer.getId().equals("pcNodeHigh") || peer.getId().equals("pcNode"))
+					peer.updateNodeBattery();
 			}
 		}
 			

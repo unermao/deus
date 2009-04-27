@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.coolStreaming;
+package it.unipr.ce.dsg.deus.example.FitnessCoolStreaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -8,10 +8,10 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.Properties;
 
-public class CoolStreamingPlayVideoEvent extends NodeEvent {
+public class FitnessCoolStreamingPlayVideoEvent extends NodeEvent {
 
 	
-	public CoolStreamingPlayVideoEvent(String id, Properties params,
+	public FitnessCoolStreamingPlayVideoEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -23,7 +23,7 @@ public class CoolStreamingPlayVideoEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		CoolStreamingPlayVideoEvent clone = (CoolStreamingPlayVideoEvent) super.clone();
+		FitnessCoolStreamingPlayVideoEvent clone = (FitnessCoolStreamingPlayVideoEvent) super.clone();
 	
 		
 		return clone;
@@ -36,7 +36,7 @@ public class CoolStreamingPlayVideoEvent extends NodeEvent {
 		//Aggiorno le liste di tutti i nodi presenti
 		for(int i = 1; i < Engine.getDefault().getNodes().size(); i++){
 			
-			CoolStreamingPeer peer = (CoolStreamingPeer)Engine.getDefault().getNodes().get(i);
+			FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)Engine.getDefault().getNodes().get(i);
 			
 			if(peer.isConnected())
 			{
