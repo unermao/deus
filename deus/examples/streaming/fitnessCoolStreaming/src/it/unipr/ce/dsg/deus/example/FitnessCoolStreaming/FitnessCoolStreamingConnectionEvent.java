@@ -62,21 +62,26 @@ public class FitnessCoolStreamingConnectionEvent extends NodeEvent {
 		//BATTERY
 		if(associatedStreamingNode.getId().equals("pcNodeHigh"))
 		{
-			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 80.0;
+			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 20.0;
 			if(randomBattey > 100.0)
 				randomBattey = 100.0;
 			
 			associatedStreamingNode.setBattery(randomBattey);
+			
+			//System.out.println(randomBattey);
 		}
 		
 		if(associatedStreamingNode.getId().equals("pcNode"))
 		{
-			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 80.0;
+			double randomBattey = 100.0*Engine.getDefault().getSimulationRandom().nextDouble() + 20.0;
 			if(randomBattey > 100.0)
 				randomBattey = 100.0;
 			
 			associatedStreamingNode.setBattery(randomBattey);
+			
+			//System.out.println(randomBattey);
 		}
+		
 		
 		
 		if(((FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0)).getCity()!=0)
