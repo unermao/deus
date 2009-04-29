@@ -168,7 +168,7 @@
 			<aut:param name="downloadSpeed" value="0.4" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="incentiveBased" value="false" />
-			<aut:param name="fitnessBased" value="true" />
+			<aut:param name="fitnessBased" value="false" />
 			<aut:param name="k_value" value="4" />
 			<aut:param name="maxPartnersNumber" value="4" />
 		</aut:params>
@@ -194,7 +194,7 @@
 			<aut:param name="downloadSpeed" value="2.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="incentiveBased" value="false" />
-			<aut:param name="fitnessBased" value="true" />
+			<aut:param name="fitnessBased" value="false" />
 			<aut:param name="k_value" value="4" />
 			<aut:param name="maxPartnersNumber" value="10" />
 		</aut:params>
@@ -220,7 +220,7 @@
 			<aut:param name="downloadSpeed" value="4.0" />
 			<aut:param name="videoResourceBufferLimit" value="10" />
 			<aut:param name="incentiveBased" value="false" />
-			<aut:param name="fitnessBased" value="true" />
+			<aut:param name="fitnessBased" value="false" />
 			<aut:param name="k_value" value="4" />
 			<aut:param name="maxPartnersNumber" value="20" />
 		</aut:params>

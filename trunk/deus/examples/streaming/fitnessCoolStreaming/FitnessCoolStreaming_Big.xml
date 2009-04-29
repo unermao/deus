@@ -170,14 +170,14 @@
 			<aut:param name="incentiveBased" value="false" />
 			<aut:param name="fitnessBased" value="true" />
 			<aut:param name="k_value" value="4" />
-			<aut:param name="maxPartnersNumber" value="4" />
+			<aut:param name="maxPartnersNumber" value="20" />
 		</aut:params>
 
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
 				<aut:params>
 					<aut:param name="type" value="maxAcceptedConnection" />
-					<aut:param name="amount" value="20" />
+					<aut:param name="amount" value="4" />
 				</aut:params>
 			</aut:resource>
 		</aut:resources>
@@ -196,7 +196,7 @@
 			<aut:param name="incentiveBased" value="false" />
 			<aut:param name="fitnessBased" value="true" />
 			<aut:param name="k_value" value="4" />
-			<aut:param name="maxPartnersNumber" value="10" />
+			<aut:param name="maxPartnersNumber" value="20" />
 		</aut:params>
 
 		<aut:resources>
@@ -256,7 +256,7 @@
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="10" />
 			<aut:param name="secondMeanArrival" value="50000" />
-			<aut:param name="vtThreshold" value="5000" />
+			<aut:param name="vtThreshold" value="10000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNode" />			
@@ -272,7 +272,7 @@
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="80" />
 			<aut:param name="secondMeanArrival" value="50000" />
-			<aut:param name="vtThreshold" value="5000" />
+			<aut:param name="vtThreshold" value="10000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="pcNodeHigh" />			
@@ -288,7 +288,7 @@
 		<aut:params>
 			<aut:param name="firstMeanArrival" value="90" />
 			<aut:param name="secondMeanArrival" value="50000" />
-			<aut:param name="vtThreshold" value="5000" />
+			<aut:param name="vtThreshold" value="10000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="superNode" />			
