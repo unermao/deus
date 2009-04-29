@@ -1939,6 +1939,10 @@ public boolean playVideoBufferCoolStreaming(){
 			ArrayList<FitnessCoolStreamingPeer> appList2 = new ArrayList<FitnessCoolStreamingPeer>();
 			ArrayList<FitnessCoolStreamingPeer> appList3 = new ArrayList<FitnessCoolStreamingPeer>();
 			
+			//Aggiornamento Fitness dei nodi conosciuti
+			 for(int k = 0 ; k < this.getNeighbors().size(); k++)
+				 ((FitnessCoolStreamingPeer)this.getNeighbors().get(k)).updateFitnessValue();
+			
 			 for(int i = 0 ; i < this.getNeighbors().size() ; i++)
 			 {
 				 FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)this.getNeighbors().get(i);
@@ -2359,9 +2363,11 @@ public boolean playVideoBufferCoolStreaming(){
 		
 		System.out.println("change3GTo2G");
 		
+		
 		//Verifico il parametro connType
 		if( connType.equals(G2) ){
 		
+			
 			System.out.println("CAMBIO !");
 			
 			this.uploadSpeed = uploadSpeed;
@@ -2372,16 +2378,11 @@ public boolean playVideoBufferCoolStreaming(){
 			//Scollego i nodi che stavo servendo in modo che possano cercare altri fornitori
 			for(int j=0; j<this.k_value; j++)
 			for( int i = 0 ; i < this.getServedPeers2().get(j).size(); i++){				
-
-		
+				
 				this.getServedPeers2().get(j).get(i).setProviderPeer(null, j);
 				
 				//Decremento il numero di download attivi del nodo che stavo fornendo
-				this.getServedPeers2().get(j).get(i).setDownloadActiveConnection(this.getServedPeers2().get(j).get(i).getDownloadActiveConnection()-1);
-				
-				//Azzero la profondita' del nodo che si stava fornendo da me
-				//this.getServedPeers2().get(j).get(i).resetNodeDepthFitnessCoolStreaming();
-						
+				this.getServedPeers2().get(j).get(i).setDownloadActiveConnection(this.getServedPeers2().get(j).get(i).getDownloadActiveConnection()-1);			
 			}
 			
 			//Lancio la funzione di ricerca dei nuovi nodi per quelli che stavo servendo
@@ -2391,48 +2392,16 @@ public boolean playVideoBufferCoolStreaming(){
 				//Faccio ripulire al nodo che stavo servendo la lista dei dati richiesti in modo che puo' richiederli ad altri
 				this.getServedPeers2().get(j).get(i).getNeededChunk().clear();
 		
-				/*
-				//Se il mio fornitore e' attivo assegno il mio fornitore al nodo che prima stavo servendo io
-				if( this.getServerByPeer().get(j) != null && this.getServerByPeer().get(j).isConnected() 
-						&& ( this.getServerByPeer().get(j).getMaxAcceptedConnection() - this.getServerByPeer().get(j).getActiveConnection() ) > 0
-						&& this.isIncentiveBased() && this.getServedPeers2().get(j).get(i).getIndexOfLastReceivedChunk() < this.getServerByPeer().get(j).getIndexOfLastReceivedChunk()){
-					
-			
-					//Imposto il mio nuovo fornitore
-					this.getServedPeers2().get(j).get(i).getServerByPeer().set(j, this.getServerByPeer().get(j));//setProviderPeer(this.getServerByPeer().get(j), j);//setSourceStreamingNode(this.getServerByPeer().get(j));
-					
-					this.getServerByPeer().get(j).addActiveConnection();
-				
-					//Mi aggiungo nella lista dei serviti del mio fornitore
-					this.getServerByPeer().get(j).getServedPeers2().get(j).add(this.getServedPeers2().get(j).get(i));
-									
-					//Incremento il mio ordine di nodo
-					//this.getServedPeers2().get(j).get(i).updateNodeDepthCoolStreaming();
-					updated.clear();
-					
-					//Incremento il numero di download attivi
-					this.getServedPeers2().get(j).get(i).downloadActiveConnection ++;
-					
-					
-					if(this.getK_buffer().get(j).size() > 0)
-						this.getServedPeers2().get(j).get(i).getBufferNeighborFitnessCoolStreamingFromInitialChunk(this.getServerByPeer().get(j),triggeringTime,this.getK_buffer().get(j).get(this.getK_buffer().get(j).size()-1).getChunkIndex(),false);
-					
-				}			
-				else{
-				*/		
 				if(this.getServedPeers2().get(j).get(i).getServerByPeer().get(j) == null && this.getServedPeers2().get(j).get(i).getServerByServer().get(j) == null)
 				//Lancio l'evento per l'aggiornamento dei fornitori per quel nodo
 				{							
-							
-				 this.getServedPeers2().get(j).get(i).findProviderNodeFromLastSegment(triggeringTime,j);
-							 
+				 this.getServedPeers2().get(j).get(i).findProviderNodeFromLastSegment(triggeringTime,j);		 
 				}
-				//	}
 				
 				
 			}
 		}
-			
+		
 	}
 	
 	public void change2GTo3G(String connType, double uploadSpeed, int maxAcceptedConnection) {
