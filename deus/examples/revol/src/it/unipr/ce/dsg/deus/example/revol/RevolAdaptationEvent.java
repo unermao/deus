@@ -66,7 +66,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 	}
 
 	private double computeFitness(int[] c, double qhr) {
-		double A = phi0 * ((double) c[0]) / 6 + phi1 * c[1] + phi2 * c[2] * 2;
+		double A = phi0 * ((double) c[0]) / ((int)((RevolPeer) associatedNode).getMaxInitChromosome()) + phi1 * c[1] + phi2 * c[2] * 2;
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		getLogger().fine("avg neighbor qhr = " + qhr);
 		
@@ -194,7 +194,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 					if (epsilon <= pm) {
 						getLogger().fine("mutation! " + i + " " + j);
 						mutatedOffspring[i][j] = Engine.getDefault()
-								.getSimulationRandom().nextInt(6) + 1;
+								.getSimulationRandom().nextInt((int)((RevolPeer) associatedNode).getMaxInitChromosome()) + 1;
 					} else
 						mutatedOffspring[i][j] = offspring[i][j];
 				}
@@ -205,7 +205,7 @@ public class RevolAdaptationEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		RevolPeer associatedRevolNode = (RevolPeer) associatedNode;
-
+	
 		if (associatedRevolNode.getNeighbors().size() == 0)
 			return;
 		
