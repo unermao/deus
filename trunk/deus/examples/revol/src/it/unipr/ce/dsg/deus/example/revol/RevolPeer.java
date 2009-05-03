@@ -29,13 +29,13 @@ import java.util.Random;
 public class RevolPeer extends Peer {
 
 	private static final String FITNESS_FUNCTION = "fitnessFunction";
-	private static final String AVG_INIT_CHROMOSOME = "avgInitChromosome";
+	private static final String MAX_INIT_CHROMOSOME = "maxInitChromosome";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
 	private static final String CPU_FACTOR = "cpuFactor";
 	private static final String RAM_FACTOR = "ramFactor";
 	private static final String DISK_FACTOR = "diskFactor";
 	private String fitnessFunction = null;
-	private int avgInitChromosome = 0;
+	private int maxInitChromosome = 0;
 	private boolean isRandomInit = false;
 	private int cpuFactor = 0;
 	private int ramFactor = 0;
@@ -66,8 +66,8 @@ public class RevolPeer extends Peer {
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(FITNESS_FUNCTION))
 			fitnessFunction = "F"+params.getProperty(FITNESS_FUNCTION);
-		if (params.containsKey(AVG_INIT_CHROMOSOME))
-			avgInitChromosome = (int) Double.parseDouble(params.getProperty(AVG_INIT_CHROMOSOME));
+		if (params.containsKey(MAX_INIT_CHROMOSOME))
+			maxInitChromosome = (int) Double.parseDouble(params.getProperty(MAX_INIT_CHROMOSOME));
 		if (params.containsKey(IS_RANDOM_INIT))
 			isRandomInit = Boolean.parseBoolean(params.getProperty(IS_RANDOM_INIT));
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
@@ -90,10 +90,10 @@ public class RevolPeer extends Peer {
 		Random random = Engine.getDefault().getSimulationRandom(); 
 		for (int i = 0; i < 3; i++)
 			if (isRandomInit)
-				clone.c[i] = random.nextInt(avgInitChromosome*2 - 1) + 1;
+				clone.c[i] = random.nextInt(maxInitChromosome) + 1; // c_i is random in in [1,maxInitChromosome]
 			else
-				clone.c[i] = avgInitChromosome; 
-
+				clone.c[i] = maxInitChromosome; 
+		
 		clone.setInitialCpu((random.nextInt(cpuFactor)+1)*512);
 		clone.setInitialRam((random.nextInt(ramFactor)+1)*256);
 		clone.setInitialDisk((random.nextInt(diskFactor)+1)*10000);
@@ -105,6 +105,10 @@ public class RevolPeer extends Peer {
 		return clone;
 	}
 
+	public double getMaxInitChromosome() {
+		return maxInitChromosome;
+	}
+	
 	public String getFitnessFunction() {
 		return fitnessFunction;
 	}
