@@ -31,7 +31,7 @@
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
 		    <aut:param name="fitnessFunction" value="1" />
-			<aut:param name="avgInitChromosome" value="3" />
+			<aut:param name="maxInitChromosome" value="6" />
 			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 		<aut:resources>
