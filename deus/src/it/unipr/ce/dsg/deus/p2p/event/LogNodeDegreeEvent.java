@@ -36,13 +36,25 @@ public class LogNodeDegreeEvent extends Event {
 	}
 
 	public void run() throws RunException {
-		int nodeDegree[] = new int[Engine.getDefault().getNodes().size()];
-		int nodeIndex = 0;
-		int kMax = 0;
+		//int nodeDegree[] = new int[Engine.getDefault().getNodes().size()];
+		//int nodeIndex = 0;
+		int kMax = 50;
 		
 		AutomatorLogger a = new AutomatorLogger("./temp/logger");
 		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		
+		int kValues[] = new int[kMax+1];
+		for (int i = 0; i < kMax+1; i++)
+			kValues[i] = 0;
+		
+		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext();) {
+			Node n = it.next();
+			if (!(n instanceof Peer))
+				continue;
+			kValues[((Peer) n).getNeighbors().size()]++;
+		}
+			
+		/*
 		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
 				.hasNext();) {
 			Node n = it.next();
@@ -54,10 +66,11 @@ public class LogNodeDegreeEvent extends Event {
 			nodeDegree[nodeIndex++] = k;
 		}
 
-		int kValues[] = new int[kMax + 1];
-
+		int kValues[] = new int[kMax+1];
+		
 		for (int i = 0; i < nodeDegree.length; i++)
 			kValues[nodeDegree[i]]++;
+		*/
 
 		for (int i = 0; i < kValues.length; i++)
 			fileValue.add(new LoggerObject("k("+i+")", kValues[i]));
