@@ -9,6 +9,9 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+		<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="connection" />
+		</aut:events>
 	</aut:event>
 
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
@@ -58,9 +61,9 @@
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 
-	<aut:process id="rectpulsepoisson" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePoissonProcess">
+	<aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10" />
+			<aut:param name="period" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
 			<aut:param name="stopVtThreshold" value="100000" />
 		</aut:params>
@@ -100,7 +103,7 @@
 	<aut:engine maxvt="2000000" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<aut:reference id="rectpulsepoisson" /> 
+			<aut:reference id="rectpulseperiodic" /> 
 			<aut:reference id="periodic2" />
 		</aut:processes>
 	</aut:engine>
