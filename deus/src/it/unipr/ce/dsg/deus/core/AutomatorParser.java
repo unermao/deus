@@ -169,12 +169,7 @@ public class AutomatorParser {
 		}
 
 		// Parse all the events in order to initialize Event objects
-		
-		System.out.println("# of events and seed: " + automator.getEvent().size() + " " + automator.getEngine().getSeed());
 		Random simulationRandom = new Random(automator.getEngine().getSeed());
-		//for (int i = 0; i < automator.getEvent().size(); i++)
-			//System.out.println("seed #"+i+": " + simulationRandom.nextInt(1000000000));
-		
 		for (Iterator<it.unipr.ce.dsg.deus.schema.Event> it = automator
 				.getEvent().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Event event = it.next();
