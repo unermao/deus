@@ -131,9 +131,7 @@ public final class Engine extends SimulationObject {
 			for (Iterator<Event> it2 = p.getReferencedEvents().iterator(); it2
 					.hasNext();) {
 				Event e = it2.next();
-				insertIntoEventsList(e.createInstance(p
-						.getNextTriggeringTime(virtualTime)));
-
+				insertIntoEventsList(e.createInstance(p.getNextTriggeringTime(e, virtualTime))); //TODO check e..
 			}
 		}
 	}
@@ -236,8 +234,7 @@ public final class Engine extends SimulationObject {
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot())
 						insertIntoEventsList(e.createInstance(e
-								.getParentProcess().getNextTriggeringTime(
-										virtualTime)));
+								.getParentProcess().getNextTriggeringTime(e, virtualTime))); // TODO check e
 				} catch (RunException ex) {
 					getLogger().severe(ex.getMessage());
 					throw new SimulationException(ex.getMessage());
