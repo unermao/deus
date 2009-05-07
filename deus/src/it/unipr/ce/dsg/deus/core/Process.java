@@ -68,7 +68,7 @@ public abstract class Process extends SimulationObject {
 	 *            the current simulation virtual time.
 	 * @return the next triggering time.
 	 */
-	public abstract float getNextTriggeringTime(float virtualTime);
+	public abstract float getNextTriggeringTime(Event event, float virtualTime);
 
 	/**
 	 * Performs the standard Object.equals comparison by using the process id as
