@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.impl.process;
 
-import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
@@ -8,6 +7,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * This class represents a generic Poisson process with two speed. The process
@@ -84,17 +84,16 @@ public class TwoSpeedsPoissonProcess extends Process {
 		}
 	}
 
-	public float getNextTriggeringTime(float virtualTime) {
+	public float getNextTriggeringTime(Event event, float virtualTime) {
 		if (virtualTime < vtThreshold)
-			return virtualTime + expRandom((float) 1 / firstMeanArrival);
+			return virtualTime + expRandom(event.getEventRandom(), (float) 1 / firstMeanArrival);
 		else
-			return virtualTime + expRandom((float) 1 / secondMeanArrival);
+			return virtualTime + expRandom(event.getEventRandom(), (float) 1 / secondMeanArrival);
 	}
 
 	// returns exponentially distributed random variable
-	private float expRandom(float lambda) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) / lambda);
+	private float expRandom(Random random, float lambda) {
+		float myRandom = (float) (-Math.log(random.nextFloat()) / lambda);
 		return myRandom;
 	}
 }

@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.impl.process;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Random;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
@@ -90,19 +91,18 @@ public class RectangularPulsePoissonProcess extends Process {
 		}
 	}
 	
-	public float getNextTriggeringTime(float virtualTime) {
+	public float getNextTriggeringTime(Event event, float virtualTime) {
 		if (virtualTime < startVtThreshold)
 			return virtualTime + startVtThreshold;
 		else if ((virtualTime >= startVtThreshold) && (virtualTime < stopVtThreshold))
-			return virtualTime + expRandom((float) 1 / meanArrival);
+			return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
 		else
 			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
 	}
 	
 	// returns exponentially distributed random variable
-	private float expRandom(float lambda) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) / lambda);
-		return myRandom;
+	private float expRandom(Random random, float lambda) {
+		float randomFloat = (float) (-Math.log(random.nextFloat()) / lambda);
+		return randomFloat;
 	}
 }
