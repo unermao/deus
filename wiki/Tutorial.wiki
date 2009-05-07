@@ -29,9 +29,8 @@ The XML schema.. The configuration file.. The automator..
 
 The user sets a seed in the {{{<aut:engine>}}} tag. This seed is used to generate N seeds, one for each of the _declared_ events, to initialize its own Random Number Generator (RNG). In this way, for example, if the initial seed is S, and there are two declared events (e1 and e2), their respective seeds will be S1 and S2. If their scheduling is associated to a random process, if we configure the simulation to run both kinds of event, the schedules of their instances will be:
 
-* from S1, for e1: t11, t12, t13, ..
-
-* from S2, for e2: t21, t22, t23, ..
+* from S1, for e1: t11, t12, t13, etc.
+* from S2, for e2: t21, t22, t23, etc.
 
 If we configure the simulationto run, for example, only e1, the schedules of its instances will be again: t11, t12, t13, ..
 
