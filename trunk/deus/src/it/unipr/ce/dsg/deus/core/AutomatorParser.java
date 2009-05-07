@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -168,10 +169,15 @@ public class AutomatorParser {
 		}
 
 		// Parse all the events in order to initialize Event objects
+		
+		System.out.println("# of events and seed: " + automator.getEvent().size() + " " + automator.getEngine().getSeed());
+		Random simulationRandom = new Random(automator.getEngine().getSeed());
+		//for (int i = 0; i < automator.getEvent().size(); i++)
+			//System.out.println("seed #"+i+": " + simulationRandom.nextInt(1000000000));
+		
 		for (Iterator<it.unipr.ce.dsg.deus.schema.Event> it = automator
 				.getEvent().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Event event = it.next();
-			//System.out.println("event: " + event.getId());
 			Class<Event> eventHandler = (Class<Event>) this.getClass()
 					.getClassLoader().loadClass(event.getHandler());
 
@@ -184,6 +190,9 @@ public class AutomatorParser {
 							new Class[] { String.class, Properties.class,
 									Process.class }).newInstance(
 							new Object[] { event.getId(), params, null });
+			
+			configEvent.setEventSeed(simulationRandom.nextInt(1000000000));
+			
 			if (event.isOneShot() != null)
 				configEvent.setOneShot(event.isOneShot().booleanValue());
 
