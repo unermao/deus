@@ -9,9 +9,6 @@
 
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
-	 	<aut:events><!-- events to be scheduled on created node -->
-		    <aut:reference id="connection" />
-		</aut:events>
 	</aut:event>
 
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
@@ -100,7 +97,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="20000001" seed="123456789"> 
+	<aut:engine maxvt="2000000" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="rectpulsepoisson" /> 
