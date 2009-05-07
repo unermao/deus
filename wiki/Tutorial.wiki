@@ -33,7 +33,7 @@ The user sets a seed in the {{{<aut:engine>}}} tag. This seed is used to generat
   * from S2, for e2: t21, t22, t23, etc.
 If we configure the simulationto run, for example, only e1, the schedules of its instances will be again: t11, t12, t13, etc.
 
-NOTE: if you modify the XML and declare another event e3 between the declaration of e1 and e2, in general the seeds will change (S1 will remain the same, S2 will become S3, and a new seed will be associated to e2). Be careful!! Suggestion: declare all the events and use only those you need. If you add new events, add them after those already declared.
+If you modify the XML and declare another event e3 between the declaration of e1 and e2, in general the seeds will change (S1 will remain the same, S2 will become S3, and a new seed will be associated to e2). Be careful!! Suggestion: declare all the events and use only those you need. If you add new events, add them after those already declared.
 
 
 = Writing logs =
