@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.impl.process;
 
-import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
@@ -84,7 +83,7 @@ public class TwoSpeedsPeriodicProcess extends Process {
 		}
 	}
 
-	public float getNextTriggeringTime(float virtualTime) {	
+	public float getNextTriggeringTime(Event event, float virtualTime) {	
 		if (virtualTime < vtThreshold)
 			return virtualTime + firstPeriodArrival;
 		else

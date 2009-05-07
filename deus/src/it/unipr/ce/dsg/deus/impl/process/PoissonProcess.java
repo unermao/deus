@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.impl.process;
 
-import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
@@ -8,6 +7,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * This class represents a generic Poisson process. It accept one parameter
@@ -37,12 +37,10 @@ public class PoissonProcess extends Process {
 		return meanArrival;
 	}
 
-	@Override
-	public float getNextTriggeringTime(float virtualTime) {
-		return virtualTime + expRandom((float) 1 / meanArrival);
+	public float getNextTriggeringTime(Event event, float virtualTime) {
+		return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
 	}
 
-	@Override
 	public void initialize() throws InvalidParamsException {
 		if (params.getProperty(MEAN_ARRIVAL) == null)
 			throw new InvalidParamsException(MEAN_ARRIVAL
@@ -57,9 +55,8 @@ public class PoissonProcess extends Process {
 	}
 
 	// returns exponentially distributed random variable
-	private float expRandom(float lambda) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
-				.getSimulationRandom().nextFloat()) / lambda);
-		return myRandom;
+	private float expRandom(Random random, float lambda) {
+		float randomFloat = (float) (-Math.log(random.nextFloat()) / lambda);
+		return randomFloat;
 	}
 }

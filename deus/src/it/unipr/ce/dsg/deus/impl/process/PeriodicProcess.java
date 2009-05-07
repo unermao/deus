@@ -31,12 +31,10 @@ public class PeriodicProcess extends Process {
 		initialize();
 	}
 
-	@Override
-	public float getNextTriggeringTime(float virtualTime) {
+	public float getNextTriggeringTime(Event event, float virtualTime) {
 		return virtualTime + period;
 	}
 
-	@Override
 	public void initialize() throws InvalidParamsException {
 		if (params.getProperty(PERIOD) == null)
 			throw new InvalidParamsException(PERIOD + " param is expected.");
