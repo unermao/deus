@@ -3,6 +3,7 @@ package it.unipr.ce.dsg.deus.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * <p>
@@ -31,6 +32,8 @@ import java.util.Properties;
 public abstract class Event extends SimulationObject implements
 		Comparable<Event>, Cloneable {
 	protected String id = null;
+	protected int eventSeed = 0;
+	protected Random eventRandom = null;
 	protected Properties params = null;
 	protected boolean isOneShot = false;
 	protected ArrayList<Event> referencedEvents = null;
@@ -60,6 +63,19 @@ public abstract class Event extends SimulationObject implements
 		this.params = params;
 		this.parentProcess = parentProcess;
 		this.referencedEvents = new ArrayList<Event>();
+	}
+
+	public int getEventSeed() {
+		return eventSeed;
+	}
+
+	public void setEventSeed(int eventSeed) {
+		this.eventSeed = eventSeed;
+		eventRandom = new Random(eventSeed);
+	}
+
+	public Random getEventRandom() {
+		return eventRandom;
 	}
 
 	/**
@@ -97,10 +113,8 @@ public abstract class Event extends SimulationObject implements
 				clone.schedulerListener = schedulerListener.getClass()
 						.newInstance();
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		clone.triggeringTime = triggeringTime;
@@ -163,7 +177,7 @@ public abstract class Event extends SimulationObject implements
 			Event event = (Event) it.next();
 			if (event.getParentProcess() == null)
 				continue;
-			referencedEventTriggeringTime = event.getParentProcess().getNextTriggeringTime(triggeringTime);
+			referencedEventTriggeringTime = event.getParentProcess().getNextTriggeringTime(event, triggeringTime);
 			Event eventToSchedule = event.createInstance(referencedEventTriggeringTime);
 			schedulerListener.newEventScheduled(this, eventToSchedule);
 			Engine.getDefault().insertIntoEventsList(eventToSchedule);
