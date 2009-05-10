@@ -262,14 +262,24 @@ public class Runner implements Runnable{
 			
 			String linea=br.readLine();
 			
+			
+			linea = linea.trim();
+			axisX = axisX.trim();
+			axisY = axisY.trim();
 	
+			
+			
 			String app="";
 			boolean assex = false;
 			boolean assey = false;
 			
 			while(linea!=null) {
 				
-			       if(linea.contains(axisX) && assey==false) 
+				//System.out.println(linea+"-"+axisX+"-"+axisY);
+				String firstString = linea.split("=")[0];
+				
+				
+			       if(firstString.equals(axisX) && assey==false) 
 			       {
 			    	   
 			    	   assex = true;
@@ -278,7 +288,7 @@ public class Runner implements Runnable{
 			    	   fos.write(val.getBytes());			    	   
 			       }
 			      
-			       else if(linea.contains(axisY) && assex==true) 
+			       else if(firstString.equals(axisY) && assex==true) 
 			       {
 			    	   assey = true;
 			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
@@ -289,14 +299,14 @@ public class Runner implements Runnable{
 			    	   assey=false;
 			       }
 			       
-			       else if(linea.contains(axisY) && assex==false)
+			       else if(firstString.equals(axisY) && assex==false)
 			       {			    	 
 			    	   assey = true;
 			    	   app = linea.substring(linea.indexOf('=') + 1, linea.length());
 			    	   app = app + " ";						    	   
 			       }
 			       
-			       else if(linea.contains(axisX) && assey==true){
+			       else if(firstString.equals(axisX) && assey==true){
 			       			    	  
 			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
 			    	   val = val + " ";
@@ -1227,7 +1237,6 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 	}
 
 
-	@Override
 	public void run() {
 		try {
 			start(originalXml, automatorXml);
