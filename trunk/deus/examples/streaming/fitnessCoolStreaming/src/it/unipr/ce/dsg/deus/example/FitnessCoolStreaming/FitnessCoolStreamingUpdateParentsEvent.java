@@ -56,7 +56,11 @@ public class FitnessCoolStreamingUpdateParentsEvent extends NodeEvent {
 			//	peer.updateParentsListCoolStreaming(this.triggeringTime);
 				peer.gossipProtocol(peer, 1);
 				
-				peer.updateFitnessValue();
+				
+				for(int k=0;k<peer.getK_value();k++)		 
+	        		peer.choiseNewProvider(k);
+	        	
+			
 			}
 		}
 			

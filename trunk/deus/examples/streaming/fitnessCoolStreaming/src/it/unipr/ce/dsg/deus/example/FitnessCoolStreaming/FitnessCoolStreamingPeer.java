@@ -157,7 +157,12 @@ public void initialize() throws InvalidParamsException {
 			incentiveBased = Boolean.parseBoolean(params.getProperty(INCENTIVE_BASED));
 		
 		if (params.containsKey(FITNESS_BASED))
-			fitnessBased = Boolean.parseBoolean(params.getProperty(FITNESS_BASED));
+		{	
+			if(Double.parseDouble(params.getProperty(FITNESS_BASED)) == 1.0)
+				fitnessBased = true;
+			else
+				fitnessBased = false;
+		}
 		
 		for (Iterator<Resource> it = resources.iterator(); it.hasNext(); ) {
 			Resource r = it.next();
@@ -166,11 +171,6 @@ public void initialize() throws InvalidParamsException {
 			if ( ((AllocableResource) r).getType().equals(MAX_ACCEPTED_CONNECTION) )
 				maxAcceptedConnection = (int) ((AllocableResource) r).getAmount();
 		}	
-		
-		time1 = System.currentTimeMillis();
-		
-		//Aggiorno il valore di fitness del nodo
-		this.updateFitnessValue();
 		
 	}
 
@@ -222,6 +222,7 @@ public void initialize() throws InvalidParamsException {
 		clone.overhead = 0;
 		clone.fitnessValue = 0.0;
 		
+		clone.time1 = (long) Engine.getDefault().getVirtualTime();
 		
 		return clone;
 	}
@@ -234,12 +235,14 @@ public void initialize() throws InvalidParamsException {
 		this.maxAcceptedConnection = maxAcceptedConnection;
 	}
 
-	public void updateFitnessValue(){
+	public void updateFitnessValue(double donwloadSpeed){
 		
 		//Campiono il nuovo tempo per determinare il tempo di permanenza OnLine	
-		time2 = System.currentTimeMillis();
+		time2 = (long) Engine.getDefault().getVirtualTime();
 		
 		this.onlineTime = this.time2 - this.time1;
+		
+		//System.out.println("OnLine Time : " + this.onlineTime + " - " + this.onlineTime/Engine.getDefault().getMaxVirtualTime());
 		
 		double newFitness = 0.0;
 		
@@ -255,9 +258,26 @@ public void initialize() throws InvalidParamsException {
 		
 		//double depthValue = 1.0/((double)this.nodeDepth +1.0);
 		
-		newFitness = ( 1.5 * (double)this.battery + 0.4*(double)(speedValue) + 2.083*this.onlineTime) / (10.0 + (double)(this.activeConnection/this.maxAcceptedConnection)); 
+		//OLD
+		//newFitness = ( 1.5 * (double)this.battery + 0.4*(double)(speedValue) + 2.083*this.onlineTime) / (10.0 + (double)(this.activeConnection/this.maxAcceptedConnection)); 
 		
-		//System.out.println("New Fitness("+ this.getId() + ") : "  + newFitness);
+		//System.out.println("Type:" + this.id + "(" + donwloadSpeed + ":" +((double)this.uploadSpeed / (double)(this.activeConnection+1)) + ":" + this.battery+")");
+		
+		double x = Math.min(donwloadSpeed, (double)this.uploadSpeed / (double)(this.activeConnection+1));
+		
+		//System.out.println("Min:" + x);
+		
+		//NEW
+		//((double)this.battery/100.0)
+		//double batteryValue = (double)this.battery/100.0; 
+		double timeValue = (double)(this.onlineTime/Engine.getDefault().getMaxVirtualTime());
+		
+		//newFitness = (3.0*batteryValue + timeValue)*Math.exp(x/200.0);
+		//newFitness = 10.0*x + 5.0*batteryValue + timeValue;
+		//newFitness = 10.0*(x/0.05) + 5.0*batteryValue + 3.0*timeValue;
+		newFitness = ( 1.5 * (double)this.battery + 0.4*(double)(timeValue)) / (10.0 + (double)(1/((x/0.05))));
+		
+		//System.out.println("New Fitness("+ this.getId() + ") : "  + newFitness + " BitRate Check: " + (x/0.05) + " Numeratore: " + (( 1.5 * (double)this.battery + 0.4*(double)(timeValue))));
 		
 		this.fitnessValue = newFitness;
 	}
@@ -467,8 +487,11 @@ public void initialize() throws InvalidParamsException {
 		//Se la batteria e' scesa sotto una certa soglia
 		if(this.battery < 1.0)
 		{	
-			System.out.println("DISCONNETTO !!!");
-			this.disconnectionCoolStreaming(Engine.getDefault().getVirtualTime());
+			//System.out.println("DISCONNETTO !!!");
+			FitnessCoolStreamingServerPeer serverPeer = (FitnessCoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
+			serverPeer.incrementBatteryDisconnectionCount();
+			//this.disconnectionCoolStreaming(Engine.getDefault().getVirtualTime());
+			this.disconnectionNoNotification(Engine.getDefault().getVirtualTime());
 		}
 	}
 	
@@ -1073,7 +1096,6 @@ public void gossipProtocol(FitnessCoolStreamingPeer node, int value){
 //						&& node.getPlayer().contains(this.getIndexOfLastPlayedChunk())
 						&& !this.getNeighbors().contains(node))
 					{		
-						//System.out.println("CACA");
 						this.getNeighbors().remove(this.getNeighbors().get(k));
 						this.getNeighbors().add(node);
 						good = 1;
@@ -1384,9 +1406,7 @@ private boolean findProviderNodeFromLastSegment(float triggeringTime, int k) {
 	}	
 	
 	
-	
-	
-	//TODO ULTIME COSE LO COLLEGO AL MIO FORNITORE ?????
+
 public void disconnectionCoolStreaming(float triggeringTime){
 								
 		//Imposto il nodo come disconnesso
@@ -1396,7 +1416,10 @@ public void disconnectionCoolStreaming(float triggeringTime){
 		FitnessCoolStreamingServerPeer server = (FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
 
 		//Incremento il numero di disconnessioni
-		server.addDisconnectedNode();				
+		server.addDisconnectedNode();
+		
+		if(this.getId().equals("pcNodeHigh") || this.getId().equals("pcNode"))
+			server.addBatteryForBarChart(this.battery);
 		
 		if(this.getServerByPeer().size() + this.getServerByServer().size() > 0)
 		{	
@@ -1405,17 +1428,19 @@ public void disconnectionCoolStreaming(float triggeringTime){
 		for(int i=0; i<this.k_value; i++)
 			if(this.getServerByPeer().get(i) != null)
 				{
-				 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+				 //MODIFICA
+				 if(this.getServerByPeer().get(i).getServedPeers2().size() > 0)
+					this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
 				 this.getServerByPeer().get(i).removeActiveConnection();
 				}
 				
 		
 		for(int i=0; i<this.k_value; i++)
 			if(this.getServerByServer().get(i) != null)
-				{
+		    {
 				this.getServerByServer().get(i).getServedPeers2().get(i).remove(this);
 				this.getServerByServer().get(i).removeActiveConnection();
-				}
+			}
 		
 		
 		
@@ -1501,6 +1526,57 @@ public void disconnectionCoolStreaming(float triggeringTime){
 		Engine.getDefault().getNodes().remove(this);
 		
 	}
+
+public void disconnectionNoNotification(float triggeringTime){
+	
+	//Imposto il nodo come disconnesso
+	this.setConnected(false);
+	
+	//Comunico le mie statistiche al Server
+	FitnessCoolStreamingServerPeer server = (FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+
+	//Incremento il numero di disconnessioni
+	server.addDisconnectedNode();			
+	server.addBatteryForBarChart(this.battery);
+	
+	if(this.getServerByPeer().size() + this.getServerByServer().size() > 0)
+	{	
+	
+	//Mi tolgo dai mie fornitori
+	for(int i=0; i<this.k_value; i++)
+		if(this.getServerByPeer().get(i) != null)
+			{
+			 //MODIFICA 
+			 if( this.getServerByPeer().get(i).getServedPeers2().size() > 0 )	
+				 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+			 this.getServerByPeer().get(i).removeActiveConnection();
+			}
+			
+	
+	for(int i=0; i<this.k_value; i++)
+		if(this.getServerByServer().get(i) != null)
+			{
+			this.getServerByServer().get(i).getServedPeers2().get(i).remove(this);
+			this.getServerByServer().get(i).removeActiveConnection();
+			}
+	
+	}
+	
+	//Azzero il mio grado di nodo
+	this.nodeDepth = 0;
+	
+	
+	//Pulisco la lista dei nodi che stavo fornendo
+	this.getServedPeers2().clear();
+	
+	//Rimuovo tutti i miei vicini
+	this.resetNeighbors();
+		
+	this.gossipProtocol(this,-1);
+	
+	Engine.getDefault().getNodes().remove(this);
+	
+}
 
 
 /**
@@ -1718,20 +1794,20 @@ public boolean playVideoBufferCoolStreaming(){
 	
 	}
 	else{				
-        for(int i=0;i<this.getK_value();i++)		 
-			 {
-        	
-        	if(this.getK_buffer().get(i).size()==0)
-        		{
-        		
-        		
-        		this.stop++;
-        		}
-        
-        		this.choiseNewProvider(i);
-        	
-        	
-			 }
+//        for(int i=0;i<this.getK_value();i++)		 
+//			 {
+//        	
+//        	if(this.getK_buffer().get(i).size()==0)
+//        		{
+//        		
+//        		
+//        		this.stop++;
+//        		}
+//        
+//        		this.choiseNewProvider(i);
+//        	
+//        	
+//			 }
 		
 		if(this.player.size()>5){
 			
@@ -1792,54 +1868,65 @@ public boolean playVideoBufferCoolStreaming(){
 
 
 
-	private void choiseNewProvider(int i) {
+	public void choiseNewProvider(int i) {
 		
 		FitnessCoolStreamingPeer app = this.choiseNeighbor(i);		
 		
 		if(this.getServerByPeer().get(i) != null && app != null && !app.equals(this.getServerByPeer().get(i)))
-		if(0.05/this.k_value > this.getServerByPeer().get(i).getUploadSpeed()/this.getServerByPeer().get(i).getActiveConnection() && 0.05/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1) 
-//				//&& 	0.648/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1)
-			|| (this.getK_buffer().get(i).size()==0) 
-				&& 0.05/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1))
 		{
-		if(this.getK_buffer().get(i).size()==0 && this.getServerByPeer().get(i) != null && app!=null)
-		{
-		 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
-		 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
-		 this.getServerByPeer().set(i, null);
-		 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
-		 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);		 
-		}
-		
-		else if(this.getServerByPeer().get(i) != null && app!=null)	
-			 if(this.getServerByPeer().get(i).getK_buffer().get(i).size()>0 && app.getK_buffer().get(i).size()>0){
-			 if(!app.equals(this.getServerByPeer().get(i)))			 
-			if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection()
-				&&	 app.getLastIndexOfChunk().get(i) > this.getServerByPeer().get(i).getLastIndexOfChunk().get(i))		 
-			  {
-				 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+			
+				if(0.05/this.k_value > this.getServerByPeer().get(i).getUploadSpeed()/this.getServerByPeer().get(i).getActiveConnection() && 0.05/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1) 
+//						//&& 	0.648/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1)
+					|| (this.getK_buffer().get(i).size()==0) 
+						&& 0.05/this.k_value <= app.getUploadSpeed()/(app.getActiveConnection()+1))
+				{
+				if(this.getK_buffer().get(i).size()==0 && this.getServerByPeer().get(i) != null && app!=null)
+				{
+				 //MODIFICA
+				 if(this.getServerByPeer().get(i).getServedPeers2().size() > 0)
+					 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+				 
 				 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
 				 this.getServerByPeer().set(i, null);
 				 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
-				 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
-			  }
-			 }
-		else
-		{		
-		 if(!app.equals(this.getServerByPeer().get(i)))			 
-				if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection()
-					&&	 app.getLastIndexOfChunk().get(i) > this.getServerByPeer().get(i).getLastIndexOfChunk().get(i))
-				  
-				  {
-					 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
-					 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
-					 this.getServerByPeer().set(i, null);
-					 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
-					 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
-				  }
-		}
-		}
-}
+				 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);		 
+				}
+				
+				
+			else if(this.getServerByPeer().get(i) != null && app!=null)	
+					 if(this.getServerByPeer().get(i).getK_buffer().get(i).size()>0 && app.getK_buffer().get(i).size()>0){
+					 if(!app.equals(this.getServerByPeer().get(i)))			 
+					if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection()
+						&&	 app.getLastIndexOfChunk().get(i) > this.getServerByPeer().get(i).getLastIndexOfChunk().get(i))		 
+					  {
+						//MODIFICA
+						if(this.getServerByPeer().get(i).getServedPeers2().size() > 0)
+							this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+						 
+						this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
+						 this.getServerByPeer().set(i, null);
+						 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
+						 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
+					  }
+					 }
+				else
+				{		
+				 if(!app.equals(this.getServerByPeer().get(i)))			 
+						if((double)app.getUploadSpeed()/((double)app.getActiveConnection()+1) > (double)this.getServerByPeer().get(i).getUploadSpeed()/(double)this.getServerByPeer().get(i).getActiveConnection()
+							&&	 app.getLastIndexOfChunk().get(i) > this.getServerByPeer().get(i).getLastIndexOfChunk().get(i))
+						  
+						  {
+							 this.getServerByPeer().get(i).getServedPeers2().get(i).remove(this);
+							 this.getServerByPeer().get(i).setActiveConnection(this.getServerByPeer().get(i).getActiveConnection()-1);
+							 this.getServerByPeer().set(i, null);
+							 this.setDownloadActiveConnection(this.getDownloadActiveConnection()-1);
+							 this.findProviderNodeFromLastSegment(Engine.getDefault().getVirtualTime(),i);
+						  }
+				}
+				}
+				
+			}	
+	}
 
 	public ArrayList<FitnessCoolStreamingPeer> getServerByPeer() {
 		return serverByPeer;
@@ -1941,8 +2028,13 @@ public boolean playVideoBufferCoolStreaming(){
 			
 			//Aggiornamento Fitness dei nodi conosciuti
 			 for(int k = 0 ; k < this.getNeighbors().size(); k++)
-				 ((FitnessCoolStreamingPeer)this.getNeighbors().get(k)).updateFitnessValue();
-			
+			 {
+				 if(this.downloadActiveConnection > 0)
+					 ((FitnessCoolStreamingPeer)this.getNeighbors().get(k)).updateFitnessValue((double)(this.downloadSpeed/(double)this.downloadActiveConnection));
+				 else
+					 ((FitnessCoolStreamingPeer)this.getNeighbors().get(k)).updateFitnessValue((double)(this.downloadSpeed));
+			 }
+			 
 			 for(int i = 0 ; i < this.getNeighbors().size() ; i++)
 			 {
 				 FitnessCoolStreamingPeer peer = (FitnessCoolStreamingPeer)this.getNeighbors().get(i);
@@ -2368,13 +2460,14 @@ public boolean playVideoBufferCoolStreaming(){
 		if( connType.equals(G2) ){
 		
 			
-			System.out.println("CAMBIO !");
+			//System.out.println("CAMBIO !");
 			
 			this.uploadSpeed = uploadSpeed;
-			this.maxAcceptedConnection = maxAcceptedConnection;
-	
-			this.updateFitnessValue();
+			this.connectionType = G2;
 			
+			//this.maxAcceptedConnection = maxAcceptedConnection;
+			
+			/*
 			//Scollego i nodi che stavo servendo in modo che possano cercare altri fornitori
 			for(int j=0; j<this.k_value; j++)
 			for( int i = 0 ; i < this.getServedPeers2().get(j).size(); i++){				
@@ -2400,6 +2493,7 @@ public boolean playVideoBufferCoolStreaming(){
 				
 				
 			}
+			*/
 		}
 		
 	}
@@ -2412,9 +2506,6 @@ public boolean playVideoBufferCoolStreaming(){
 			this.connectionType = connType;
 			this.maxAcceptedConnection = maxAcceptedConnection;
 			this.uploadSpeed = uploadSpeed;
-			
-			//Calcolo la nuova fitness
-			this.updateFitnessValue();
 			
 		}
 		else
