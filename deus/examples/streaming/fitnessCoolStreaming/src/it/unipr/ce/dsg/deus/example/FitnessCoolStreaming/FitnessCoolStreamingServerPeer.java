@@ -50,7 +50,11 @@ public class FitnessCoolStreamingServerPeer extends Peer {
 	private double totalDeadline = 0.0;
 	private double disconnectedNodes = 0;
 	private float totalstartUpTime = 0;
-
+	private double connectionChanged = 0.0;
+	private int batteryDisconnectionCount = 0;
+	
+	private ArrayList<Double> istogrammaBatteria = new ArrayList<Double>();
+	
 	//Array per le statistiche dei tempi di ricezione dei nodi che si sono disconnessi
 	private ArrayList<Float> arrivalTimesPcNode = new ArrayList<Float>();
 	private ArrayList<Float> arrivalTimesPcNodeHigh = new ArrayList<Float>();
@@ -63,6 +67,11 @@ public class FitnessCoolStreamingServerPeer extends Peer {
 	//Lista contenente le richieste di chunk
 	private ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>> sendBuffer = new ArrayList<ArrayList<FitnessCoolStreamingVideoChunk>>();
 	//private ArrayList<ArrayList<ChunkHash>> numOfChunkSended = new ArrayList<ArrayList<ChunkHash>>();  
+	
+	public void addBatteryForBarChart( double battery)
+	{
+		this.istogrammaBatteria.add(battery);
+	}
 	
 	public double getTotalDeadline() {
 		return totalDeadline;
@@ -509,5 +518,38 @@ public class FitnessCoolStreamingServerPeer extends Peer {
 	public void setCity(int city) {
 		this.city = city;
 	}
+
+	public double getConnectionChanged() {
+		return connectionChanged;
+	}
+
+	public void setConnectionChanged(double connectionChanged) {
+		this.connectionChanged = connectionChanged;
+	}
 	
+	public void addConnectionChanged(){
+		this.connectionChanged ++;
+	}
+	
+	
+	
+	public void incrementBatteryDisconnectionCount(){
+		this.batteryDisconnectionCount ++;
+	}
+
+	public int getBatteryDisconnectionCount() {
+		return batteryDisconnectionCount;
+	}
+
+	public void setBatteryDisconnectionCount(int batteryDisconnectionCount) {
+		this.batteryDisconnectionCount = batteryDisconnectionCount;
+	}
+
+	public ArrayList<Double> getIstogrammaBatteria() {
+		return istogrammaBatteria;
+	}
+
+	public void setIstogrammaBatteria(ArrayList<Double> istogrammaBatteria) {
+		this.istogrammaBatteria = istogrammaBatteria;
+	}
 }

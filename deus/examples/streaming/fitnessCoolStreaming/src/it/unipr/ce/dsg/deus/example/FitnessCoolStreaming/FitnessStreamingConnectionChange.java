@@ -70,21 +70,28 @@ public class FitnessStreamingConnectionChange extends NodeEvent {
 		
 		FitnessCoolStreamingPeer peer = null;
 		int size = (Engine.getDefault().getNodes().size() - 1 );
-	
-		do{
+		
+		int changeCount = Engine.getDefault().getSimulationRandom().nextInt(10) + 1;
+		
+		//System.out.println("Numero Cambi 3G --> 2G : " + changeCount);
+		
+		for(int i=0; i < changeCount; i++ )
+		{
+			do{
 			
-			index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
-			peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);
-			System.out.println("Ho trovato: " + peer.getConnectionType() + " - " + peer.getId() + "-" + peer.isConnected());
+				index = Engine.getDefault().getSimulationRandom().nextInt(size) + 1;
+				peer = (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index);
+				//System.out.println("Ho trovato: " + peer.getConnectionType() + " - " + peer.getId() + "-" + peer.isConnected());
+			}
+			while( !(peer.isConnected() && peer.getId().equals("pcNode") && peer.getConnectionType().equals(FitnessCoolStreamingPeer.G3)));
+		
+		
+			peer.change3GTo2G(FitnessCoolStreamingPeer.G2, this.g2NewUploadSpeed, this.g2NewMaxAcceptedConnection,this.triggeringTime);
+		
+			//Memorizzo il cambio di connessione
+			FitnessCoolStreamingServerPeer server = (FitnessCoolStreamingServerPeer)Engine.getDefault().getNodes().get(0);
+			server.addConnectionChanged();
 		}
-		while( !(peer.isConnected() && peer.getId().equals("pcNode") && peer.getConnectionType().equals(FitnessCoolStreamingPeer.G3)));
-		
-		//Il peer alla fine del ciclo  il peer che voglio modificare
-		//Il peer passa da 3G a 2G
-		System.out.println(this.g2NewUploadSpeed);
-		System.out.println(this.g2NewMaxAcceptedConnection);
-		peer.change3GTo2G(FitnessCoolStreamingPeer.G2, this.g2NewUploadSpeed, this.g2NewMaxAcceptedConnection,this.triggeringTime);
-		
 		
 	}
 	

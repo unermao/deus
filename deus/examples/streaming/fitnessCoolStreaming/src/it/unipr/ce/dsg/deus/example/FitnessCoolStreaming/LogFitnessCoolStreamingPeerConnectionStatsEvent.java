@@ -47,6 +47,15 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 
 		getLogger().info("\nNode Connection Stats:");
 		
+		//ARRAY LIST ISTOGRAMMA
+		ArrayList<Integer> istogrammaPcNode = new ArrayList<Integer>();
+		ArrayList<Integer> istogrammaPcNodeHigh = new ArrayList<Integer>();
+		ArrayList<Integer> istogrammaSuperNode = new ArrayList<Integer>();
+		
+		
+		//Istogramma Batteria
+		ArrayList<Integer> istogrammaBatteria = new ArrayList<Integer>();
+		
 		double activeConnectionTotal = 0.0;
 		double activeConnectionPercentTotalPcNode = 0.0;
 		double activeConnectionPercentTotalPcNodeHigh = 0.0;
@@ -125,10 +134,30 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 		double totalInternalISP = 0;
 		double totalExternalISP = 0;
 		
+		//MEDIA BATTERIA
+		double batteryLevelSum = 0.0;
+		
+		
+		for(int i=0; i < 100; i++)
+		{
+			istogrammaPcNode.add(0);
+			istogrammaPcNodeHigh.add(0);
+			istogrammaSuperNode.add(0);
+		}
+		
+		for(int i = 0 ; i < 11 ;i++)
+			istogrammaBatteria.add(0);
+		
 		FitnessCoolStreamingServerPeer serverPeer = (FitnessCoolStreamingServerPeer) Engine.getDefault().getNodes().get(0);
 		
-				
-
+		//Aggiungo le info sulla batteria dei nodi disconnessi per l'istogramma
+		for(int i = 0 ; i < serverPeer.getIstogrammaBatteria().size(); i++)
+		{
+			batteryLevelSum = batteryLevelSum + serverPeer.getIstogrammaBatteria().get(i);
+			int batteryIndex = (int)(serverPeer.getIstogrammaBatteria().get(i)/10);
+			istogrammaBatteria.set(batteryIndex,istogrammaBatteria.get(batteryIndex)+1);
+		}
+			
 		//Aggiungo alle statistiche relative ai chunk mancanti quelle memorizzate nel server dai nodi disconnessi
 		totalMissingChunk = totalMissingChunk + (serverPeer.getMissingChunkNumber());
 		totalArrivedChunk = totalArrivedChunk + serverPeer.getTotalChunkReceived();
@@ -326,6 +355,29 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 			if(peer.getId().equals("superNode"))
 				totalSuperNodeReceivedChunk = totalSuperNodeReceivedChunk + peer.getArrivalTimes().size();
 			
+
+			//ISTROGRAMMA SUL GRADO DI NODO
+			if(peer.getId().equals("pcNode"))
+				istogrammaPcNode.set(peer.getActiveConnection(), istogrammaPcNode.get(peer.getActiveConnection()) +1);
+			
+			if(peer.getId().equals("pcNodeHigh"))
+				istogrammaPcNodeHigh.set(peer.getActiveConnection(), istogrammaPcNodeHigh.get(peer.getActiveConnection()) +1);
+			
+			if(peer.getId().equals("superNode"))
+				istogrammaSuperNode.set(peer.getActiveConnection(), istogrammaSuperNode.get(peer.getActiveConnection()) +1);
+			
+			
+			
+			if(peer.getId().equals("pcNodeHigh") || peer.getId().equals("pcNode"))
+			{
+				//MEDIA BATTERIA
+				batteryLevelSum = batteryLevelSum + peer.getBattery();
+				
+				//ISTOGRAMMA BATTERIA
+				int batteryIndex = (int)(peer.getBattery() / 10);
+				istogrammaBatteria.set(batteryIndex,istogrammaBatteria.get(batteryIndex)+1);
+			}
+			
 			for( int k = 0 ; k < peer.getArrivalTimes().size(); k++ ){
 				
 				float localValue =  peer.getArrivalTimes().get(k);
@@ -468,42 +520,72 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 		getLogger().info("Average Start Up Time High: " + ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20);
 		getLogger().info("------------------------------------------------------------------------");
 			
-		fileValue.add(new LoggerObject("Tot Pc in Isp 0", PcISP0));
-		fileValue.add(new LoggerObject("Tot High Pc in Isp 0", HighISP0));
-		fileValue.add(new LoggerObject("Tot Super in Isp 0", SuperISP0));
-		fileValue.add(new LoggerObject("Tot Pc in Isp 1", PcISP1));
-		fileValue.add(new LoggerObject("Tot High Pc in Isp 1", HighISP1));
-		fileValue.add(new LoggerObject("Tot Super in Isp 1", SuperISP1));
-		fileValue.add(new LoggerObject("Tot Pc in Isp 2", PcISP2));
-		fileValue.add(new LoggerObject("Tot High Pc in Isp 2", HighISP2));
-		fileValue.add(new LoggerObject("Tot Super in Isp 2", SuperISP2));
-		fileValue.add(new LoggerObject("Buffering", totalstop/(totalPcNode + totalPcNodeHigh + totalSuperNode)));
+		//fileValue.add(new LoggerObject("Tot Pc in Isp 0", PcISP0));
+		//fileValue.add(new LoggerObject("Tot High Pc in Isp 0", HighISP0));
+		//fileValue.add(new LoggerObject("Tot Super in Isp 0", SuperISP0));
+		//fileValue.add(new LoggerObject("Tot Pc in Isp 1", PcISP1));
+		//fileValue.add(new LoggerObject("Tot High Pc in Isp 1", HighISP1));
+		//fileValue.add(new LoggerObject("Tot Super in Isp 1", SuperISP1));
+		//fileValue.add(new LoggerObject("Tot Pc in Isp 2", PcISP2));
+		//fileValue.add(new LoggerObject("Tot High Pc in Isp 2", HighISP2));
+		//fileValue.add(new LoggerObject("Tot Super in Isp 2", SuperISP2));
+		//fileValue.add(new LoggerObject("Buffering", totalstop/(totalPcNode + totalPcNodeHigh + totalSuperNode)));
 		//Paccheti di overhead di 30byte
-		fileValue.add(new LoggerObject("pcConnection", (double)((pcConnection+highConnection)/totalExternalISP)));
+		//fileValue.add(new LoggerObject("pcConnection", (double)((pcConnection+highConnection)/totalExternalISP)));
 	//	fileValue.add(new LoggerObject("highConenction", (double)(highConnection/totalPcNodeHigh)));
-		fileValue.add(new LoggerObject("superConnection", (double)(superConnection/totalExternalISP)));
+		//fileValue.add(new LoggerObject("superConnection", (double)(superConnection/totalExternalISP)));
 //		fileValue.add(new LoggerObject("pcConnectionsuPcOver", (double)((pcConnection/totalPcNode))/2.0));
 //		fileValue.add(new LoggerObject("highConenctionOver", (double)((highConnection/totalPcNodeHigh)/2.0)));
 //		fileValue.add(new LoggerObject("superConnectionOver", (double)((superConnection/totalSuperNode)/2.0)));
-		fileValue.add(new LoggerObject("Overhead [Byte]%", (double)((totalOverheadMessage)/((totalInternalISP + totalExternalISP)*682+ totalOverheadMessage) )*100));
-		fileValue.add(new LoggerObject("Average bandwidth", (((double)totalPcNode*uploadPc + (double)totalPcNodeHigh*uploadHigh + (double)totalSuperNode*uploadSuper)) / (totalSuperNode+totalPcNodeHigh+totalPcNode)));
-		fileValue.add(new LoggerObject("Overhead message%", (double)(totalOverheadMessage/(totalInternalISP + totalExternalISP+totalOverheadMessage))*100));
-		fileValue.add(new LoggerObject("Exchange Internal ISP %", (double)totalInternalISP/(totalInternalISP + totalExternalISP)*100));
-		fileValue.add(new LoggerObject("Exchange External ISP %", (double)totalExternalISP/(totalInternalISP + totalExternalISP)*100));
+//		fileValue.add(new LoggerObject("Overhead [Byte]%", (double)((totalOverheadMessage)/((totalInternalISP + totalExternalISP)*682+ totalOverheadMessage) )*100));
+//		fileValue.add(new LoggerObject("Average bandwidth", (((double)totalPcNode*uploadPc + (double)totalPcNodeHigh*uploadHigh + (double)totalSuperNode*uploadSuper)) / (totalSuperNode+totalPcNodeHigh+totalPcNode)));
+//		fileValue.add(new LoggerObject("Overhead message%", (double)(totalOverheadMessage/(totalInternalISP + totalExternalISP+totalOverheadMessage))*100));
+//		fileValue.add(new LoggerObject("Exchange Internal ISP %", (double)totalInternalISP/(totalInternalISP + totalExternalISP)*100));
+//		fileValue.add(new LoggerObject("Exchange External ISP %", (double)totalExternalISP/(totalInternalISP + totalExternalISP)*100));
 		fileValue.add(new LoggerObject("Total PC Node", (double) totalPcNode ));
 		fileValue.add(new LoggerObject("Total PC Node High", (double) totalPcNodeHigh ));
 		fileValue.add(new LoggerObject("Total SuperNode", (double) totalSuperNode ));
-		fileValue.add(new LoggerObject("Average Start Up Time Pc", ((totalStartUpTimePc/((double)( numberPlayerPcNode))))/20));
-		fileValue.add(new LoggerObject("Average Start Up Time High" , ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20));
+//		fileValue.add(new LoggerObject("Average Start Up Time Pc", ((totalStartUpTimePc/((double)( numberPlayerPcNode))))/20));
+//		fileValue.add(new LoggerObject("Average Start Up Time High" , ((totalStartUpTimeHigh/((double)( numberPlayerHighNode))))/20));
 		fileValue.add(new LoggerObject("Continuity Index", ((totalArrivedChunk-totalDeadlineNumber)/totalArrivedChunk)*100.0));
-		fileValue.add(new LoggerObject("Duplicate %", (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0));
+//		fileValue.add(new LoggerObject("Duplicate %", (totalDuplicateChunk/(totalDuplicateChunk+totalArrivedChunk))*100.0));
 		fileValue.add(new LoggerObject("Total Node", (double)( totalPcNode + totalPcNodeHigh + totalSuperNode)));
 		fileValue.add(new LoggerObject("Total Disconnected Node", serverPeer.getDisconnectedNodes()));
 		fileValue.add(new LoggerObject("Average Out-Degree superNode", out_degree_superNode/(totalSuperNode)));
 		fileValue.add(new LoggerObject("Average Out-Degree pcNode", out_degree_pcNode/(totalPcNode)));
 		fileValue.add(new LoggerObject("Average Out-Degree pcNodeHigh",out_degree_pcNodeHigh/(totalPcNodeHigh)));
 		fileValue.add(new LoggerObject("Unstable Node", unstablesNode90pcNode + unstablesNode90pcNodeHigh + unstablesNode90superNode));
+		fileValue.add(new LoggerObject("Connection Changed", serverPeer.getConnectionChanged()));
+		fileValue.add(new LoggerObject("BatteryDisconnectionCount", serverPeer.getBatteryDisconnectionCount()));
+		fileValue.add(new LoggerObject("BatteryLevelAverage", batteryLevelSum/(serverPeer.getIstogrammaBatteria().size()+totalPcNode + totalPcNodeHigh)));
 		
+		//STATISTICHE BATTERIA
+//		for(int i=0; i<100; i++)
+//			fileValue.add(new LoggerObject((i+"PcNode"),istogrammaPcNode.get(i)));
+//
+//		for(int i=0; i<100; i++)
+//			fileValue.add(new LoggerObject((i+"PcNodeHigh"),istogrammaPcNodeHigh.get(i)));
+//		
+//		for(int i=0; i<100; i++)
+//			fileValue.add(new LoggerObject((i+"SuperNode"),istogrammaSuperNode.get(i)));
+		
+		for(int i = 0; i < 11; i++)
+			fileValue.add(new LoggerObject((i+"BatteryLevel"),istogrammaBatteria.get(i)));
+		
+		//Calcolo bitrate ottimale che si pu˜ ottenere con la distribuzione di nodi presenti
+		
+		double nodesUploadSpeedSum = 0.0;
+		
+		nodesUploadSpeedSum = nodesUploadSpeedSum + serverPeer.getUploadSpeed();
+		
+		for(int index = 1 ; index < Engine.getDefault().getNodes().size(); index++)
+			nodesUploadSpeedSum = nodesUploadSpeedSum + ( (FitnessCoolStreamingPeer) Engine.getDefault().getNodes().get(index)).getUploadSpeed();
+		
+		double bestBitRate = Math.min(serverPeer.getUploadSpeed(), ( nodesUploadSpeedSum / (double)Engine.getDefault().getNodes().size() ));
+		
+		//System.out.println(bestBitRate);
+		
+		fileValue.add(new LoggerObject("BestBitRate", bestBitRate));
 		
 				//for(int vt = 10 ; vt < 100 ; vt = vt +10 )
 		a.write(Engine.getDefault().getVirtualTime(), fileValue);		
@@ -525,6 +607,7 @@ public class LogFitnessCoolStreamingPeerConnectionStatsEvent extends Event {
 		}
 		
 		System.out.println("Tempo : " + Engine.getDefault().getVirtualTime() + " Nodi:" + Engine.getDefault().getNodes().size() + " ("+totalPcNode+" , "+totalPcNodeHigh+" , "+totalSuperNode+" ) ");
+		
 		
 		getLogger().info("\n");
 		getLogger().info("########################################################################");
