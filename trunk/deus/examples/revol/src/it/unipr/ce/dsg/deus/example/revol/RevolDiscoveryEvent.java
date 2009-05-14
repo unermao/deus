@@ -164,7 +164,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * 
 	 */
 	public void run() throws RunException {
-		
+			
 		getLogger().fine("####### disc event: " + this);
 		getLogger().fine("####### disc event time: " + triggeringTime);
 
@@ -172,7 +172,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		getLogger().fine("mean arrival free resource " + meanArrivalFreeResource);
 		getLogger().fine("ttl = " + ttl);
 		RevolPeer associatedRevolNode = (RevolPeer) associatedNode;
-
+	
 		// the following if statement should avoid to search for resources
 		// which have been already found by the intersted node
 		if (res != null) {
@@ -218,13 +218,13 @@ public class RevolDiscoveryEvent extends NodeEvent {
 				// this query
 			} else
 				return;
-		}
-
+		}	
+		
 		Random random = Engine.getDefault().getSimulationRandom();
 
-		if (!isPropagation)
+		if (!isPropagation) 
 			initializeDiscoveryProcess(associatedRevolNode, random);
-		
+			
 		RevolPeer interestedNode = (RevolPeer) res.getInterestedNode();
 		if (interestedNode == null)
 			return;
@@ -545,7 +545,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	 * returns exponentially distributed random variable
 	 */
 	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
+		float myRandom = (float) (-Math.log(1-Engine.getDefault()
 				.getSimulationRandom().nextFloat()) * meanValue);
 		return myRandom;
 	}
