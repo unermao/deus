@@ -93,7 +93,7 @@ public class TwoSpeedsPoissonProcess extends Process {
 
 	// returns exponentially distributed random variable
 	private float expRandom(Random random, float lambda) {
-		float myRandom = (float) (-Math.log(random.nextFloat()) / lambda);
+		float myRandom = (float) (-Math.log(1-random.nextFloat()) / lambda);
 		return myRandom;
 	}
 }

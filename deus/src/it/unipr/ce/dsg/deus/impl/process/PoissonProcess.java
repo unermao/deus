@@ -56,7 +56,7 @@ public class PoissonProcess extends Process {
 
 	// returns exponentially distributed random variable
 	private float expRandom(Random random, float lambda) {
-		float randomFloat = (float) (-Math.log(random.nextFloat()) / lambda);
+		float randomFloat = (float) (-Math.log(1-random.nextFloat()) / lambda);
 		return randomFloat;
 	}
 }
