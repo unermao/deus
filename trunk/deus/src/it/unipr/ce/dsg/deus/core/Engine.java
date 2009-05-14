@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.core;
 
+import it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent;
 import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 
 import java.io.IOException;
@@ -232,9 +233,9 @@ public final class Engine extends SimulationObject {
 					getLogger().fine("Running event " + e);
 					e.run();
 					e.scheduleReferencedEvents();
-					if (e.getParentProcess() != null && !e.isOneShot())
-						insertIntoEventsList(e.createInstance(e
-								.getParentProcess().getNextTriggeringTime(e, virtualTime))); // TODO check e
+					if (e.getParentProcess() != null && !e.isOneShot()) {
+						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
+					}
 				} catch (RunException ex) {
 					getLogger().severe(ex.getMessage());
 					throw new SimulationException(ex.getMessage());
