@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.core;
 
-import it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent;
 import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 
 import java.io.IOException;
