@@ -264,7 +264,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 					MultipleRandomConnectionsEvent connEv = (MultipleRandomConnectionsEvent) new MultipleRandomConnectionsEvent(
 							"connection", connEvParams, null)
 							.createInstance(triggeringTime
-									+ expRandom(meanArrivalTriggeredDiscovery));
+									+ expRandom(this.getEventRandom(), meanArrivalTriggeredDiscovery));
 					connEv.setOneShot(true);
 					connEv.setAssociatedNode(associatedRevolNode);
 					connEv.setNumInitialConnections(numInitialConnections); 
@@ -378,7 +378,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			RevolFreeResourceEvent freeResEv = (RevolFreeResourceEvent) Engine
 					.getDefault()
 					.createEvent(RevolFreeResourceEvent.class,
-							triggeringTime + expRandom(meanArrivalFreeResource));
+							triggeringTime + expRandom(this.getEventRandom(), meanArrivalFreeResource));
 			freeResEv.setOneShot(true);
 			freeResEv.setResOwner(associatedRevolNode);
 			freeResEv.setResName(res.getName());
@@ -424,7 +424,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 					.getDefault().createEvent(
 							RevolDiscoveryEvent.class,
 							triggeringTime
-									+ expRandom(meanArrivalTriggeredDiscovery));
+									+ expRandom(this.getEventRandom(), meanArrivalTriggeredDiscovery));
 			getLogger().fine("disc event: " + discEv);
 			discEv.setHasSameAssociatedNode(false);
 			discEv.setOneShot(true);
@@ -515,7 +515,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 					.getDefault().createEvent(
 							RevolDiscoveryEvent.class,
 							triggeringTime
-									+ expRandom(meanArrivalTriggeredDiscovery));
+									+ expRandom(this.getEventRandom(), meanArrivalTriggeredDiscovery));
 			getLogger().fine("disc event: " + discEv);
 			getLogger().fine("disc event time: " + discEv.triggeringTime);
 
@@ -544,9 +544,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	/**
 	 * returns exponentially distributed random variable
 	 */
-	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(1-Engine.getDefault()
-				.getSimulationRandom().nextFloat()) * meanValue);
+	private float expRandom(Random random, float meanValue) {
+		float myRandom = (float) (-Math.log(1-random.nextFloat()) * meanValue);
 		return myRandom;
 	}
 
