@@ -42,7 +42,7 @@ public class BirthEvent extends NodeEvent {
 				Engine.getDefault().getSimulationRandom().nextInt(
 						getParentProcess().getReferencedNodes().size()))
 				.createInstance(Engine.getDefault().generateKey());
-		Engine.getDefault().getNodes().add(n);
+		Engine.getDefault().addNode(n);
 		associatedNode = n;
 	}
 
