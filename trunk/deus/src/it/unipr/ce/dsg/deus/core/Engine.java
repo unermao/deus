@@ -5,6 +5,7 @@ import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -72,6 +73,8 @@ public final class Engine extends SimulationObject {
 
 	private ArrayList<Node> nodes = null;
 
+	private HashMap<String, ArrayList<Integer>> nodeHashMap = null;
+	
 	private ArrayList<Integer> generatedKeys = null;
 	
 	private ArrayList<Integer> generatedResourcesKeys = null;
@@ -114,6 +117,7 @@ public final class Engine extends SimulationObject {
 		this.referencedProcesses = referencedProcesses;
 		eventsList = new LinkedList<Event>();
 		nodes = new ArrayList<Node>();
+		nodeHashMap = new HashMap<String, ArrayList<Integer>>();
 		generatedKeys = new ArrayList<Integer>();
 		generatedResourcesKeys = new ArrayList<Integer>();
 		parseReferencedProcesses();
@@ -313,7 +317,31 @@ public final class Engine extends SimulationObject {
 	public ArrayList<Node> getNodes() {
 		return nodes;
 	}
-
+	
+	public Node getNodeByKey(int key) {
+		for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
+			if (((Node) it).getKey() == key)
+				return ((Node) it);
+		}
+		return null;
+	}
+	
+	public ArrayList<Integer> getNodeKeysById(String id) {
+		return nodeHashMap.get(id);
+	}
+	
+	public void addNode(Node n) {
+		nodes.add(n);
+		if (!nodeHashMap.containsKey(n.getId()))
+			addNodeIdToHashMap(n.getId());
+		nodeHashMap.get(n.getId()).add(n.getKey());
+	}
+	
+	private void addNodeIdToHashMap(String id) {
+		nodeHashMap.put(id, new ArrayList<Integer>());
+	}
+	
+	
 	/**
 	 * Initialize a java file logger that will store log messages, with the
 	 * given logging level, into the given logger path prefix and using as log
