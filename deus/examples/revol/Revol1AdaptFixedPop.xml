@@ -30,7 +30,7 @@
 			<aut:param name="ram" value="1024" /><!-- MB -->
 			<aut:param name="disk" value="100000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
-			<aut:param name="meanArrivalFreeResource" value="500000" />
+			<aut:param name="meanArrivalFreeResource" value="5000000" />
 			<aut:param name="numInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
@@ -94,9 +94,9 @@
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 
-	<aut:process id="rectpulsepoisson" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePoissonProcess">
+	<aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="10" />
+			<aut:param name="period" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
 			<aut:param name="stopVtThreshold" value="100000" />
 		</aut:params>
@@ -122,7 +122,7 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="100" />
+			<aut:param name="meanArrival" value="400" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -134,7 +134,7 @@
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="100000" />
+			<aut:param name="period" value="500000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -158,10 +158,10 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000000" seed="123456789"> 
+	<aut:engine maxvt="20000000" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<aut:reference id="rectpulsepoisson" /> 
+			<aut:reference id="rectpulseperiodic" /> 
 			<aut:reference id="poisson4" />
 			<aut:reference id="periodic2" />
 		</aut:processes>

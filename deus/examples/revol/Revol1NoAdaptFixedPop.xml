@@ -29,7 +29,7 @@
 			<aut:param name="ram" value="1024" /><!-- MB -->
 			<aut:param name="disk" value="100000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
-			<aut:param name="meanArrivalFreeResource" value="2000000" />
+			<aut:param name="meanArrivalFreeResource" value="5000000" />
 			<aut:param name="numInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
@@ -63,7 +63,7 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
-			<aut:param name="maxInitChromosome" value="2" />  <!-- this param may be varied using the Automator -->
+			<aut:param name="maxInitChromosome" value="1" />  <!-- this param may be varied using the Automator -->
 			<aut:param name="isRandomInit" value="false" />
 		</aut:params>
 		<aut:resources>
@@ -121,7 +121,7 @@
 
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="100" />
+			<aut:param name="meanArrival" value="400" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -157,7 +157,7 @@
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="10000000" seed="123456789"> 
+	<aut:engine maxvt="20000000" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
 			<aut:reference id="rectpulseperiodic" /> 
