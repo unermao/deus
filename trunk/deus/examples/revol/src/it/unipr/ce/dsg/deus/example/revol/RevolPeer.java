@@ -208,33 +208,18 @@ public class RevolPeer extends Peer {
 	}
 
 	public double getAvgNeighborsQhr() {
-		/*
-		double sumQhr = 0;
-		if (this.getQ() > 0)
-			sumQhr += this.getQhr();
-		int numNeighborsWithPositiveQ = 0;
+		// consider only neighbours with Q > 0
+		double sumQhr = this.getQhr();
 		RevolPeer currentNeighbor = null;
+		int ns = 1;
 		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) {
 			currentNeighbor = (RevolPeer) it.next();
 			if (currentNeighbor.getQ() > 0) {
 				sumQhr += currentNeighbor.getQhr();
-				numNeighborsWithPositiveQ++;
+				ns += 1;
 			}
 		}
-			
-		if ((this.getQ() == 0) && (numNeighborsWithPositiveQ == 0))
-			return -1;
-		else if ((this.getQ() == 0) && (numNeighborsWithPositiveQ > 0))
-			return sumQhr / numNeighborsWithPositiveQ;
-		return sumQhr / (numNeighborsWithPositiveQ + 1);
-		*/
-		double sumQhr = this.getQhr();
-		RevolPeer currentNeighbor = null;
-		for (Iterator<Peer> it = this.getNeighbors().iterator(); it.hasNext(); ) {
-			currentNeighbor = (RevolPeer) it.next();
-			sumQhr += currentNeighbor.getQhr();
-		}
-		return sumQhr / (this.getNeighbors().size() + 1);
+		return sumQhr / ns;
 	}
 	
 	public ArrayList<ResourceAdv> getCache() {

@@ -50,14 +50,14 @@ public class RevolAdaptationEvent extends NodeEvent {
 
 		// F1
 		if (fitnessFunction.equals("F1.0")) {
-			if (qhr < 0.99) 	  
+			if (qhr < 0.9) 	  
 				return 1 / A;
 			else
 				return A;
-		}
+		} // F2
 		else if (fitnessFunction.equals("F2.0")) {
 			return (1-qhr)/(delta*delta*A) + qhr*A;	
-		}
+		} // F3
 		else if (fitnessFunction.equals("F3.0")) {
 			return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);
 		}
@@ -69,17 +69,23 @@ public class RevolAdaptationEvent extends NodeEvent {
 		double A = phi0 * ((double) c[0]) / ((int)((RevolPeer) associatedNode).getMaxInitChromosome()) + phi1 * c[1] + phi2 * c[2] * 2;
 		getLogger().fine("A = " + A + " 1/A = " + 1/A);
 		getLogger().fine("avg neighbor qhr = " + qhr);
+		fitnessFunction = ((RevolPeer) ((Peer) associatedNode)).getFitnessFunction();
 		
 		// F1
+		if (fitnessFunction.equals("F1.0")) {
+			if (qhr < 0.9) 	  
+				return 1 / A;
+			else
+				return A;
+		} // F2
+		else if (fitnessFunction.equals("F2.0")) {
+			return (1-qhr)/(delta*delta*A) + qhr*A;
+		} // F3 
+		else if (fitnessFunction.equals("F3.0")) {
+			return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		}
 		
-		if (qhr < 0.99) 	  
-			return 1 / A;
-		else
-			return A;
-		
-		// F2 return (1-qhr)/(delta*delta*A) + qhr*A;
-		// F3 
-		//return ((1/(delta*delta)) * (1/(qhr + delta) - 1) / A + A * qhr);  
+		return -1; // error
 	}
 
 	private RevolPeer selectBestNeighbor() {
