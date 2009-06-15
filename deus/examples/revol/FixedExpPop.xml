@@ -17,7 +17,8 @@
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
-			<aut:param name="numInitialConnections" value="3" />
+			<aut:param name="n0" value="5" />
+			<aut:param name="m" value="3" />
 		</aut:params>
 	</aut:event>
 	
@@ -63,7 +64,7 @@
 
 	<aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="1000" />
+			<aut:param name="period" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
 			<aut:param name="stopVtThreshold" value="100000" />
 		</aut:params>
