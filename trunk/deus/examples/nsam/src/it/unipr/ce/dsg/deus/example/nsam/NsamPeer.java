@@ -29,7 +29,11 @@ public class NsamPeer extends Peer {
 	private static final String QUALITY_FACTOR = "qos";
 	private static final String MAX_SERVICE_NUMBER ="maxServiceNum";
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
-
+	private static final String MAX_SERVICE_INPUT_NUM = "maxServiceInputNum";
+	private static final String MAX_SERVICE_OUTPUT_NUM = "maxServiceOutputNum";
+	private static final String SERVICE_INPUT_RANGE = "serviceInputRange";
+	private static final String SERVICE_OUTPUT_RANGE="serviceOutputRange";
+	
 	private boolean isRandomInit = false;
 
 	public static final String ADSL = "adsl";
@@ -42,6 +46,10 @@ public class NsamPeer extends Peer {
 	private int bandwidth = 0;
 	private int cpuFactor = 0;
 	private int maxServiceNum =0;
+	private int maxServiceInputNum = 0;
+	private int maxServiceOutputNum = 0;
+	private int serviceInputRange = 0;
+	private int serviceOutputRange = 0;
 	private int ramFactor = 0;
 	private int diskFactor = 0;
 	private int initialCpu = 0;
@@ -52,10 +60,10 @@ public class NsamPeer extends Peer {
 	private int disk = 0;	
 	
 	private int maxAcceptedConnection = 0;
-	private int activeConnection = 0;
-	//private NsamPeer sourceStreamingNode = null;
+
+
 //	private NsamServerPeer serverNode = null;
-	
+	private  ArrayList<Service> serviceList = new ArrayList<Service>();
 	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>();
 	private ArrayList<ResourceAdv> cachedQueries = new ArrayList<ResourceAdv>();
 	
@@ -65,6 +73,9 @@ public class NsamPeer extends Peer {
 		initialize();
 	}
 
+	
+		
+	
 public void initialize() throws InvalidParamsException {
 		
 		if (params.containsKey(BATTERY))
@@ -82,6 +93,18 @@ public void initialize() throws InvalidParamsException {
 		if (params.containsKey(MAX_SERVICE_NUMBER))
 		maxServiceNum = Integer.parseInt(params.getProperty(MAX_SERVICE_NUMBER));
 		
+		if (params.containsKey(MAX_SERVICE_INPUT_NUM))
+			maxServiceInputNum = Integer.parseInt(params.getProperty(MAX_SERVICE_INPUT_NUM));
+		
+		if (params.containsKey(MAX_SERVICE_OUTPUT_NUM))
+			maxServiceOutputNum = Integer.parseInt(params.getProperty(MAX_SERVICE_OUTPUT_NUM));
+		
+		if (params.containsKey(SERVICE_INPUT_RANGE))
+			serviceInputRange = Integer.parseInt(params.getProperty(SERVICE_INPUT_RANGE));
+		
+		if (params.containsKey(SERVICE_OUTPUT_RANGE))
+			serviceOutputRange = Integer.parseInt(params.getProperty(SERVICE_OUTPUT_RANGE));
+		
 		if (params.containsKey(IS_RANDOM_INIT))
 			isRandomInit = Boolean.parseBoolean(params.getProperty(IS_RANDOM_INIT));
 		
@@ -96,14 +119,14 @@ public void initialize() throws InvalidParamsException {
 	
 	public Object clone() {
 		NsamPeer clone = (NsamPeer) super.clone();
-		clone.activeConnection = this.activeConnection;
 		clone.battery = this.battery;
 		clone.connectionType = this.connectionType;
 		clone.maxAcceptedConnection = this.maxAcceptedConnection;
 		
 		clone.isConnected = true;
-		clone.cache = new ArrayList<ResourceAdv>();
-		clone.cachedQueries = new ArrayList<ResourceAdv>();
+		clone.serviceList = this.serviceList;
+	//	clone.cache = new ArrayList<ResourceAdv>();
+	//	clone.cachedQueries = new ArrayList<ResourceAdv>();
 		return clone;
 	}
 
@@ -116,9 +139,9 @@ public void initialize() throws InvalidParamsException {
 		this.maxAcceptedConnection = maxAcceptedConnection;
 	}
 	
-	
-	
-
+	public int getTtlMax() {
+		return 7;
+	}
 	public void setInitialCpu(int initialCpu) {
 		this.initialCpu = initialCpu;
 		this.cpu = initialCpu;
@@ -177,4 +200,15 @@ public void initialize() throws InvalidParamsException {
 		cache = newCache;
 	}
 	
+	public ArrayList<Service> createServiceList (){
+		
+		 /*creo una array list che al max ha maxServiceNum elementi */
+		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
+		 for (int i=0; i<numServices; i++)
+		 {
+			 Service service = new Service(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
+			 serviceList.add(service); 
+		 } 
+		 return serviceList;
+	}	
 }
