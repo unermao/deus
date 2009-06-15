@@ -25,10 +25,12 @@ import java.util.Properties;
 
 public class ExpTopologyConnectionEvent extends NodeEvent {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
-	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
+	private static final String N0 = "n0";
+	private static final String M = "m";
 	
 	private boolean isBidirectional = false;
-	private int numInitialConnections = 0;
+	private int n0 = 0;
+	private int m = 0;
 	
 	public ExpTopologyConnectionEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -39,8 +41,10 @@ public class ExpTopologyConnectionEvent extends NodeEvent {
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(IS_BIDIRECTIONAL))
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
-		if (params.containsKey(NUM_INITIAL_CONNECTIONS))
-			numInitialConnections = Integer.parseInt(params.getProperty(NUM_INITIAL_CONNECTIONS));
+		if (params.containsKey(N0))
+			n0 = Integer.parseInt(params.getProperty(N0));
+		if (params.containsKey(M))
+			m = Integer.parseInt(params.getProperty(M));
 	}
 
 	public Object clone() {
@@ -51,41 +55,59 @@ public class ExpTopologyConnectionEvent extends NodeEvent {
 	public void run() throws RunException {
 		if (!(associatedNode instanceof Peer))
 			throw new RunException("The associated node is not a Peer!");
-		//System.out.println("numInitialConnections = " + numInitialConnections);
-		numInitialConnections = Engine.getDefault().getSimulationRandom().nextInt(numInitialConnections+1);
-		//System.out.println("numInitialConnections = " + numInitialConnections);
+		
 		int n = Engine.getDefault().getNodes().size();
-		if (n == 1)
-			return;
-		int m = 0;
-		if (n <= numInitialConnections)
-			m = Engine.getDefault().getNodes().size() - 1;
-		else
-			m = numInitialConnections;
-		do {
-			Peer target = null;			
-			do {			
-				int randomInt = Engine.getDefault().getSimulationRandom().nextInt(n);
-				Node randomNode = Engine.getDefault().getNodes().get(randomInt);
-				if (!(randomNode instanceof Peer)) {
-					target = null;					
-					continue;
+		if (n == n0) {
+			// connect all nodes
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if ( i != j) {
+						Peer target = (Peer) Engine.getDefault().getNodes().get(j);
+						if (((Peer) associatedNode).addNeighbor(target)) {
+							if (isBidirectional)
+								target.addNeighbor(((Peer) associatedNode));
+						}
+					}					
 				}
-				target = (Peer) randomNode; 
-			} while ((target == null) || (target.getKey() == ((Peer) associatedNode).getKey()));
-			if (((Peer) associatedNode).addNeighbor(target)) {
-				if (isBidirectional)
-					target.addNeighbor(((Peer) associatedNode));
 			}
-		} while (((Peer) associatedNode).getNeighbors().size() < m);
+		}
+		else if (n > n0) {
+			//int m = Engine.getDefault().getSimulationRandom().nextInt(numInitialConnections+1);
+			do {
+				Peer target = null;			
+				do {			
+					int randomInt = Engine.getDefault().getSimulationRandom().nextInt(n);
+					Node randomNode = Engine.getDefault().getNodes().get(randomInt);
+					if (!(randomNode instanceof Peer)) {
+						target = null;					
+						continue;
+					}
+					target = (Peer) randomNode; 
+				} while ((target == null) || (target.getKey() == ((Peer) associatedNode).getKey()));
+				if (((Peer) associatedNode).addNeighbor(target)) {
+					if (isBidirectional)
+						target.addNeighbor(((Peer) associatedNode));
+				}
+			} while (((Peer) associatedNode).getNeighbors().size() < m);
+		}
+		
+		System.out.println("num neighbors = " + ((Peer) associatedNode).getNeighbors().size());
 	}
 
-	public int getNumInitialConnections() {
-		return numInitialConnections;
+	public int getN0() {
+		return n0;
 	}
 
-	public void setNumInitialConnections(int numInitialConnections) {
-		this.numInitialConnections = numInitialConnections;
+	public void setN0(int n0) {
+		this.n0 = n0;
+	}
+	
+	public int getM() {
+		return m;
+	}
+
+	public void setM(int m) {
+		this.m = m;
 	}
 
 }
