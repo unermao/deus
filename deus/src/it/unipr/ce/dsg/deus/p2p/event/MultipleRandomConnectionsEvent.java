@@ -26,10 +26,10 @@ import java.util.Properties;
 
 public class MultipleRandomConnectionsEvent extends NodeEvent {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
-	private static final String NUM_INITIAL_CONNECTIONS = "numInitialConnections";
+	private static final String MAX_NUM_INITIAL_CONNECTIONS = "maxNumInitialConnections";
 	
 	private boolean isBidirectional = false;
-	private int numInitialConnections = 0;
+	private int maxNumInitialConnections = 0;
 	
 	public MultipleRandomConnectionsEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -40,8 +40,8 @@ public class MultipleRandomConnectionsEvent extends NodeEvent {
 	public void initialize() throws InvalidParamsException {
 		if (params.containsKey(IS_BIDIRECTIONAL))
 			isBidirectional = Boolean.parseBoolean(params.getProperty(IS_BIDIRECTIONAL)); 
-		if (params.containsKey(NUM_INITIAL_CONNECTIONS))
-			numInitialConnections = Integer.parseInt(params.getProperty(NUM_INITIAL_CONNECTIONS));
+		if (params.containsKey(MAX_NUM_INITIAL_CONNECTIONS))
+			maxNumInitialConnections = Integer.parseInt(params.getProperty(MAX_NUM_INITIAL_CONNECTIONS));
 	}
 
 	public Object clone() {
@@ -56,10 +56,10 @@ public class MultipleRandomConnectionsEvent extends NodeEvent {
 		if (n == 1)
 			return;
 		int m = 0;
-		if (n <= numInitialConnections)
+		if (n <= maxNumInitialConnections)
 			m = Engine.getDefault().getNodes().size() - 1;
 		else
-			m = numInitialConnections;
+			m = Engine.getDefault().getSimulationRandom().nextInt(maxNumInitialConnections+1);
 		do {
 			Peer target = null;			
 			do {			
@@ -79,11 +79,11 @@ public class MultipleRandomConnectionsEvent extends NodeEvent {
 	}
 
 	public int getNumInitialConnections() {
-		return numInitialConnections;
+		return maxNumInitialConnections;
 	}
 
 	public void setNumInitialConnections(int numInitialConnections) {
-		this.numInitialConnections = numInitialConnections;
+		this.maxNumInitialConnections = numInitialConnections;
 	}
 
 }
