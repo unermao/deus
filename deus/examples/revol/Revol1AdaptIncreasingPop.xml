@@ -16,11 +16,12 @@
 		</aut:events>
 	</aut:event>
 	
-	<aut:event id="connection2" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" 
-	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolMultipleRandomConnectionsSchedulerListener">
+	<aut:event id="connection2" handler="it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent" oneShot="true" 
+	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolExpTopologyConnectionSchedulerListener">
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
-			<aut:param name="numInitialConnections" value="3" />
+			<aut:param name="n0" value="5" />
+			<aut:param name="m" value="3" />
 		</aut:params>
 		<aut:events>
 			<aut:reference id="disconnection" />
