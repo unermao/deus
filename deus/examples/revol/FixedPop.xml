@@ -17,7 +17,7 @@
 	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
-			<aut:param name="numInitialConnections" value="3" />
+			<aut:param name="maxNumInitialConnections" value="3" />
 		</aut:params>
 	</aut:event>
 	
