@@ -4,6 +4,7 @@ import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
 import it.unipr.ce.dsg.deus.impl.event.BirthEvent;
 import it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent;
+import it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 
@@ -25,6 +26,8 @@ public class RevolBirthSchedulerListener implements SchedulerListener {
 			((RevolAdaptationEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		} else if (newEvent instanceof RevolDiscoveryEvent) {
 			((RevolDiscoveryEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
+		} else if (newEvent instanceof ExpTopologyConnectionEvent) {
+			((ExpTopologyConnectionEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		}
 	}
 
