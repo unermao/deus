@@ -564,7 +564,7 @@ public class EnergyDiscoveryEvent extends NodeEvent {
 	 * returns exponentially distributed random variable
 	 */
 	private float expRandom(float meanValue) {
-		float myRandom = (float) (-Math.log(Engine.getDefault()
+		float myRandom = (float) (-Math.log(1-Engine.getDefault()
 				.getSimulationRandom().nextFloat()) * meanValue);
 		return myRandom;
 	}
