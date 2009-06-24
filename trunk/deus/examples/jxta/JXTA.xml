@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd" >
+
+
+	<!-- *** EVENTS *** -->
+
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.jxta.JXTABirthEvent"
+	schedulerListener="it.unipr.ce.dsg.deus.example.jxta.JXTABirthSchedulerListener" >
+		<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="createAdv" />
+		</aut:events>
+	</aut:event>
+	
+	<aut:event id="createAdv" handler="it.unipr.ce.dsg.deus.example.jxta.JXTACreateAdvEvent" />
+	
+	
+	<aut:event id="time" handler="it.unipr.ce.dsg.deus.example.jxta.LogJXTATime"/>
+	
+	
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node id="JXTAPeer" handler="it.unipr.ce.dsg.deus.example.jxta.JXTAEdgePeer">
+		<aut:logger level="FINE" />
+		<!--<aut:params>
+			<aut:param name="fingerTableSize" value="14" />
+			<aut:param name="resourcesNode" value="10" />
+		</aut:params>-->
+	</aut:node>
+
+
+	<!-- *** PROCESSES *** -->
+
+	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="500" />	
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="JXTAPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />		
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicAdvCreate" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="800" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="JXTAPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="createAdv" />
+		</aut:events>
+	</aut:process>
+	
+	
+	<aut:process id="time" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="100" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="time" />
+		</aut:events>
+	</aut:process>
+		
+	<!-- *** SIMULATION *** -->
+
+	<aut:engine maxvt="1000" seed="123456789" keyspacesize="100000"> 
+		<aut:logger level="ALL" />
+		<aut:processes>
+			<aut:reference id="periodicBirth" />
+			<aut:reference id="periodicAdvCreate" />
+			<aut:reference id="time" />
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>
