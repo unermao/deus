@@ -320,8 +320,9 @@ public final class Engine extends SimulationObject {
 	
 	public Node getNodeByKey(int key) {
 		for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
-			if (((Node) it).getKey() == key)
-				return ((Node) it);
+			Node n = it.next();
+            if (n.getKey() == key)
+                return n;
 		}
 		return null;
 	}
