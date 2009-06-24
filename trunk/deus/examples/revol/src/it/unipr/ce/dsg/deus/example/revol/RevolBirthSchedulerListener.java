@@ -26,6 +26,7 @@ public class RevolBirthSchedulerListener implements SchedulerListener {
 			((RevolAdaptationEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		} else if (newEvent instanceof RevolDiscoveryEvent) {
 			((RevolDiscoveryEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
+			System.out.println("beschlistener: be.associatedNode " + be.getAssociatedNode());
 		} else if (newEvent instanceof ExpTopologyConnectionEvent) {
 			((ExpTopologyConnectionEvent) newEvent).setAssociatedNode((RevolPeer) be.getAssociatedNode());
 		}
