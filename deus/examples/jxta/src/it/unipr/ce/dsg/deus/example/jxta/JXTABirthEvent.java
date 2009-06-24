@@ -44,6 +44,7 @@ public class JXTABirthEvent extends NodeEvent {
 		
 		Engine.getDefault().getNodes().add(n);
 		associatedNode = n;
+		
 		System.out.println("BIRTH : " + associatedNode);
 		JXTAEdgePeer app = (JXTAEdgePeer) n;
 		app.setConnected(true);

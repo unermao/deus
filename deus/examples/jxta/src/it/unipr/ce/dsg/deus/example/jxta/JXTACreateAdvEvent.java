@@ -22,9 +22,14 @@ public class JXTACreateAdvEvent extends NodeEvent {
 //		
 //	}
 
-	@Override
+	
+	public Object clone() {
+		JXTACreateAdvEvent clone = (JXTACreateAdvEvent) super.clone();
+		return clone;
+	}
+	
 	public void run() throws RunException {
-		System.out.println("RUN Adv_EVENT");
+		System.out.println("RUN Adv_EVENT " + this);
 		// TODO Auto-generated method stub
 		JXTAEdgePeer aa = (JXTAEdgePeer) Engine.getDefault().getNodes().get(0);
 		aa.ciao();
