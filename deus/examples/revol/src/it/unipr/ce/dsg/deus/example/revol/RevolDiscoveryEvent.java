@@ -172,7 +172,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 		getLogger().fine("mean arrival free resource " + meanArrivalFreeResource);
 		getLogger().fine("ttl = " + ttl);
 		RevolPeer associatedRevolNode = (RevolPeer) associatedNode;
-	
+		
 		// the following if statement should avoid to search for resources
 		// which have been already found by the intersted node
 		if (res != null) {
