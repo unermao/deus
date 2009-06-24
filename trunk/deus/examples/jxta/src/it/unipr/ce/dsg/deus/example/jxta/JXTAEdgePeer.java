@@ -59,7 +59,7 @@ public class JXTAEdgePeer extends Peer {
 	}
 	
 	public void ciao(){
-		System.out.println("CIAOCAIO da " + this.JXTAID );
+		System.out.println("CIAOCIAO da " + this.JXTAID );
 	}
 	
 	//creazione nuovo adv (casuale) ed inserimento nella lista
