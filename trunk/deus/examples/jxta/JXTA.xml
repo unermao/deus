@@ -14,8 +14,11 @@
 		</aut:events>
 	</aut:event>
 	
-	<aut:event id="createAdv" handler="it.unipr.ce.dsg.deus.example.jxta.JXTACreateAdvEvent" />
-	
+	<aut:event id="createAdv" handler="it.unipr.ce.dsg.deus.example.jxta.JXTACreateAdvEvent">
+		<aut:params>
+			<aut:param name="hasSameAssociatedNode" value="true" />
+		</aut:params>
+	</aut:event>
 	
 	<aut:event id="time" handler="it.unipr.ce.dsg.deus.example.jxta.LogJXTATime"/>
 	
@@ -69,11 +72,10 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1000" seed="123456789" keyspacesize="100000"> 
+	<aut:engine maxvt="3000" seed="123456789" keyspacesize="100000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
-			<aut:reference id="periodicAdvCreate" />
 			<aut:reference id="time" />
 		</aut:processes>
 	</aut:engine>
