@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.kademlia;
 
+
 import java.util.Comparator;
 
 public class XorDistanceComparator implements Comparator<KademliaPeer> {
