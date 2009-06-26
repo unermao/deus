@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
+
+
+	<!-- *** EVENTS *** -->
+
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaBirthEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.kademlia.KademliaBirthSchedulerListener" >
+	 	<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="join" />
+		    <aut:reference id="publishAll" />
+			  <aut:reference id="publishRefresh" />
+		</aut:events>
+	</aut:event>
+
+	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaJoinEvent" oneShot="true" />
+
+	<aut:event id="publishAll" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPublishAllEvent" oneShot="true" />
+
+	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaValueLookUpEvent" />
+
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaDeathEvent" oneShot="true"/>
+	
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaDisconnectionEvent" />
+
+	<aut:event id="publishRefresh" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPublishRefreshEvent"  />
+
+	<aut:event id="publishStoredRefresh" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPublishStoredEvent" />
+
+  <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.kademlia.LogKademliaNodesStatsEvent" />
+
+	
+	<!-- *** NODE SPECIES *** -->
+
+	<aut:node id="kademliaPeer" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPeer">
+		<aut:logger level="FINE" />
+		<aut:params>
+			<aut:param name="kBucketDim" value="20" />
+			<aut:param name="resourcesNode" value="10" />
+			<aut:param name="alpha" value="3" />
+			<aut:param name="discoveryMaxWait" value="300.0" />
+		</aut:params>
+	</aut:node>
+
+
+	<!-- *** PROCESSES *** -->
+	
+	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+	  <aut:params>
+			<aut:param name="period" value="10" />
+			<aut:param name="startVtThreshold" value="0" />
+			<aut:param name="stopVtThreshold" value="50000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth" />		
+		</aut:events>
+	</aut:process>
+
+	
+	<aut:process id="poissonJoinPublish" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="0" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="join" />
+			<aut:reference id="publishAll" />
+		</aut:events>
+	</aut:process>
+	
+	
+	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="500" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="discovery" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicPublishRefresh" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+		<aut:params>
+      <aut:param name="period" value="8640000" />
+			<aut:param name="startVtThreshold" value="8640000" />
+			<aut:param name="stopVtThreshold" value="100000000000000000000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="publishRefresh" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicPublishStoredRefresh" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="360000" />  <!-- every hour -->
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="publishStoredRefresh" />
+		</aut:events>
+	</aut:process>
+	
+	<!-- ***cosi i nodi da disconnettere sono casuali *** -->
+	
+	<aut:process id="periodicDeath" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="700" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="death" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="700" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="disconnection" />
+		</aut:events>
+	</aut:process>
+
+  <!-- Tipo 2 -->
+<!--
+	<aut:process id="periodicDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+		<aut:params>
+			<aut:param name="firstPeriodArrival" value="700" />
+			<aut:param name="secondPeriodArrival" value="200" />
+			<aut:param name="vtThreshold" value="1500" />	
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="death" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodicDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
+		<aut:params>
+			<aut:param name="firstPeriodArrival" value="700" />
+			<aut:param name="secondPeriodArrival" value="200" />
+			<aut:param name="vtThreshold" value="1500" />	
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+		    <aut:reference id="disconnection" />
+		</aut:events>
+	</aut:process>
+
+-->
+
+  <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+    <aut:params> 
+      <aut:param name="period" value="5000" />
+    </aut:params>
+    <aut:events>
+      <aut:reference id="logNodesData" />
+    </aut:events>
+  </aut:process>
+
+	
+		
+	<!-- *** SIMULATION *** -->
+
+
+	<aut:engine maxvt="75000" seed="1234567890" keyspacesize="2000000"> 
+		<aut:logger level="ALL" />
+		<aut:processes>
+			<aut:reference id="periodicBirth" />
+      <aut:reference id="periodicDiscovery" />
+      <aut:reference id="periodicNodeLogging" />
+			<aut:reference id="periodicDeath" />
+			<aut:reference id="periodicDisconnection" />
+		</aut:processes>
+	</aut:engine>
+
+</aut:automator>
