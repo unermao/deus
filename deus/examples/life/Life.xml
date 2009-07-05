@@ -24,6 +24,7 @@
 	
 	<aut:event id="time" handler="it.unipr.ce.dsg.deus.example.life.LogLifeTime" />
 	
+	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="lifeRegion" handler="it.unipr.ce.dsg.deus.example.life.LifeRegion">
