@@ -12,7 +12,7 @@
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="join" />
 		    <aut:reference id="publishAll" />
-			  <aut:reference id="publishRefresh" />
+			<aut:reference id="publishRefresh" />
 		</aut:events>
 	</aut:event>
 
@@ -30,7 +30,7 @@
 
 	<aut:event id="publishStoredRefresh" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPublishStoredEvent" />
 
-  <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.kademlia.LogKademliaNodesStatsEvent" />
+    <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.kademlia.LogKademliaNodesStatsEvent" />
 
 	
 	<!-- *** NODE SPECIES *** -->
@@ -50,9 +50,9 @@
 	
 	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 	  <aut:params>
-			<aut:param name="period" value="10" />
+			<aut:param name="period" value="1" />
 			<aut:param name="startVtThreshold" value="0" />
-			<aut:param name="stopVtThreshold" value="50000" />
+			<aut:param name="stopVtThreshold" value="5" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="kademliaPeer" />
@@ -91,7 +91,7 @@
 	
 	<aut:process id="periodicPublishRefresh" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-      <aut:param name="period" value="8640000" />
+            <aut:param name="period" value="8640000" />
 			<aut:param name="startVtThreshold" value="8640000" />
 			<aut:param name="stopVtThreshold" value="100000000000000000000" />
 		</aut:params>
@@ -175,7 +175,7 @@
 
   <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="5000" />
+      <aut:param name="period" value="1000" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodesData" />
@@ -187,14 +187,14 @@
 	<!-- *** SIMULATION *** -->
 
 
-	<aut:engine maxvt="75000" seed="1234567890" keyspacesize="2000000"> 
+	<aut:engine maxvt="7500" seed="123456789" keyspacesize="2000000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
-      <aut:reference id="periodicDiscovery" />
-      <aut:reference id="periodicNodeLogging" />
+      		<!-- aut:reference id="periodicDiscovery" / -->
+      		<aut:reference id="periodicNodeLogging" />
 			<aut:reference id="periodicDeath" />
-			<aut:reference id="periodicDisconnection" />
+			<!-- aut:reference id="periodicDisconnection" / -->
 		</aut:processes>
 	</aut:engine>
 

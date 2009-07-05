@@ -7,22 +7,18 @@
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="creation" handler="it.unipr.ce.dsg.deus.example.life.LifeCreationEvent" 
-	schedulerListener="it.unipr.ce.dsg.deus.example.life.LifeCreationSchedulerListener">
+	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.life.LifeCreationEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.life.LifeCreationSchedulerListener">
 	 	<aut:events><!-- events to be scheduled on created node -->
-		    <aut:reference id="startBirthsDeaths" />
+		    <aut:reference id="update" />
 		</aut:events>
 	</aut:event>
 
-	<aut:event id="startBirthsDeaths" handler="it.unipr.ce.dsg.deus.example.life.LifeStartBirthsDeathsEvent" oneShot="true" >
+	<aut:event id="update" handler="it.unipr.ce.dsg.deus.example.life.LifeUpdateWorldEvent" >
 		<aut:params>
 			<aut:param name="hasSameAssociatedNode" value="true" />
 		</aut:params>
 	</aut:event>
-	
-	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.example.life.LifeCellBirthEvent" />
-	
-	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.life.LifeCellDeathEvent" />
 
 	<aut:event id="showWorld" handler="it.unipr.ce.dsg.deus.example.life.LifeShowWorldEvent" />
 	
@@ -36,41 +32,38 @@
 		<aut:params>
 			<aut:param name="regionSide" value="40" />
 			<aut:param name="initialZones" value="1" />
-			<aut:param name="meanArrivalBirthDeath" value="2" />
 		</aut:params>
 	</aut:node>
 
 
 	<!-- *** PROCESSES *** -->
 
-	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="10" />
-			<aut:param name="startVtThreshold" value="0" />
-			<aut:param name="stopVtThreshold" value="40" />
+			<aut:param name="firstPeriodArrival" value="0.25" />
+			<aut:param name="secondPeriodArrival" value="10000000000000000" />
+			<aut:param name="vtThreshold" value="1" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="lifeRegion" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="creation" />		
+			<aut:reference id="birth" />		
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="periodicStart" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+	<aut:process id="periodicUpdate" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="2" /> 
 		</aut:params>
 		<aut:events>
-		    <aut:reference id="startBirthsDeaths" />
+		    <aut:reference id="update" />
 		</aut:events>
 	</aut:process>
 	
-	<aut:process id="periodicShow" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+		<aut:process id="periodicShow" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="2" />
-			<aut:param name="startVtThreshold" value="41" />
-			<aut:param name="stopVtThreshold" value="5000" />
+			<aut:param name="period" value="2" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="showWorld" />
@@ -89,7 +82,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1000" seed="123456789" keyspacesize="100"> 
+	<aut:engine maxvt="500" seed="123456789" keyspacesize="100"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
