@@ -112,7 +112,9 @@ public class LifeRegion extends Node {
 									triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
 									meanArrivalBirthDeath));
 							cellDeathEv.setAssociatedNode(this);
-							cellDeathEv.setTargetCell(y*regionSide + x);
+							cellDeathEv.setX(x);
+							cellDeathEv.setY(y);
+							cellDeathEv.setRegionSide(regionSide);
 							Engine.getDefault().insertIntoEventsList(cellDeathEv);
 						}
 						// else survive
@@ -125,7 +127,9 @@ public class LifeRegion extends Node {
 									triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
 									meanArrivalBirthDeath));
 							cellBirthEv.setAssociatedNode(this);
-							cellBirthEv.setTargetCell(y*regionSide + x);
+							cellBirthEv.setX(x);
+							cellBirthEv.setY(y);
+							cellBirthEv.setRegionSide(regionSide);
 							Engine.getDefault().insertIntoEventsList(cellBirthEv);
 						}
 					}
