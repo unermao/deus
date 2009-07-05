@@ -50,7 +50,7 @@ public class KademliaFindNodeEvent extends NodeEvent {
 		
 		reqNode.nlResults.get(resourceKey).addAll(currentNode.find_node(resourceKey));
 		// Really slows down things.
-		// Cutting currentNode.insertPeer(reqNode) reduces the simulation time from 32 hourse to 1h 40
+		// Cutting currentNode.insertPeer(reqNode) reduces the simulation time from 32 hours to 1h 40
 		if (currentNode.getKey() != reqNode.getKey()) {
 			currentNode.insertPeer(reqNode); 
 		}

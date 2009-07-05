@@ -106,6 +106,7 @@ public class KademliaPeer extends Peer {
 	}
 
 	public void insertPeer(KademliaPeer newPeer) {
+		System.out.println(this.getKey() + " insertPeer " + newPeer.getKey() + ": begin");
 		if (this.getKey() == newPeer.getKey())
 			return;
 		int distance = this.getKey() ^ newPeer.getKey();
@@ -164,7 +165,7 @@ public class KademliaPeer extends Peer {
 				newPeer.store(r);
 			}
 		}
-
+		System.out.println("insertPeer: end \n ---");
 	}
 
 	public boolean ping(KademliaPeer peer) {
