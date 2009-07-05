@@ -13,7 +13,6 @@ public class LifeRegionPanel extends javax.swing.JPanel {
 		
 		cells = new ArrayList<javax.swing.JPanel>();
 		
-		
         org.jdesktop.layout.GroupLayout LifeRegionPanelLayout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(LifeRegionPanelLayout);
         LifeRegionPanelLayout.setHorizontalGroup(
@@ -34,7 +33,6 @@ public class LifeRegionPanel extends javax.swing.JPanel {
         	JPanel cellPanel = new javax.swing.JPanel();
 		
         	cellPanel.setBackground(new java.awt.Color(255, 255, 255));
-
 		
         	org.jdesktop.layout.GroupLayout cellPanelLayout = new org.jdesktop.layout.GroupLayout(cellPanel);
         	cellPanel.setLayout(cellPanelLayout);
