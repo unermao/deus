@@ -428,8 +428,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			getLogger().fine("disc event: " + discEv);
 			discEv.setHasSameAssociatedNode(false);
 			discEv.setOneShot(true);
-			discEv
-					.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
+			discEv.setMeanArrivalTriggeredDiscovery(meanArrivalTriggeredDiscovery);
 			discEv.setMeanArrivalFreeResource(meanArrivalFreeResource);
 			discEv.setPropagation(true);
 			discEv.setAssociatedNode((RevolPeer) resInCache.getOwner());
