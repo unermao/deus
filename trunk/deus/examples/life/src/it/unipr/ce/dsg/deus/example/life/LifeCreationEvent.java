@@ -9,17 +9,14 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class LifeBirthEvent extends NodeEvent {
+public class LifeCreationEvent extends NodeEvent {
 
-	public LifeBirthEvent(String id, Properties params, Process parentProcess)
+	public LifeCreationEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
-		// TODO Auto-generated constructor stub
 	}
 
-	@Override
 	public void run() throws RunException {
-		// TODO Auto-generated method stub
 		Node n = null;
 		
 		if(Engine.getDefault().getNodes().size() != 0) {
@@ -38,8 +35,7 @@ public class LifeBirthEvent extends NodeEvent {
 		this.setAssociatedNode(n);
 		
 		LifeRegion r = (LifeRegion) n;
-		r.connect();
-		
+		r.connect();	
 	}
 
 }

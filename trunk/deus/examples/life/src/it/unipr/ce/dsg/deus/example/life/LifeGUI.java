@@ -33,8 +33,7 @@ public class LifeGUI extends javax.swing.JFrame {
         vtLabelValue = new javax.swing.JLabel();
         comunicationCountTitle = new javax.swing.JLabel();
         comunicationCountValue = new javax.swing.JLabel();
-        
-        
+            
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("LIFE Game");
 
@@ -80,8 +79,7 @@ public class LifeGUI extends javax.swing.JFrame {
         
 		for(int i=0; i< numberOfRegions; ++i) {
 			LifeRegionPanel lrp = ((LifeRegion)Engine.getDefault().getNodes().get(i)).regionPanel;
-			
-	        
+			       
 	        gridBagConstraints = new java.awt.GridBagConstraints();
 	        gridBagConstraints.gridx = i%gridSide;
 	        gridBagConstraints.gridy = i/gridSide;
@@ -100,8 +98,7 @@ public class LifeGUI extends javax.swing.JFrame {
                  .add(statusPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                  .addContainerGap())
         );
-        
-        
+            
         layout.setVerticalGroup(
         		layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
