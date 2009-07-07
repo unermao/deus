@@ -6,9 +6,9 @@ import it.unipr.ce.dsg.deus.core.SchedulerListener;
 public class LifeCreationSchedulerListener implements SchedulerListener {
 
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
-		LifeCreationEvent be = (LifeCreationEvent) parentEvent;
+		LifeCreationEvent ce = (LifeCreationEvent) parentEvent;
 		if (newEvent instanceof LifeStartBirthsDeathsEvent) {
-			((LifeStartBirthsDeathsEvent) newEvent).setAssociatedNode((LifeRegion) be
+			((LifeStartBirthsDeathsEvent) newEvent).setAssociatedNode((LifeRegion) ce
 					.getAssociatedNode());
 		}
 	}

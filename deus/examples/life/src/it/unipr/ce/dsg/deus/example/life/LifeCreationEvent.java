@@ -34,8 +34,8 @@ public class LifeCreationEvent extends NodeEvent {
 		Engine.getDefault().getNodes().add(n);
 		this.setAssociatedNode(n);
 		
-		LifeRegion r = (LifeRegion) n;
-		r.connect();	
+		((LifeRegion) n).connect();	
+		((LifeRegion) n).initRegion();
 	}
 
 }
