@@ -15,6 +15,7 @@ public class LifeStartBirthsDeathsEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
+		System.out.println("node started: " + (LifeRegion)this.associatedNode);
 		((LifeRegion)this.associatedNode).scheduleBirthsDeaths(triggeringTime);	
 	}
 	

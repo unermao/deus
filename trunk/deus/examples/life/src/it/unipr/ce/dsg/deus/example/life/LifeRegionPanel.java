@@ -57,9 +57,9 @@ public class LifeRegionPanel extends javax.swing.JPanel {
 	public void updateGrid(int grid[]) {
 		for(int i=0; i<grid.length; ++i) {
 			if(grid[i] == 1)
-				cells.get(i).setBackground(new java.awt.Color(0, 0, 0));
+				cells.get(i).setBackground(new java.awt.Color(0, 0, 255)); // blue
 			else
-				cells.get(i).setBackground(new java.awt.Color(255, 255, 255));
+				cells.get(i).setBackground(new java.awt.Color(255, 255, 0)); // yellow
 		}
 	}
 

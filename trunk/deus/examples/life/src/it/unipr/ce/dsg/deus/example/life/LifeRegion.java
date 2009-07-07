@@ -30,8 +30,7 @@ public class LifeRegion extends Node {
 		super(id, params, resources);
 		initialize();		
 		grid = new int[regionSide * regionSide];
-		regionPanel = new LifeRegionPanel(regionSide);
-		this.initRegion();	
+		regionPanel = new LifeRegionPanel(regionSide);	
 	}
 
 	public void initialize() throws InvalidParamsException {
@@ -66,7 +65,6 @@ public class LifeRegion extends Node {
 		neighbourRegions = new Integer[8]; 
 		grid = new int[regionSide * regionSide]; 
 		regionPanel = new LifeRegionPanel(regionSide); 
-		this.initRegion(); 
 		return clone;
 	}
 	
@@ -99,39 +97,45 @@ public class LifeRegion extends Node {
 	}
 	
 	public void scheduleBirthsDeaths(float triggeringTime) {
+		System.out.println("schedule for node: " + this);
 		int count = 0;
-		for(int k = 0; k<2; ++k){
-			for(int y=k; y<regionSide; y=y+2) {
-				for(int x=0; x<regionSide; ++x) {
-					count = this.getNeighboursCellCount(x,y);
-					if (grid[y*regionSide + x] == 1) {
-						if (count < 2 || count > 3) {
-							// schedule death in grid[y*regionSide + x]
-							LifeCellDeathEvent cellDeathEv = (LifeCellDeathEvent) Engine.getDefault().createEvent(
-									LifeCellDeathEvent.class,
-									triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
-									meanArrivalBirthDeath));
-							cellDeathEv.setAssociatedNode(this);
-							cellDeathEv.setX(x);
-							cellDeathEv.setY(y);
-							cellDeathEv.setRegionSide(regionSide);
-							Engine.getDefault().insertIntoEventsList(cellDeathEv);
-						}
-						// else survive
+		for (int x=0; x<regionSide; ++x) {
+			for (int y=0; y<regionSide; ++y) {
+				count = this.getNeighboursCellCount(x,y);
+				
+				if (grid[y*regionSide + x] == 1) {
+					if (count < 2 || count > 3) {
+						//System.out.println("x = " + x + ", y = " + y);
+						//System.out.println("(1) count = " + count);
+						// schedule death in grid[y*regionSide + x]
+						LifeCellDeathEvent cellDeathEv = (LifeCellDeathEvent) Engine.getDefault().createEvent(
+								LifeCellDeathEvent.class,
+								triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
+								meanArrivalBirthDeath));
+						cellDeathEv.setAssociatedNode(this);
+						cellDeathEv.setMeanArrival(meanArrivalBirthDeath);
+						cellDeathEv.setX(x);
+						cellDeathEv.setY(y);
+						cellDeathEv.setRegionSide(regionSide);
+						Engine.getDefault().insertIntoEventsList(cellDeathEv);
 					}
-					else {
-						if (count == 2 || count == 3) {
-							// schedule birth in grid[y*regionSide + x]
-							LifeCellBirthEvent cellBirthEv = (LifeCellBirthEvent) Engine.getDefault().createEvent(
-									LifeCellBirthEvent.class,
-									triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
-									meanArrivalBirthDeath));
-							cellBirthEv.setAssociatedNode(this);
-							cellBirthEv.setX(x);
-							cellBirthEv.setY(y);
-							cellBirthEv.setRegionSide(regionSide);
-							Engine.getDefault().insertIntoEventsList(cellBirthEv);
-						}
+					// else survive
+				}
+				else {
+					if (count == 2 || count == 3) {
+						//System.out.println("x = " + x + ", y = " + y);
+						//System.out.println("(0) count = " + count);
+						// schedule birth in grid[y*regionSide + x]
+						LifeCellBirthEvent cellBirthEv = (LifeCellBirthEvent) Engine.getDefault().createEvent(
+								LifeCellBirthEvent.class,
+								triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
+								meanArrivalBirthDeath));
+						cellBirthEv.setAssociatedNode(this);
+						cellBirthEv.setMeanArrival(meanArrivalBirthDeath);
+						cellBirthEv.setX(x);
+						cellBirthEv.setY(y);
+						cellBirthEv.setRegionSide(regionSide);
+						Engine.getDefault().insertIntoEventsList(cellBirthEv);				
 					}
 				}
 			}
@@ -148,32 +152,6 @@ public class LifeRegion extends Node {
 	
 	public void updateRegionPanel() {
 		regionPanel.updateGrid(this.grid);
-	}
-	
-	public void updateRegion(boolean random) {		
-		int count;
-		if(random) {
-			Random r = new Random();		
-			int x = r.nextInt(regionSide -1);
-			int y = r.nextInt(regionSide -1);
-			count = this.getNeighboursCellCount(x,y);
-			if (count == 2 || count == 3)
-				this.grid[y*regionSide + x] = 1;
-			else
-				this.grid[y*regionSide + x] = 0;
-		} else {
-			for(int k = 0; k<2; ++k){
-				for(int y=k; y<regionSide; y=y+2) {
-					for(int x=0; x<regionSide; ++x) {
-						count = this.getNeighboursCellCount(x,y);
-						if (count == 2 || count == 3)
-							this.grid[y*regionSide + x] = 1;
-						else
-							this.grid[y*regionSide + x] = 0;
-					}
-				}
-			}
-		}
 	}
 	
 	public int getNeighboursCellCount(int x, int y) {
@@ -297,15 +275,13 @@ public class LifeRegion extends Node {
 		return this.grid[y*regionSide + x];
 	}
 	
-	private void initRegion() {
-		Random r = new Random();
+	public void initRegion() {
+		Random r = Engine.getDefault().getSimulationRandom();
 		for(int i=0; i<initialZones; ++i) {
 			int row = r.nextInt(regionSide -2) + 1;
-			int col = r.nextInt(regionSide -2) + 1;		
+			int col = r.nextInt(regionSide -2) + 1;	
+			System.out.println("x = " + col + " y = " + row);
 			grid[row*regionSide + col] = 1;
-			grid[row*regionSide + col + 1] = 1;
-			grid[(row+1)*regionSide + col + 1] = 1;
-			grid[(row+1)*regionSide + col] = 1;
 		}
 	}
 
