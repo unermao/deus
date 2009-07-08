@@ -34,17 +34,27 @@ public class LifeCellBirthEvent extends NodeEvent {
 		((LifeRegion) associatedNode).grid[y*regionSide + x] = 1;
 		
 		// if this birth creates the conditions for new births or deaths, schedule them 
-		if (y >= 1) { 
-			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y-1);
-			if (((LifeRegion) associatedNode).getCellValue(x, y-1) == 1) {			
-				if (count < 2 || count > 3) 
-					generateCellDeathEvent((LifeRegion) associatedNode, x, y-1);
+			System.out.println("y = " + y);			
+			if (y == 0) {
+				// TODO .. lo stato di (x,y-1) va chiesto al nodo..
+				
+			} else {
+				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y-1);
+				if (((LifeRegion) associatedNode).getCellValue(x, y-1) == 1) {			
+					if (count < 2 || count > 3) 
+						generateCellDeathEvent((LifeRegion) associatedNode, x, y-1);
+				}
+				else {
+					if (count == 2 || count == 3) 
+						generateCellBirthEvent((LifeRegion) associatedNode, x, y-1);
+				}
+			}
+						
+			if ((x == regionSide - 1) || (y == 0)) {
+				// TODO ..
+				System.out.println("x == regionSide - 1 OR y == 0");
 			}
 			else {
-				if (count == 2 || count == 3) 
-					generateCellBirthEvent((LifeRegion) associatedNode, x, y-1);
-			}
-			if (x < regionSide - 1) {
 				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y-1);
 				if (((LifeRegion) associatedNode).getCellValue(x+1, y-1) == 1) {			
 					if (count < 2 || count > 3)
@@ -55,7 +65,7 @@ public class LifeCellBirthEvent extends NodeEvent {
 						generateCellBirthEvent((LifeRegion) associatedNode, x+1, y-1);
 				}
 			}
-		}
+		
 		if (x < regionSide - 1) {
 			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y);
 			if (((LifeRegion) associatedNode).getCellValue(x+1, y) == 1) {			
