@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.example.life;
 
 import java.util.Properties;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -15,8 +16,14 @@ public class LifeStartBirthsDeathsEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		System.out.println("node started: " + (LifeRegion)this.associatedNode);
-		((LifeRegion)this.associatedNode).scheduleBirthsDeaths(triggeringTime);	
+		int k = ((LifeRegion)this.associatedNode).getKey();
+		System.out.println("startBDevent: k = " + k);
+		int sqrtNumeRegions = ((LifeRegion)this.associatedNode).getSqrtNumRegions();
+		if (k < (sqrtNumeRegions*sqrtNumeRegions - 1))
+			return;
+		for (int x = 0; x < sqrtNumeRegions*sqrtNumeRegions; x++) {
+			((LifeRegion)Engine.getDefault().getNodeByKey(x)).scheduleBirthsDeaths(triggeringTime);
+		}
 	}
 	
 }
