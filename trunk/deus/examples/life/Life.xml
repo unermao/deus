@@ -34,9 +34,10 @@
 	<aut:node id="lifeRegion" handler="it.unipr.ce.dsg.deus.example.life.LifeRegion">
 		<aut:logger level="FINE" />
 		<aut:params>
+			<aut:param name="sqrtNumRegions" value="3" />
 			<aut:param name="regionSide" value="40" />
-			<aut:param name="initialZones" value="1" />
-			<aut:param name="meanArrivalBirthDeath" value="2" />
+			<aut:param name="initialZones" value="100" />
+			<aut:param name="meanArrivalBirthDeath" value="100" />
 		</aut:params>
 	</aut:node>
 
@@ -47,7 +48,7 @@
 		<aut:params>
 			<aut:param name="period" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
-			<aut:param name="stopVtThreshold" value="40" />
+			<aut:param name="stopVtThreshold" value="90" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="lifeRegion" />
@@ -59,7 +60,7 @@
 	
 	<aut:process id="periodicStart" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="2" /> 
+			<aut:param name="period" value="2" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="startBirthsDeaths" />
@@ -68,9 +69,9 @@
 	
 	<aut:process id="periodicShow" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="2" />
-			<aut:param name="startVtThreshold" value="41" />
-			<aut:param name="stopVtThreshold" value="5000" />
+			<aut:param name="period" value="1" />
+			<aut:param name="startVtThreshold" value="91" />
+			<aut:param name="stopVtThreshold" value="3000" />
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="showWorld" />
@@ -79,7 +80,7 @@
 	
 	<aut:process id="time" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="25" /> 
+			<aut:param name="period" value="100" /> 
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="time" />
@@ -89,7 +90,7 @@
 		
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="1000" seed="123456789" keyspacesize="100"> 
+	<aut:engine maxvt="3000" seed="12345678" keyspacesize="100"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
