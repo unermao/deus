@@ -13,9 +13,9 @@ import it.unipr.ce.dsg.deus.core.RunException;
 public class LifeCellDeathEvent extends NodeEvent {
 
 	private float meanArrival = 0;
-	int x = 0;
-	int y = 0;
-	int regionSide = 0;
+	private int x = 0;
+	private int y = 0;
+	private int regionSide = 0;
 	
 	public LifeCellDeathEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
@@ -24,116 +24,151 @@ public class LifeCellDeathEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		//System.out.println("death in node" + associatedNode);
-		
+		//System.out.println("VT" + triggeringTime);
+		//System.out.println("D meanArrival " + meanArrival);
 		// check if this death still makes sense
 		int count = ((LifeRegion) associatedNode).getNeighboursCellCount(x,y);
 		if (count == 2 || count == 3) 
 			return;
 		
 		// if this death makes sense, do it
-		//System.out.println("death");
+		//System.out.println(" death @ x = " + x + ", y = " + y);
 		((LifeRegion) associatedNode).grid[y*regionSide + x] = 0;
 		
 		// if this death creates the conditions for new births or deaths, schedule them 
-		if (y >= 1) { 
-			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y-1);
-			if (((LifeRegion) associatedNode).getCellValue(x, y-1) == 1) {			
-				if (count < 2 || count > 3) 
-					generateCellDeathEvent((LifeRegion) associatedNode, x, y-1);
-			}
-			else {
-				if (count == 2 || count == 3) 
-					generateCellBirthEvent((LifeRegion) associatedNode, x, y-1);
-			}
-			if (x < regionSide - 1) {
-				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y-1);
-				if (((LifeRegion) associatedNode).getCellValue(x+1, y-1) == 1) {			
-					if (count < 2 || count > 3)
-						generateCellDeathEvent((LifeRegion) associatedNode, x+1, y-1);
-				}
-				else {
-					if (count == 2 || count == 3) 
-						generateCellBirthEvent((LifeRegion) associatedNode, x+1, y-1);
-				}
-			}
+		
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y-1);
+		if (((LifeRegion) associatedNode).getCellValue(x, y-1) == 1) {			
+			if (count < 2 || count > 3) 
+				generateCellDeathEvent((LifeRegion) associatedNode, x, y-1);
 		}
-		if (x < regionSide - 1) {
-			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y);
-			if (((LifeRegion) associatedNode).getCellValue(x+1, y) == 1) {			
-				if (count < 2 || count > 3)
-					generateCellDeathEvent((LifeRegion) associatedNode, x+1, y);
-			}
-			else {
-				if (count == 2 || count == 3) 
-					generateCellBirthEvent((LifeRegion) associatedNode, x+1, y);
-			}
-			if (y < regionSide - 1) {
-				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y+1);
-				if (((LifeRegion) associatedNode).getCellValue(x+1, y+1) == 1) {			
-					if (count < 2 || count > 3)
-						generateCellDeathEvent((LifeRegion) associatedNode, x+1, y+1);
-				}
-				else {
-					if (count == 2 || count == 3) 
-						generateCellBirthEvent((LifeRegion) associatedNode, x+1, y+1);
-				}	
-			}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x, y-1);
 		}
-		if (y < regionSide - 1) {
-			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y+1);
-			if (((LifeRegion) associatedNode).getCellValue(x, y+1) == 1) {			
-				if (count < 2 || count > 3)
-					generateCellDeathEvent((LifeRegion) associatedNode, x, y+1);
-			}
-			else {
-				if (count == 2 || count == 3) 
-					generateCellBirthEvent((LifeRegion) associatedNode, x, y+1);
-			}	
-			if (x >= 1) {
-				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y+1);
-				if (((LifeRegion) associatedNode).getCellValue(x-1, y+1) == 1) {			
-					if (count < 2 || count > 3)
-						generateCellDeathEvent((LifeRegion) associatedNode, x-1, y+1);
-				}
-				else {
-					if (count == 2 || count == 3) 
-						generateCellBirthEvent((LifeRegion) associatedNode, x-1, y+1);
-				}	
-			}
+			
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y-1);
+		if (((LifeRegion) associatedNode).getCellValue(x+1, y-1) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x+1, y-1);
 		}
-		if (x >= 1) {
-			count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y);
-			if (((LifeRegion) associatedNode).getCellValue(x-1, y) == 1) {			
-				if (count < 2 || count > 3)
-					generateCellDeathEvent((LifeRegion) associatedNode, x-1, y);
-			}
-			else {
-				if (count == 2 || count == 3) 
-					generateCellBirthEvent((LifeRegion) associatedNode, x-1, y);
-			}	
-			if (y >= 1) {
-				count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y-1);
-				if (((LifeRegion) associatedNode).getCellValue(x-1, y-1) == 1) {			
-					if (count < 2 || count > 3)
-						generateCellDeathEvent((LifeRegion) associatedNode, x-1, y-1);
-				}
-				else {
-					if (count == 2 || count == 3) 
-						generateCellBirthEvent((LifeRegion) associatedNode, x-1, y-1);
-				}		
-			}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x+1, y-1);
 		}
+	
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y);
+		if (((LifeRegion) associatedNode).getCellValue(x+1, y) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x+1, y);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x+1, y);
+		}
+			
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x+1, y+1);
+		if (((LifeRegion) associatedNode).getCellValue(x+1, y+1) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x+1, y+1);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x+1, y+1);
+		}	
+			
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y+1);
+		if (((LifeRegion) associatedNode).getCellValue(x, y+1) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x, y+1);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x, y+1);
+		}	
+			
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y+1);
+		if (((LifeRegion) associatedNode).getCellValue(x-1, y+1) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x-1, y+1);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x-1, y+1);
+		}	
+		
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y);
+		if (((LifeRegion) associatedNode).getCellValue(x-1, y) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x-1, y);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x-1, y);
+		}	
+			
+		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x-1, y-1);
+		if (((LifeRegion) associatedNode).getCellValue(x-1, y-1) == 1) {			
+			if (count < 2 || count > 3)
+				generateCellDeathEvent((LifeRegion) associatedNode, x-1, y-1);
+		}
+		else {
+			if (count == 2 || count == 3) 
+				generateCellBirthEvent((LifeRegion) associatedNode, x-1, y-1);
+		}		
 	}
 	
 	private void generateCellBirthEvent(Node associatedNode, int x, int y) {
 		LifeCellBirthEvent cellBirthEv = (LifeCellBirthEvent) Engine.getDefault().createEvent(
 				LifeCellBirthEvent.class,
-				triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
-				meanArrival));
+				triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), meanArrival));
 		cellBirthEv.setAssociatedNode(associatedNode);
+		if ( ((x >= 0) && (x <= regionSide-1)) && ((y >= 0) && (y <= regionSide-1)) ) {
+			cellBirthEv.setAssociatedNode(associatedNode);
+			cellBirthEv.setX(x);
+			cellBirthEv.setY(y);
+		}
+		else if ( (x < 0) && (y < 0) ) { // NO
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[0]));
+			cellBirthEv.setX(regionSide-1+x);
+			cellBirthEv.setY(regionSide-1+y);
+		}
+		else if ( ((x >= 0) && (x <= regionSide-1)) && (y < 0) ) { // N
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[1]));
+			cellBirthEv.setX(x);
+			cellBirthEv.setY(regionSide-1+y);
+		}
+		else if ( (x > regionSide-1) && (y < 0) ) { // NE
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[2]));
+			cellBirthEv.setX(x - (regionSide-1));
+			cellBirthEv.setY(regionSide-1+y);
+		}
+		else if ( (x > regionSide-1) && ((y >= 0) && (y <= regionSide-1)) ) { // E
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[3]));
+			cellBirthEv.setX(x - (regionSide-1));
+			cellBirthEv.setY(y);
+		}
+		else if ( (x > regionSide-1) && (y > regionSide-1) ) { // SE
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[4]));
+			cellBirthEv.setX(x - (regionSide-1));
+			cellBirthEv.setY(y - (regionSide-1));
+		}
+		else if ( ((x >= 0) && (x <= regionSide-1)) && (y > regionSide-1) ) { // S
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[5]));
+			cellBirthEv.setX(x);
+			cellBirthEv.setY(y - (regionSide-1));
+		}
+		else if ( (x < 0) && (y > regionSide-1) ) { // SO
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[6]));
+			cellBirthEv.setX(regionSide-1+x);
+			cellBirthEv.setY(y - (regionSide-1));
+		}
+		else if ( (x < 0) && ((y >= 0) && (y <= regionSide-1)) ) { // O
+			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[7]));
+			cellBirthEv.setX(regionSide-1+x);
+			cellBirthEv.setY(y);
+		}
 		cellBirthEv.setMeanArrival(meanArrival);
-		cellBirthEv.setX(x);
-		cellBirthEv.setY(y);
 		cellBirthEv.setRegionSide(regionSide);
 		Engine.getDefault().insertIntoEventsList(cellBirthEv);
 	}
@@ -143,10 +178,52 @@ public class LifeCellDeathEvent extends NodeEvent {
 				LifeCellDeathEvent.class,
 				triggeringTime + expRandom(Engine.getDefault().getSimulationRandom(), 
 				meanArrival));
-		cellDeathEv.setAssociatedNode(associatedNode);
+		if ( ((x >= 0) && (x <= regionSide-1)) && ((y >= 0) && (y <= regionSide-1)) ) {
+			cellDeathEv.setAssociatedNode(associatedNode);
+			cellDeathEv.setX(x);
+			cellDeathEv.setY(y);
+		}
+		else if ( (x < 0) && (y < 0) ) { // NO
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[0]));
+			cellDeathEv.setX(regionSide-1+x);
+			cellDeathEv.setY(regionSide-1+y);
+		}
+		else if ( ((x >= 0) && (x <= regionSide-1)) && (y < 0) ) { // N
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[1]));
+			cellDeathEv.setX(x);
+			cellDeathEv.setY(regionSide-1+y);
+		}
+		else if ( (x > regionSide-1) && (y < 0) ) { // NE
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[2]));
+			cellDeathEv.setX(x - (regionSide-1));
+			cellDeathEv.setY(regionSide-1+y);
+		}
+		else if ( (x > regionSide-1) && ((y >= 0) && (y <= regionSide-1)) ) { // E
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[3]));
+			cellDeathEv.setX(x - (regionSide-1));
+			cellDeathEv.setY(y);
+		}
+		else if ( (x > regionSide-1) && (y > regionSide-1) ) { // SE
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[4]));
+			cellDeathEv.setX(x - (regionSide-1));
+			cellDeathEv.setY(y - (regionSide-1));
+		}
+		else if ( ((x >= 0) && (x <= regionSide-1)) && (y > regionSide-1) ) { // S
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[5]));
+			cellDeathEv.setX(x);
+			cellDeathEv.setY(y - (regionSide-1));
+		}
+		else if ( (x < 0) && (y > regionSide-1) ) { // SO
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[6]));
+			cellDeathEv.setX(regionSide-1+x);
+			cellDeathEv.setY(y - (regionSide-1));
+		}
+		else if ( (x < 0) && ((y >= 0) && (y <= regionSide-1)) ) { // O
+			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[7]));
+			cellDeathEv.setX(regionSide-1+x);
+			cellDeathEv.setY(y);
+		}
 		cellDeathEv.setMeanArrival(meanArrival);
-		cellDeathEv.setX(x);
-		cellDeathEv.setY(y);
 		cellDeathEv.setRegionSide(regionSide);
 		Engine.getDefault().insertIntoEventsList(cellDeathEv);
 	}
@@ -161,6 +238,10 @@ public class LifeCellDeathEvent extends NodeEvent {
 	
 	public void setMeanArrival(float meanArrival) {
 		this.meanArrival = meanArrival;
+	}
+	
+	public float getMeanArrival() {
+		return this.meanArrival;
 	}
 	
 	public void setX(int x) {
