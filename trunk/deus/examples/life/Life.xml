@@ -28,6 +28,12 @@
 	
 	<aut:event id="time" handler="it.unipr.ce.dsg.deus.example.life.LogLifeTime" />
 	
+	<aut:event id="music" handler="it.unipr.ce.dsg.deus.impl.event.MP3Event" oneShot="true">
+		<aut:params>
+			<aut:param name="fileName" value="res/UWR_000175-4.mp3" />
+			<aut:param name="modality" value="loop" />
+		</aut:params>
+	</aut:event>
 	
 	<!-- *** NODE SPECIES *** -->
 
@@ -75,6 +81,7 @@
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="showWorld" />
+		    <aut:reference id="music" />
 		</aut:events>
 	</aut:process>
 	
