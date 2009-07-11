@@ -6,11 +6,10 @@ import javax.swing.table.AbstractTableModel;
 @SuppressWarnings("serial")
 public class NodeParameterTableModel extends AbstractTableModel {
 
-	// Array di String che contiene i nomi delle colonne
+	// String array that contains the names of the columns
 	protected String columnNames[] = { "Node Id","Param Name","Initial Value", "Final Value" ,"Step Value"};
 
-	// Array che contiene i valori per le diverse righe nel modello della
-	// tabella
+	// Array that contains the values for the rows in the table model
 	protected Object dataValues[][];
 
 	int rowcount;
@@ -40,22 +39,21 @@ public class NodeParameterTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Restituisce il numero di righe del modello
+	 * Returns the number of rows
 	 */
 	public int getRowCount() {
-		// TODO Auto-generated method stub
 		return rowcount;
 	}
 
 	/**
-	 * Restituisce il nome della colonna in base al valore della colonna
+	 * Returns the nome of the column, given its number
 	 */
 	public String getColumnName(int col) {
 		return columnNames[col];
 	}
 
 	/**
-	 * Restituisce il tipo di oggetto in base al valore della colonna
+	 * Returns the type of object, given the column number
 	 */
 	@SuppressWarnings("unchecked")
 	public Class getColumnClass(int c) {
@@ -63,16 +61,14 @@ public class NodeParameterTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Restituisce il numero di colonne presenti nel modello
+	 * Returns the number of columns
 	 */
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		return columncount;
 	}
 
 	/**
-	 * Restituisce l'oggetto presente nel modello alle posizioni passate alla
-	 * funzione.
+	 * Returns the object in the table, given its row and column numbers
 	 */
 	public Object getValueAt(int row, int col) {
 		
@@ -80,8 +76,7 @@ public class NodeParameterTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Restituisce l'oggetto presente nel modello alle posizioni passate alla
-	 * funzione.
+	 * Returns the object in the first column, given the row number
 	 */
 	public Object getRowObject(int row ) {
 		
@@ -90,8 +85,7 @@ public class NodeParameterTableModel extends AbstractTableModel {
 
 
 	/**
-	 * Permette di impostare il valore di un oggetto nel modello alla posizione
-	 * indicata dai valori passati alla funzione.
+	 * Allows to set a value in the table, given the row and column numbers
 	 */
 	public void setValueAt(Object value, int row, int col) {
 		dataValues[row][col] = value;
@@ -106,7 +100,7 @@ public class NodeParameterTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Stabilisce quali celle del modello sono editabili oppure no.
+	 * Defines which cells can be edited
 	 */
 	public boolean isCellEditable(int row, int col) {
 

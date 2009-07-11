@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 @SuppressWarnings("serial")
 public class GnuPlotFileTableModel extends AbstractTableModel {
 
-	// Array di String that contains column names
+	// String array that contains column names
 	protected String columnNames[] = { "File Name","X Label","Y Label"};
 
 	// Array that contains the values for the different rows in the model of the table
@@ -77,7 +77,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Returns the first element of a row.
+	 * Returns the first element of a row
 	 */
 	public Object getRowObject(int row ) {
 		
@@ -86,7 +86,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 
 
 	/**
-	 * Set a value, given its position in the table.
+	 * Set a value, given its position in the table
 	 */
 	public void setValueAt(Object value, int row, int col) {
 	
@@ -100,7 +100,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Defines which cells are editable and which are not
+	 * Defines which cells can be edited
 	 */
 	public boolean isCellEditable(int row, int col) {
 
