@@ -12,13 +12,6 @@
 package it.unipr.ce.dsg.deus.automator.gui;
 
 import it.unipr.ce.dsg.deus.automator.DeusAutomatorException;
-import it.unipr.ce.dsg.deus.automator.MyObjectEngine;
-import it.unipr.ce.dsg.deus.automator.MyObjectGnuplot;
-import it.unipr.ce.dsg.deus.automator.MyObjectNode;
-import it.unipr.ce.dsg.deus.automator.MyObjectParam;
-import it.unipr.ce.dsg.deus.automator.MyObjectProcess;
-import it.unipr.ce.dsg.deus.automator.MyObjectResourceParam;
-import it.unipr.ce.dsg.deus.automator.MyObjectSimulation;
 import it.unipr.ce.dsg.deus.automator.Runner;
 
 import java.awt.BorderLayout;
@@ -29,13 +22,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -58,13 +49,13 @@ import org.xml.sax.SAXException;
  *
  * @author marcopk
  */
+@SuppressWarnings("serial")
 public class DeusAutomatorFrame extends javax.swing.JFrame {
 
     private int simulationCount = 0;
 	private JLabel removeSimulationLabel;
 	private String originalXmlPath;
 	
-	//Nome del file per l'XML dell'automator 
 	private String outFileName = "automator.xml";
 	
 	private JFrame chooser_frame;
@@ -192,10 +183,8 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
                 try {
 					runLabelMouseClicked(evt);
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
             }
@@ -291,22 +280,18 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				 
 				 clearAllSimulation();
 					
-					//Imposto il titolo della finestra
+					// Set the title of the window
 					setTitle("Deus Automator - DSG Parma " + fileName);
 					
 					try {
 						readXML(fileName);
 					} catch (DeusAutomatorException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (JAXBException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (SAXException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				 }
@@ -330,7 +315,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     		((DeusSimulationPanel)this.simulationTabbedPane.getComponentAt(index)).clearAllData();
     	}
     	
-		//Chiudo tutti i tab delle simulazioni che sono gia' attivi
+		// Close all active tabs of the simulations
 		this.simulationTabbedPane.removeAll();
 	}
 
@@ -405,7 +390,6 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				 try {
 					writeAutomatorXML(saveFileName);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				 
@@ -446,7 +430,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     private void runLabelMouseClicked(java.awt.event.MouseEvent evt) throws IOException {//GEN-FIRST:event_runLabelMouseClicked
     	writeAutomatorXML(this.outFileName);
     	
-    	//Eseguo il file salvato
+    	// Run saved file
 		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
 		runner.setSimulationProgressBar(simulationProgressBar);
 		
@@ -581,14 +565,14 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 			
 			document.getDocumentElement().normalize();
 			
-			//Elemento root
+			// Root element 
 			NodeList simulationLst = document.getElementsByTagName("simulation");
 						
 			
-			//LISTA DELLE SIMULAZIONI
+			// list of simulations
 			for (int w = 0; w < simulationLst.getLength(); w++) {																									
 				
-				//DeusSimulationPanel sul quale aggiungere i valori letti dal File
+				// DeusSimulationPanel on which values read from file are added 
 				DeusSimulationPanel deusSimulationPanel = null;
 				
 				Node fstSimulation = simulationLst.item(w);
@@ -601,10 +585,10 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 //				
 //				String simulationNumberSeed = fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue();
 				
-				// NOME DELLA SIMULAZIONE
+				// name of the simulation
 				String simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
 				
-				//Creo il nuovo Panel e lo imposto per poterlo modificare con i nuovi dati letti dal file XML
+				// Create new Panel and set it to be modified with new data read from the XML file
 				deusSimulationPanel = this.addSimulationPanel(simulationName);
 
 //				if(fstSimulation.getAttributes().getNamedItem("resultFolder") != null)
@@ -618,26 +602,26 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				
 			NodeList nodeLst = document.getElementsByTagName("node");
 												
-			//LISTA DEI NODI
+			// list of nodes
 			for (int s = 0; s < nodeLst.getLength(); s++) {				
 				
 				Node fstNode = nodeLst.item(s);
 				
 				if(fstNode.getParentNode().equals(simulationLst.item(w))){									
 					
-				//NOME DEL NODO
+				// name of the node
 				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();							
 
 				Element fstElmnt = (Element) fstNode;
 				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");							
 				
-				//Ricavo tutti i parametri in ParamName di node
+				// Retrieve all params in node's ParamName
 				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
 				{										
 
 					Element paramElement = (Element)fstNmElmntLst.item(j);
 
-					//NOME DEL PARAMETRO
+					// name of the param
 					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();															
 
 					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
@@ -651,12 +635,12 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node " + messageType + " in " + paramName);	
 					}
 					
-					//VALORE PARAMETRI
+					// value of params
 					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
 					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
 					Double step = Double.parseDouble(stepValue.item(0).getTextContent());									
 				
-					//Creo il nuovo oggetto da inserire nella GUI
+					// create new object to be inserted in the GUI
 					NodeParameter nodeParameter = new NodeParameter(fin,init,messageType,paramName,step);
 					
 					deusSimulationPanel.addNodeParameter(nodeParameter);
@@ -666,16 +650,16 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				
 				NodeList paramName = fstElmnt.getElementsByTagName("resourceParamName");							
 
-				//Ricavo tutti i parametri in resourceParamName di node 
+				// retrieve all params in node's resourceParamName
 				for( int j = 0 ; j < paramName.getLength() ; j++)
 				{				
 					
 					Element paramElement = (Element)paramName.item(j);
 
-					//NOME HANDLER
+					// handler name
 					String handlerName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("handlerName").getNodeValue();
 					
-					//NOME PARAMETRO RESOURCE
+					// resource param name
 					String resParamValueName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("resParamValue").getNodeValue();
 
 					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
@@ -689,7 +673,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node" + messageType + " in " + paramName );	
 					}
 					
-					//VALORE PARAMETRI
+					// values of params
 					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
 					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
 					Double step = Double.parseDouble(stepValue.item(0).getTextContent());	
@@ -706,26 +690,26 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 			
 			NodeList processLst = document.getElementsByTagName("process");						
 
-			//LISTA DEI PROCESSI
+			// list of processes
 			for (int s = 0; s < processLst.getLength(); s++) {
 			
 				Node fstNode = processLst.item(s);								
 			
 				if(fstNode.getParentNode().equals(simulationLst.item(w))){																	
 					
-				// NOME PROCESSO
+				// process name
 				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();
 
 				Element fstElmnt = (Element) fstNode;
 				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");
 								
-				//Ricavo tutti i parametri in ParamName di process
+				// Retrieve all params in process' ParamName
 				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
 				{				
 					
 					Element paramElement = (Element)fstNmElmntLst.item(j);
 
-					//NOME PARAMETRO PROCESSO
+					// name of process param
 					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();
 					
 					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
@@ -734,7 +718,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					
 					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
 					
-					//VALORE PARAMETRI
+					// values of params
 					Double init = Double.parseDouble(initialValue.item(0).getTextContent());
 					Double fin = Double.parseDouble(finalValue.item(0).getTextContent());
 					Double step = Double.parseDouble(stepValue.item(0).getTextContent());
@@ -750,7 +734,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 			
 			NodeList engineLst = document.getElementsByTagName("engine");						
 
-			//ENGINE
+			// engine
 			for (int s = 0; s < engineLst.getLength(); s++) {
 							
 				Node fstNode = engineLst.item(s);
@@ -782,7 +766,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				Element fstElmnt = (Element) fstNode;
 				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("seed");
 
-				//Ricavo tutti i seedValue presenti in seed
+				// Retrieve all seedValues in seed
 				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
 				{					
 					
@@ -792,7 +776,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 										
 					for( int o = 0 ; o < seedValue.getLength() ; o++)
 					{						
-						// VALORI DEI SEED
+						// values of the seeds
 						String seedvalue = seedValue.item(o).getTextContent();
 						
 						EngineParameter engineParameter = new EngineParameter(seedvalue);
@@ -819,7 +803,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 //		
 //			}
 //			
-			//GNUPLOT
+			// GNUPLOT
 			NodeList GnuPlotLst = document.getElementsByTagName("resultXYFile");						
 
 			for (int i = 0; i < GnuPlotLst.getLength(); i++) {			
@@ -863,7 +847,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		
 		if(oldIndex == -1)
 		{
-			//Aggiungo il Tab Simulazione
+			// Add simulation Tab
 			simulationCount++;
 			simulationTabbedPane.addTab(simulationName, new DeusSimulationPanel(simulationTabbedPane));
 			

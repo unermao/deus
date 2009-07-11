@@ -3,13 +3,13 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 public class GnuPlotFileTableModel extends AbstractTableModel {
 
-	// Array di String che contiene i nomi delle colonne
+	// Array di String that contains column names
 	protected String columnNames[] = { "File Name","X Label","Y Label"};
 
-	// Array che contiene i valori per le diverse righe nel modello della
-	// tabella
+	// Array that contains the values for the different rows in the model of the table
 	protected Object dataValues[][];
 
 	int rowcount;
@@ -19,10 +19,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	private ArrayList<GnuPlotFileElement> gnuPlotFileList;
 
 	/**
-	 * Permette di settare tramite i valori delle Mail all'iterno del modello
-	 * della tabella.
-	 * 
-	 * @param mail_list
+	 *
 	 */
 	public void set_FileTableModel(ArrayList<GnuPlotFileElement> nodeResourceList) {
 
@@ -43,22 +40,21 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Restituisce il numero di righe del modello
+	 * Returns the number of rows of the model
 	 */
 	public int getRowCount() {
-		// TODO Auto-generated method stub
 		return rowcount;
 	}
 
 	/**
-	 * Restituisce il nome della colonna in base al valore della colonna
+	 * Returns the name of the column
 	 */
 	public String getColumnName(int col) {
 		return columnNames[col];
 	}
 
 	/**
-	 * Restituisce il tipo di oggetto in base al valore della colonna
+	 * Returns the object type based on the value of the column
 	 */
 	@SuppressWarnings("unchecked")
 	public Class getColumnClass(int c) {
@@ -66,16 +62,14 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Restituisce il numero di colonne presenti nel modello
+	 * Returns the number of columns in the model
 	 */
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		return columncount;
 	}
 
 	/**
-	 * Restituisce l'oggetto presente nel modello alle posizioni passate alla
-	 * funzione.
+	 * Returns the value, given its position in the table
 	 */
 	public Object getValueAt(int row, int col) {
 		
@@ -83,8 +77,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 	
 	/**
-	 * Restituisce l'oggetto presente nel modello alle posizioni passate alla
-	 * funzione.
+	 * Returns the first element of a row.
 	 */
 	public Object getRowObject(int row ) {
 		
@@ -93,8 +86,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 
 
 	/**
-	 * Permette di impostare il valore di un oggetto nel modello alla posizione
-	 * indicata dai valori passati alla funzione.
+	 * Set a value, given its position in the table.
 	 */
 	public void setValueAt(Object value, int row, int col) {
 	
@@ -108,7 +100,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Stabilisce quali celle del modello sono editabili oppure no.
+	 * Defines which cells are editable and which are not
 	 */
 	public boolean isCellEditable(int row, int col) {
 

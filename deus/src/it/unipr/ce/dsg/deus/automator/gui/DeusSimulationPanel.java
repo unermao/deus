@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /*
  * DeusSimulationPanel.java
@@ -17,6 +13,7 @@ import java.util.ArrayList;
  *
  * @author marcopk
  */
+@SuppressWarnings("serial")
 public class DeusSimulationPanel extends javax.swing.JPanel {
 
 	public static ArrayList<ArrayList<Object>> simulations = new ArrayList<ArrayList<Object>>();

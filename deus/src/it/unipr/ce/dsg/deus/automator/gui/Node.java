@@ -16,7 +16,6 @@ public class Node {
 		nodeResourceList = new ArrayList<NodeResource>();
 	}
 	
-	@Override
 	public boolean equals(Object obj) {
 	
 		Node nodeObj = (Node)obj;
@@ -71,7 +70,7 @@ public class Node {
 	}
 	
 	/**
-	 * Genera il TAG associato al Nodo
+	 * Generate the tag associated to the node
 	 * 
 	 * <node id="serverNode">
 	 *	<paramName name="uploadSpeed">
