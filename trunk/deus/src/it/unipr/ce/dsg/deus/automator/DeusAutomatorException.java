@@ -2,8 +2,8 @@ package it.unipr.ce.dsg.deus.automator;
 
 
 /**
- * Eccezione lanciata nel caso in cui i punti necessari per disegnare una figura siano insufficenti
- * @author marcopk
+ * Exception that is thrown when the points that are necessary to draw a figure are not sufficient
+ *  * @author marcopk
  *
  */
 public class DeusAutomatorException extends Exception {

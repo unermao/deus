@@ -9,7 +9,6 @@ public class MyObjectGnuplot {
 	
 	public MyObjectGnuplot() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	public String getFileName() {

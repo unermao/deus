@@ -9,7 +9,6 @@ public class MyObjectResourceParam {
 		
 
 	public MyObjectResourceParam() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getObjectParam() {
