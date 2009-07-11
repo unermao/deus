@@ -3,6 +3,7 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 public class EngineParameterTableModel extends AbstractTableModel {
 
 	// Array di String che contiene i nomi delle colonne
@@ -44,7 +45,6 @@ public class EngineParameterTableModel extends AbstractTableModel {
 	 * Restituisce il numero di righe del modello
 	 */
 	public int getRowCount() {
-		// TODO Auto-generated method stub
 		return rowcount;
 	}
 
@@ -67,7 +67,6 @@ public class EngineParameterTableModel extends AbstractTableModel {
 	 * Restituisce il numero di colonne presenti nel modello
 	 */
 	public int getColumnCount() {
-		// TODO Auto-generated method stub
 		return columncount;
 	}
 

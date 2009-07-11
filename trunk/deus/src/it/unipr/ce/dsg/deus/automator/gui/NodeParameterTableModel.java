@@ -3,6 +3,7 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 public class NodeParameterTableModel extends AbstractTableModel {
 
 	// Array di String che contiene i nomi delle colonne
@@ -18,12 +19,6 @@ public class NodeParameterTableModel extends AbstractTableModel {
 
 	private ArrayList<NodeParameter> nodeParametersList;
 
-	/**
-	 * Permette di settare tramite i valori delle Mail all'iterno del modello
-	 * della tabella.
-	 * 
-	 * @param mail_list
-	 */
 	public void set_FileTableModel(ArrayList<NodeParameter> nodeParametersList) {
 
 		this.nodeParametersList = nodeParametersList;
