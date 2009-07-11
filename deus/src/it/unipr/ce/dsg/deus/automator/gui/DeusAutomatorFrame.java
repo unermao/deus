@@ -741,27 +741,24 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				
 				if(fstNode.getParentNode().equals(simulationLst.item(w))){
 
+				/*	// the following lines are useless [Michele]
 				String startVt = "";
 				String endVt = "";
 				String stepVt = "";
 								
-				boolean vt = true;
-				
+				boolean vt = true;			
 				if(fstNode.getAttributes().getNamedItem("startVT") != null )	
 					startVt = fstNode.getAttributes().getNamedItem("startVT").getNodeValue();
-				
 				else vt = false;
 				
 				if(fstNode.getAttributes().getNamedItem("endVT") != null )	
-					endVt = fstNode.getAttributes().getNamedItem("endVT").getNodeValue();
-				 
+					endVt = fstNode.getAttributes().getNamedItem("endVT").getNodeValue(); 
 				else vt = false;
 				
 				if(fstNode.getAttributes().getNamedItem("stepVT") != null )
 					stepVt = fstNode.getAttributes().getNamedItem("stepVT").getNodeValue();
-				
 				else vt = false;
-				
+				*/
 								
 				Element fstElmnt = (Element) fstNode;
 				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("seed");
