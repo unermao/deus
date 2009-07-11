@@ -14,7 +14,6 @@ public class MyObjectParam {
 	}
 
 	public MyObjectParam() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getObjectParam() {

@@ -10,8 +10,8 @@ public class AutomatorLogger {
 	private FileOutputStream file;
 	
 	/**
-	 * Costruttore dell'AutomatorLogger
-	 * @param fileName, nome del file su cui scrivere i risultati
+	 * constructor of the AutomatorLogger
+	 * @param fileName, name of the file on which the results must be written
 	 */
 	public AutomatorLogger(String fileName) {
 		super();			
@@ -19,15 +19,14 @@ public class AutomatorLogger {
 		try {				
 			this.file = new FileOutputStream(fileName,true);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * Fucnzione che scrive sul file di logger
-	 * @param f, Tempo del simulatore
-	 * @param fileValue, insieme dei parametri <nome,valore> da scrivere sul file 
+	 * Method that writes on the logger file
+	 * @param f, time of the simulator
+	 * @param fileValue, set of couples <name,values> to write on the file 
 	 */
 	public void write(float f, ArrayList<LoggerObject> fileValue){				
 		
@@ -48,7 +47,6 @@ public class AutomatorLogger {
 			this.file.close();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

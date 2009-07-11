@@ -15,7 +15,6 @@ public class VTResults {
 		VT = vt;
 	}
 	
-	@Override
 	public boolean equals(Object obj) {	
 	
 		VTResults result = (VTResults) obj;

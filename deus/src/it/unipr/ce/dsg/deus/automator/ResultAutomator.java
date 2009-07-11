@@ -20,7 +20,7 @@ public class ResultAutomator {
 	}
 
 	/**
-	 * Funzione per leggere tutti i file su cui fare la media
+	 * Method for reading all the files on which the mean must be computed
 	 * @throws IOException
 	 */
 	public void readTotalResults() throws IOException
@@ -30,8 +30,8 @@ public class ResultAutomator {
 	}
 	
 	/**
-	 * Funzione che si occupa di creare degli oggetti Result su cui poi efettua le medie
-	 * @param fileName , nome del file da leggere
+	 * Method for creating Result objects on which means are computed 
+	 * @param fileName , name of the file to read
 	 * @throws IOException
 	 */
 	public void readFileResults(String fileName) throws IOException{
@@ -43,11 +43,11 @@ public class ResultAutomator {
 		InputStreamReader isr = new InputStreamReader(fis);
 		BufferedReader br = new BufferedReader(isr);
 		
-		String linea = br.readLine();
+		String line = br.readLine();
 		
-		while(linea!=null) {
+		while(line!=null) {
 		       
-		       String[] lineSlipts = linea.split("=");
+		       String[] lineSlipts = line.split("=");
 		       
 		       if(	lineSlipts.length == 2 )
 		       {   
@@ -80,11 +80,10 @@ public class ResultAutomator {
 		       }
 		       else
 		       {
-		    	   //TODO Aggiungere invio eccezione
-		    	   System.out.println("ERRORE NUMERO DI PARAMETRI LINEA !!!");
+		    	   System.out.println("ERROR NUMBER OF LINE PARAMS !!!");
 		       }
 		    	   
-		       linea=br.readLine();
+		       line=br.readLine();
 		}
 		
 		if(vtResultValue != null)
@@ -97,77 +96,66 @@ public class ResultAutomator {
 	
 	
 	/**
-	 * Funzione che effettua la media 
+	 * Method that computes the mean 
 	 * @param fileName
 	 */
 	public void resultsAverage(String fileName){
 		
-		for(int index = 0 ; index < this.readedResults.size(); index++)
-		{	
-			
+		for(int index = 0 ; index < this.readedResults.size(); index++) {	
 			if(!this.finalResults.contains(this.readedResults.get(index)))
-				this.finalResults.add(this.readedResults.get(index));
-					
-			else
-			{
-			//Recupero l'elemento da modificare
-			int position = this.finalResults.indexOf(new VTResults(this.readedResults.get(index).getVT()));
+				this.finalResults.add(this.readedResults.get(index));		
+			else {
+				int position = this.finalResults.indexOf(new VTResults(this.readedResults.get(index).getVT()));
 			
-			VTResults vtResult = this.finalResults.get(position);
+				VTResults vtResult = this.finalResults.get(position);
 
-			for(int resultIndex = 0 ; resultIndex < this.readedResults.get(index).getVtResultsList().size(); resultIndex++ )
-			{
-				Result result = this.readedResults.get(index).getVtResultsList().get(resultIndex);
-					
-				vtResult.getVtResultsList().get(resultIndex).addToValue(result.getValue());
-			}
-			}
-			
+				for(int resultIndex = 0 ; resultIndex < this.readedResults.get(index).getVtResultsList().size(); resultIndex++ ) {
+					Result result = this.readedResults.get(index).getVtResultsList().get(resultIndex);	
+					vtResult.getVtResultsList().get(resultIndex).addToValue(result.getValue());
+				}
+			}	
 		}
 		
-		//Media finali e scrittura	
-	try {
+		// Final means and writing	
+		try {
 		
-		if(new File(fileName).exists())
-			new File(fileName).delete();
+			if(new File(fileName).exists())
+					new File(fileName).delete();
 		
-		FileOutputStream file = new FileOutputStream(fileName);
+			FileOutputStream file = new FileOutputStream(fileName);
 				
-		for( int i = 0 ; i < this.finalResults.size(); i++ ){
+			for ( int i = 0 ; i < this.finalResults.size(); i++ ) {
 			
-			String outputLine = "VT=" + this.finalResults.get(i).getVT() + "\n";
+				String outputLine = "VT=" + this.finalResults.get(i).getVT() + "\n";
 			
-			for(int resultIndex = 0 ; resultIndex < this.finalResults.get(i).getVtResultsList().size(); resultIndex++ )
-			{
+				for(int resultIndex = 0 ; resultIndex < this.finalResults.get(i).getVtResultsList().size(); resultIndex++ ) {
 				
-				Result result = this.finalResults.get(i).getVtResultsList().get(resultIndex);
+					Result result = this.finalResults.get(i).getVtResultsList().get(resultIndex);
 	
-				String name = result.getName();
+					String name = result.getName();
 				
-				Double value= result.getValue()/((double)this.filesList.size());
-				outputLine = outputLine + name + "=" + value + "\n";
+					Double value= result.getValue()/((double)this.filesList.size());
+					outputLine = outputLine + name + "=" + value + "\n";
 				
-			}
+				}
 					
-			try {
-				file.write(outputLine.getBytes());
-				outputLine = "";
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				try {
+					file.write(outputLine.getBytes());
+					outputLine = "";
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		
 			}
 		
-		}
-		
-		 } catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
+		 	} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}				
 				
 	}
 		
 	/**
-	 * Funzione che effettua la varianza
+	 * Method that computes the variance
 	 * @param fileName
 	 * @param averageFileName
 	 * @throws IOException
@@ -200,7 +188,6 @@ public class ResultAutomator {
 			
 			else
 			{
-			//Recupero l'elemento da modificare
 			int position = this.finalResults.indexOf(new VTResults(this.readedResults.get(index).getVT()));
 			int position2 = averageResults.indexOf(new VTResults(this.readedResults.get(index).getVT()));
 			
@@ -216,7 +203,7 @@ public class ResultAutomator {
 			
 		}
 		
-		//Varianza finale e scrittura
+		// Final variance and writing
 		 try {
 			if(new File(fileName).exists())
 				 new File(fileName).delete();
@@ -251,20 +238,18 @@ public class ResultAutomator {
 				outputLine = "";
 				outputLine2 = "";
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 		}
 		
 		 } catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}				
 		
 	}
 	
 	/**
-	 * Funzione che effettua una media di appoggio, utilizzata per calcolare la varianza
+	 * Method that computes a "support" mean, used to compute the variance
 	 * @param fileName
 	 * @return
 	 * @throws IOException
@@ -308,8 +293,8 @@ public class ResultAutomator {
 		       }
 		       else
 		       {
-		    	   //TODO Aggiungere invio eccezione
-		    	   System.out.println("ERRORE NUMERO DI PARAMETRI LINEA !!!");
+		    	   //TODO add exception throwing
+		    	   System.out.println("ERROR NUMBER OF LINE PARAMS !!!");
 		       }
 		    	   
 		       linea=br.readLine();
