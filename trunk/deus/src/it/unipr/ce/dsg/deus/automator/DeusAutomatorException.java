@@ -6,6 +6,7 @@ package it.unipr.ce.dsg.deus.automator;
  *  * @author marcopk
  *
  */
+@SuppressWarnings("serial")
 public class DeusAutomatorException extends Exception {
 
 	String error = "";
