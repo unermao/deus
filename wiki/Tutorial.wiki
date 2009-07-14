@@ -23,7 +23,41 @@ Moreover, under the "examples" folder there are some useful simulation examples 
 
 = Configuring simulations =
 
-The XML schema.. The configuration file.. The automator..
+The XML schema basically defines the following concepts: event, node, process, engine. 
+
+In a typical XML file for the configuration of a simulation, you have to define nodes:
+
+{{{
+<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
+  <aut:params>
+    <aut:param name="fitnessFunction" value="1" />
+    <aut:param name="maxInitChromosome" value="6" />
+    <aut:param name="isRandomInit" value="true" />
+  </aut:params>
+  <aut:resources>
+    <aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+      <aut:params>
+        <aut:param name="type" value="cpuFactor" />
+	<aut:param name="amount" value="4" /><!-- *512 MHz = 2GHz -->
+      </aut:params>	
+    </aut:resource>
+    <aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+      <aut:params>
+	<aut:param name="type" value="ramFactor" />
+	<aut:param name="amount" value="4" /><!-- *256 MB = 1GB -->
+      </aut:params>	
+    </aut:resource>
+    <aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
+      <aut:params>
+        <aut:param name="type" value="diskFactor" />
+        <aut:param name="amount" value="10" /><!-- *10000 MB = 100GB -->
+      </aut:params>	
+    </aut:resource>
+  </aut:resources>
+</aut:node>
+}}}
+
+The configuration file.. The automator..
 
 
 = Seeds =
