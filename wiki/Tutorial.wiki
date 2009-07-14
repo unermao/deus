@@ -25,7 +25,9 @@ Moreover, under the "examples" folder there are some useful simulation examples 
 
 The XML schema basically defines the following concepts: event, node, process, engine. 
 
-In a typical XML file for the configuration of a simulation, you have to declare nodes like:
+In the "revol" example, there are several XML files configuring different simulations. In the following we refer to "FixedPop.xml", which configures a simulation which creates a network of 10000 nodes.
+
+Like any other XML file for the configuration of a DEUS-based simulation, you have to declare nodes like:
 
 {{{
 <aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
@@ -113,6 +115,24 @@ In the XML file, you may define processes which regulate the timeliness of event
 
 Each process may refer to one or more node type, and to one or more events. A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g. "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
 
+Finally, you have to declare which processes to run:
+{{{
+<aut:engine maxvt="2000000" seed="123456789"> 
+  <aut:logger level="INFO" />
+  <aut:processes>
+    <aut:reference id="rectpulseperiodic" /> 
+    <aut:reference id="periodic2" />
+  </aut:processes>
+</aut:engine>
+}}}
+
+Note: the engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson3" process. 
+
+
+= Timestamps of events =
+
+TODO
+
 
 = Seeds =
 
@@ -161,6 +181,3 @@ For example, if a node has an integer parameter "x", you can add in the Node Par
 Very important is the {{{GnuPlot File}}} panel. Here you can define files in which to put bidimensional data to be plotted. 
 
 For example, suppose that you have Logger that periodically computes the value of a variable "y". You can define a file (call it yVariation.txt, for example) with X label "VT" (virtual time) and Y Label "y". Then, after each simulation, you will have a yVariation.txt file reporting the values of y (first column) with respect to virtual time (second column). 
-
-
-= Basic examples =
