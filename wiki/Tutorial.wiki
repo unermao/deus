@@ -84,7 +84,6 @@ Then, an event may be declared and instantiated in the Java code of another even
 In the XML file, you may define processes which regulate the timeliness of events, like:
 
 {{{
-<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 <aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
   <aut:params>
     <aut:param name="period" value="10" />
