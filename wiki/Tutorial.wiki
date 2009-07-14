@@ -25,7 +25,7 @@ Moreover, under the "examples" folder there are some useful simulation examples 
 
 The XML schema basically defines the following concepts: event, node, process, engine. 
 
-In a typical XML file for the configuration of a simulation, you have to define nodes:
+In a typical XML file for the configuration of a simulation, you have to declare nodes like:
 
 {{{
 <aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
@@ -57,7 +57,62 @@ In a typical XML file for the configuration of a simulation, you have to define 
 </aut:node>
 }}}
 
-The configuration file.. The automator..
+The handler must be a Java class in the classpath (this is a general rule, not only for nodes but also for resources, events, processes). Resources may be complex objects characterizing nodes (for this, they are not simply params of nodes, but entities with an associated handler which is the Java class defining the resource).
+
+Other than nodes, you have to declare events, like:
+
+{{{
+<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+  <aut:events>
+    <!-- events to be scheduled on created node -->
+    <aut:reference id="connection" />
+  </aut:events>
+</aut:event>
+
+<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.MultipleRandomConnectionsEvent" oneShot="true" >
+  <aut:params>
+    <aut:param name="isBidirectional" value="true" />
+    <aut:param name="maxNumInitialConnections" value="3" />
+  </aut:params>
+</aut:event>
+}}}
+
+The "birth" event has an internal reference to another event, "connection", which is defined separately. This means that when a "birth" is scheduled, also a "connection" is scheduled (the timestamp of the referenced event is always greater than the rimestamp of the referencer). An event may have or not some parameters (e.g. "birth" has no params, while "connection" has params). An event can be one-shot, which means that it is executed only once, even though its time-regulating process is periodic.
+
+Then, an event may be declared and instantiated in the Java code of another event. This approach is out of the control of the user that creates the XML configuration file.  
+
+In the XML file, you may define processes which regulate the timeliness of events, like:
+
+{{{
+<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
+<aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+  <aut:params>
+    <aut:param name="period" value="10" />
+    <aut:param name="startVtThreshold" value="0" />
+    <aut:param name="stopVtThreshold" value="100000" />
+  </aut:params>
+  <aut:nodes>
+    <aut:reference id="revolNode" />
+  </aut:nodes>
+  <aut:events>
+    <aut:reference id="birth" />
+  </aut:events>
+</aut:process>
+
+<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+  <aut:params>
+    <aut:param name="meanArrival" value="5" />
+  </aut:params>
+  <aut:nodes>
+    <aut:reference id="revolNode" />
+  </aut:nodes>
+  <aut:events>
+    <aut:reference id="connection" />
+  </aut:events>
+</aut:process>
+}}}
+
+Each process may refer to one or more node type, and to one or more events. A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g. "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
 
 
 = Seeds =
