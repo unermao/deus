@@ -23,20 +23,15 @@ public class LifeCellBirthEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		//System.out.println("birth in node" + associatedNode);
-		//System.out.println("VT" + triggeringTime);
-		//System.out.println("B meanArrival " + meanArrival);
 		// check if this birth still makes sense
 		int count = ((LifeRegion) associatedNode).getNeighboursCellCount(x,y);
 		if (count < 2 || count > 3) 
 			return;
 		
 		// if this birth makes sense, do it
-		//System.out.println("birth @ x = " + x + ", y = " + y);
 		((LifeRegion) associatedNode).grid[y*regionSide + x] = 1;
 		
 		// if this birth creates the conditions for new births or deaths, schedule them 
-
 		count = ((LifeRegion) associatedNode).getNeighboursCellCount(x, y-1);
 		if (((LifeRegion) associatedNode).getCellValue(x, y-1) == 1) {			
 			if (count < 2 || count > 3) 
@@ -129,42 +124,42 @@ public class LifeCellBirthEvent extends NodeEvent {
 		}
 		else if ( (x < 0) && (y < 0) ) { // NO
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[0]));
-			cellBirthEv.setX(regionSide-1+x);
-			cellBirthEv.setY(regionSide-1+y);
+			cellBirthEv.setX(regionSide+x);
+			cellBirthEv.setY(regionSide+y);
 		}
 		else if ( ((x >= 0) && (x <= regionSide-1)) && (y < 0) ) { // N
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[1]));
 			cellBirthEv.setX(x);
-			cellBirthEv.setY(regionSide-1+y);
+			cellBirthEv.setY(regionSide+y);
 		}
 		else if ( (x > regionSide-1) && (y < 0) ) { // NE
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[2]));
-			cellBirthEv.setX(x - (regionSide-1));
-			cellBirthEv.setY(regionSide-1+y);
+			cellBirthEv.setX(x - regionSide);
+			cellBirthEv.setY(regionSide+y);
 		}
 		else if ( (x > regionSide-1) && ((y >= 0) && (y <= regionSide-1)) ) { // E
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[3]));
-			cellBirthEv.setX(x - (regionSide-1));
+			cellBirthEv.setX(x - regionSide);
 			cellBirthEv.setY(y);
 		}
 		else if ( (x > regionSide-1) && (y > regionSide-1) ) { // SE
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[4]));
-			cellBirthEv.setX(x - (regionSide-1));
-			cellBirthEv.setY(y - (regionSide-1));
+			cellBirthEv.setX(x - regionSide);
+			cellBirthEv.setY(y - regionSide);
 		}
 		else if ( ((x >= 0) && (x <= regionSide-1)) && (y > regionSide-1) ) { // S
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[5]));
 			cellBirthEv.setX(x);
-			cellBirthEv.setY(y - (regionSide-1));
+			cellBirthEv.setY(y - regionSide);
 		}
 		else if ( (x < 0) && (y > regionSide-1) ) { // SO
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[6]));
-			cellBirthEv.setX(regionSide-1+x);
-			cellBirthEv.setY(y - (regionSide-1));
+			cellBirthEv.setX(regionSide+x);
+			cellBirthEv.setY(y - regionSide);
 		}
 		else if ( (x < 0) && ((y >= 0) && (y <= regionSide-1)) ) { // O
 			cellBirthEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[7]));
-			cellBirthEv.setX(regionSide-1+x);
+			cellBirthEv.setX(regionSide+x);
 			cellBirthEv.setY(y);
 		}
 		cellBirthEv.setMeanArrival(meanArrival);
@@ -183,18 +178,18 @@ public class LifeCellBirthEvent extends NodeEvent {
 		}
 		else if ( (x < 0) && (y < 0) ) { // NO
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[0]));
-			cellDeathEv.setX(regionSide-1+x);
-			cellDeathEv.setY(regionSide-1+y);
+			cellDeathEv.setX(regionSide+x);
+			cellDeathEv.setY(regionSide+y);
 		}
 		else if ( ((x >= 0) && (x <= regionSide-1)) && (y < 0) ) { // N
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[1]));
 			cellDeathEv.setX(x);
-			cellDeathEv.setY(regionSide-1+y);
+			cellDeathEv.setY(regionSide+y);
 		}
 		else if ( (x > regionSide-1) && (y < 0) ) { // NE
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[2]));
-			cellDeathEv.setX(x - (regionSide-1));
-			cellDeathEv.setY(regionSide-1+y);
+			cellDeathEv.setX(x - regionSide);
+			cellDeathEv.setY(regionSide+y);
 		}
 		else if ( (x > regionSide-1) && ((y >= 0) && (y <= regionSide-1)) ) { // E
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[3]));
@@ -203,22 +198,22 @@ public class LifeCellBirthEvent extends NodeEvent {
 		}
 		else if ( (x > regionSide-1) && (y > regionSide-1) ) { // SE
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[4]));
-			cellDeathEv.setX(x - (regionSide-1));
-			cellDeathEv.setY(y - (regionSide-1));
+			cellDeathEv.setX(x - regionSide);
+			cellDeathEv.setY(y - regionSide);
 		}
 		else if ( ((x >= 0) && (x <= regionSide-1)) && (y > regionSide-1) ) { // S
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[5]));
 			cellDeathEv.setX(x);
-			cellDeathEv.setY(y - (regionSide-1));
+			cellDeathEv.setY(y - regionSide);
 		}
 		else if ( (x < 0) && (y > regionSide-1) ) { // SO
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[6]));
-			cellDeathEv.setX(regionSide-1+x);
-			cellDeathEv.setY(y - (regionSide-1));
+			cellDeathEv.setX(regionSide+x);
+			cellDeathEv.setY(y - regionSide);
 		}
 		else if ( (x < 0) && ((y >= 0) && (y <= regionSide-1)) ) { // O
 			cellDeathEv.setAssociatedNode((LifeRegion)Engine.getDefault().getNodeByKey(((LifeRegion) associatedNode).neighbourRegions[7]));
-			cellDeathEv.setX(regionSide-1+x);
+			cellDeathEv.setX(regionSide+x);
 			cellDeathEv.setY(y);
 		}
 		cellDeathEv.setMeanArrival(meanArrival);
