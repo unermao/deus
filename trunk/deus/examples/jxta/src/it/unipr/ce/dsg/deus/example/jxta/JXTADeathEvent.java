@@ -4,20 +4,47 @@ import java.util.Properties;
 import java.util.Random;
 
 import it.unipr.ce.dsg.deus.core.Engine;
-import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
+import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class JXTADeathEvent extends Event {
+/**
+ * This event represents the death of a simulation node. During the execution of
+ * the event the specified node will be killed or, in case nothing is specified,
+ * a random node will be killed.
+ * 
+ * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
+ * 
+ */
+
+
+public class JXTADeathEvent extends NodeEvent {
 
 	private Node nodeToKill = null;
+	
+	private String EP = "JXTAPeer";
+	private String RdV = "JXTARdVPeer";
+	private String TYPE = "typeOfPeer";
+	
+	
+	private boolean typeRdV;
+	
 	
 	public JXTADeathEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
-		// TODO Auto-generated constructor stub
+		
+		if(params.getProperty(TYPE) == null)
+			throw new InvalidParamsException(TYPE + " param is expected.");
+		
+			System.out.println("AVUTO : " + params.getProperty(TYPE));
+			this.typeRdV = params.getProperty(TYPE).contentEquals(RdV);
+			if(this.typeRdV)
+				System.out.println("RdV");
+			else if (!this.typeRdV)
+				System.out.println("EP");
 	}
 
 	public Object clone() {
@@ -32,17 +59,45 @@ public class JXTADeathEvent extends Event {
 	
 	@Override
 	public void run() throws RunException {
-		// TODO Auto-generated method stub
+		System.out.println("DEATH EVENT");
+		
 		JXTAEdgePeer disconnectedNode = (JXTAEdgePeer) nodeToKill;
+		
 		if(disconnectedNode == null)
 		{
+			System.out.println("Discovery node to kill");
+			boolean ok_toKill = false;
 			Random random = new Random();
-			int initialized_nodes = Engine.getDefault().getNodes().size();
-			int random_node = random.nextInt(initialized_nodes);
-			disconnectedNode = (JXTAEdgePeer) Engine.getDefault().getNodes().get(random_node);
+			while(!ok_toKill){
+				
+				int initialized_nodes = Engine.getDefault().getNodes().size();
+				int random_node_to_kill = random.nextInt(initialized_nodes);
+				
+				disconnectedNode = (JXTAEdgePeer) Engine.getDefault().getNodes().get(random_node_to_kill);
+				System.out.println("Try to kill: " + disconnectedNode.JXTAID);
+				
+				if (this.typeRdV && Engine.getDefault().getNodes().get(random_node_to_kill) instanceof JXTARendezvousSuperPeer) {
+				
+					if(!((JXTARendezvousSuperPeer)Engine.getDefault().getNodes().get(random_node_to_kill)).persistant_RdV){
+					
+						if(disconnectedNode != null && disconnectedNode.isConnected())
+							ok_toKill = true;
+				
+					}
+				}
+				else if(!this.typeRdV && Engine.getDefault().getNodes().get(random_node_to_kill) instanceof JXTAEdgePeer){
+
+					if(disconnectedNode != null && disconnectedNode.isConnected()){
+						disconnectedNode.disconnectJXTANode();
+						ok_toKill = true;
+					}
+					
+				} 
+		
+			}
 		}
 		
-		//disconnectedNode.deathJXTANode();
+		disconnectedNode.deathJXTANode();
 	}
 
 }

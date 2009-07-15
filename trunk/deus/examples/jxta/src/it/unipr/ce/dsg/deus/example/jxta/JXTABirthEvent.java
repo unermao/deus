@@ -13,7 +13,7 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * This event represents the birth of a simulation JXTAPeer. During its execution an
  * instance of the node associated to the event will be created.
  * 
- * @author Stefano Sebastio
+ * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  * 
  */
 
@@ -31,7 +31,6 @@ public class JXTABirthEvent extends NodeEvent {
 	
 	public void run() throws RunException {
 		
-		// TODO Auto-generated method stub
 		if(getParentProcess() == null)
 			throw new RunException(
 					"A parent process must be set in order to run "
@@ -44,23 +43,9 @@ public class JXTABirthEvent extends NodeEvent {
 		
 		Engine.getDefault().getNodes().add(n);
 		associatedNode = n;
-		
-		System.out.println("BIRTH : " + associatedNode);
 		JXTAEdgePeer app = (JXTAEdgePeer) n;
 		app.setConnected(true);
 		
-		app.keyspace = Engine.getDefault().getKeySpaceSize();
-		app.JXTAID =Engine.getDefault().generateKey();
-		System.out.println("k " + app.keyspace + " id "+ app.JXTAID);
-		//app.ciao();
-//		for(int i = 0; i <app.getResourcesNode(); i++)
-//			try {
-//				app.chordResources.add(new ChordResourceType(Engine.getDefault().generateResourceKey()));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//	
-//	}
 	}
 
 }
