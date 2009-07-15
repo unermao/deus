@@ -8,19 +8,20 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
+/**
+ * This event represents the creation of an Advetisement with
+ * a random ID.
+ * 
+ * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
+ * 
+ */
+
 public class JXTACreateAdvEvent extends NodeEvent {
 
 	public JXTACreateAdvEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		// TODO Auto-generated constructor stub
-		System.out.println("In create-AdvEvent");
-		//initialize();
 	}
-	
-//	public void initialize() throws InvalidParamsException {
-//		
-//	}
 
 	
 	public Object clone() {
@@ -29,18 +30,16 @@ public class JXTACreateAdvEvent extends NodeEvent {
 	}
 	
 	public void run() throws RunException {
-		System.out.println("RUN Adv_EVENT " + this);
-		// TODO Auto-generated method stub
-		JXTAEdgePeer aa = (JXTAEdgePeer) Engine.getDefault().getNodes().get(0);
-		aa.ciao();
-		System.out.println("A:: "+ associatedNode);
 		JXTAEdgePeer creatingAdvNode = (JXTAEdgePeer) getAssociatedNode();
-		if(creatingAdvNode == null)
-			System.out.println("NULLO");
 
-	//	creatingAdvNode.createAdvertisement();
-		creatingAdvNode.ciao();
-		System.out.println("In create-POST");
+		if(creatingAdvNode == null)
+			System.out.println("NO PEER ASSOCIATED TO EVENT");
+
+		if(!Engine.getDefault().getNodes().contains(creatingAdvNode)){
+			System.out.println("Peer died and not create  " + creatingAdvNode.JXTAID);
+			return;
+		}
+		creatingAdvNode.createAdvertisement();
 		
 	}
 
