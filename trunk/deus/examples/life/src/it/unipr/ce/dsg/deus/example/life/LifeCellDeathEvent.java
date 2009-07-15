@@ -27,7 +27,6 @@ public class LifeCellDeathEvent extends NodeEvent {
 		int count = ((LifeRegion) associatedNode).getNeighboursCellCount(x,y);
 		if (count == 2 || count == 3) 
 			return;
-		
 		// if this death makes sense, do it
 		((LifeRegion) associatedNode).grid[y*regionSide + x] = 0;
 		
