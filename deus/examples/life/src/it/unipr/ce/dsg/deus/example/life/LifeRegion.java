@@ -255,7 +255,7 @@ public class LifeRegion extends Node {
 		return -1;
 	}
 	
-	public void initRegion() {
+	public void initRegionRandomly() {
 		Random r = Engine.getDefault().getSimulationRandom();
 		for(int i=0; i<initialZones-1; i++) {
 			int row = r.nextInt(regionSide);

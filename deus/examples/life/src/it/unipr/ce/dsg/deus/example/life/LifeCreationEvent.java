@@ -35,7 +35,7 @@ public class LifeCreationEvent extends NodeEvent {
 		this.setAssociatedNode(n);
 		
 		((LifeRegion) n).connect();	
-		((LifeRegion) n).initRegion();
+		((LifeRegion) n).initRegionRandomly();
 	}
 
 }
