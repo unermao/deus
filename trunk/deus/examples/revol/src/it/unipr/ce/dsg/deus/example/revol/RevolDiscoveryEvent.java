@@ -35,6 +35,8 @@ public class RevolDiscoveryEvent extends NodeEvent {
 	private static final String CPU = "cpu";
 	private static final String RAM = "ram";
 	private static final String DISK = "disk";
+	private static final int MAX_INPUT = 20;
+	private static final int MAX_OUTPUT = 20;
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;
