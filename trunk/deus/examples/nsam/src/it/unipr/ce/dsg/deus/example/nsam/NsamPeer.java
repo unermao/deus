@@ -21,12 +21,12 @@ public class NsamPeer extends Peer {
 	
 	private static final String BATTERY = "battery";
 	private static final String CONNECTION_TYPE = "connectionType";
-	private static final String CPU ="cpuFactor";
-	private static final String RAM = "ramFactor";
-	private static final String DISK = "diskFactor";
+	private static final String CPU ="cpu";
+	private static final String RAM = "ram";
+	private static final String DISK = "disk";
 	private static final String BANDWIDTH = "bandwidth";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
-	private static final String QUALITY_FACTOR = "qos";
+	private static final String QUALITY_LEVEL = "qos";
 	private static final String MAX_SERVICE_NUMBER ="maxServiceNum";
 	private static final String MAX_ACCEPTED_CONNECTION = "maxAcceptedConnection";
 	private static final String MAX_SERVICE_INPUT_NUM = "maxServiceInputNum";
@@ -40,32 +40,34 @@ public class NsamPeer extends Peer {
 	public static final String WIFI = "wifi";
 	public static final String G3 = "3g";
 
+	
 	private int qos = 0;
 	private double battery = 0.0;
 	private String connectionType = "";
 	private int bandwidth = 0;
-	private int cpuFactor = 0;
 	private int maxServiceNum =0;
 	private int maxServiceInputNum = 0;
 	private int maxServiceOutputNum = 0;
 	private int serviceInputRange = 0;
 	private int serviceOutputRange = 0;
-	private int ramFactor = 0;
-	private int diskFactor = 0;
-	private int initialCpu = 0;
-	private int initialRam = 0;
-	private int initialDisk = 0;
 	private int cpu = 0;
 	private int ram = 0;
 	private int disk = 0;	
 	
+	// query log
+	private double q = 0;
+	private double qh = 0;
+	
 	private int maxAcceptedConnection = 0;
+
+	
 
 
 //	private NsamServerPeer serverNode = null;
-	private  ArrayList<Service> serviceList = new ArrayList<Service>();
-	private ArrayList<ResourceAdv> cache = new ArrayList<ResourceAdv>();
-	private ArrayList<ResourceAdv> cachedQueries = new ArrayList<ResourceAdv>();
+	private  ArrayList<NsamService> serviceList = new ArrayList<NsamService>();
+	private ArrayList<NsamService> cache = new ArrayList<NsamService>();
+	
+//	private ArrayList<ResourceAdv> cachedQueries = new ArrayList<ResourceAdv>();
 	
 	public NsamPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
@@ -84,12 +86,15 @@ public void initialize() throws InvalidParamsException {
 		if (params.containsKey(CONNECTION_TYPE))
 			connectionType = new String(params.getProperty(CONNECTION_TYPE));
 		
-		if (params.containsKey(QUALITY_FACTOR))
-			qos = Integer.parseInt(params.getProperty(QUALITY_FACTOR));
+		if (params.containsKey(QUALITY_LEVEL))
+			qos = Integer.parseInt(params.getProperty(QUALITY_LEVEL));
 		
 		if (params.containsKey(BANDWIDTH))
 			bandwidth = Integer.parseInt(params.getProperty(BANDWIDTH));
 		
+		if (params.containsKey(QUALITY_LEVEL))
+			qos = Integer.parseInt(params.getProperty(QUALITY_LEVEL));
+				
 		if (params.containsKey(MAX_SERVICE_NUMBER))
 		maxServiceNum = Integer.parseInt(params.getProperty(MAX_SERVICE_NUMBER));
 		
@@ -125,6 +130,7 @@ public void initialize() throws InvalidParamsException {
 		
 		clone.isConnected = true;
 		clone.serviceList = this.serviceList;
+		clone.qos = this.qos;
 	//	clone.cache = new ArrayList<ResourceAdv>();
 	//	clone.cachedQueries = new ArrayList<ResourceAdv>();
 		return clone;
@@ -139,30 +145,16 @@ public void initialize() throws InvalidParamsException {
 		this.maxAcceptedConnection = maxAcceptedConnection;
 	}
 	
+	public int getMaxAcceptedConnection() {
+			return maxAcceptedConnection;
+		}
+	
+	public int getQoS(){
+		return qos;
+	}
+	
 	public int getTtlMax() {
 		return 7;
-	}
-	public void setInitialCpu(int initialCpu) {
-		this.initialCpu = initialCpu;
-		this.cpu = initialCpu;
-	}
-
-	public int getInitialRam() {
-		return initialRam;
-	}
-
-	public void setInitialRam(int initialRam) {
-		this.initialRam = initialRam;
-		this.ram = initialRam;
-	}
-
-	public int getInitialDisk() {
-		return initialDisk;
-	}
-
-	public void setInitialDisk(int initialDisk) {
-		this.initialDisk = initialDisk;
-		this.disk = initialDisk;
 	}
 
 	public int getCpu() {
@@ -189,26 +181,70 @@ public void initialize() throws InvalidParamsException {
 		this.disk = disk;
 	}
 	
+	public double getQ() {
+		return q;
+	}
+
+	public void setQ(double q) {
+		this.q = q;
+	}
+
+	public double getQh() {
+		return qh;
+	}
+
+	public void setQh(double qh) {
+		this.qh = qh;
+	}
+
+	public double getQhr() {
+		if (this.q == 0)
+			return 0.5;
+		else
+			return this.qh / this.q;
+	}
 	
-	public void removeResourceAdvFromCache(ResourceAdv currentResourceAdv) {
-		ArrayList<ResourceAdv> newCache = new ArrayList<ResourceAdv>();
-		for (Iterator<ResourceAdv> it = cache.iterator(); it.hasNext();) {
-			ResourceAdv r = it.next();
-			if (!r.equals(currentResourceAdv))
-				newCache.add(r);
+	public ArrayList<NsamService> getCache() {
+		return cache;
+	}
+	
+	public void addToCache(NsamService service) {
+		if (cache.size() < getDMax())    //è la dimensine della cache???
+										//TODO trova un modo per impostarla
+			cache.add(service);
+		else if (cache.size() == getDMax()) {
+			cache.remove(0);
+			cache.add(service);
+		}
+	}
+	
+	public void removeServiceFromCache(NsamService currentService) {
+		ArrayList<NsamService> newCache = new ArrayList<NsamService>();
+		for (Iterator<NsamService> it = cache.iterator(); it.hasNext();) {
+			NsamService s = it.next();
+			if (!s.equals(currentService))
+				newCache.add(s);
 		}
 		cache = newCache;
 	}
 	
-	public ArrayList<Service> createServiceList (){
+	public ArrayList<NsamService> createServiceList (){
 		
 		 /*creo una array list che al max ha maxServiceNum elementi */
 		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
 		 for (int i=0; i<numServices; i++)
 		 {
-			 Service service = new Service(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
+			 NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
 			 serviceList.add(service); 
 		 } 
 		 return serviceList;
-	}	
+	}
+	
+	public ArrayList<NsamService> getServiceList() {	
+		return serviceList;
+	}
+	
+	public void setDisk(ArrayList<NsamService> serviceList) {
+		this.serviceList = serviceList;
+	}
 }
