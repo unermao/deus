@@ -83,12 +83,49 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
     private void initComponents() {
 
     	this.setTitle("Deus Automator - DSG Parma");
-    	
-    	try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+    	/*
+         * Set the better look and feel for the running platform
+         */
+        // Default System
+    		try {
+    			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());						
+    			} catch (Exception e1) {
+    				//Win32
+    				try{
+    					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+    				}
+    				catch(Exception e2){
+    					//Linux gtk
+    					try{
+    						UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+    					}
+    					catch(Exception e3){
+    						//MacOS
+    						try{
+    							UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
+    						}
+    						catch(Exception e4){
+    							try{
+    							//Cross platform metal
+    							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    							}
+    							catch(Exception e5){
+    								e5.printStackTrace();
+    								System.exit(1);
+    							}
+    						}
+    					}
+    				}
+    			
+    			}		
+    	  	 	
+ /*   	try {
+			//UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 		} catch (Exception e) {
-			System.err.println("Unsupported Windows Look And Feel !");
-		}
+		//	System.err.println("Unsupported Windows Look And Feel !");
+			System.err.println("Unsupported GTK Look And Feel !");
+		}   */
 		
         dsgLogoLabel = new javax.swing.JLabel();
         simulationTabbedPane = new javax.swing.JTabbedPane();

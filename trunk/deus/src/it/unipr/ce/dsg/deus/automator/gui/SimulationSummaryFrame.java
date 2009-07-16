@@ -14,7 +14,7 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.awt.event.ActionEvent;
 
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+ //import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -39,10 +39,45 @@ public class SimulationSummaryFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-    	this.setTitle("Deus Automator - Simualtion Summary");
-    	
-    	try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+    	this.setTitle("Deus Automator - Simulation Summary"); 	
+    	/*
+         * Set the better look and feel for the running platform
+         */
+        	// Default System
+    		try {
+    			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());						
+    			} catch (Exception e1) {
+    				//Win32
+    				try{
+    					UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+    				}
+    				catch(Exception e2){
+    					//Linux gtk
+    					try{
+    						UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+    					}
+    					catch(Exception e3){
+    						//MacOS
+    						try{
+    							UIManager.setLookAndFeel("javax.swing.plaf.mac.MacLookAndFeel");
+    						}
+    						catch(Exception e4){
+    							try{
+    							//Cross platform metal
+    							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    							}
+    							catch(Exception e5){
+    								e5.printStackTrace();
+    								System.exit(1);
+    							}
+    						}
+    					}
+    				}
+    			
+    			}		
+    		
+  /*  		UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+		//	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (InstantiationException e1) {
@@ -51,7 +86,7 @@ public class SimulationSummaryFrame extends javax.swing.JFrame {
 			e1.printStackTrace();
 		} catch (UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
-		}
+		}   */
     	
     	
         dsgLogoLabel = new javax.swing.JLabel();
