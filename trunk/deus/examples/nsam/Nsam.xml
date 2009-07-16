@@ -45,10 +45,6 @@
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.nsam.NsamDiscoveryEvent" >
 		<aut:logger level="INFO" />
 		<aut:params>
-			<aut:param name="hasSameAssociatedNode" value="false" />
-			<aut:param name="cpu" value="1000" /><!-- MHz -->
-			<aut:param name="ram" value="500" /><!-- MB -->
-			<aut:param name="disk" value="50000" /><!-- MB -->
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 			<aut:param name="numInitialConnections" value="3" />
