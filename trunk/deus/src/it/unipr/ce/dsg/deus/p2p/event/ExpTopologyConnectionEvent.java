@@ -91,7 +91,7 @@ public class ExpTopologyConnectionEvent extends NodeEvent {
 			} while (((Peer) associatedNode).getNeighbors().size() < m);
 		}
 		
-		System.out.println("num neighbors = " + ((Peer) associatedNode).getNeighbors().size());
+		//System.out.println("num neighbors = " + ((Peer) associatedNode).getNeighbors().size());
 	}
 
 	public int getN0() {
