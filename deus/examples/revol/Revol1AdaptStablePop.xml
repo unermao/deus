@@ -55,6 +55,8 @@
 	
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
+	<aut:event id="logVirtualTime" handler="it.unipr.ce.dsg.deus.impl.event.LogVirtualTimeEvent" />
+	
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 	
 	<aut:event id="logRevolPeerStats" handler="it.unipr.ce.dsg.deus.example.revol.LogRevolPeerStatsEvent" />
@@ -135,6 +137,18 @@
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
+			<aut:param name="period" value="1000000" /> 
+		</aut:params>
+		<aut:events>
+		    <aut:reference id="logPopulationSize" />
+		    <aut:reference id="logVirtualTime" />
+			<!-- aut:reference id="logNodeDegree" /--> 
+			<aut:reference id="logRevolPeerStats" /> 
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
 			<aut:param name="period" value="500000" />
 		</aut:params>
 		<aut:nodes>
@@ -142,17 +156,6 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="adaptation" />
-		</aut:events>
-	</aut:process>
-	
-	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
-			<aut:param name="period" value="1000000" /> 
-		</aut:params>
-		<aut:events>
-		    <aut:reference id="logPopulationSize" />
-			<!-- aut:reference id="logNodeDegree" /--> 
-			<aut:reference id="logRevolPeerStats" /> 
 		</aut:events>
 	</aut:process>
 
@@ -164,7 +167,7 @@
 		<aut:processes>
 			<aut:reference id="rectpulseperiodic" /> 
 			<aut:reference id="poisson4" />
-			<aut:reference id="periodic2" />
+			<aut:reference id="periodic1" />
 		</aut:processes>
 	</aut:engine>
 
