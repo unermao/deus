@@ -193,7 +193,7 @@ public class RevolDiscoveryEvent extends NodeEvent {
 			}
 		}
 
-		if (associatedRevolNode == null) {
+		if (associatedRevolNode == null) {  // FIXME check these conditions carefully..
 			if ((!isPropagation) && (hasSameAssociatedNode == false)
 					&& (Engine.getDefault().getNodes().size() > 0)) {
 				getLogger().fine("generating associated node ");

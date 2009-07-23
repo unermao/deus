@@ -6,20 +6,31 @@
 
 
 	<!-- *** EVENTS *** -->
-
+	
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+	 	<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="connection" /> 
+		</aut:events>
+	</aut:event>
+	
+    <aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
 		</aut:events>
 	</aut:event>
-
-	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent" oneShot="true" >
+	
+	<aut:event id="connection" handler="it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent" oneShot="true" 
+	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolExpTopologyConnectionSchedulerListener">
 		<aut:params>
 			<aut:param name="isBidirectional" value="true" />
 			<aut:param name="n0" value="5" />
 			<aut:param name="m" value="3" />
 		</aut:params>
+		<aut:events>
+			<aut:reference id="disconnection" />
+		</aut:events>
 	</aut:event>
 	
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
@@ -39,22 +50,19 @@
 		<aut:logger level="INFO" />
 	</aut:event>
 	
-	<aut:event id="adaptation" handler="it.unipr.ce.dsg.deus.example.revol.RevolAdaptationEvent" > 
-		<aut:logger level="INFO" />
-		<aut:params>
-			<aut:param name="hasSameAssociatedNode" value="true" />
-			<aut:param name="fitnessFunction" value="F1" />
-			<!-- phi0=100, phi1=10, phi2=5 are the values which give all genes he same weight -->
-			<aut:param name="phi0" value="100" />
-			<aut:param name="phi1" value="10" />
-			<aut:param name="phi2" value="5" />
-			<aut:param name="selectionStrategy" value="proportional" /> 
-			<!-- selection strategies: bestFitness, proportional, random, tournament, rank-based -->
-		</aut:params>
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true"
+	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolDisconnectionSchedulerListener">
+		<aut:events>
+			<aut:reference id="death" />
+		</aut:events>
 	</aut:event>
 	
+	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
+	 
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
+	<aut:event id="logVirtualTime" handler="it.unipr.ce.dsg.deus.impl.event.LogVirtualTimeEvent" />
+	
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
 	
 	<aut:event id="logRevolPeerStats" handler="it.unipr.ce.dsg.deus.example.revol.LogRevolPeerStatsEvent" />
@@ -64,8 +72,9 @@
 
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
-			<aut:param name="maxInitChromosome" value="1" />  <!-- this param may be varied using the Automator -->
-			<aut:param name="isRandomInit" value="false" />
+		    <aut:param name="fitnessFunction" value="1" />
+			<aut:param name="maxInitChromosome" value="6" />
+			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
@@ -108,6 +117,20 @@
 		</aut:events>
 	</aut:process>
 
+	<aut:process id="rectpulsepoisson" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="1000" />
+			<aut:param name="startVtThreshold" value="100000" />
+			<aut:param name="stopVtThreshold" value="20000000" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birth2" />
+		</aut:events>
+	</aut:process>
+
 	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="5" />
@@ -117,6 +140,19 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
+			<aut:reference id="death" />
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="1000000" /> 
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="revolNode" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
 
@@ -134,36 +170,26 @@
 	
 	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="100000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="adaptation" />
-		</aut:events>
-	</aut:process>
-	
-	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
 			<aut:param name="period" value="1000000" /> 
 		</aut:params>
 		<aut:events>
-			<!-- aut:reference id="logNodeDegree" / -->
-			<aut:reference id="logRevolPeerStats" />  
 		    <aut:reference id="logPopulationSize" />
+		    <aut:reference id="logVirtualTime" />
+			<!-- aut:reference id="logNodeDegree" /--> 
+			<aut:reference id="logRevolPeerStats" /> 
 		</aut:events>
 	</aut:process>
 
 
 	<!-- *** SIMULATION *** -->
 
-	<aut:engine maxvt="20000000" seed="123456789"> 
+	<aut:engine maxvt="20000001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<aut:reference id="rectpulseperiodic" /> 
+			<aut:reference id="rectpulseperiodic" />
+			<aut:reference id="rectpulsepoisson" />
 			<aut:reference id="poisson4" />
-			<aut:reference id="periodic2" />
+			<aut:reference id="periodic1" />
 		</aut:processes>
 	</aut:engine>
 
