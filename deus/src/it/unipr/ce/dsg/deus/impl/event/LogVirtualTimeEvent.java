@@ -14,9 +14,9 @@ import java.util.Properties;
  * @author  Michele Amoretti
  */
 
-public class LogTimeEvent extends Event {
+public class LogVirtualTimeEvent extends Event {
 
-	public LogTimeEvent(String id, Properties params, Process parentProcess)
+	public LogVirtualTimeEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
