@@ -87,16 +87,16 @@ public class LifeRegion extends Node {
 			return;
 		for (int x = 0; x < sqrtNumRegions*sqrtNumRegions; x++) {
 			
-			if (x - sqrtNumRegions - 1 < 0)
+			if (x - sqrtNumRegions < 0)
 				if (x-1 >= 0)
-					if (x%sqrtNumRegions != 0)
-						((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - 1 + sqrtNumRegions*(sqrtNumRegions-1);
-					else
-						((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - 1;
+					((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - 1 + sqrtNumRegions*(sqrtNumRegions-1);
 				else
 					((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x + (sqrtNumRegions-1) + sqrtNumRegions*(sqrtNumRegions-1);
 			else
-				((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - sqrtNumRegions - 1;
+				if (x%sqrtNumRegions != 0)
+					((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - sqrtNumRegions - 1;
+				else
+					((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0] = x - 1;
 			//System.out.println("x = " + x + ", n0 = " + ((LifeRegion)Engine.getDefault().getNodeByKey(x)).neighbourRegions[0]);
 			
 			if (x - sqrtNumRegions < 0)
