@@ -105,7 +105,6 @@ public class KademliaValueLookUpEvent extends NodeEvent {
 		for (int i = 0; currNode.nlResults.get(resourceKey).size() > i
 				&& i < currNode.getAlpha(); i++) {
 			try {
-
 				float delay = expRandom((float) 300.0);
 				if (delay > discoveryMaxWait)
 					continue;

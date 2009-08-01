@@ -24,6 +24,18 @@ public class KademliaJoinEvent extends NodeEvent {
 		KademliaPeer connectingNode = (KademliaPeer) this.getAssociatedNode();
 		KademliaPeer destinationNode = null;
 
+		if (connectingNode == null) {
+			// Find a random not-connected node
+			do {
+				connectingNode = (KademliaPeer) Engine.getDefault().getNodes()
+						.get(
+								Engine.getDefault().getSimulationRandom()
+										.nextInt(
+												Engine.getDefault().getNodes()
+														.size()));
+			} while (connectingNode.isConnected());
+		}
+
 		for (int i = 0; i < connectingNode.getResourcesNode(); i++) {
 			connectingNode.kademliaResources.get(i).setOwner(connectingNode);
 		}

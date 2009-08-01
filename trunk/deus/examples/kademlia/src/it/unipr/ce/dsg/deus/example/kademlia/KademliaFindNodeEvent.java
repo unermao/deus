@@ -9,22 +9,21 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 
-
 public class KademliaFindNodeEvent extends NodeEvent {
-	
+
 	private KademliaPeer reqNode = null;
-	
+
 	private int resourceKey = -1;
-	
-	
-	public KademliaFindNodeEvent(String id, Properties params, Process parentProcess, KademliaPeer peer) 
-	throws InvalidParamsException {
-		super(id,params,parentProcess);
+
+	public KademliaFindNodeEvent(String id, Properties params,
+			Process parentProcess, KademliaPeer peer)
+			throws InvalidParamsException {
+		super(id, params, parentProcess);
 		reqNode = peer;
-			
+
 		initialize();
 	}
-	
+
 	public Object clone() {
 		KademliaFindNodeEvent clone = (KademliaFindNodeEvent) super.clone();
 		clone.resourceKey = -1;
@@ -37,8 +36,6 @@ public class KademliaFindNodeEvent extends NodeEvent {
 	}
 
 	public void initialize() {
-		
-		
 	}
 
 	public void run() throws RunException {
@@ -47,15 +44,15 @@ public class KademliaFindNodeEvent extends NodeEvent {
 			Random random = new Random();
 			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
 		}
-		
-		reqNode.nlResults.get(resourceKey).addAll(currentNode.find_node(resourceKey));
-		// Really slows down things.
-		// Cutting currentNode.insertPeer(reqNode) reduces the simulation time from 32 hours to 1h 40
+
+		reqNode.nlResults.get(resourceKey).addAll(
+				currentNode.find_node(resourceKey));
 		if (currentNode.getKey() != reqNode.getKey()) {
-			currentNode.insertPeer(reqNode); 
+			currentNode.insertPeer(reqNode);
 		}
 
 	}
+
 	public void setResourceKey(int resourceKey) {
 		this.resourceKey = resourceKey;
 	}
@@ -67,7 +64,4 @@ public class KademliaFindNodeEvent extends NodeEvent {
 	public void setRequestingNode(KademliaPeer reqNode) {
 		this.reqNode = reqNode;
 	}
-
-
-
 }

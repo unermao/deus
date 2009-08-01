@@ -9,6 +9,7 @@ import it.unipr.ce.dsg.deus.core.RunException;
 public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 
 	private KademliaPeer closerElement = null;
+	private KademliaResourceType res = null;
 
 	private float discoveryMaxWait = 500;
 
@@ -66,13 +67,15 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 		}
 
 		if (closerElement == first) {
-			if (this.isFindNodeK()) { // no new result even from the first k
-				// nodes
+			if (this.isFindNodeK()) { 
+				// no new result even from the first k nodes
 				Object[] foundNodes = currNode.nlResults.get(resourceKey)
 						.getFoundNodes().toArray();
 				for (int j = 0; j < currNode.nlResults.get(resourceKey).size()
 						&& j < currNode.getKBucketDim(); j++) {
 					currNode.insertPeer((KademliaPeer) foundNodes[j]);
+					if (res != null )
+						((KademliaPeer) foundNodes[j]).store(res);
 				}
 
 				currNode.nlResults.get(resourceKey).getFoundNodes().clear();
@@ -101,6 +104,7 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 			nlk.setAssociatedNode(currNode);
 			nlk.setResourceKey(resourceKey);
 			nlk.setFindNodeK(this.findNodeK);
+			nlk.setRes(res);
 			Engine.getDefault().insertIntoEventsList(nlk);
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -160,6 +164,14 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 
 	public void setDiscoveryMaxWait(float discoveryMaxWait) {
 		this.discoveryMaxWait = discoveryMaxWait;
+	}
+
+	public KademliaResourceType getRes() {
+		return res;
+	}
+
+	public void setRes(KademliaResourceType res) {
+		this.res = res;
 	}
 
 }

@@ -4,8 +4,6 @@ import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
 
 public class KademliaBirthSchedulerListener implements SchedulerListener {
-
-	// 090317: Not added Ping and Find* Events....
 	public void newEventScheduled(Event parentEvent, Event newEvent) {
 		KademliaBirthEvent be = (KademliaBirthEvent) parentEvent;
 		if (newEvent instanceof KademliaJoinEvent) {
@@ -25,8 +23,5 @@ public class KademliaBirthSchedulerListener implements SchedulerListener {
 		} else if (newEvent instanceof KademliaDeathEvent)  {
 			((KademliaDeathEvent) newEvent).setNodeToKill((KademliaPeer) be.getAssociatedNode());
 		}
-			
-
 	}
-
 }
