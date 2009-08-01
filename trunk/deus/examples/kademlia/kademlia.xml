@@ -12,7 +12,7 @@
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="join" />
 		    <aut:reference id="publishAll" />
-			<aut:reference id="publishRefresh" />
+			  <aut:reference id="publishRefresh" />
 		</aut:events>
 	</aut:event>
 
@@ -30,7 +30,9 @@
 
 	<aut:event id="publishStoredRefresh" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaPublishStoredEvent" />
 
-    <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.kademlia.LogKademliaNodesStatsEvent" />
+  <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.kademlia.LogKademliaNodesStatsEvent" />
+
+  <aut:event id="initialization" handler="it.unipr.ce.dsg.deus.example.kademlia.KademliaNetworkInitializeEvent" oneShot="true" />
 
 	
 	<!-- *** NODE SPECIES *** -->
@@ -39,7 +41,7 @@
 		<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="kBucketDim" value="20" />
-			<aut:param name="resourcesNode" value="10" />
+			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
 			<aut:param name="discoveryMaxWait" value="300.0" />
 		</aut:params>
@@ -50,9 +52,9 @@
 	
 	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 	  <aut:params>
-			<aut:param name="period" value="1" />
+			<aut:param name="period" value="10" />
 			<aut:param name="startVtThreshold" value="0" />
-			<aut:param name="stopVtThreshold" value="5" />
+			<aut:param name="stopVtThreshold" value="60000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="kademliaPeer" />
@@ -77,7 +79,7 @@
 	</aut:process>
 	
 	
-	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+	<!--<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="500" /> 
 		</aut:params>
@@ -87,11 +89,26 @@
 		<aut:events>
 		    <aut:reference id="discovery" />
 		</aut:events>
+	</aut:process>-->
+
+<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+	  <aut:params>
+			<aut:param name="period" value="10" />
+			<aut:param name="startVtThreshold" value="10300" />
+			<aut:param name="stopVtThreshold" value="20300" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="kademliaPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="discovery" />		
+		</aut:events>
 	</aut:process>
+
 	
 	<aut:process id="periodicPublishRefresh" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-            <aut:param name="period" value="8640000" />
+      <aut:param name="period" value="8640000" />
 			<aut:param name="startVtThreshold" value="8640000" />
 			<aut:param name="stopVtThreshold" value="100000000000000000000" />
 		</aut:params>
@@ -141,6 +158,14 @@
 		</aut:events>
 	</aut:process>
 
+	<aut:process id="poissonInitialize" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="0" />
+		</aut:params>		<aut:events>
+			<aut:reference id="initialization" />
+		</aut:events>
+	</aut:process>
+
   <!-- Tipo 2 -->
 <!--
 	<aut:process id="periodicDeath" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
@@ -175,26 +200,25 @@
 
   <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="1000" />
+      <aut:param name="period" value="110000" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodesData" />
     </aut:events>
   </aut:process>
 
-	
 		
 	<!-- *** SIMULATION *** -->
 
-
-	<aut:engine maxvt="7500" seed="123456789" keyspacesize="2000000"> 
+	<aut:engine maxvt="110000.001" seed="1234567810" keyspacesize="200000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 			<aut:reference id="periodicBirth" />
-      		<!-- aut:reference id="periodicDiscovery" / -->
-      		<aut:reference id="periodicNodeLogging" />
-			<aut:reference id="periodicDeath" />
-			<!-- aut:reference id="periodicDisconnection" / -->
+      <!--<aut:reference id="poissonInitialize" /> -->
+      <aut:reference id="periodicDiscovery" />
+      <aut:reference id="periodicNodeLogging" />
+			<aut:reference id="periodicDeath" /> 
+			<aut:reference id="periodicDisconnection" /> 
 		</aut:processes>
 	</aut:engine>
 
