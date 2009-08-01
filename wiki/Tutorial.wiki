@@ -25,7 +25,7 @@ Moreover, under the "examples" folder there are some useful simulation examples 
 
 The XML schema basically defines the following concepts: event, node, process, engine. 
 
-In the "revol" example, there are several XML files configuring different simulations. In the following we refer to "FixedPop.xml", which configures a simulation which creates a network of 10000 nodes.
+In the "revol" example, there are several XML files configuring different simulations. In the following we refer to {{{FixedPop.xml}}}, which configures a simulation which creates a network of 10000 nodes.
 
 Like any other XML file for the configuration of a DEUS-based simulation, you have to declare nodes like:
 
@@ -126,7 +126,7 @@ Finally, you have to declare which processes to run:
 </aut:engine>
 }}}
 
-Note: the engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson3" process. 
+Note: the engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
 
 
 = Timestamps of events =
@@ -145,10 +145,26 @@ If you modify the XML and declare another event e3 between the declaration of e1
 
 = Writing logs =
 
+In DEUS, there are two logging strategies. One allows to have different logging granularity, by using Java instructions like
+
+{{{
+getLogger().fine(aLogMessage);
+getLogger().info(anotherLogMessage);
+}}}
+
+and deciding which log messages to write by setting the logging level (info, fine, etc.) in the XML:
+
+{{{
+<aut:engine maxvt="2000000" seed="123456789"> 
+  <aut:logger level="INFO" />
+...
+}}}
+
+The other approach is the one for producing a log file whose format is good for the GUI automator, in order to produce 2D-graph Gnuplot data (i.e. files with x,y columns).
 In your Log event, use the following code:
 
 {{{
-AutomatorLogger a = new AutomatorLogger("logger");
+AutomatorLogger a = new AutomatorLogger("./temp/logger");
 ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 }}}
 
