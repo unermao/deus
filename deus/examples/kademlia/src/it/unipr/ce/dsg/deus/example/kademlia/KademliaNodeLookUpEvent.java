@@ -12,11 +12,11 @@ import java.util.Random;
 public class KademliaNodeLookUpEvent extends NodeEvent {
 
 	private int resourceKey = 0;
+	private KademliaResourceType res = null;
 
 	public KademliaNodeLookUpEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-
 		initialize();
 	}
 
@@ -39,11 +39,6 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 	private void initialize() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.unipr.ce.dsg.deus.core.Event#run()
-	 */
 	public void run() throws RunException {
 		KademliaPeer currNode = (KademliaPeer) this.getAssociatedNode();
 
@@ -83,6 +78,7 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 			nlk.setAssociatedNode(currNode);
 			nlk.setResourceKey(resourceKey);
 			nlk.setFindNodeK(false);
+			nlk.setRes(res);
 			Engine.getDefault().insertIntoEventsList(nlk);
 
 		} catch (Exception e1) {
@@ -116,6 +112,14 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 
 	public void setResourceKey(int resourceKey) {
 		this.resourceKey = resourceKey;
+	}
+
+	public KademliaResourceType getRes() {
+		return res;
+	}
+
+	public void setRes(KademliaResourceType res) {
+		this.res = res;
 	}
 
 }

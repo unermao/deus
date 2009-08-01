@@ -42,7 +42,26 @@ public class LogKademliaNodesStatsEvent extends Event {
 		Collections.sort(Engine.getDefault().getNodes());
 		//verbose();
 		compressed();
+		//network_dump();
 
+	}
+	
+	public void network_dump() {
+		// Assuming all nodes have the same Properties
+		KademliaPeer peer =  (KademliaPeer) Engine.getDefault().getNodes().get(0);
+		getLogger().info("Properties = " + peer.getKBucketDim() + " " + peer.getResourcesNode() + " " + peer.getAlpha() + " " + peer.getDiscoveryMaxWait());
+		String s;
+		for (Node node: Engine.getDefault().getNodes()) {
+			peer = (KademliaPeer) node;
+			s = new String();
+			s += peer.getKey() + " = ";
+			for (ArrayList<KademliaPeer> bucket : peer.getKbucket()) {
+				for (KademliaPeer entry : bucket) {
+					s += entry.getKey() + " ";
+				}
+			}
+			getLogger().info(s);
+		}
 	}
 
 	public void verbose() {

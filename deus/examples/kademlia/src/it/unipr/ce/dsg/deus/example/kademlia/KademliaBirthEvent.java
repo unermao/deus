@@ -11,13 +11,15 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.kademlia.KademliaResourceType;
 
 public class KademliaBirthEvent extends NodeEvent {
-	
-	public KademliaBirthEvent(String id, Properties params, Process parentProcess) throws InvalidParamsException {
-		super(id,params,parentProcess);
+
+	public KademliaBirthEvent(String id, Properties params,
+			Process parentProcess) throws InvalidParamsException {
+		super(id, params, parentProcess);
 		initialize();
 	}
-	
-	public void initialize() { }
+
+	public void initialize() {
+	}
 
 	public void run() throws RunException {
 		if (getParentProcess() == null)
@@ -30,21 +32,19 @@ public class KademliaBirthEvent extends NodeEvent {
 				Engine.getDefault().getSimulationRandom().nextInt(
 						getParentProcess().getReferencedNodes().size()))
 				.createInstance(Engine.getDefault().generateKey());
-		
+
 		KademliaPeer app = (KademliaPeer) n;
 
-		
 		Engine.getDefault().getNodes().add(app);
 		associatedNode = app;
-		
-		
-		for(int i = 0; i <app.getResourcesNode(); i++)
+
+		for (int i = 0; i < app.getResourcesNode(); i++)
 			try {
-				app.kademliaResources.add(new KademliaResourceType(Engine.getDefault().generateResourceKey()));
+				app.kademliaResources.add(new KademliaResourceType(Engine
+						.getDefault().generateResourceKey()));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 	}
 
 }

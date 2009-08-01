@@ -7,7 +7,6 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 
-// 090317: Shall be working!
 
 public class KademliaPingEvent extends NodeEvent {
 	private KademliaPeer peer = null;

@@ -22,8 +22,8 @@ public class KademliaDeathEvent extends Event {
 
 	private Node nodeToKill = null;
 
-	public KademliaDeathEvent(String id, Properties params, Process parentProcess)
-			throws InvalidParamsException {
+	public KademliaDeathEvent(String id, Properties params,
+			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
 
