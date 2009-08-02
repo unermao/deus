@@ -79,8 +79,8 @@
 	<aut:node id="revolNode" handler="it.unipr.ce.dsg.deus.example.revol.RevolPeer">
 		<aut:params>
 		    <aut:param name="fitnessFunction" value="1" />
-			<aut:param name="maxInitChromosome" value="6" />
-			<aut:param name="isRandomInit" value="true" />
+			<aut:param name="maxInitChromosome" value="1" />
+			<aut:param name="isRandomInit" value="false" />
 		</aut:params>
 		<aut:resources>
 			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
