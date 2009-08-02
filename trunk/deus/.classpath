@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="examples/nsam/src"/>
 	<classpathentry kind="src" path="examples/kademlia/src"/>
 	<classpathentry kind="src" path="examples/jxta/src"/>
 	<classpathentry kind="src" path="examples/life/src"/>
-	<classpathentry kind="src" path="examples/nsam/src"/>
 	<classpathentry kind="src" path="examples/streaming/coolStreaming/src"/>
 	<classpathentry kind="src" path="examples/streaming/chordStreaming/src"/>
 	<classpathentry kind="src" path="examples/streaming/simpleDataDriven/src"/>
