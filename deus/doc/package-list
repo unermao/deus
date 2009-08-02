@@ -1,9 +1,0 @@
-it.unipr.ce.dsg.deus.core
-it.unipr.ce.dsg.deus.impl.event
-it.unipr.ce.dsg.deus.impl.node
-it.unipr.ce.dsg.deus.impl.process
-it.unipr.ce.dsg.deus.impl.resource
-it.unipr.ce.dsg.deus.p2p.event
-it.unipr.ce.dsg.deus.p2p.node
-it.unipr.ce.dsg.deus.schema
-it.unipr.ce.dsg.deus.util
