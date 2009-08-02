@@ -18,7 +18,7 @@
     <aut:event id="birth2" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
-		    <aut:reference id="connection" />
+		    <aut:reference id="connection2" />
 		    <aut:reference id="adaptation" />  
 		</aut:events>
 	</aut:event>
@@ -30,9 +30,15 @@
 			<aut:param name="n0" value="5" />
 			<aut:param name="m" value="3" />
 		</aut:params>
-		<aut:events>
-			<aut:reference id="disconnection" />
-		</aut:events>
+	</aut:event>
+	
+	<aut:event id="connection2" handler="it.unipr.ce.dsg.deus.p2p.event.ExpTopologyConnectionEvent" oneShot="true" 
+	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolExpTopologyConnectionSchedulerListener">
+		<aut:params>
+			<aut:param name="isBidirectional" value="true" />
+			<aut:param name="n0" value="5" />
+			<aut:param name="m" value="3" />
+		</aut:params>
 	</aut:event>
 	
  	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.revol.RevolDiscoveryEvent" >
@@ -65,7 +71,7 @@
 		</aut:params>
 	</aut:event>
 	
-	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true"
+	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" 
 	schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolDisconnectionSchedulerListener">
 		<aut:events>
 			<aut:reference id="death" />
@@ -155,13 +161,16 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
+			<aut:reference id="connection2" />
 			<aut:reference id="death" />
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="1000000" /> 
+			<aut:param name="meanArrival" value="1000" /> 
+			<aut:param name="startVtThreshold" value="100000" />
+			<aut:param name="stopVtThreshold" value="20000000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="revolNode" />
@@ -215,6 +224,7 @@
 		<aut:processes>
 			<aut:reference id="rectpulseperiodic" />
 			<aut:reference id="rectpulsepoisson" />
+			<aut:reference id="poisson3" />
 			<aut:reference id="poisson4" />
 			<aut:reference id="periodic1" />
 		</aut:processes>
