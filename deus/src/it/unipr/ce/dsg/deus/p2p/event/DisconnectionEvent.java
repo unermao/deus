@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.p2p.event;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -45,6 +46,16 @@ public class DisconnectionEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
+		String nodeId = null;
+		if (associatedNode == null) {
+			do {
+				nodeId = getParentProcess().getReferencedNodes().get(
+						Engine.getDefault().getSimulationRandom().nextInt(
+								getParentProcess().getReferencedNodes().size())).getId();
+				associatedNode = Engine.getDefault().getNodes().get(Engine.getDefault().getSimulationRandom()
+								.nextInt(Engine.getDefault().getNodes().size()));
+			} while (!associatedNode.getId().equals(nodeId) && !(associatedNode instanceof Peer));
+		}
 		if (!(associatedNode instanceof Peer))
 			throw new RunException("The associated node is not a Peer!");
 		if (target != null)
