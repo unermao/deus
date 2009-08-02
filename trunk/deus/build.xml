@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="deus" default="soap.j2se" basedir=".">
+
+    <property environment="env"/>
+    <property name="project" value="deus"/>
+    <property name="version" value="0.3.5"/>
+    <property name="lib.dir" value="./lib"/>
+    <property name="build.dir" value="./build"/>
+    <property name="build.dest" value="${build.dir}/classes"/>
+    <property name="src.dir" value="./src"/>
+    <property name="docs.dir" value="./docs"/>
+    <property name="debug" value="on"/>
+    <property name="ant.home" value="${ant.home}"/>
+    <property name="project.jar" value="${build.dir}/${project}-${version}.jar"/>
+
+    <!-- =================================================================== -->
+    <!-- Build			                                      				 -->
+    <!-- =================================================================== -->
+    <target name="deus.build" description="Build DEUS">        
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.dest}"/>
+        <echo message="Compiling in ${src.dir} and saving to ${build.dest}"/>
+        <javac deprecation="yes"
+               srcdir="${src.dir}/" 
+               destdir="${build.dest}" 
+               debug="${debug}"
+        	   target="1.6"
+        	   source="1.6">
+            <compilerarg value="-Xlint"/> 
+            <classpath>
+                <fileset dir="${lib.dir}">
+                     <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+	<!-- =================================================================== -->
+	<!-- Build API documentation						                     -->
+	<!-- =================================================================== -->
+	<target name="deus.javadoc" description="Javadoc for DEUS">
+	    <mkdir dir="${docs.dir}/javadoc"/>
+	    <javadoc destdir="${docs.dir}/javadoc">
+	      <fileset dir="${src.dir}"/>
+	      <classpath>
+	        <pathelement location="${lib.dir}"/>
+	        <fileset dir="${lib.dir}">
+	          <include name="**/*.jar"/>
+	        </fileset>
+	        <pathelement location="${build.dir}"/>
+	      </classpath>
+	    </javadoc>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Build jar 							             -->
+	<!-- =================================================================== -->
+    <target name="deus.jar" description="Create DEUS jar">
+        <echo message="Building jar file..."/>
+        <jar jarfile="${project.jar}"
+             compress="false"
+             update="no"
+             basedir="${build.dest}"
+             includes="**"/>
+    </target>
+    
+    <!-- =================================================================== -->
+    <!-- Clean up the distribution                                           -->
+    <!-- =================================================================== -->
+    <target name="deus.clean" description="Clean DEUS build and docs folders">
+        <delete dir="${build.dir}/classes"/>
+	    <delete dir="${build.dir}"/>
+	    <delete dir="${docs.dir}/javadoc"/>
+        <delete file="${project.jar}"/>
+    </target>
+    
+</project>
