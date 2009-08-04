@@ -152,6 +152,7 @@
 		</aut:params>
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
+		    <aut:reference id="logNodeDegree" /> 
 		    <aut:reference id="logVirtualTime" />
 		</aut:events>
 	</aut:process>
