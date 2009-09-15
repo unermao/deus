@@ -7,7 +7,7 @@
 
 	<!-- *** EVENTS *** -->
 
-	<aut:event id="birthPersistantRdVSP" handler="it.unipr.ce.dsg.deus.example.jxta.JXTABirthEvent"
+	<aut:event id="birthPersistentRdVSP" handler="it.unipr.ce.dsg.deus.example.jxta.JXTABirthEvent"
 	schedulerListener="it.unipr.ce.dsg.deus.example.jxta.JXTABirthSchedulerListener" >
 		<aut:events>
 			<aut:reference id="join" />
@@ -109,27 +109,27 @@
 		</aut:params>
 	</aut:node>
 	
-	<aut:node id="JXTAPersistantRdVPeer" handler="it.unipr.ce.dsg.deus.example.jxta.JXTARendezvousSuperPeer">
+	<aut:node id="JXTAPersistentRdVPeer" handler="it.unipr.ce.dsg.deus.example.jxta.JXTARendezvousSuperPeer">
 		<aut:logger level="FINE" />
 		<aut:params >
 			<aut:param name="walker" value="3" />
-			<aut:param name="num_perst" value="5" />
+			<aut:param name="isPersistent" value="true" />
 		</aut:params>
 	</aut:node>
 
 	<!-- *** PROCESSES *** -->
 
-	<aut:process id="periodicPersistantRdVBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+	<aut:process id="periodicPersistentRdVBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="40" />
 			<aut:param name="startVtThreshold" value="0" />
 			<aut:param name="stopVtThreshold" value="200" />	
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="JXTAPersistantRdVPeer" />
+			<aut:reference id="JXTAPersistentRdVPeer" />
 		</aut:nodes>
 		<aut:events>
-			<aut:reference id="birthPersistantRdVSP" />
+			<aut:reference id="birthPersistentRdVSP" />
 		</aut:events>
 	</aut:process>
 
@@ -160,7 +160,7 @@
 	
 	<aut:process id="periodicJoin" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="1500" />
+			<aut:param name="period" value="150" /><!--1500-->
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="JXTAPeer" />
@@ -223,7 +223,7 @@
 	
 	<aut:process id="poissonRdVDisconnection" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="30000" />	
+			<aut:param name="meanArrival" value="300" /><!--30000-->	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="JXTARdVPeer" />
@@ -275,7 +275,6 @@
 			<aut:param name="period" value="143999.99" /> 
 		</aut:params>
 		<aut:events>
-		    <aut:reference id="logPopulationSize" />
 		    <aut:reference id="logJXTAStats" />
 		    <aut:reference id="logJXTAForPajek" />
 		    <aut:reference id="logJXTAForNWB" />
@@ -296,7 +295,7 @@
 	<aut:engine maxvt="144000" seed="123456789" keyspacesize="100000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
-			<aut:reference id="periodicPersistantRdVBirth" />
+			<aut:reference id="periodicPersistentRdVBirth" />
 			<aut:reference id="poissonRdVBirth" />
 			<aut:reference id="poissonBirth" />
 			<aut:reference id="poissonDisconnection" />
