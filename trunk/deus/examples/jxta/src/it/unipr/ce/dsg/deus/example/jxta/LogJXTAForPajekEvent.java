@@ -13,7 +13,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This event print the network in <p>Pajek</p> format
+ * This event print the network topology in <p>Pajek</p> format
  * 
  * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  *
@@ -24,23 +24,12 @@ public class LogJXTAForPajekEvent extends Event {
 	public LogJXTAForPajekEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
-		// TODO Auto-generated constructor stub
-	}
 
-	
-//	*Vertices 3 
-//	1 "Doc1" 0.0 0.0 0.0 ic Green bc Brown 
-//	2 "Doc2" 0.0 0.0 0.0 ic Green bc Brown 
-//	3 "Doc3" 0.0 0.0 0.0 ic Green bc Brown  
-//	*Arcs 
-//	1 2 3 c Green 
-//	2 3 5 c Black 
-//	*Edges (non orientato)
-//	1 3 4 c Green 
+	} 
 	
 	@Override
 	public void run() throws RunException {
-		// TODO Auto-generated method stub
+
 		getLogger().info("##### Network links:");
 		Collections.sort(Engine.getDefault().getNodes());
 		getLogger().info("*Vertices " + Engine.getDefault().getNodes().size());
@@ -50,7 +39,7 @@ public class LogJXTAForPajekEvent extends Event {
 			
 			JXTAEdgePeer n = (JXTAEdgePeer) it.next();
 			if (n instanceof JXTARendezvousSuperPeer ){
-				if ( ((JXTARendezvousSuperPeer) n).isPersistantRdV() )
+				if ( ((JXTARendezvousSuperPeer) n).isPersistentRdV() )
 					getLogger().info(k + " \"" + n.JXTAID + "\" ic Green bc Black");
 				else
 					getLogger().info(k + " \"" + n.JXTAID + "\" ic Yellow bc Black");

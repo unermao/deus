@@ -16,10 +16,13 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This class is used to print for Rendezvous Super Peer: the number of Well-Known Rendezvous,
- * the dimension of RPV, the connected Edge Peer and the number of resposibility Advertisement;
- * for Edge Peer: the number of Well-Known Rendezvous, the Advertisement on cache, total number of
- * research and hits. Finally print statistics.
+ * 
+ * This class is used to print for Rendezvous Super Peer: the 
+ * number of Well-Known Rendezvous, the dimension of RPV, 
+ * the connected Edge Peer and the number of responsibility Advertisement;
+ * for Edge Peer: the number of Well-Known Rendezvous, the 
+ * Advertisement on cache, total number of research and hits. 
+ * Finally print summary statistics.
  * 
  * @author  Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  */
@@ -28,7 +31,7 @@ public class LogJXTAStatsEvent extends Event {
 	
 	public int totalHits = 0;
 	public int totalSearch = 0;
-	public int numPersistantRdV = 0;
+	public int numPersistentRdV = 0;
 	public int numRdV = 0;
 	public int numEP = 0;
 	
@@ -45,7 +48,7 @@ public class LogJXTAStatsEvent extends Event {
 	@Override
 	public void run() throws RunException {
 		
-		AutomatorLogger a = new AutomatorLogger("./temp/JXTAlogger");
+		AutomatorLogger a = new AutomatorLogger("./temp/logger");
 		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		int numNodes = Engine.getDefault().getNodes().size();
 		
@@ -53,60 +56,39 @@ public class LogJXTAStatsEvent extends Event {
 		
 		for(Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ){
 			n = (JXTAEdgePeer) it.next();
-			//System.out.println("nel ciclo ");
+
 			if (n instanceof JXTARendezvousSuperPeer ){
-				//fileValue.add(new LoggerObject("name", value));
-				if ( ( (JXTARendezvousSuperPeer) n).isPersistantRdV()) {
-					//System.out.println("PERS");
-					numPersistantRdV++;
-					fileValue.add(new LoggerObject("peer type of Persistant Rendezvous Super Peer ", n.JXTAID));
-				} else {
-					//System.out.println("NON perst");
-					numRdV++;
-					fileValue.add(new LoggerObject("peer type of Rendezvous Super Peer ", n.JXTAID));
-				}
+
+				if ( ( (JXTARendezvousSuperPeer) n).isPersistentRdV()) {
+
+					numPersistentRdV++;
 				
-				fileValue.add(new LoggerObject("\tWell-know Rendezvous : ", n.rendezvousSP.size()));
-				//printWNRdV(n);
-				fileValue.add(new LoggerObject("\tDimensions of Rendezvous Peer View : ", ( (JXTARendezvousSuperPeer) n).dimRPV()));
-				//rintRPV( (JXTARendezvousSuperPeer) n );
-				fileValue.add(new LoggerObject("\tEP connected : ", ( (JXTARendezvousSuperPeer) n).dimEP()));
-				//printConnectedEP( (JXTARendezvousSuperPeer) n );
-				fileValue.add(new LoggerObject("\tNumber of responsibility Advertisement : ", ( (JXTARendezvousSuperPeer) n).dimRespAdv()));
-				//printResponsibilityAdv((JXTARendezvousSuperPeer) n);
+				} else {
+
+					numRdV++;
+				}
 				
 			}
 			else if (n instanceof JXTAEdgePeer){
 				numEP++;
-				//System.out.println("Edge");
-				fileValue.add(new LoggerObject("peer type of Edge Peer ", n.JXTAID));
-				fileValue.add(new LoggerObject("\tWell-know Rendezvous : ", n.rendezvousSP.size()));
-				//printWNRdV(n);
-				fileValue.add(new LoggerObject("\tAdvertisement on cache : ", n.cacheAdv.size()));
-				//printAdvOnCache(n);
-				
+
 				totalSearch = totalSearch + n.totalQuery;
 				totalHits = totalHits + n.queryHit;
-				fileValue.add(new LoggerObject("\tNumber of search : ", n.totalQuery));
-				fileValue.add(new LoggerObject("\tNumber of hits : ", n.queryHit));
 				
 			}
 			
-			
-			System.out.println(n.JXTAID);
 		}
 		
 		
-		fileValue.add(new LoggerObject("\n\nTotal number of Peer: ", numNodes));
-		fileValue.add(new LoggerObject("\tPersistant Rendezvous Super Peer: ", numPersistantRdV));
-		fileValue.add(new LoggerObject("\tRendezvous Super Peer: ", numRdV));
-		fileValue.add(new LoggerObject("\tEdge Peer: ", numEP));
-		fileValue.add(new LoggerObject("\tTotal number of search: ", totalSearch));
-		fileValue.add(new LoggerObject("\tTotal number of hits: ", totalHits));
-		fileValue.add(new LoggerObject("\tTotal number of miss: ", totalSearch - totalHits));
+		fileValue.add(new LoggerObject("Total number of Peer: ", numNodes));
+		fileValue.add(new LoggerObject("Persistent Rendezvous Super Peer: ", numPersistentRdV));
+		fileValue.add(new LoggerObject("Rendezvous Super Peer: ", numRdV));
+		fileValue.add(new LoggerObject("Edge Peer: ", numEP));
+		fileValue.add(new LoggerObject("Total number of search: ", totalSearch));
+		fileValue.add(new LoggerObject("Total number of hits: ", totalHits));
+		fileValue.add(new LoggerObject("Total number of miss: ", totalSearch - totalHits));
 		if (totalSearch != 0)
-			fileValue.add(new LoggerObject("\tPercent of hit: ", (totalHits*100)/totalSearch));
-		
+			fileValue.add(new LoggerObject("Percent of hit: ", (totalHits*100)/totalSearch));
 		
 		a.write(Engine.getDefault().getVirtualTime(), fileValue);
 		
@@ -115,11 +97,12 @@ public class LogJXTAStatsEvent extends Event {
 	}
 
 	/**
+	 * 
 	 * This is the old version of DEUS Log
+	 * 
 	 * @throws RunException
 	 */
 	public void oldrun() throws RunException{
-		// TODO Auto-generated method stub
 		
 		getLogger().info("##### JXTAPeer stats:");
 		
@@ -129,14 +112,13 @@ public class LogJXTAStatsEvent extends Event {
 		
 		for(Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext(); ) {
 			
-			//Peer n = (JXTAEdgePeer) it.next();
 			JXTAEdgePeer n = (JXTAEdgePeer) it.next();
 			
 			if (n instanceof JXTARendezvousSuperPeer ){
-				//n = (JXTARendezvousSuperPeer) n;
-				if ( ( (JXTARendezvousSuperPeer) n).isPersistantRdV()) {
-					numPersistantRdV++;
-					getLogger().info("peer " + n.JXTAID + " type of Persistant Rendezvous Super Peer (on " + ( (JXTARendezvousSuperPeer) n).num_perst + " )");
+
+				if ( ( (JXTARendezvousSuperPeer) n).isPersistentRdV()) {
+					numPersistentRdV++;
+					getLogger().info("peer " + n.JXTAID + " type of Persistent Rendezvous Super Peer ");
 				} else {
 					numRdV++;
 					getLogger().info("peer " + n.JXTAID + " type of Rendezvous Super Peer");
@@ -165,13 +147,17 @@ public class LogJXTAStatsEvent extends Event {
 			
 		}
 		
-		getLogger().info("\n\nTotal number of: \n\tPersistant Rendezvous Super Peer: " + numPersistantRdV);
+		getLogger().info("\n\nTotal number of: \n\tPersistent Rendezvous Super Peer: " + numPersistentRdV);
 		getLogger().info("\tRendezvous Super Peer: " + numRdV);
 		getLogger().info("\tEdge Peer: " + numEP);
 	}
 
 	
-	//Stampa tutti i RdV
+	/** 
+	 * Print all well-known RdV by Edge Peer "e" 
+	 * 
+	 * @param e
+	 */
 	private void printWNRdV(JXTAEdgePeer e){
 		
 		for (int i = 0; i < e.rendezvousSP.size(); i++){
@@ -180,6 +166,11 @@ public class LogJXTAStatsEvent extends Event {
 		
 	}
 	
+	/**
+	 * Print RPV of Rendezvous "r"
+	 * 
+	 * @param r
+	 */
 	private void printRPV(JXTARendezvousSuperPeer r) {
 		
 		for(int i = 0; i < r.RPV.size(); i++){
@@ -188,6 +179,11 @@ public class LogJXTAStatsEvent extends Event {
 		
 	}
 	
+	/**
+	 * Print all Edge Peer connected to Rendezvous "r"
+	 * 
+	 * @param r
+	 */
 	private void printConnectedEP(JXTARendezvousSuperPeer r) {
 		
 		for(int i=0; i < r.peer.size(); i++){
@@ -196,6 +192,12 @@ public class LogJXTAStatsEvent extends Event {
 		
 	}
 	
+	/**
+	 * Print all id and owner for responsibility Advertisement 
+	 * of Rendezvous "r" 
+	 * 
+	 * @param r
+	 */
 	private void printResponsibilityAdv ( JXTARendezvousSuperPeer r) {
 		
 		Set<Integer> key_set = r.respAdv.keySet();
@@ -207,7 +209,11 @@ public class LogJXTAStatsEvent extends Event {
 		
 	}
 	
-	
+	/**
+	 * Print all Advertisement on cache of Peer "e"
+	 * 
+	 * @param e
+	 */
 	private void printAdvOnCache(JXTAEdgePeer e){
 		
 		Set<Integer> key_set = e.cacheAdv.keySet();

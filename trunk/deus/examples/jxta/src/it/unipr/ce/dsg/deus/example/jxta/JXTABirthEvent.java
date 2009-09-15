@@ -10,8 +10,10 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This event represents the birth of a simulation JXTAPeer. During its execution an
- * instance of the node associated to the event will be created.
+ * 
+ * This event represents the birth of a simulation JXTAPeer. 
+ * During its execution an instance of the node associated to 
+ * the event will be created.
  * 
  * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  * 

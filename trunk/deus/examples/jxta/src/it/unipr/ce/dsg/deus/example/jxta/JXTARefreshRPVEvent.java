@@ -8,8 +8,9 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This event represents the refresh of Rendezvous Peer View (RPV) of a Rendezvous 
- * super peer.
+ * 
+ * This event represents the refresh of Rendezvous Peer View (RPV) 
+ * of a Rendezvous super peer.
  * 
  * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  * 

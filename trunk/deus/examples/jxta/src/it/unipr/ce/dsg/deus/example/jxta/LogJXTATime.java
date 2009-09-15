@@ -9,9 +9,10 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
+ * 
  * This class is used to print the current virtual time in the simulation
  * 
- * @author  Stefano Sebastio
+ * @author  Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  */
 
 public class LogJXTATime extends Event {
