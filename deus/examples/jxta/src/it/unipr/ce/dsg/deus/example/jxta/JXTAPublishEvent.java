@@ -8,7 +8,9 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This event represents the publish of an Advertisement.
+ * 
+ * This event represents the publish of all not
+ * just published Advertisement of the Edge Peer.
  * 
  * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  * 

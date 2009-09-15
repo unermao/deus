@@ -11,7 +11,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 /**
- * This event print the network in <p>nwb</p> format
+ * This event print the network topology in <p>nwb</p> format.
  *  
  * @author Stefano Sebastio (stefano.sebastio@studenti.unipr.it)
  *
@@ -42,7 +42,7 @@ public class LogJXTAForNwbEvent extends Event {
 			JXTAEdgePeer n = (JXTAEdgePeer) Engine.getDefault().getNodes().get(i);
 			
 			if (n instanceof JXTARendezvousSuperPeer){
-				if (((JXTARendezvousSuperPeer) n).persistant_RdV){
+				if (((JXTARendezvousSuperPeer) n).persistent_RdV){
 					getLogger().info((i+1) + " \"" + n.JXTAID + "\" \"green\" ");
 					
 				} else {
@@ -81,7 +81,7 @@ public class LogJXTAForNwbEvent extends Event {
 							
 				}
 
-				//Connessioni con gli EP
+				//Connection with EP
 				for(int j = 0; j < ((JXTARendezvousSuperPeer) n).peer.size(); j++){
 					if ( app.get(Integer.toString( ( (JXTARendezvousSuperPeer) n).peer.get(j).JXTAID )) != null) {
 						
