@@ -48,6 +48,7 @@
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
 			<aut:param name="meanArrivalFreeResource" value="500000" />
 			<aut:param name="numInitialConnections" value="3" />
+			<aut:param name="neighborsPercentage" value="60" />
 		</aut:params>
 	</aut:event>
 	
