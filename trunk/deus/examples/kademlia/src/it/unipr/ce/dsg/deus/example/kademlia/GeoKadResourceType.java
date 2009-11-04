@@ -1,15 +1,15 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import it.unipr.ce.dsg.deus.impl.resource.ResourceAdv;
 
-public class KademliaResourceType extends ResourceAdv {
+public class GeoKadResourceType extends ResourceAdv {
 	private int resourceKey = 0;
 	
-	public KademliaResourceType()  {
+	public GeoKadResourceType()  {
 
 	}
 	
-	public KademliaResourceType(int id)  {
+	public GeoKadResourceType(int id)  {
 		this.resourceKey = id;
 	}
 	
@@ -21,15 +21,15 @@ public class KademliaResourceType extends ResourceAdv {
 		this.resourceKey = key;
 	}
 	
-	public boolean equals(KademliaResourceType obj) {
+	public boolean equals(GeoKadResourceType obj) {
 		if (obj.resourceKey == this.resourceKey)
 			return true;
 		return false;
 	}
 	
 	public boolean equals(Object obj) {
-		if (obj instanceof KademliaResourceType)
-			return equals( (KademliaResourceType) obj);
+		if (obj instanceof GeoKadResourceType)
+			return equals( (GeoKadResourceType) obj);
 		return false;
 	}
 

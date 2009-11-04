@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -9,19 +9,19 @@ import it.unipr.ce.dsg.deus.core.RunException;
 import java.util.Properties;
 import java.util.Random;
 
-public class KademliaNodeLookUpEvent extends NodeEvent {
+public class GeoKadNodeLookUpEvent extends NodeEvent {
 
 	private int resourceKey = 0;
-	private KademliaResourceType res = null;
+	private GeoKadResourceType res = null;
 
-	public KademliaNodeLookUpEvent(String id, Properties params,
+	public GeoKadNodeLookUpEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
 	}
 
 	public Object clone() {
-		KademliaNodeLookUpEvent clone = (KademliaNodeLookUpEvent) super.clone();
+		GeoKadNodeLookUpEvent clone = (GeoKadNodeLookUpEvent) super.clone();
 		clone.resourceKey = 0;
 		return clone;
 	}
@@ -40,14 +40,14 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		KademliaPeer currNode = (KademliaPeer) this.getAssociatedNode();
+		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
 		if (currNode == null) {
 			Random random = new Random();
 
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			int random_node = random.nextInt(initialized_nodes);
-			currNode = (KademliaPeer) Engine.getDefault().getNodes().get(
+			currNode = (GeoKadPeer) Engine.getDefault().getNodes().get(
 					random_node);
 		}
 
@@ -62,13 +62,13 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 		currNode.nlResults.get(resourceKey).addAll(
 				currNode.find_node(resourceKey));
 
-		KademliaPeer first = null;
+		GeoKadPeer first = null;
 		if (currNode.nlResults.get(resourceKey).size() != 0) {
 			first = currNode.nlResults.get(resourceKey).getFoundNodes().first();
 		}
 
 		try {
-			KademliaNodeLookUpRecursiveEvent nlk = (KademliaNodeLookUpRecursiveEvent) new KademliaNodeLookUpRecursiveEvent(
+			GeoKadNodeLookUpRecursiveEvent nlk = (GeoKadNodeLookUpRecursiveEvent) new GeoKadNodeLookUpRecursiveEvent(
 					"node_lookup", params, null, first, discoveryMaxWait)
 					.createInstance(triggeringTime + discoveryMaxWait);
 
@@ -84,16 +84,16 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		KademliaFindNodeEvent fn = null;
+		GeoKadFindNodeEvent fn = null;
 		for (int i = 0; currNode.nlResults.get(resourceKey).size() > i
 				&& i < currNode.getAlpha(); i++) {
 			try {
 				float delay = expRandom((float) 300.0);
 				if (delay > discoveryMaxWait)
 					continue;
-				KademliaPeer p = (KademliaPeer) currNode.nlResults.get(
+				GeoKadPeer p = (GeoKadPeer) currNode.nlResults.get(
 						resourceKey).getFoundNodes().toArray()[i];
-				fn = (KademliaFindNodeEvent) new KademliaFindNodeEvent(
+				fn = (GeoKadFindNodeEvent) new GeoKadFindNodeEvent(
 						"find_node", new Properties(), null, currNode)
 
 				.createInstance(triggeringTime + delay);
@@ -114,11 +114,11 @@ public class KademliaNodeLookUpEvent extends NodeEvent {
 		this.resourceKey = resourceKey;
 	}
 
-	public KademliaResourceType getRes() {
+	public GeoKadResourceType getRes() {
 		return res;
 	}
 
-	public void setRes(KademliaResourceType res) {
+	public void setRes(GeoKadResourceType res) {
 		this.res = res;
 	}
 

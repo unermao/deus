@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -8,14 +8,14 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 
-public class KademliaFindValueEvent extends NodeEvent {
+public class GeoKadFindValueEvent extends NodeEvent {
 
-	private KademliaPeer reqNode = null;
+	private GeoKadPeer reqNode = null;
 
 	private int resourceKey = -1;
 
-	public KademliaFindValueEvent(String id, Properties params,
-			Process parentProcess, KademliaPeer requestingNode)
+	public GeoKadFindValueEvent(String id, Properties params,
+			Process parentProcess, GeoKadPeer requestingNode)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 
@@ -24,7 +24,7 @@ public class KademliaFindValueEvent extends NodeEvent {
 	}
 
 	public Object clone() {
-		KademliaFindValueEvent clone = (KademliaFindValueEvent) super.clone();
+		GeoKadFindValueEvent clone = (GeoKadFindValueEvent) super.clone();
 		clone.resourceKey = -1;
 		clone.reqNode = null;
 		return clone;
@@ -40,7 +40,7 @@ public class KademliaFindValueEvent extends NodeEvent {
 
 	@SuppressWarnings("unchecked")
 	public void run() throws RunException {
-		KademliaPeer currentNode = (KademliaPeer) getAssociatedNode();
+		GeoKadPeer currentNode = (GeoKadPeer) getAssociatedNode();
 		if (resourceKey == -1) {
 			throw new RunException("The resourceKey should really be set in "
 					+ this);
@@ -50,17 +50,17 @@ public class KademliaFindValueEvent extends NodeEvent {
 		currentNode.insertPeer(reqNode);
 		if (findv instanceof ArrayList) {
 			reqNode.nlResults.get(resourceKey).addAll(
-					(ArrayList<KademliaPeer>) findv);
-		} else if (findv instanceof KademliaResourceType) {
+					(ArrayList<GeoKadPeer>) findv);
+		} else if (findv instanceof GeoKadResourceType) {
 			// Resource found!
 			reqNode.nlResults.get(resourceKey).setValueFound(true);
 
 			// For caching purposes, the initiator must store the key/value pair
 			// at the closest node seen which did not return the value.
-			for (KademliaPeer p : reqNode.nlResults.get(resourceKey)
+			for (GeoKadPeer p : reqNode.nlResults.get(resourceKey)
 					.getFoundNodes()) {
 				if (p.getKey() != currentNode.getKey()) {
-					p.store(new KademliaResourceType(this.resourceKey));
+					p.store(new GeoKadResourceType(this.resourceKey));
 					return;
 				}
 			}
@@ -71,11 +71,11 @@ public class KademliaFindValueEvent extends NodeEvent {
 		this.resourceKey = resourceKey;
 	}
 
-	public KademliaPeer getRequestingNode() {
+	public GeoKadPeer getRequestingNode() {
 		return reqNode;
 	}
 
-	public void setRequestingNode(KademliaPeer reqNode) {
+	public void setRequestingNode(GeoKadPeer reqNode) {
 		this.reqNode = reqNode;
 	}
 

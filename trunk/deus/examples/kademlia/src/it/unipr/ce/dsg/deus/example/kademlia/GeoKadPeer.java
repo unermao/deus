@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,11 +9,12 @@ import java.util.LinkedList;
 
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 import it.unipr.ce.dsg.deus.core.*;
-import it.unipr.ce.dsg.deus.example.kademlia.KademliaResourceType;
+import it.unipr.ce.dsg.deus.example.geokad.GeoKadResourceType;
 
 import java.util.Properties;
 
-public class KademliaPeer extends Peer {
+public class GeoKadPeer extends Peer {
+	
 	private static final String K_BUCKET_DIM = "kBucketDim";
 	private static final String RESOURCES_NODE = "resourcesNode";
 	private static final String ALPHA = "alpha";
@@ -21,19 +22,19 @@ public class KademliaPeer extends Peer {
 	private static final String DISCOVERY_MAX_WAIT = "discoveryMaxWait";
 	private float discoveryMaxWait = 500;
 
-	private Vector<ArrayList<KademliaPeer>> kbucket = null;
+	private Vector<ArrayList<GeoKadPeer>> kbucket = null;
 
 	private int kBucketDim = 0;
 	private int resourcesNode = 0;
 
 	public Map<Integer, Integer> logSearch = new HashMap<Integer, Integer>();
 
-	public ArrayList<KademliaResourceType> kademliaResources = new ArrayList<KademliaResourceType>();
-	public ArrayList<KademliaResourceType> storedResources = new ArrayList<KademliaResourceType>();
+	public ArrayList<GeoKadResourceType> kademliaResources = new ArrayList<GeoKadResourceType>();
+	public ArrayList<GeoKadResourceType> storedResources = new ArrayList<GeoKadResourceType>();
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
-	public ArrayList<KademliaPeer> nlContactedNodes = new ArrayList<KademliaPeer>();
+	public ArrayList<GeoKadPeer> nlContactedNodes = new ArrayList<GeoKadPeer>();
 
-	public KademliaPeer(String id, Properties params,
+	public GeoKadPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
 		super(id, params, resources);
 
@@ -43,10 +44,10 @@ public class KademliaPeer extends Peer {
 		// /Math.log(2) +0.5); Invocation Target Exception!
 
 		// this.kbucket = new Vector<LinkedList<KademliaPeer>>();
-		this.kbucket = new Vector<ArrayList<KademliaPeer>>();
+		this.kbucket = new Vector<ArrayList<GeoKadPeer>>();
 		for (int i = 0; i < size; i++) {
 			// kbucket.add(i, new LinkedList<KademliaPeer>());
-			kbucket.add(i, new ArrayList<KademliaPeer>());
+			kbucket.add(i, new ArrayList<GeoKadPeer>());
 		}
 		if (params.getProperty(K_BUCKET_DIM) == null)
 			throw new InvalidParamsException(K_BUCKET_DIM
@@ -77,20 +78,20 @@ public class KademliaPeer extends Peer {
 	}
 
 	public Object clone() {
-		KademliaPeer clone = (KademliaPeer) super.clone();
+		GeoKadPeer clone = (GeoKadPeer) super.clone();
 		// clone.kbucket = new Vector<LinkedList<KademliaPeer>>();
-		clone.kbucket = new Vector<ArrayList<KademliaPeer>>();
+		clone.kbucket = new Vector<ArrayList<GeoKadPeer>>();
 		int size = (int) Math.floor(Math.log(Engine.getDefault()
 				.getKeySpaceSize())
 				/ Math.log(2) + 1.5);
 		for (int i = 0; i < size; ++i) {
 			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
-			clone.kbucket.add(i, new ArrayList<KademliaPeer>());
+			clone.kbucket.add(i, new ArrayList<GeoKadPeer>());
 		}
-		clone.kademliaResources = new ArrayList<KademliaResourceType>();
-		clone.storedResources = new ArrayList<KademliaResourceType>();
+		clone.kademliaResources = new ArrayList<GeoKadResourceType>();
+		clone.storedResources = new ArrayList<GeoKadResourceType>();
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
-		clone.nlContactedNodes = new ArrayList<KademliaPeer>();
+		clone.nlContactedNodes = new ArrayList<GeoKadPeer>();
 		clone.logSearch = new HashMap<Integer, Integer>();
 
 		return clone;
@@ -108,7 +109,7 @@ public class KademliaPeer extends Peer {
 		this.setConnected(false);
 	}
 
-	public void insertPeer(KademliaPeer newPeer) {
+	public void insertPeer(GeoKadPeer newPeer) {
 		if (this.getKey() == newPeer.getKey())
 			return;
 		int distance = this.getKey() ^ newPeer.getKey();
@@ -119,7 +120,7 @@ public class KademliaPeer extends Peer {
 		if (kbucket.get(index).size() == 0) {
 			// There is no list yet!
 			// kbucket.setElementAt(new LinkedList<KademliaPeer>(), index);
-			kbucket.setElementAt(new ArrayList<KademliaPeer>(), index);
+			kbucket.setElementAt(new ArrayList<GeoKadPeer>(), index);
 			// Insert the new Peer in the correct kbucket
 			kbucket.get(index).add(newPeer);
 		} else if (kbucket.get(index).size() < kBucketDim) {
@@ -134,7 +135,7 @@ public class KademliaPeer extends Peer {
 			// Otherwise the last-recently seen peer is moved at the tail and
 			// the new is ignored
 			// KademliaPeer lastRecentlySeen = kbucket.get(index).removeFirst();
-			KademliaPeer lastRecentlySeen = kbucket.get(index).remove(0);
+			GeoKadPeer lastRecentlySeen = kbucket.get(index).remove(0);
 
 			if (this.ping(lastRecentlySeen)) {
 				// kbucket.get(index).addLast(lastRecentlySeen);
@@ -151,7 +152,7 @@ public class KademliaPeer extends Peer {
 		// than the node itself. If it is, it stores <key,value> couples in the
 		// closer node
 		int dist, newdist;
-		for (KademliaResourceType r : storedResources) {
+		for (GeoKadResourceType r : storedResources) {
 			dist = this.getKey() ^ r.getResourceKey();
 			newdist = newPeer.getKey() ^ r.getResourceKey();
 			if (newdist < dist) {
@@ -160,7 +161,7 @@ public class KademliaPeer extends Peer {
 		}
 
 		// the node checks if it is close to any Resource
-		for (KademliaResourceType r : kademliaResources) {
+		for (GeoKadResourceType r : kademliaResources) {
 			dist = this.getKey() ^ r.getResourceKey();
 			newdist = newPeer.getKey() ^ r.getResourceKey();
 			if (newdist < dist) {
@@ -170,14 +171,14 @@ public class KademliaPeer extends Peer {
 
 	}
 
-	public boolean ping(KademliaPeer peer) {
+	public boolean ping(GeoKadPeer peer) {
 		if (Engine.getDefault().getNodes().contains(peer)) {
 			return true;
 		}
 		return false;
 	}
 
-	public ArrayList<KademliaPeer> find_node(int key) {
+	public ArrayList<GeoKadPeer> find_node(int key) {
 		int distance = this.getKey() ^ key;
 		// Get the k-bucket index for current distance (log2 distance)
 		int index;
@@ -187,8 +188,8 @@ public class KademliaPeer extends Peer {
 			index = (int) (Math.log(distance) / Math.log(2));
 		}
 
-		ArrayList<KademliaPeer> tempResults = new ArrayList<KademliaPeer>();
-		Iterator<KademliaPeer> it;
+		ArrayList<GeoKadPeer> tempResults = new ArrayList<GeoKadPeer>();
+		Iterator<GeoKadPeer> it;
 
 		it = kbucket.get(index).iterator();
 		while (it.hasNext())
@@ -226,14 +227,14 @@ public class KademliaPeer extends Peer {
 		return tempResults;
 	}
 
-	public void store(KademliaResourceType res) {
+	public void store(GeoKadResourceType res) {
 		if (!this.storedResources.contains(res)) {
 			this.storedResources.add(res);
 		}
 	}
 
 	public Object find_value(int key) {
-		int idx = this.storedResources.indexOf(new KademliaResourceType(key));
+		int idx = this.storedResources.indexOf(new GeoKadResourceType(key));
 
 		if (idx != -1) {
 			return this.storedResources.get(idx);
@@ -258,11 +259,11 @@ public class KademliaPeer extends Peer {
 		return discoveryMaxWait;
 	}
 
-	public Vector<ArrayList<KademliaPeer>> getKbucket() {
+	public Vector<ArrayList<GeoKadPeer>> getKbucket() {
 		return kbucket;
 	}
 
-	public void rawInsertPeer(KademliaPeer newPeer) {
+	public void rawInsertPeer(GeoKadPeer newPeer) {
 		if (this.getKey() == newPeer.getKey())
 			return;
 		int distance = this.getKey() ^ newPeer.getKey();
@@ -273,7 +274,7 @@ public class KademliaPeer extends Peer {
 		if (kbucket.get(index).size() == 0) {
 			// There is no list yet!
 			// kbucket.setElementAt(new LinkedList<KademliaPeer>(), index);
-			kbucket.setElementAt(new ArrayList<KademliaPeer>(), index);
+			kbucket.setElementAt(new ArrayList<GeoKadPeer>(), index);
 			// Insert the new Peer in the correct kbucket
 			kbucket.get(index).add(newPeer);
 		} else if (kbucket.get(index).size() < kBucketDim) {

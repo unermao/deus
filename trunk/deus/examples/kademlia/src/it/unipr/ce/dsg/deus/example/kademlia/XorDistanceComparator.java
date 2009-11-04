@@ -1,8 +1,8 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Comparator;
 
-public class XorDistanceComparator implements Comparator<KademliaPeer> {
+public class XorDistanceComparator implements Comparator<GeoKadPeer> {
 
 	private int currKey = 0;
 
@@ -10,7 +10,7 @@ public class XorDistanceComparator implements Comparator<KademliaPeer> {
 		currKey = resourceKey;
 	}
 
-	public int compare(KademliaPeer arg0, KademliaPeer arg1) {
+	public int compare(GeoKadPeer arg0, GeoKadPeer arg1) {
 		return ((arg0.getKey() ^ currKey) - (arg1.getKey() ^ currKey));
 	}
 }

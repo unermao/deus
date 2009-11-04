@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Properties;
 
@@ -8,11 +8,11 @@ import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.deus.example.kademlia.KademliaResourceType;
+import it.unipr.ce.dsg.deus.example.geokad.GeoKadResourceType;
 
-public class KademliaBirthEvent extends NodeEvent {
+public class GeoKadBirthEvent extends NodeEvent {
 
-	public KademliaBirthEvent(String id, Properties params,
+	public GeoKadBirthEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -33,14 +33,14 @@ public class KademliaBirthEvent extends NodeEvent {
 						getParentProcess().getReferencedNodes().size()))
 				.createInstance(Engine.getDefault().generateKey());
 
-		KademliaPeer app = (KademliaPeer) n;
+		GeoKadPeer app = (GeoKadPeer) n;
 
 		Engine.getDefault().getNodes().add(app);
 		associatedNode = app;
 
 		for (int i = 0; i < app.getResourcesNode(); i++)
 			try {
-				app.kademliaResources.add(new KademliaResourceType(Engine
+				app.kademliaResources.add(new GeoKadResourceType(Engine
 						.getDefault().generateResourceKey()));
 			} catch (Exception e) {
 				e.printStackTrace();

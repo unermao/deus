@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Collection;
 import java.util.TreeSet;
@@ -11,26 +11,26 @@ import java.util.TreeSet;
  * 
  */
 public class SearchResultType {
-	private TreeSet<KademliaPeer> foundNodes = null;
+	private TreeSet<GeoKadPeer> foundNodes = null;
 	private boolean valueFound = false;
 
 	public SearchResultType(int key) {
-		foundNodes = new TreeSet<KademliaPeer>(new XorDistanceComparator(key));
+		foundNodes = new TreeSet<GeoKadPeer>(new XorDistanceComparator(key));
 	}
 
-	public void add(KademliaPeer peer) {
+	public void add(GeoKadPeer peer) {
 		foundNodes.add(peer);
 	}
 
-	public void addAll(Collection<? extends KademliaPeer> collPeer) {
+	public void addAll(Collection<? extends GeoKadPeer> collPeer) {
 		foundNodes.addAll(collPeer);
 	}
 
-	public TreeSet<KademliaPeer> getFoundNodes() {
+	public TreeSet<GeoKadPeer> getFoundNodes() {
 		return foundNodes;
 	}
 
-	public void setFoundNodes(TreeSet<KademliaPeer> foundNodes) {
+	public void setFoundNodes(TreeSet<GeoKadPeer> foundNodes) {
 		this.foundNodes = foundNodes;
 	}
 

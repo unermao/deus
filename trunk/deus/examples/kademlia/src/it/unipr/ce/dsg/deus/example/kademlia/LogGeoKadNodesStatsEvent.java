@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,15 +24,22 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * @author Vittorio Sozzi
  * 
  */
-public class LogKademliaNodesStatsEvent extends Event {
+public class LogGeoKadNodesStatsEvent extends Event {
 
-	public LogKademliaNodesStatsEvent(String id, Properties params,
+	public LogGeoKadNodesStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 
 	}
 
 	public void run() throws RunException {
+		
+		System.out.println(
+				"#KademliaNodesStats info @ "
+						+ Engine.getDefault().getVirtualTime()
+						+ " Number of nodes: "
+						+ Engine.getDefault().getNodes().size());
+		
 		getLogger().info(
 				"#KademliaNodesStats info @ "
 						+ Engine.getDefault().getVirtualTime()
@@ -40,23 +47,23 @@ public class LogKademliaNodesStatsEvent extends Event {
 						+ Engine.getDefault().getNodes().size());
 
 		Collections.sort(Engine.getDefault().getNodes());
-		//verbose();
-		compressed();
+		verbose();
+		//compressed();
 		//network_dump();
 
 	}
 	
 	public void network_dump() {
 		// Assuming all nodes have the same Properties
-		KademliaPeer peer =  (KademliaPeer) Engine.getDefault().getNodes().get(0);
+		GeoKadPeer peer =  (GeoKadPeer) Engine.getDefault().getNodes().get(0);
 		getLogger().info("Properties = " + peer.getKBucketDim() + " " + peer.getResourcesNode() + " " + peer.getAlpha() + " " + peer.getDiscoveryMaxWait());
 		String s;
 		for (Node node: Engine.getDefault().getNodes()) {
-			peer = (KademliaPeer) node;
+			peer = (GeoKadPeer) node;
 			s = new String();
 			s += peer.getKey() + " = ";
-			for (ArrayList<KademliaPeer> bucket : peer.getKbucket()) {
-				for (KademliaPeer entry : bucket) {
+			for (ArrayList<GeoKadPeer> bucket : peer.getKbucket()) {
+				for (GeoKadPeer entry : bucket) {
 					s += entry.getKey() + " ";
 				}
 			}
@@ -66,14 +73,14 @@ public class LogKademliaNodesStatsEvent extends Event {
 
 	public void verbose() {
 		for (Node node : Engine.getDefault().getNodes()) {
-			KademliaPeer peer = (KademliaPeer) node;
+			GeoKadPeer peer = (GeoKadPeer) node;
 			getLogger().info("\nn: " + peer.getKey());
 			int size = 0;
 			int i = 0;
-			for (ArrayList<KademliaPeer> bucket : peer.getKbucket()) {
+			for (ArrayList<GeoKadPeer> bucket : peer.getKbucket()) {
 				size += bucket.size();
 				String s = new String();
-				for (KademliaPeer entry : bucket) {
+				for (GeoKadPeer entry : bucket) {
 					s += entry.getKey() + " ";
 				}
 				getLogger().info(
@@ -95,15 +102,15 @@ public class LogKademliaNodesStatsEvent extends Event {
 	public void compressed() {
 		Set<Integer> knownNodes = new TreeSet<Integer>();
 		for (Node node : Engine.getDefault().getNodes()) {
-			KademliaPeer peer = (KademliaPeer) node;
+			GeoKadPeer peer = (GeoKadPeer) node;
 			String s = new String("n: " + peer.getKey() + "K"
 					+ peer.getKBucketDim() + "A" + peer.getAlpha()
 					+ " Searches#: " + peer.logSearch.size() + " ");
 			String s2 = new String();
 			String s3 = new String();
-			for (ArrayList<KademliaPeer> bucket : peer.getKbucket()) {
+			for (ArrayList<GeoKadPeer> bucket : peer.getKbucket()) {
 				s2 += " " + bucket.size();
-				for (KademliaPeer knownNode : bucket) {
+				for (GeoKadPeer knownNode : bucket) {
 					knownNodes.add(knownNode.getKey()); // Set = no duplicate
 														// elements
 				}
