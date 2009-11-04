@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -22,11 +22,11 @@ import java.util.Random;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class KademliaDisconnectionEvent extends NodeEvent {    
+public class GeoKadDisconnectionEvent extends NodeEvent {    
 
 	private Peer target = null;
 
-	public KademliaDisconnectionEvent(String id, Properties params,
+	public GeoKadDisconnectionEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -41,7 +41,7 @@ public class KademliaDisconnectionEvent extends NodeEvent {
 	}
 	
 	public Object clone() {
-		KademliaDisconnectionEvent clone = (KademliaDisconnectionEvent) super.clone();
+		GeoKadDisconnectionEvent clone = (GeoKadDisconnectionEvent) super.clone();
 		clone.target = null;
 		return clone;
 	}
@@ -52,10 +52,10 @@ public class KademliaDisconnectionEvent extends NodeEvent {
 
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			int random_node = random.nextInt(initialized_nodes);
-			associatedNode = (KademliaPeer) Engine.getDefault().getNodes().get(random_node);
+			associatedNode = (GeoKadPeer) Engine.getDefault().getNodes().get(random_node);
 		}
 
-		if (!(associatedNode instanceof KademliaPeer))
+		if (!(associatedNode instanceof GeoKadPeer))
 			throw new RunException("The associated node is not a KademliaPeer!");
 		if (target != null)
 			((Peer) associatedNode).removeNeighbor(this.target);

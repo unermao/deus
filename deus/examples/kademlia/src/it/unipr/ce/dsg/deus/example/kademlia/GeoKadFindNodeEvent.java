@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Properties;
 import java.util.Random;
@@ -9,14 +9,14 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 
-public class KademliaFindNodeEvent extends NodeEvent {
+public class GeoKadFindNodeEvent extends NodeEvent {
 
-	private KademliaPeer reqNode = null;
+	private GeoKadPeer reqNode = null;
 
 	private int resourceKey = -1;
 
-	public KademliaFindNodeEvent(String id, Properties params,
-			Process parentProcess, KademliaPeer peer)
+	public GeoKadFindNodeEvent(String id, Properties params,
+			Process parentProcess, GeoKadPeer peer)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		reqNode = peer;
@@ -25,7 +25,7 @@ public class KademliaFindNodeEvent extends NodeEvent {
 	}
 
 	public Object clone() {
-		KademliaFindNodeEvent clone = (KademliaFindNodeEvent) super.clone();
+		GeoKadFindNodeEvent clone = (GeoKadFindNodeEvent) super.clone();
 		clone.resourceKey = -1;
 		clone.reqNode = null;
 		return clone;
@@ -39,7 +39,7 @@ public class KademliaFindNodeEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		KademliaPeer currentNode = (KademliaPeer) getAssociatedNode();
+		GeoKadPeer currentNode = (GeoKadPeer) getAssociatedNode();
 		if (resourceKey == -1) {
 			Random random = new Random();
 			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
@@ -57,11 +57,11 @@ public class KademliaFindNodeEvent extends NodeEvent {
 		this.resourceKey = resourceKey;
 	}
 
-	public KademliaPeer getRequestingNode() {
+	public GeoKadPeer getRequestingNode() {
 		return reqNode;
 	}
 
-	public void setRequestingNode(KademliaPeer reqNode) {
+	public void setRequestingNode(GeoKadPeer reqNode) {
 		this.reqNode = reqNode;
 	}
 }

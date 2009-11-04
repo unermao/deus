@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -6,18 +6,18 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
+public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 
-	private KademliaPeer closerElement = null;
-	private KademliaResourceType res = null;
+	private GeoKadPeer closerElement = null;
+	private GeoKadResourceType res = null;
 
 	private float discoveryMaxWait = 500;
 
 	private boolean findNodeK = false;
 	private int resourceKey = 0;
 
-	public KademliaNodeLookUpRecursiveEvent(String id, Properties params,
-			Process parentProcess, KademliaPeer closerElem, float maxWait)
+	public GeoKadNodeLookUpRecursiveEvent(String id, Properties params,
+			Process parentProcess, GeoKadPeer closerElem, float maxWait)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		discoveryMaxWait = maxWait;
@@ -32,7 +32,7 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 	}
 
 	public Object clone() {
-		KademliaNodeLookUpRecursiveEvent clone = (KademliaNodeLookUpRecursiveEvent) super
+		GeoKadNodeLookUpRecursiveEvent clone = (GeoKadNodeLookUpRecursiveEvent) super
 				.clone();
 		clone.discoveryMaxWait = this.discoveryMaxWait;
 		clone.findNodeK = false;
@@ -54,13 +54,13 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 	}
 
 	public void run() throws RunException {
-		KademliaPeer currNode = (KademliaPeer) this.getAssociatedNode();
+		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
 		if (resourceKey == 0) {
 			throw new RunException("The resourceKey should really be set in "
 					+ this);
 		}
-		KademliaPeer first = null;
+		GeoKadPeer first = null;
 
 		if (currNode.nlResults.get(resourceKey).size() != 0) {
 			first = currNode.nlResults.get(resourceKey).getFoundNodes().first();
@@ -73,9 +73,9 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 						.getFoundNodes().toArray();
 				for (int j = 0; j < currNode.nlResults.get(resourceKey).size()
 						&& j < currNode.getKBucketDim(); j++) {
-					currNode.insertPeer((KademliaPeer) foundNodes[j]);
+					currNode.insertPeer((GeoKadPeer) foundNodes[j]);
 					if (res != null )
-						((KademliaPeer) foundNodes[j]).store(res);
+						((GeoKadPeer) foundNodes[j]).store(res);
 				}
 
 				currNode.nlResults.get(resourceKey).getFoundNodes().clear();
@@ -94,7 +94,7 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 		}
 
 		try {
-			KademliaNodeLookUpRecursiveEvent nlk = (KademliaNodeLookUpRecursiveEvent) new KademliaNodeLookUpRecursiveEvent(
+			GeoKadNodeLookUpRecursiveEvent nlk = (GeoKadNodeLookUpRecursiveEvent) new GeoKadNodeLookUpRecursiveEvent(
 					"node_lookup", params, null, first, discoveryMaxWait)
 					.createInstance(triggeringTime + discoveryMaxWait);
 
@@ -111,8 +111,8 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 		}
 	}
 
-	private void scheduleFindNodeEvent(KademliaPeer currNode, int numElements) {
-		KademliaFindNodeEvent fn = null;
+	private void scheduleFindNodeEvent(GeoKadPeer currNode, int numElements) {
+		GeoKadFindNodeEvent fn = null;
 		int i = 0;
 		int contactedNodes = 0;
 		Object[] node = currNode.nlResults.get(resourceKey).getFoundNodes()
@@ -124,16 +124,16 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 					float delay = expRandom((float) 300.0);
 					if (delay > discoveryMaxWait)
 						continue;
-					fn = (KademliaFindNodeEvent) new KademliaFindNodeEvent(
+					fn = (GeoKadFindNodeEvent) new GeoKadFindNodeEvent(
 							"find_node", new Properties(), null, currNode)
 							.createInstance(triggeringTime + delay);
 
 					fn.setRequestingNode(currNode);
 					fn.setOneShot(true);
-					fn.setAssociatedNode((KademliaPeer) node[i]);
+					fn.setAssociatedNode((GeoKadPeer) node[i]);
 					fn.setResourceKey(resourceKey);
 					Engine.getDefault().insertIntoEventsList(fn);
-					currNode.nlContactedNodes.add((KademliaPeer) node[i]);
+					currNode.nlContactedNodes.add((GeoKadPeer) node[i]);
 					contactedNodes++;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -150,11 +150,11 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 		this.resourceKey = resourceKey;
 	}
 
-	public KademliaPeer getCloserElement() {
+	public GeoKadPeer getCloserElement() {
 		return closerElement;
 	}
 
-	public void setCloserElement(KademliaPeer closerElement) {
+	public void setCloserElement(GeoKadPeer closerElement) {
 		this.closerElement = closerElement;
 	}
 
@@ -166,11 +166,11 @@ public class KademliaNodeLookUpRecursiveEvent extends KademliaNodeLookUpEvent {
 		this.discoveryMaxWait = discoveryMaxWait;
 	}
 
-	public KademliaResourceType getRes() {
+	public GeoKadResourceType getRes() {
 		return res;
 	}
 
-	public void setRes(KademliaResourceType res) {
+	public void setRes(GeoKadResourceType res) {
 		this.res = res;
 	}
 

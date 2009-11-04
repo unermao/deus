@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
@@ -18,17 +18,17 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class KademliaDeathEvent extends Event {
+public class GeoKadDeathEvent extends Event {
 
 	private Node nodeToKill = null;
 
-	public KademliaDeathEvent(String id, Properties params,
+	public GeoKadDeathEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 	}
 
 	public Object clone() {
-		KademliaDeathEvent clone = (KademliaDeathEvent) super.clone();
+		GeoKadDeathEvent clone = (GeoKadDeathEvent) super.clone();
 		clone.nodeToKill = null;
 		return clone;
 	}

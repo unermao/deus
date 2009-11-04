@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Properties;
 
@@ -9,9 +9,9 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 
 
-public class KademliaPublishRefreshEvent extends NodeEvent {
+public class GeoKadPublishRefreshEvent extends NodeEvent {
 	
-	public KademliaPublishRefreshEvent (String id, Properties params, Process parentProcess)
+	public GeoKadPublishRefreshEvent (String id, Properties params, Process parentProcess)
 	throws InvalidParamsException {
 		super(id,params,parentProcess);
 		initialize();
@@ -21,9 +21,9 @@ public class KademliaPublishRefreshEvent extends NodeEvent {
 
 	
 	public void run() throws RunException {
-		KademliaPeer currNode = (KademliaPeer) getAssociatedNode();
-		for (KademliaResourceType res : currNode.kademliaResources ) {
-			for (KademliaPeer peer : currNode.find_node(res.getResourceKey())) {
+		GeoKadPeer currNode = (GeoKadPeer) getAssociatedNode();
+		for (GeoKadResourceType res : currNode.kademliaResources ) {
+			for (GeoKadPeer peer : currNode.find_node(res.getResourceKey())) {
 				peer.insertPeer(currNode);
 				peer.store(res);
 			}

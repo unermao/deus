@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Properties;
 
@@ -8,9 +8,9 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class KademliaJoinEvent extends NodeEvent {
+public class GeoKadJoinEvent extends NodeEvent {
 
-	public KademliaJoinEvent(String id, Properties params, Process parentProcess)
+	public GeoKadJoinEvent(String id, Properties params, Process parentProcess)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -21,13 +21,13 @@ public class KademliaJoinEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		// Identify current node
-		KademliaPeer connectingNode = (KademliaPeer) this.getAssociatedNode();
-		KademliaPeer destinationNode = null;
+		GeoKadPeer connectingNode = (GeoKadPeer) this.getAssociatedNode();
+		GeoKadPeer destinationNode = null;
 
 		if (connectingNode == null) {
 			// Find a random not-connected node
 			do {
-				connectingNode = (KademliaPeer) Engine.getDefault().getNodes()
+				connectingNode = (GeoKadPeer) Engine.getDefault().getNodes()
 						.get(
 								Engine.getDefault().getSimulationRandom()
 										.nextInt(
@@ -48,7 +48,7 @@ public class KademliaJoinEvent extends NodeEvent {
 
 		// Find a Random connected node
 		do {
-			destinationNode = (KademliaPeer) Engine.getDefault().getNodes()
+			destinationNode = (GeoKadPeer) Engine.getDefault().getNodes()
 					.get(
 							Engine.getDefault().getSimulationRandom().nextInt(
 									Engine.getDefault().getNodes().size()));
@@ -61,8 +61,8 @@ public class KademliaJoinEvent extends NodeEvent {
 
 		// Populates the connectingNode's kbuckets by searching its own key
 		try {
-			 KademliaNodeLookUpEvent nlk = (KademliaNodeLookUpEvent)
-			 new KademliaNodeLookUpEvent("node_lookup", params, null )
+			 GeoKadNodeLookUpEvent nlk = (GeoKadNodeLookUpEvent)
+			 new GeoKadNodeLookUpEvent("node_lookup", params, null )
 			 .createInstance(triggeringTime);
 
 			nlk.setOneShot(true);

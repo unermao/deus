@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.kademlia;
+package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,9 +17,9 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
-public class KademliaNetworkInitializeEvent extends Event {
+public class GeoKadNetworkInitializeEvent extends Event {
 
-	public KademliaNetworkInitializeEvent(String id, Properties params,
+	public GeoKadNetworkInitializeEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 
@@ -45,7 +45,7 @@ public class KademliaNetworkInitializeEvent extends Event {
 					continue;
 				}
 				strtok = s.split("\\s");
-				KademliaPeer peer = new KademliaPeer(s, params, null);
+				GeoKadPeer peer = new GeoKadPeer(s, params, null);
 				
 				// Creation of all nodes.
 				peer.setKey(Integer.parseInt(strtok[0]));
@@ -68,9 +68,9 @@ public class KademliaNetworkInitializeEvent extends Event {
 		
 		// Filling of the kbuckets
 		for (Integer key : knownNodes.keySet() ) {
-			KademliaPeer p = (KademliaPeer) Engine.getDefault().getNodeByKey(key);
+			GeoKadPeer p = (GeoKadPeer) Engine.getDefault().getNodeByKey(key);
 			for (Integer node : knownNodes.get(key)) {
-				p.rawInsertPeer((KademliaPeer)Engine.getDefault().getNodeByKey(node));
+				p.rawInsertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(node));
 			}
 		}
 	}
