@@ -15,18 +15,24 @@ import java.util.Properties;
 
 public class GeoKadPeer extends Peer {
 	
-	private static final String K_BUCKET_DIM = "kBucketDim";
+	private static final String NUM_OF_KBUCKETS = "numOfKBuckets";
 	private static final String RESOURCES_NODE = "resourcesNode";
 	private static final String ALPHA = "alpha";
+	private static final String RAY_DISTANCE = "rayDistance";
 	private int alpha = 3;
 	private static final String DISCOVERY_MAX_WAIT = "discoveryMaxWait";
 	private float discoveryMaxWait = 500;
 
 	private Vector<ArrayList<GeoKadPeer>> kbucket = null;
 
-	private int kBucketDim = 0;
+	private int numOfKBuckets = 0;
 	private int resourcesNode = 0;
+	private double rayDistance = 0.0;
 
+	//Latitude and Longitude
+	private double latitude = 0.0;
+	private double longitude = 0.0;
+	
 	public Map<Integer, Integer> logSearch = new HashMap<Integer, Integer>();
 
 	public ArrayList<GeoKadResourceType> kademliaResources = new ArrayList<GeoKadResourceType>();
@@ -38,24 +44,18 @@ public class GeoKadPeer extends Peer {
 			ArrayList<Resource> resources) throws InvalidParamsException {
 		super(id, params, resources);
 
-		int size = 100;
+		//int size = 100;
 		// int size = (int) Math.floor(Math.log
 		// (Engine.getDefault().getKeySpaceSize())
 		// /Math.log(2) +0.5); Invocation Target Exception!
 
-		// this.kbucket = new Vector<LinkedList<KademliaPeer>>();
-		this.kbucket = new Vector<ArrayList<GeoKadPeer>>();
-		for (int i = 0; i < size; i++) {
-			// kbucket.add(i, new LinkedList<KademliaPeer>());
-			kbucket.add(i, new ArrayList<GeoKadPeer>());
-		}
-		if (params.getProperty(K_BUCKET_DIM) == null)
-			throw new InvalidParamsException(K_BUCKET_DIM
+		if (params.getProperty(NUM_OF_KBUCKETS) == null)
+			throw new InvalidParamsException(NUM_OF_KBUCKETS
 					+ " param is expected");
 		try {
-			kBucketDim = Integer.parseInt(params.getProperty(K_BUCKET_DIM));
+			numOfKBuckets = Integer.parseInt(params.getProperty(NUM_OF_KBUCKETS));
 		} catch (NumberFormatException ex) {
-			throw new InvalidParamsException(K_BUCKET_DIM
+			throw new InvalidParamsException(NUM_OF_KBUCKETS
 					+ " must be a valid int value.");
 		}
 		if (params.containsKey(RESOURCES_NODE))
@@ -75,25 +75,51 @@ public class GeoKadPeer extends Peer {
 						+ " must be a valid float value.");
 			}
 		}
+		
+		if (params.getProperty(RAY_DISTANCE) != null) {
+			try {
+				setRayDistance(Double.parseDouble(params
+						.getProperty(RAY_DISTANCE)));
+			} catch (NumberFormatException ex) {
+				throw new InvalidParamsException(RAY_DISTANCE
+						+ " must be a valid double value.");
+			}
+		}
+		
+		// this.kbucket = new Vector<LinkedList<KademliaPeer>>();
+		this.kbucket = new Vector<ArrayList<GeoKadPeer>>();
+		for (int i = 0; i < this.numOfKBuckets; i++) {
+			// kbucket.add(i, new LinkedList<KademliaPeer>());
+			kbucket.add(i, new ArrayList<GeoKadPeer>());
+		}
+		
 	}
 
 	public Object clone() {
+		
 		GeoKadPeer clone = (GeoKadPeer) super.clone();
 		// clone.kbucket = new Vector<LinkedList<KademliaPeer>>();
 		clone.kbucket = new Vector<ArrayList<GeoKadPeer>>();
-		int size = (int) Math.floor(Math.log(Engine.getDefault()
-				.getKeySpaceSize())
-				/ Math.log(2) + 1.5);
-		for (int i = 0; i < size; ++i) {
+		
+//		int size = (int) Math.floor(Math.log(Engine.getDefault()
+//				.getKeySpaceSize())
+//				/ Math.log(2) + 1.5);
+
+		
+		//Create the list of KBuckets
+		for (int i = 0; i < this.numOfKBuckets; ++i) {
 			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
 			clone.kbucket.add(i, new ArrayList<GeoKadPeer>());
 		}
+		
 		clone.kademliaResources = new ArrayList<GeoKadResourceType>();
 		clone.storedResources = new ArrayList<GeoKadResourceType>();
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
 		clone.nlContactedNodes = new ArrayList<GeoKadPeer>();
 		clone.logSearch = new HashMap<Integer, Integer>();
 
+		//TODO Caricare la lista delle posizioni per il singolo nodo
+		
 		return clone;
 	}
 
@@ -110,65 +136,37 @@ public class GeoKadPeer extends Peer {
 	}
 
 	public void insertPeer(GeoKadPeer newPeer) {
+		
 		if (this.getKey() == newPeer.getKey())
 			return;
-		int distance = this.getKey() ^ newPeer.getKey();
-
-		// Get the k-bucket index for current distance (log2 distance)
-		int index = (int) (Math.log(distance) / Math.log(2));
-
-		if (kbucket.get(index).size() == 0) {
-			// There is no list yet!
-			// kbucket.setElementAt(new LinkedList<KademliaPeer>(), index);
-			kbucket.setElementAt(new ArrayList<GeoKadPeer>(), index);
-			// Insert the new Peer in the correct kbucket
-			kbucket.get(index).add(newPeer);
-		} else if (kbucket.get(index).size() < kBucketDim) {
-			// Insert the new Peer in the correct kbucket
-			if (kbucket.get(index).contains(newPeer)) {
-				kbucket.get(index).remove(newPeer);
-			}
-			kbucket.get(index).add(newPeer);
-		} else {
-			// Current peer pings last-recently seen peer (POP)
-			// if it doesn't respond, the new one is inserted at the tail.
-			// Otherwise the last-recently seen peer is moved at the tail and
-			// the new is ignored
-			// KademliaPeer lastRecentlySeen = kbucket.get(index).removeFirst();
-			GeoKadPeer lastRecentlySeen = kbucket.get(index).remove(0);
-
-			if (this.ping(lastRecentlySeen)) {
-				// kbucket.get(index).addLast(lastRecentlySeen);
-				kbucket.get(index).add(lastRecentlySeen);
-			} else {
-				// kbucket.get(index).addLast(newPeer);
-				kbucket.get(index).add(newPeer);
-			}
-			lastRecentlySeen = null;
-		}
-
-		// After a new node is inserted in the kbucket
-		// the node checks if it is closer to any stored resources
-		// than the node itself. If it is, it stores <key,value> couples in the
-		// closer node
-		int dist, newdist;
-		for (GeoKadResourceType r : storedResources) {
-			dist = this.getKey() ^ r.getResourceKey();
-			newdist = newPeer.getKey() ^ r.getResourceKey();
-			if (newdist < dist) {
-				newPeer.store(r);
+		
+		//int distance = this.getKey() ^ newPeer.getKey();
+		double distance = GeoKadDistance.distance(this, newPeer);
+		
+		boolean bucketFounded = false;
+		
+		//For each KBucket without the last one that is for all peers out of previous circumferences 
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+			if(distance <= (numOfKBuckets-1)*rayDistance)
+			{
+				//Add the peer in the right bucket
+				this.kbucket.get(i).add(newPeer);
+				
+				bucketFounded = true;
+				
+				break;
 			}
 		}
-
-		// the node checks if it is close to any Resource
-		for (GeoKadResourceType r : kademliaResources) {
-			dist = this.getKey() ^ r.getResourceKey();
-			newdist = newPeer.getKey() ^ r.getResourceKey();
-			if (newdist < dist) {
-				newPeer.store(r);
-			}
+		
+		//If the peer's distance is very high it will be added in the last available KBucket
+		if(bucketFounded == false)
+		{
+			//Add new Peer in the last Bucket
+			kbucket.get(numOfKBuckets-1).add(newPeer);
 		}
-
+		
 	}
 
 	public boolean ping(GeoKadPeer peer) {
@@ -197,7 +195,7 @@ public class GeoKadPeer extends Peer {
 
 		boolean flag = false;
 		int a = 1;
-		while (tempResults.size() < kBucketDim) {
+		while (tempResults.size() < numOfKBuckets) {
 			flag = false;
 			try {
 				it = kbucket.get(index + a).iterator();
@@ -207,7 +205,7 @@ public class GeoKadPeer extends Peer {
 				flag = true;
 			}
 
-			if (tempResults.size() >= kBucketDim)
+			if (tempResults.size() >= numOfKBuckets)
 				break;
 
 			try {
@@ -220,8 +218,8 @@ public class GeoKadPeer extends Peer {
 			}
 			a++;
 		}
-		if (tempResults.size() > kBucketDim) {
-			tempResults.subList(kBucketDim, tempResults.size()).clear();
+		if (tempResults.size() > numOfKBuckets) {
+			tempResults.subList(numOfKBuckets, tempResults.size()).clear();
 		}
 
 		return tempResults;
@@ -248,7 +246,7 @@ public class GeoKadPeer extends Peer {
 	}
 
 	public int getKBucketDim() {
-		return kBucketDim;
+		return numOfKBuckets;
 	}
 
 	public void setDiscoveryMaxWait(float discoveryMaxWait) {
@@ -277,10 +275,34 @@ public class GeoKadPeer extends Peer {
 			kbucket.setElementAt(new ArrayList<GeoKadPeer>(), index);
 			// Insert the new Peer in the correct kbucket
 			kbucket.get(index).add(newPeer);
-		} else if (kbucket.get(index).size() < kBucketDim) {
+		} else if (kbucket.get(index).size() < numOfKBuckets) {
 			// Insert the new Peer in the correct kbucket
 			kbucket.get(index).add(newPeer);
 		}
 
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getRayDistance() {
+		return rayDistance;
+	}
+
+	public void setRayDistance(double rayDistance) {
+		this.rayDistance = rayDistance;
 	}
 }
