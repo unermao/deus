@@ -40,10 +40,11 @@
 	<aut:node id="geokadPeer" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="kBucketDim" value="20" />
+			<aut:param name="numOfKBuckets" value="10" />
 			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
 			<aut:param name="discoveryMaxWait" value="300.0" />
+			<aut:param name="rayDistance" value="1.5" />
 		</aut:params>
 	</aut:node>
 
