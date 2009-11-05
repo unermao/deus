@@ -11,11 +11,12 @@ import java.util.TreeSet;
  * 
  */
 public class SearchResultType {
+	
 	private TreeSet<GeoKadPeer> foundNodes = null;
 	private boolean valueFound = false;
 
 	public SearchResultType(int key) {
-		foundNodes = new TreeSet<GeoKadPeer>(new XorDistanceComparator(key));
+		foundNodes = new TreeSet<GeoKadPeer>(new GeoKadDistanceComparator(key));
 	}
 
 	public void add(GeoKadPeer peer) {
