@@ -1,6 +1,6 @@
 package it.unipr.ce.dsg.deus.editor;
 
-import it.unipr.ce.dsg.deus.gui.MenuPanelRight;
+import it.unipr.ce.dsg.deus.editor.MenuPanelRight;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -189,7 +189,7 @@ public class MainGUI {
 	 private void designPanelControl(){
 	    	
 	 
-	        //*** Menù ***  
+	        //*** Menu ***  
 		
 	        JMenuBar menuBar = new JMenuBar();
 	       
@@ -490,7 +490,6 @@ public class MainGUI {
         
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         //Build the graph
-        @SuppressWarnings("unused")
 		final MainGUI sgv = new MainGUI();
         
         frame.pack();

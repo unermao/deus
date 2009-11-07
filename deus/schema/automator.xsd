@@ -19,6 +19,7 @@
 		<attribute name="handler" type="string" use="required"></attribute>
 		<attribute name="schedulerListener" type="string" use="optional"></attribute>
 		<attribute name="oneShot" type="boolean" use="optional"></attribute>
+		<attribute name="distributionLevel" type="string" use="optional"></attribute>
 	</complexType>
 
 	<complexType name="node">
@@ -70,6 +71,16 @@
 		<attribute name="id" type="string" use="required"></attribute>
 		<attribute name="handler" type="string" use="required"></attribute>
 	</complexType>
+	
+	<complexType name="network">
+		<sequence>
+			<element name="nodes" type="tns:references" minOccurs="1"
+				maxOccurs="1">
+			</element>
+		</sequence>
+		<attribute name="id" type="string" use="required"></attribute>
+		<attribute name="handler" type="string" use="required"></attribute>
+	</complexType>
 
 	<complexType name="engine">
 		<sequence>
@@ -115,6 +126,7 @@
 
 	<complexType name="reference">
 		<attribute name="id" type="string" use="required"></attribute>
+		<attribute name="number" type="int"></attribute>
 	</complexType>
 
 	<complexType name="logger">
@@ -146,6 +158,9 @@
 			</element>
 			<element name="process" type="tns:process" minOccurs="0"
 				maxOccurs="unbounded">
+			</element>
+			<element name="network" type="tns:network" minOccurs="0"
+				maxOccurs="1">
 			</element>
 			<element name="engine" type="tns:engine" minOccurs="1"
 				maxOccurs="1">
