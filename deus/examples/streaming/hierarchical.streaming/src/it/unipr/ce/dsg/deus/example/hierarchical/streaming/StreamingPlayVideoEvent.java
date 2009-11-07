@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
