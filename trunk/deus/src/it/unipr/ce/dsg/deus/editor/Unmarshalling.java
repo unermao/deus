@@ -90,8 +90,7 @@ InvocationTargetException, NoSuchMethodException, SAXException{
 	
 	//*******Automator
 	
-	Automator automator = (Automator) ((JAXBElement) unmarshaller
-			.unmarshal(file)).getValue();
+	Automator automator = (Automator) ((JAXBElement) unmarshaller.unmarshal(file)).getValue();
 	
 	
 	Graph<DeusVertex, DeusEdge> graph = visView.getGraphLayout().getGraph();
