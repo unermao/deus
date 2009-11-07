@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

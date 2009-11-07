@@ -1,5 +1,4 @@
-
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import java.awt.event.ActionEvent;

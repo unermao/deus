@@ -1,5 +1,4 @@
-package it.unipr.ce.dsg.deus.gui;
-
+package it.unipr.ce.dsg.deus.editor;
 
 import it.unipr.ce.dsg.deus.gui.MenuPanelRight;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;

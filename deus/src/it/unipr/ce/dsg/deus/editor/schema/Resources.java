@@ -6,7 +6,7 @@
 //
 
 
-package it.unipr.ce.dsg.deus.schema;
+package it.unipr.ce.dsg.deus.editor.schema;
 
 import java.util.ArrayList;
 import java.util.List;
