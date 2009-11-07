@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -96,7 +96,7 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 		
 		//Aggiungo alle statistiche relative ai chunk mancanti quelle memorizzate nel server dai nodi disconnessi
 		
-		//TODO: andare a vedere questo che nn mi ricordo se è stato messo a posto o no
+		//TODO: andare a vedere questo che nn mi ricordo se ï¿½ stato messo a posto o no
 		totalMissingChunk = totalMissingChunk + serverPeer.getMissingChunkNumber();
 		totalArrivedChunk = totalArrivedChunk + serverPeer.getTotalChunkReceived();
 		
@@ -175,13 +175,13 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 			
 			StreamingPeer peer = (StreamingPeer) Engine.getDefault().getNodes().get(index);
 			
-			//Memorizzo la sua capacitˆ in Upload
+			//Memorizzo la sua capacitï¿½ in Upload
 			uploadSpeedCapacity += peer.getUploadSpeed();
 			
-			//Se il nodo è un fornitore
+			//Se il nodo ï¿½ un fornitore
 			if(peer.getServedPeers().size() > 0)
 			{	
-				//Disponibilitˆ in Upload media totale
+				//Disponibilitï¿½ in Upload media totale
 				if(peer.getActiveConnection() > 0 )
 					uploadSpeedAverage += (double)peer.getUploadSpeed() / (double)peer.getActiveConnection();
 				else
@@ -237,7 +237,7 @@ public class LogStreamingPeerConnectionStatsEvent extends Event {
 				
 			//CALCOLO TEMPO MEDIO DI ARRIVO CHUNK
 			
-	//TODO: questa sezione è da mettere a posto!!!!		
+	//TODO: questa sezione ï¿½ da mettere a posto!!!!		
 			
 			//Aggiungo il numero di chunk ricevuti dal singolo nodo
 			totalReceivedLayer = totalReceivedLayer + peer.getArrivalTimes().size();

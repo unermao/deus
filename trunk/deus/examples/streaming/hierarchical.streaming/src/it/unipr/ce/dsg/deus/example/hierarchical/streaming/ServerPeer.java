@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -183,7 +183,7 @@ public class ServerPeer extends Peer {
 	
 	public void sendChunkLayer(StreamingPeer clientNode,ChunkLayer newResource, float triggeringTime){
 		
-		//Verifico se devo degradare la velocità di download del nodo client in base alle sue connessioni in ingresso attive
+		//Verifico se devo degradare la velocitï¿½ di download del nodo client in base alle sue connessioni in ingresso attive
 		double clientDownloadSpeed = 0.0;
 		if( clientNode.getDownloadActiveConnection() > 0 )
 			clientDownloadSpeed = clientNode.getDownloadSpeed() / (double)clientNode.getDownloadActiveConnection();

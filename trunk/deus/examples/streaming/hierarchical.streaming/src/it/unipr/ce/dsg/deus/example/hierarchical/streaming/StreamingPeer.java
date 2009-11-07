@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -308,7 +308,7 @@ public class StreamingPeer extends Peer {
 
 			}  //end for dei livelli
 			
-		} //end if che controlla se qualche nodo è stato rimosso dalla lista dei vicini
+		} //end if che controlla se qualche nodo ï¿½ stato rimosso dalla lista dei vicini
 		
 		//Riordino la lista dei vicini in base alla loro fitness  
 		if( this.isFitnessSort() )
@@ -408,8 +408,8 @@ public class StreamingPeer extends Peer {
 			//Faccio ripulire al nodo che stavo servendo la lista dei dati richiesti in modo che puo' richiederli ad altri
 			this.servedPeers.get(i).getPeer().getNeededLayer().clear();
 			
-			//Se il mio fornitore è attivo assegno il mio fornitore al nodo che prima stavo servendo io
-			//tengo in più in conto del livello a cui lo stavo fornendo						
+			//Se il mio fornitore ï¿½ attivo assegno il mio fornitore al nodo che prima stavo servendo io
+			//tengo in piï¿½ in conto del livello a cui lo stavo fornendo						
 			if( this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()) != null && this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()).isConnected() 
 					&& ( this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()).getMaxAcceptedConnection() - this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()).getActiveConnection() ) > 0){	
 				
@@ -534,7 +534,7 @@ public class StreamingPeer extends Peer {
 		
 		//Batteria[0,100]% , UploadSpeed [0,1000]Kbit/sec , Online Time[0,24]h, Connessioni Attive[0,100]% 
 		
-		//Determino la velocitˆ di upload in base alle connessioni attive 
+		//Determino la velocitï¿½ di upload in base alle connessioni attive 
 		double speedValue = 0.0;
 		
 		if(this.activeConnection > 0)
@@ -565,7 +565,7 @@ public class StreamingPeer extends Peer {
 			this.uploadSpeed = uploadSpeed;
 			this.numberOfLayer = NumberOfLayer;
 			this.setNumberOfLayer(NumberOfLayer);
-			//Se il protocollo che valuta la fitness è attivo allora devo aggiornarla
+			//Se il protocollo che valuta la fitness ï¿½ attivo allora devo aggiornarla
 			//if(this.isFitnessSort())
 			//{
 				
@@ -602,8 +602,8 @@ public class StreamingPeer extends Peer {
 					//Faccio ripulire al nodo che stavo servendo la lista dei dati richiesti in modo che puo' richiederli ad altri
 					this.servedPeers.get(i).getPeer().getNeededLayer().clear();
 					
-					//Se il mio fornitore è attivo assegno il mio fornitore al nodo che prima stavo servendo io
-					//tengo in più in conto del livello a cui lo stavo fornendo
+					//Se il mio fornitore ï¿½ attivo assegno il mio fornitore al nodo che prima stavo servendo io
+					//tengo in piï¿½ in conto del livello a cui lo stavo fornendo
 					
 	
 					if( this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()) != null && this.sourceStreamingNode.get(this.servedPeers.get(i).getLayer()).isConnected() 
@@ -696,7 +696,7 @@ public class StreamingPeer extends Peer {
 			if (this.isFitnessSort())
 				this.updateFitnessValue();
 			
-			//Dovrò andare ad aumentare il numero di vicini (dato che ho aumentato il livello)
+			//Dovrï¿½ andare ad aumentare il numero di vicini (dato che ho aumentato il livello)
 			//inoltre cerco un fornitore per il nuovo/nuovi livelli
 			
 			//for (int layer = oldNumberOfLayer+1; layer<=this.numberOfLayer;layer++)
@@ -719,7 +719,7 @@ public class StreamingPeer extends Peer {
 		this.arrivalTimes.add(arrivalValue);
 		
 		//Controllo se si e' verificata un eventuale deadline (ricezione fuori ordine)
-		//non lo posso più fare in questa maniera ma devo vedere quando effettivamente ricevo il chunk
+		//non lo posso piï¿½ fare in questa maniera ma devo vedere quando effettivamente ricevo il chunk
 		/*if( newVideoRes.getChunkIndex() < this.indexOfLastReceivedChunk )
 			this.deadlineNumber++;*/
 		
@@ -729,14 +729,14 @@ public class StreamingPeer extends Peer {
 			//Incremento il numero totale di chunk ricevuti
 			this.totalLayerReceived ++;
 		
-			//l'add nn posso più farlo diretto ma devo usare una funzione che se esiste già il chunk di quel livello lo
-			//aggiunge sennò crea il nuovo chunk
+			//l'add nn posso piï¿½ farlo diretto ma devo usare una funzione che se esiste giï¿½ il chunk di quel livello lo
+			//aggiunge sennï¿½ crea il nuovo chunk
 			addNewLayer(newVideoRes);
 			
 			this.sortVideoBuffer();
 		}
 		else{
-			//ora nn ha più senso mantenere il numero di chunk duplicati perchè sarà quasi impossibile!
+			//ora nn ha piï¿½ senso mantenere il numero di chunk duplicati perchï¿½ sarï¿½ quasi impossibile!
 			this.duplicateLayerNumber ++; //Incremento il numero di duplicati
 		}
 	}
@@ -817,7 +817,7 @@ public class StreamingPeer extends Peer {
 //					for(int j = 0 ; j < 5 ; j ++)
 //						this.videoResource.remove(0);
 //				
-//					//Incremento il numero di deadline in quanto non posso riprodurre questi segmenti per mancanza di continuitˆ
+//					//Incremento il numero di deadline in quanto non posso riprodurre questi segmenti per mancanza di continuitï¿½
 //					this.deadlineNumber += 5;
 //					
 //					break;
@@ -957,12 +957,12 @@ public class StreamingPeer extends Peer {
 		  
 		}
 	
-	//Perciò dovrò aver un fornitore per livello!
+	//Perciï¿½ dovrï¿½ aver un fornitore per livello!
 	public void findFirstProviderNode(float triggeringTime){
 		
 		for (int layer = 0; layer < this.getNumberOfLayer(); layer++) {
 		
-		//Devo cercare un fornitore per il filmato soltanto se nn ho già un un nodo come fornitore e non mi sto rifornendo dal server centrale
+		//Devo cercare un fornitore per il filmato soltanto se nn ho giï¿½ un un nodo come fornitore e non mi sto rifornendo dal server centrale
 		if( this.getSourceStreamingNode().get(layer) == null && this.getServerNode().get(layer) == null )
 		{
 			
@@ -976,7 +976,7 @@ public class StreamingPeer extends Peer {
 				
 				StreamingPeer appSourceStreamingNode = (StreamingPeer) this.getNeighbors().get(i);
 				
-				//Mi collego solo, se ha un fornitore se ha le risorse video e se ha la possibilità di accettare le connessioni e se non è tra la lista di quelli che sto fornendo
+				//Mi collego solo, se ha un fornitore se ha le risorse video e se ha la possibilitï¿½ di accettare le connessioni e se non ï¿½ tra la lista di quelli che sto fornendo
 				
 				if( (appSourceStreamingNode.getServerNode().get(layer) != null || appSourceStreamingNode.getSourceStreamingNode().get(layer) != null)						
 						&& ((appSourceStreamingNode.getVideoResource().size() > 0) && (hasLayer(appSourceStreamingNode.getVideoResource(),layer)))  
@@ -1000,7 +1000,7 @@ public class StreamingPeer extends Peer {
 					
 					//Chiamiamo la funzione per avere segmenti mancanti
 					
-					//ci sarà da tener conto anche dei layer ora!, ho perciò aggiunto il layer
+					//ci sarï¿½ da tener conto anche dei layer ora!, ho perciï¿½ aggiunto il layer
 					//
 					this.getBufferNeighbor(appSourceStreamingNode,triggeringTime,layer);
 					
@@ -1009,7 +1009,7 @@ public class StreamingPeer extends Peer {
 				
 			}
 			
-			//Se non trovo nessun nodo da cui fornirmi, e non sono già connesso al nodo centrale mi collego al server centrale
+			//Se non trovo nessun nodo da cui fornirmi, e non sono giï¿½ connesso al nodo centrale mi collego al server centrale
 			if( this.getSourceStreamingNode().get(layer) == null && this.getServerNode().get(layer) == null )
 			{
 					
@@ -1048,7 +1048,7 @@ public class StreamingPeer extends Peer {
 	
 	public boolean findProviderNodeFromLastSegment(float triggeringTime, int layer) {
 		
-		//Devo cercare un fornitore per il filmato soltanto se nn ho già un un nodo come fornitore e non mi sto rifornendo dal server centrale
+		//Devo cercare un fornitore per il filmato soltanto se nn ho giï¿½ un un nodo come fornitore e non mi sto rifornendo dal server centrale
 		if( this.getSourceStreamingNode().get(layer) == null && this.getServerNode().get(layer) == null )
 		{
 			//Riordino la lista dei vicini in base alla loro fitness  
@@ -1208,11 +1208,11 @@ public class StreamingPeer extends Peer {
 			  //Sto decidendo quale richiedere..	 
 			  
 			  //if(!this.getVideoResource().contains(source.getVideoResource().get(index)))
-			  //cerco se il livello layer del cunk index è già presente
+			  //cerco se il livello layer del cunk index ï¿½ giï¿½ presente
 			  if (!isLayerReceived(this.getVideoResource(),index,layer))
 				 
 			  {
-				  //se nn l'ho già richiesto
+				  //se nn l'ho giï¿½ richiesto
 				  //if( !this.neededChunk.contains(source.getVideoResource().get(index).getChunkIndex()) )
 				  if (!isLayerNeeded(index,layer))
 				  {
@@ -1494,7 +1494,7 @@ public class StreamingPeer extends Peer {
 				
 				//vado a richiedere i layer mancanti dei chunk ricevuti
 				for (int i = 0; i<this.getNumberOfLayer();i++){
-					//se nn l'ho già ricevuto e nn l'ho già richiesto allora lo richiedo
+					//se nn l'ho giï¿½ ricevuto e nn l'ho giï¿½ richiesto allora lo richiedo
 					if ( !this.getVideoResource().get(index).isLayerPresent(i) && !isLayerNeeded(this.getVideoResource().get(index).getChunkIndex(),i)){
 						this.neededLayer.add(new ChunkLayer(i,this.getVideoResource().get(index).getChunkIndex()));
 						missingLayer.add(new ChunkLayer(i,this.getVideoResource().get(index).getChunkIndex()));
@@ -1532,7 +1532,7 @@ public class StreamingPeer extends Peer {
 	}
 	
 
-	//Controlla, data una lista di videoChunk se almeno in un chunk è presente il layer desiderato
+	//Controlla, data una lista di videoChunk se almeno in un chunk ï¿½ presente il layer desiderato
 	public boolean hasLayer(ArrayList<VideoChunk> list,int layer){
 		for (Iterator<VideoChunk> i = list.iterator(); i.hasNext();){
 			VideoChunk c = (VideoChunk) i.next();
@@ -1542,7 +1542,7 @@ public class StreamingPeer extends Peer {
 		return false;
 	}
 	
-	//Controlla, data una lista e l'indice del videoChunk se è presente un determinato layer
+	//Controlla, data una lista e l'indice del videoChunk se ï¿½ presente un determinato layer
 	public boolean isLayerReceived(ArrayList<VideoChunk> list,int chunkIndex,int layer){
 		for (Iterator<VideoChunk> i = list.iterator(); i.hasNext();){
 			VideoChunk c = (VideoChunk) i.next();
@@ -1552,7 +1552,7 @@ public class StreamingPeer extends Peer {
 		return false;
 	}
 	
-	//Controlla se un layer di uno specifico  chunk è già stato richiesto
+	//Controlla se un layer di uno specifico  chunk ï¿½ giï¿½ stato richiesto
 	public boolean isLayerNeeded(int chunkIndex,int layer){
 		for (Iterator<ChunkLayer> i = this.neededLayer.iterator(); i.hasNext();){
 			ChunkLayer l = (ChunkLayer) i.next();
@@ -1571,7 +1571,7 @@ public class StreamingPeer extends Peer {
 			if (c.getChunkIndex() == layer.getChunkIndex()) {
 				c.getLayers().add(layer);
 				found = true;
-				//se è il layer base allora considero il chunk come ricevuto
+				//se ï¿½ il layer base allora considero il chunk come ricevuto
 				if (layer.getLayerIndex()==0){
 					  this.totalChunkReceived++;
 					//Controllo se si e' verificata un eventuale deadline (ricezione fuori ordine dei chunk)
@@ -1589,7 +1589,7 @@ public class StreamingPeer extends Peer {
 			c.setSourceNode(layer.getSourceNode());
 			c.insertLayer(layer);
 			this.videoResource.add(c);
-			//se è il layer base allora considero il chunk come ricevuto
+			//se ï¿½ il layer base allora considero il chunk come ricevuto
 			if (layer.getLayerIndex()==0)
 			  this.totalChunkReceived++;
 			

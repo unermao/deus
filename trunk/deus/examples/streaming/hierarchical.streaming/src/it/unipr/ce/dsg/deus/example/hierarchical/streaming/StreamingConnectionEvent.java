@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
@@ -53,7 +53,7 @@ public class StreamingConnectionEvent extends NodeEvent {
 			getLogger().fine("Livello: "+ layer);
 			ArrayList<Node> layerNode = this.GetLayerNode(Engine.getDefault().getNodes(), layer);
 			
-		//Se il numero di peer presenti nel sistema (per il mio livello) è maggiore alla dimensione max della lista vicini per il livello 
+		//Se il numero di peer presenti nel sistema (per il mio livello) ï¿½ maggiore alla dimensione max della lista vicini per il livello 
 		if( (layerNode.size() - 1 - associatedStreamingNode.getNeighbors().size()) > associatedStreamingNode.getMaxPartnersNumber())
 		{	
 			
@@ -70,7 +70,7 @@ public class StreamingConnectionEvent extends NodeEvent {
 			while( cont < associatedStreamingNode.getMaxPartnersNumber() )
 			{
 
-				//Se è connesso, e nn ce l'ho già e nn sono io allora lo aggiungo alla lista dei vicini
+				//Se ï¿½ connesso, e nn ce l'ho giï¿½ e nn sono io allora lo aggiungo alla lista dei vicini
 				if(		peer.isConnected() 
 						&& !associatedStreamingNode.getNeighbors().contains((Peer)peer) 
 						&& !associatedStreamingNode.equals(Engine.getDefault().getNodes().get(index))
@@ -89,7 +89,7 @@ public class StreamingConnectionEvent extends NodeEvent {
 		}
 		else 
 		//Se i peer presenti per il livello sono meno del massimo consentito li inserisco tutti come vicini
-		//0 è il server	
+		//0 ï¿½ il server	
 		{
 			
 			for(int i = 0; i<layerNode.size(); i++)

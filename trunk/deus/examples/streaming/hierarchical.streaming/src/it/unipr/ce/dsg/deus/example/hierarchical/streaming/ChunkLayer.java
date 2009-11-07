@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.example.HierarchicalStreaming;
+package it.unipr.ce.dsg.deus.example.hierarchical.streaming;
 
 import it.unipr.ce.dsg.deus.core.Node;
 
@@ -7,7 +7,7 @@ public class ChunkLayer {
 	private int layerIndex;
 	private double layerSize;
 	
-	//TODO: Guardare se servirà
+	//TODO: Guardare se servirï¿½
 	private int chunkIndex;
 	
 	
