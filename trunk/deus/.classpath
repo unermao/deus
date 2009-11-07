@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="examples/streaming/hierarchical.streaming/src"/>
 	<classpathentry kind="src" path="examples/ontochord/src"/>
 	<classpathentry kind="src" path="examples/nsam/src"/>
 	<classpathentry kind="src" path="examples/kademlia/src"/>
