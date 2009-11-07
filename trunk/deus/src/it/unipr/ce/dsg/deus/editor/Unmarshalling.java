@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import it.unipr.ce.dsg.deus.schema.Automator;
 import it.unipr.ce.dsg.deus.schema.Engine;

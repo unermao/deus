@@ -1,5 +1,4 @@
- 
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import javax.swing.*;
 import javax.swing.SpringLayout;

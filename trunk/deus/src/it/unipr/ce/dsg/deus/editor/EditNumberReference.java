@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

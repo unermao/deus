@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.gui;
+package it.unipr.ce.dsg.deus.editor;
 
 import java.util.ArrayList;
 import java.util.Collection;

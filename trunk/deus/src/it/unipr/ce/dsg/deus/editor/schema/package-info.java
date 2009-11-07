@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://dsg.ce.unipr.it/software/deus/schema/automator", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package it.unipr.ce.dsg.deus.schema;
+package it.unipr.ce.dsg.deus.editor.schema;
