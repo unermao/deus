@@ -129,6 +129,19 @@ Finally, you have to declare which processes to run:
 Note: the engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
 
 
+= DEUS Visual Editor =
+
+Finally we have a visual editor that avoids to write the XML files manually, for configuring simulations.
+
+To run the visual tool, supposing you have imported deus in Eclipse, create a "Run configuration" with the following features:
+
+Project: deus
+
+Main Class: it.unipr.ce.dsg.deus.editor.MainGUI
+
+The user manual of the Visual Editor will be published in the "Downloads" section of this site. 
+
+
 = Timestamps of events =
 
 TODO
