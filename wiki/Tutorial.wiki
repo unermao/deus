@@ -144,7 +144,24 @@ The user manual of the Visual Editor will be published in the "Downloads" sectio
 
 = Timestamps of events =
 
-TODO
+In the Event class, the scheduleReferencedEvents method creates and insert in the queue the events that are referred from the event scheduled by the Engine (example: BirthEvent references DiscoveryEvent).
+
+If event X references events A, B and C, their triggering times are respectively:
+
+* tA = tX + tGivenByProcessAssociatedToA
+* tB = tX + tGivenByProcessAssociatedToB
+* tC = tX + tGivenByProcessAssociatedToC
+
+BE CAREFUL!
+
+If you want that tA < tB <tC you need to create a reference chain:
+
+* A references B
+* B references C
+
+for which C always comes after B, which always come after A.
+
+Rememeber to implement all necessary scheduler listeners!!!
 
 
 = Seeds =
