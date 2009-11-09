@@ -149,7 +149,9 @@ In the Event class, the scheduleReferencedEvents method creates and insert in th
 If event X references events A, B and C, their triggering times are respectively:
 
 * tA = tX + tGivenByProcessAssociatedToA
+
 * tB = tX + tGivenByProcessAssociatedToB
+
 * tC = tX + tGivenByProcessAssociatedToC
 
 BE CAREFUL!
@@ -157,6 +159,7 @@ BE CAREFUL!
 If you want that tA < tB <tC you need to create a reference chain:
 
 * A references B
+
 * B references C
 
 for which C always comes after B, which always come after A.
