@@ -62,7 +62,6 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 	  return (rad * 180.0 / Math.PI);
 	}
 
-	@Override
 	public int compare(GeoKadPeer o1, GeoKadPeer o2) {
 		// TODO Auto-generated method stub
 		return 0;

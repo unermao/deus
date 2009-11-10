@@ -135,6 +135,11 @@ public class GeoKadPeer extends Peer {
 		this.setConnected(false);
 	}
 
+	/**
+	 * Add newPeer in the right K-Bucket
+	 * 
+	 * @param newPeer
+	 */
 	public void insertPeer(GeoKadPeer newPeer) {
 		
 		if (this.getKey() == newPeer.getKey())
@@ -262,6 +267,9 @@ public class GeoKadPeer extends Peer {
 	}
 
 	public void rawInsertPeer(GeoKadPeer newPeer) {
+		
+		//TODO Change according to the new structure of GeoKad
+		
 		if (this.getKey() == newPeer.getKey())
 			return;
 		int distance = this.getKey() ^ newPeer.getKey();
