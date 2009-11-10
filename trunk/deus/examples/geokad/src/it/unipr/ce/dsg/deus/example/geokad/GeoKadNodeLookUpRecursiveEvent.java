@@ -14,7 +14,6 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	private float discoveryMaxWait = 500;
 
 	private boolean findNodeK = false;
-	private int resourceKey = 0;
 
 	public GeoKadNodeLookUpRecursiveEvent(String id, Properties params,
 			Process parentProcess, GeoKadPeer closerElem, float maxWait)
@@ -37,14 +36,14 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		clone.discoveryMaxWait = this.discoveryMaxWait;
 		clone.findNodeK = false;
 		clone.closerElement = null;
-		clone.resourceKey = 0;
+	//	clone.resourceKey = 0;
 
 		return clone;
 	}
 
-	public int getResourceKey() {
-		return resourceKey;
-	}
+//	public int getResourceKey() {
+//		return resourceKey;
+//	}
 
 	private void initialize() {
 	}
@@ -54,32 +53,37 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	}
 
 	public void run() throws RunException {
+		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
-		if (resourceKey == 0) {
-			throw new RunException("The resourceKey should really be set in "
-					+ this);
-		}
+//		if (resourceKey == 0) {
+//			throw new RunException("The resourceKey should really be set in "
+//					+ this);
+//		}
+
 		GeoKadPeer first = null;
 
-		if (currNode.nlResults.get(resourceKey).size() != 0) {
-			first = currNode.nlResults.get(resourceKey).getFoundNodes().first();
+		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
+			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
 		}
 
 		if (closerElement == first) {
 			if (this.isFindNodeK()) { 
 				// no new result even from the first k nodes
-				Object[] foundNodes = currNode.nlResults.get(resourceKey)
+				Object[] foundNodes = currNode.nlResults.get(currNode.getKey())
 						.getFoundNodes().toArray();
-				for (int j = 0; j < currNode.nlResults.get(resourceKey).size()
+				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size()
 						&& j < currNode.getKBucketDim(); j++) {
 					currNode.insertPeer((GeoKadPeer) foundNodes[j]);
 					if (res != null )
 						((GeoKadPeer) foundNodes[j]).store(res);
 				}
 
-				currNode.nlResults.get(resourceKey).getFoundNodes().clear();
+				currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
 				currNode.nlContactedNodes.clear();
+				
+				//System.out.println("################### CLOSING LOOKUP Recursive !!!!");
+				
 				return;
 			}
 			// No closer elements found! find_node-ing k not-already-contacted
@@ -102,7 +106,6 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 			nlk.setDiscoveryMaxWait(discoveryMaxWait);
 			nlk.setOneShot(true);
 			nlk.setAssociatedNode(currNode);
-			nlk.setResourceKey(resourceKey);
 			nlk.setFindNodeK(this.findNodeK);
 			nlk.setRes(res);
 			Engine.getDefault().insertIntoEventsList(nlk);
@@ -115,9 +118,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		GeoKadFindNodeEvent fn = null;
 		int i = 0;
 		int contactedNodes = 0;
-		Object[] node = currNode.nlResults.get(resourceKey).getFoundNodes()
+		Object[] node = currNode.nlResults.get(currNode.getKey()).getFoundNodes()
 				.toArray();
-		for (i = 0; i < currNode.nlResults.get(resourceKey).size()
+		for (i = 0; i < currNode.nlResults.get(currNode.getKey()).size()
 				&& contactedNodes <= numElements; i++) {
 			if (!currNode.nlContactedNodes.contains(node[i])) {
 				try {
@@ -131,7 +134,6 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 					fn.setRequestingNode(currNode);
 					fn.setOneShot(true);
 					fn.setAssociatedNode((GeoKadPeer) node[i]);
-					fn.setResourceKey(resourceKey);
 					Engine.getDefault().insertIntoEventsList(fn);
 					currNode.nlContactedNodes.add((GeoKadPeer) node[i]);
 					contactedNodes++;
@@ -146,9 +148,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		this.findNodeK = findNodeK;
 	}
 
-	public void setResourceKey(int resourceKey) {
-		this.resourceKey = resourceKey;
-	}
+//	public void setResourceKey(int resourceKey) {
+//		this.resourceKey = resourceKey;
+//	}
 
 	public GeoKadPeer getCloserElement() {
 		return closerElement;

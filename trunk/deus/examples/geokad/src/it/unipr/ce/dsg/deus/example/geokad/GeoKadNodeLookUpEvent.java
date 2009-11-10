@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class GeoKadNodeLookUpEvent extends NodeEvent {
 
-	private int resourceKey = 0;
+	//private int resourceKey = 0;
 	private GeoKadResourceType res = null;
 
 	public GeoKadNodeLookUpEvent(String id, Properties params,
@@ -22,7 +22,7 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 
 	public Object clone() {
 		GeoKadNodeLookUpEvent clone = (GeoKadNodeLookUpEvent) super.clone();
-		clone.resourceKey = 0;
+	//	clone.resourceKey = 0;
 		return clone;
 	}
 
@@ -32,14 +32,17 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		return myRandom;
 	}
 
-	public int getResourceKey() {
-		return resourceKey;
-	}
+//	public int getResourceKey() {
+//		return resourceKey;
+//	}
 
 	private void initialize() {
 	}
 
 	public void run() throws RunException {
+		
+		//System.out.println("NODE LOOK-UP EVENT");
+		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
 		if (currNode == null) {
@@ -53,18 +56,17 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 
-		if (resourceKey == 0) {
-			Random random = new Random();
-			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
-		}
+//		if (resourceKey == 0) {
+//			Random random = new Random();
+//			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
+//		}
 
-		currNode.nlResults.put(resourceKey, new SearchResultType(resourceKey));
-		currNode.nlResults.get(resourceKey).addAll(
-				currNode.find_node(resourceKey));
+		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNode));
+		currNode.nlResults.get(currNode.getKey()).addAll(currNode.find_node(currNode));
 
 		GeoKadPeer first = null;
-		if (currNode.nlResults.get(resourceKey).size() != 0) {
-			first = currNode.nlResults.get(resourceKey).getFoundNodes().first();
+		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
+			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
 		}
 
 		try {
@@ -76,7 +78,6 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			nlk.setDiscoveryMaxWait(discoveryMaxWait);
 			nlk.setOneShot(true);
 			nlk.setAssociatedNode(currNode);
-			nlk.setResourceKey(resourceKey);
 			nlk.setFindNodeK(false);
 			nlk.setRes(res);
 			Engine.getDefault().insertIntoEventsList(nlk);
@@ -84,24 +85,23 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		
 		GeoKadFindNodeEvent fn = null;
-		for (int i = 0; currNode.nlResults.get(resourceKey).size() > i
+		for (int i = 0; currNode.nlResults.get(currNode.getKey()).size() > i
 				&& i < currNode.getAlpha(); i++) {
 			try {
 				float delay = expRandom((float) 300.0);
 				if (delay > discoveryMaxWait)
 					continue;
-				GeoKadPeer p = (GeoKadPeer) currNode.nlResults.get(
-						resourceKey).getFoundNodes().toArray()[i];
+				
+				GeoKadPeer p = (GeoKadPeer) currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray()[i];
 				fn = (GeoKadFindNodeEvent) new GeoKadFindNodeEvent(
 						"find_node", new Properties(), null, currNode)
-
 				.createInstance(triggeringTime + delay);
 
 				fn.setRequestingNode(currNode);
 				fn.setOneShot(true);
 				fn.setAssociatedNode(p);
-				fn.setResourceKey(resourceKey);
 				Engine.getDefault().insertIntoEventsList(fn);
 				currNode.nlContactedNodes.add(p);
 			} catch (Exception e) {
@@ -110,9 +110,10 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		}
 	}
 
-	public void setResourceKey(int resourceKey) {
-		this.resourceKey = resourceKey;
-	}
+//
+//	public void setResourceKey(int resourceKey) {
+//		this.resourceKey = resourceKey;
+//	}
 
 	public GeoKadResourceType getRes() {
 		return res;

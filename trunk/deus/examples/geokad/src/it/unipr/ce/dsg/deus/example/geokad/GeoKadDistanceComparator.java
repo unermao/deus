@@ -6,15 +6,17 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 
 	private double lat = 0.0;
 	private double lon = 0.0;
+	private GeoKadPeer peer = null;
 
 	/**
 	 * 
 	 * @param lat
 	 * @param lon
 	 */
-	public GeoKadDistanceComparator(double lat, double lon) {
-		this.lat = lat;
-		this.lon = lon;
+	public GeoKadDistanceComparator(GeoKadPeer peer) {
+		this.peer  = peer;
+		this.lat = peer.getLatitude();
+		this.lon = peer.getLongitude();
 	}
 	
 	/**
@@ -63,7 +65,19 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 	}
 
 	public int compare(GeoKadPeer o1, GeoKadPeer o2) {
-		// TODO Auto-generated method stub
+		
+		double dist1 = distance(peer, o1);
+		double dist2 = distance(peer, o2);
+		
+		if(dist1 == dist2)
+			return 0;
+		
+		if(dist1 < dist2)
+			return -1;
+	
+		if(dist1 > dist2)
+			return 1;
+		
 		return 0;
 	}
 }

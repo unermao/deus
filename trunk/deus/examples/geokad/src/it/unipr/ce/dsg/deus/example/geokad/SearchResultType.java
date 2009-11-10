@@ -15,8 +15,8 @@ public class SearchResultType {
 	private TreeSet<GeoKadPeer> foundNodes = null;
 	private boolean valueFound = false;
 
-	public SearchResultType(int key) {
-		foundNodes = new TreeSet<GeoKadPeer>(new GeoKadDistanceComparator(key));
+	public SearchResultType(GeoKadPeer peer) {
+		foundNodes = new TreeSet<GeoKadPeer>(new GeoKadDistanceComparator(peer));
 	}
 
 	public void add(GeoKadPeer peer) {
