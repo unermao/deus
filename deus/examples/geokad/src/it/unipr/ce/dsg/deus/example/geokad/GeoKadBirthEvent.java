@@ -22,6 +22,9 @@ public class GeoKadBirthEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
+		
+		//System.out.println("BIRTH ");
+		
 		if (getParentProcess() == null)
 			throw new RunException(
 					"A parent process must be set in order to run "
@@ -38,6 +41,7 @@ public class GeoKadBirthEvent extends NodeEvent {
 		Engine.getDefault().getNodes().add(app);
 		associatedNode = app;
 
+		/*
 		for (int i = 0; i < app.getResourcesNode(); i++)
 			try {
 				app.kademliaResources.add(new GeoKadResourceType(Engine
@@ -45,6 +49,7 @@ public class GeoKadBirthEvent extends NodeEvent {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			/*/
 	}
 
 }

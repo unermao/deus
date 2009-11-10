@@ -20,10 +20,13 @@ public class GeoKadJoinEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
+		
+		//System.out.println("JOIN");
+		
 		// Identify current node
 		GeoKadPeer connectingNode = (GeoKadPeer) this.getAssociatedNode();
 		GeoKadPeer destinationNode = null;
-
+		
 		if (connectingNode == null) {
 			// Find a random not-connected node
 			do {
@@ -36,9 +39,9 @@ public class GeoKadJoinEvent extends NodeEvent {
 			} while (connectingNode.isConnected());
 		}
 
-		for (int i = 0; i < connectingNode.getResourcesNode(); i++) {
-			connectingNode.kademliaResources.get(i).setOwner(connectingNode);
-		}
+//		for (int i = 0; i < connectingNode.getResourcesNode(); i++) {
+//			connectingNode.kademliaResources.get(i).setOwner(connectingNode);
+//		}
 
 		// If this is the very first node in the network
 		if (Engine.getDefault().getNodes().size() <= 1) {
@@ -58,7 +61,6 @@ public class GeoKadJoinEvent extends NodeEvent {
 		connectingNode.insertPeer(destinationNode);
 		connectingNode.setConnected(true);
 		
-
 		// Populates the connectingNode's kbuckets by searching its own key
 		try {
 			 GeoKadNodeLookUpEvent nlk = (GeoKadNodeLookUpEvent)
@@ -67,7 +69,7 @@ public class GeoKadJoinEvent extends NodeEvent {
 
 			nlk.setOneShot(true);
 			nlk.setAssociatedNode(connectingNode);
-			nlk.setResourceKey(connectingNode.getKey());
+			//nlk.setResourceKey(connectingNode.getKey());
 			Engine.getDefault().insertIntoEventsList(nlk);
 		} catch (InvalidParamsException e1) {
 			e1.printStackTrace();

@@ -11,24 +11,16 @@
 		schedulerListener="it.unipr.ce.dsg.deus.example.geokad.GeoKadBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="join" />
-		    <aut:reference id="publishAll" />
-			  <aut:reference id="publishRefresh" />
 		</aut:events>
 	</aut:event>
 
 	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadJoinEvent" oneShot="true" />
 
-	<aut:event id="publishAll" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadPublishAllEvent" oneShot="true" />
-
-	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadValueLookUpEvent" />
+	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadNodeLookUpEvent" />
 
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadDeathEvent" oneShot="true"/>
 	
 	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadDisconnectionEvent" />
-
-	<aut:event id="publishRefresh" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadPublishRefreshEvent"  />
-
-	<aut:event id="publishStoredRefresh" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadPublishStoredEvent" />
 
   <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.geokad.LogGeoKadNodesStatsEvent" />
 
@@ -66,26 +58,19 @@
 		</aut:events>
 	</aut:process>
 	
-	
-
-	
-	<aut:process id="poissonJoinPublish" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="poissonJoin" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="0" />
 		</aut:params>
-		<aut:nodes>
-			<aut:reference id="geokadPeer" />
-		</aut:nodes>
 		<aut:events>
 			<aut:reference id="join" />
-			<aut:reference id="publishAll" />
 		</aut:events>
 	</aut:process>
+		
 	
-	
-	<!--<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
-			<aut:param name="period" value="500" /> 
+			<aut:param name="period" value="100" /> 
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -93,8 +78,9 @@
 		<aut:events>
 		    <aut:reference id="discovery" />
 		</aut:events>
-	</aut:process>-->
+	</aut:process>
 
+<!-- 
 	<aut:process id="periodicDiscovery" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 	  <aut:params>
 			<aut:param name="period" value="10" />
@@ -108,33 +94,7 @@
 			<aut:reference id="discovery" />		
 		</aut:events>
 	</aut:process>
-
-	
-	<aut:process id="periodicPublishRefresh" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
-		<aut:params>
-      <aut:param name="period" value="8640" />
-			<aut:param name="startVtThreshold" value="8640" />
-			<aut:param name="stopVtThreshold" value="100000000000000000000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="geokadPeer" />
-		</aut:nodes>
-		<aut:events>
-		    <aut:reference id="publishRefresh" />
-		</aut:events>
-	</aut:process>
-	
-	<aut:process id="periodicPublishStoredRefresh" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
-			<aut:param name="period" value="3600" />  <!-- every hour -->
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="geokadPeer" />
-		</aut:nodes>
-		<aut:events>
-		    <aut:reference id="publishStoredRefresh" />
-		</aut:events>
-	</aut:process>
+ -->
 	
 	<!-- ***cosi i nodi da disconnettere sono casuali *** -->
 	
