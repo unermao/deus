@@ -29,6 +29,8 @@ public class GeoKadPeer extends Peer {
 
 	private Vector<ArrayList<GeoKadPeer>> kbucket = null;
 
+	private ArrayList<GeoKadPoint> pathCoordinates = new ArrayList<GeoKadPoint>();
+	
 	private int numOfKBuckets = 0;
 	private int resourcesNode = 0;
 	private double rayDistance = 0.0;
@@ -44,7 +46,7 @@ public class GeoKadPeer extends Peer {
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
 	public ArrayList<GeoKadPeer> nlContactedNodes = new ArrayList<GeoKadPeer>();
 
-	public static ArrayList<GeoKadPoint> pointsList = new ArrayList<GeoKadPoint>();
+	public static ArrayList<String> pathList = new ArrayList<String>();
 	
 	public GeoKadPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -101,16 +103,16 @@ public class GeoKadPeer extends Peer {
 		
 		try
 		{
-			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/1000_Lat_Lon_Points.csv"))));
+			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result.txt"))));
 			
 			String line = null;
 			line = br.readLine();
 			
 			while(line!= null)
 			{
-				//System.out.println("Linea: "+ line + " Lat: " + line.split(",")[0] + " Lon: " + line.split(",")[1] );
+				//System.out.println("Linea: "+ line );
 				
-				pointsList.add(new GeoKadPoint(Double.parseDouble(line.split(",")[0]), Double.parseDouble(line.split(",")[1])));
+				pathList.add(line);
 				
 				line = br.readLine();
 			}
@@ -127,12 +129,7 @@ public class GeoKadPeer extends Peer {
 		GeoKadPeer clone = (GeoKadPeer) super.clone();
 		// clone.kbucket = new Vector<LinkedList<KademliaPeer>>();
 		clone.kbucket = new Vector<ArrayList<GeoKadPeer>>();
-		
-//		int size = (int) Math.floor(Math.log(Engine.getDefault()
-//				.getKeySpaceSize())
-//				/ Math.log(2) + 1.5);
-
-		
+			
 		//Create the list of KBuckets
 		for (int i = 0; i < this.numOfKBuckets; ++i) {
 			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
@@ -145,17 +142,34 @@ public class GeoKadPeer extends Peer {
 		clone.nlContactedNodes = new ArrayList<GeoKadPeer>();
 		clone.logSearch = new HashMap<Integer, Integer>();
 
-		//Set Random Lat e Lon values
-		int index = Engine.getDefault().getSimulationRandom().nextInt(pointsList.size());
-		GeoKadPoint point = pointsList.get(index);
-		pointsList.remove(index);
+		//Get Random Path
+		int index = Engine.getDefault().getSimulationRandom().nextInt(pathList.size());
+		String path = pathList.get(index);
 		
-		clone.latitude = point.getLat();
-		clone.longitude = point.getLon();
+		//Remove from available list
+		pathList.remove(index);
 		
-		//System.out.println(clone.latitude + "-" + clone.longitude);
+		//Split to find single lat,log point
+		String[] pathPoints = path.split("#");
 		
-		//TODO Caricare la lista delle posizioni per il singolo nodo
+		clone.pathCoordinates = new ArrayList<GeoKadPoint>();
+		
+		//Add GPS Points to node's list
+		for (int i = 0; i < pathPoints.length; ++i)
+		{
+			double lat = Double.parseDouble(pathPoints[i].split(",")[0]);
+			double lon = Double.parseDouble(pathPoints[i].split(",")[1]);
+			
+			clone.pathCoordinates.add(new GeoKadPoint(lat, lon));
+		}
+			
+		
+		//Set Current Position
+		clone.latitude = clone.pathCoordinates.get(0).getLat();
+		clone.longitude = clone.pathCoordinates.get(0).getLon();
+		
+		//Remove position 0
+		clone.pathCoordinates.remove(0);
 		
 		return clone;
 	}
@@ -179,10 +193,24 @@ public class GeoKadPeer extends Peer {
 	 */
 	public void insertPeer(GeoKadPeer newPeer) {
 		
-		//System.out.println("INSERTTTTTTTTT");
-		
 		if (this.getKey() == newPeer.getKey())
 			return;
+		
+		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+		
+		//Check if the peer is already in some KBuckets
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(newPeer);
+			
+			if( index != -1)
+			{
+				//Set new PeerInfo
+				this.kbucket.get(i).remove(index);
+				break;
+			}
+		}
 		
 		//int distance = this.getKey() ^ newPeer.getKey();
 		double distance = GeoKadDistance.distance(this, newPeer);
@@ -199,14 +227,12 @@ public class GeoKadPeer extends Peer {
 			{
 				
 				//GOSSIP
-				//for(int j=0; j<this.kbucket.get(i).size(); j++)
-					//this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
+				for(int j=0; j<this.kbucket.get(i).size(); j++)
+					this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
 					
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
 					this.kbucket.get(i).add(newPeer);
-				
-				//System.out.println("ADD");
 				
 				bucketFounded = true;
 				
@@ -233,6 +259,21 @@ public class GeoKadPeer extends Peer {
 		if (this.getKey() == newPeer.getKey())
 			return;
 		
+		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+		
+		//Check if the peer is in some KBuckets
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(newPeer);
+			
+			if( index != -1)
+			{
+				this.kbucket.get(i).remove(index);
+				break;
+			}
+		}
+		
 		//int distance = this.getKey() ^ newPeer.getKey();
 		double distance = GeoKadDistance.distance(this, newPeer);
 		
@@ -249,8 +290,6 @@ public class GeoKadPeer extends Peer {
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
 					this.kbucket.get(i).add(newPeer);
-				
-				//System.out.println("ADD");
 				
 				bucketFounded = true;
 				
@@ -390,6 +429,22 @@ public class GeoKadPeer extends Peer {
 		
 		if (this.getKey() == newPeer.getKey())
 			return;
+
+		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+		
+		//Check if the peer is in some KBuckets
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(newPeer);
+			
+			if( index != -1)
+			{
+				//Set new PeerInfo
+				this.kbucket.get(i).remove(index);
+				break;
+			}
+		}
 		
 		//int distance = this.getKey() ^ newPeer.getKey();
 		double distance = GeoKadDistance.distance(this, newPeer);
@@ -403,8 +458,8 @@ public class GeoKadPeer extends Peer {
 			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
 			{
 				//GOSSIP
-				//for(int j=0; j<this.kbucket.get(i).size(); j++)
-					//this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
+				for(int j=0; j<this.kbucket.get(i).size(); j++)
+					this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
 				
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
@@ -447,5 +502,135 @@ public class GeoKadPeer extends Peer {
 
 	public void setRayDistance(double rayDistance) {
 		this.rayDistance = rayDistance;
+	}
+
+	/**
+	 * Move the node to a new position according to his path
+	 */
+	public void move(float triggeringTime) {
+		
+		if(this.pathCoordinates.size() > 0)
+		{
+
+			//Set Current Position
+			this.latitude = this.pathCoordinates.get(0).getLat();
+			this.longitude = this.pathCoordinates.get(0).getLon();
+			
+			//Remove position 0
+			this.pathCoordinates.remove(0);
+			
+			//Send updated information to its neighbors
+			for(int i=0; i<(numOfKBuckets-1); i++)
+			{
+				for(int k=0; k <  this.kbucket.get(i).size(); k++)
+					this.kbucket.get(i).get(k).updateInfoAboutNode(this);
+			}
+			
+			//Move the peer
+			this.scheduleMove(triggeringTime);
+			
+		}
+			
+	}
+	
+	public void scheduleMove(float triggeringTime) {
+		//Create a new move element
+		try {
+			
+			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(Engine.getDefault().getMaxVirtualTime()/100);
+			
+			//System.out.println("Delay: " + delay + " New VT: " + (triggeringTime+delay));
+			
+			GeoKadMoveNodeEvent moveEvent = (GeoKadMoveNodeEvent) new GeoKadMoveNodeEvent("node_lookup", params, null).createInstance(triggeringTime + delay);
+			moveEvent.setOneShot(true);
+			moveEvent.setAssociatedNode(this);
+			Engine.getDefault().insertIntoEventsList(moveEvent);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	/**
+	 * Update information about a node
+	 */
+	private void updateInfoAboutNode(GeoKadPeer peer)
+	{		
+		this.insertPeer(peer);	
+	}
+
+	public ArrayList<GeoKadPoint> getPathCoordinates() {
+		return pathCoordinates;
+	}
+
+	public void setPathCoordinates(ArrayList<GeoKadPoint> pathCoordinates) {
+		this.pathCoordinates = pathCoordinates;
+	}
+
+	public int getNumOfKBuckets() {
+		return numOfKBuckets;
+	}
+
+	public void setNumOfKBuckets(int numOfKBuckets) {
+		this.numOfKBuckets = numOfKBuckets;
+	}
+
+	public Map<Integer, Integer> getLogSearch() {
+		return logSearch;
+	}
+
+	public void setLogSearch(Map<Integer, Integer> logSearch) {
+		this.logSearch = logSearch;
+	}
+
+	public ArrayList<GeoKadResourceType> getKademliaResources() {
+		return kademliaResources;
+	}
+
+	public void setKademliaResources(ArrayList<GeoKadResourceType> kademliaResources) {
+		this.kademliaResources = kademliaResources;
+	}
+
+	public ArrayList<GeoKadResourceType> getStoredResources() {
+		return storedResources;
+	}
+
+	public void setStoredResources(ArrayList<GeoKadResourceType> storedResources) {
+		this.storedResources = storedResources;
+	}
+
+	public HashMap<Integer, SearchResultType> getNlResults() {
+		return nlResults;
+	}
+
+	public void setNlResults(HashMap<Integer, SearchResultType> nlResults) {
+		this.nlResults = nlResults;
+	}
+
+	public ArrayList<GeoKadPeer> getNlContactedNodes() {
+		return nlContactedNodes;
+	}
+
+	public void setNlContactedNodes(ArrayList<GeoKadPeer> nlContactedNodes) {
+		this.nlContactedNodes = nlContactedNodes;
+	}
+
+	public static ArrayList<String> getPathList() {
+		return pathList;
+	}
+
+	public static void setPathList(ArrayList<String> pathList) {
+		GeoKadPeer.pathList = pathList;
+	}
+
+	public static String getNumOfKbuckets() {
+		return NUM_OF_KBUCKETS;
+	}
+
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+	}
+
+	public void setKbucket(Vector<ArrayList<GeoKadPeer>> kbucket) {
+		this.kbucket = kbucket;
 	}
 }

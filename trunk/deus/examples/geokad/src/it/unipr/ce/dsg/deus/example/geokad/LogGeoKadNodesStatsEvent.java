@@ -47,10 +47,71 @@ public class LogGeoKadNodesStatsEvent extends Event {
 						+ Engine.getDefault().getNodes().size());
 
 		Collections.sort(Engine.getDefault().getNodes());
-		verbose();
+		
+		checkNodeDistance();
+		
+		//verbose();
 		//compressed();
 		//network_dump();
+		
 
+	}
+	
+	public void checkNodeDistance()
+	{
+		
+		ArrayList<Double> perc = null;
+		
+		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
+		{
+			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+			
+			if(perc == null)
+			{
+				perc = new ArrayList<Double>(peer.getNumOfKBuckets());
+				
+				for(int k=0; k<peer.getNumOfKBuckets(); k++)
+					perc.add(0.0);
+			}
+			
+			ArrayList<Integer> appArray = new ArrayList<Integer>();
+			
+			for(int k=0; k<peer.getNumOfKBuckets(); k++)
+					appArray.add(0);
+			
+			for(int k=0; k<Engine.getDefault().getNodes().size(); k++)
+			{
+
+				double distance = GeoKadDistance.distance(peer, (GeoKadPeer) Engine.getDefault().getNodes().get(k));
+				
+				boolean bucketFounded = false;
+				
+				for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+				{
+					if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
+					{		
+						bucketFounded = true;
+						appArray.set(j, appArray.get(j)+1);
+						break;
+					}
+				}
+				
+				if(bucketFounded == false)
+						appArray.set(peer.getNumOfKBuckets()-1, appArray.get(peer.getNumOfKBuckets()-1)+1);
+			}
+			
+
+			for(int k=0; k<peer.getNumOfKBuckets(); k++)
+			{	
+				if(appArray.get(k) != 0)
+					perc.set(k,perc.get(k)+(double)((double)peer.getKbucket().get(k).size() / (double)appArray.get(k)));
+			}
+		}
+		
+		for(int k=0; k<perc.size(); k++)
+		{
+			System.out.println((double)perc.get(k)/(double)Engine.getDefault().getNodes().size());
+		}
 	}
 	
 	public void network_dump() {
