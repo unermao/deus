@@ -74,5 +74,9 @@ public class GeoKadJoinEvent extends NodeEvent {
 		} catch (InvalidParamsException e1) {
 			e1.printStackTrace();
 		}
+		
+		//First Move
+		//System.out.println("FIRT Move: " + connectingNode);
+		connectingNode.move(triggeringTime);
 	}
 }
