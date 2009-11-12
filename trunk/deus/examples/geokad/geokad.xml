@@ -23,6 +23,8 @@
 	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadDisconnectionEvent" />
 
   <aut:event id="logNodesData" handler="it.unipr.ce.dsg.deus.example.geokad.LogGeoKadNodesStatsEvent" />
+  
+  <aut:event id="logNodeMap" handler="it.unipr.ce.dsg.deus.example.geokad.LogGeoKadNodeMapEvent" />
 
   <aut:event id="initialization" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadNetworkInitializeEvent" oneShot="true" />
 
@@ -171,6 +173,17 @@
     </aut:events>
   </aut:process>
 
+
+  <aut:process id="periodicNodeMapLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+    <aut:params> 
+      <aut:param name="period" value="10" />
+    </aut:params>
+    <aut:events>
+      <aut:reference id="logNodeMap" />
+    </aut:events>
+  </aut:process>
+		
+		
 		
 	<!-- *** SIMULATION *** -->
 
@@ -181,6 +194,7 @@
        <!--<aut:reference id="poissonInitialize" /> -->
      	<aut:reference id="periodicDiscovery" />
 	    <aut:reference id="periodicNodeLogging" />
+	    <aut:reference id="periodicNodeMapLogging" />
 		<!-- <aut:reference id="periodicDeath" />  --> 
 		<!-- <aut:reference id="periodicDisconnection" />  --> 
 		</aut:processes>

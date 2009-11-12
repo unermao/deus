@@ -48,9 +48,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 
 		Collections.sort(Engine.getDefault().getNodes());
 		
-		checkNodeDistance();
+		//checkNodeDistance();
 		
-		//verbose();
+		verbose();
 		//compressed();
 		//network_dump();
 		
@@ -79,9 +79,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 			for(int k=0; k<peer.getNumOfKBuckets(); k++)
 					appArray.add(0);
 			
-			for(int k=0; k<Engine.getDefault().getNodes().size(); k++)
+			for(int k=0; k < Engine.getDefault().getNodes().size(); k++)
 			{
-
+				
 				double distance = GeoKadDistance.distance(peer, (GeoKadPeer) Engine.getDefault().getNodes().get(k));
 				
 				boolean bucketFounded = false;
@@ -97,14 +97,20 @@ public class LogGeoKadNodesStatsEvent extends Event {
 				}
 				
 				if(bucketFounded == false)
-						appArray.set(peer.getNumOfKBuckets()-1, appArray.get(peer.getNumOfKBuckets()-1)+1);
+					appArray.set(peer.getNumOfKBuckets()-1, appArray.get(peer.getNumOfKBuckets()-1)+1);
+				
 			}
 			
-
 			for(int k=0; k<peer.getNumOfKBuckets(); k++)
 			{	
+				//System.out.println(k + " --> Perc: " + perc.get(k) + " KBucket Size : " + peer.getKbucket().get(k).size() + " AppArray Size:" + appArray.get(k));
+				
+				//if(peer.getKbucket().get(k).size() > appArray.get(k))
+					//System.out.println(k +" Peer: "+peer.getKey()+" --> Diff: " + (Math.abs(peer.getKbucket().get(k).size()-appArray.get(k))));
+				
 				if(appArray.get(k) != 0)
-					perc.set(k,perc.get(k)+(double)((double)peer.getKbucket().get(k).size() / (double)appArray.get(k)));
+					perc.set(k,perc.get(k) + (double)Math.abs(peer.getKbucket().get(k).size()-appArray.get(k)) );
+					//perc.set(k,perc.get(k) + (double)((double)peer.getKbucket().get(k).size() / (double)appArray.get(k)) );
 			}
 		}
 		
@@ -133,6 +139,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 	}
 
 	public void verbose() {
+		
+		getLogger().info("VT: "+Engine.getDefault().getVirtualTime()+"############# VERBOSE ################################");
+		
 		for (Node node : Engine.getDefault().getNodes()) {
 			GeoKadPeer peer = (GeoKadPeer) node;
 			getLogger().info("\nn: " + peer.getKey());
