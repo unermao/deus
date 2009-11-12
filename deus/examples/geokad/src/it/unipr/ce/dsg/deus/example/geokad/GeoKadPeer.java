@@ -39,6 +39,9 @@ public class GeoKadPeer extends Peer {
 	private double latitude = 0.0;
 	private double longitude = 0.0;
 	
+	private GeoKadPoint startPoint = null;
+	private GeoKadPoint endPoint = null;
+	
 	public Map<Integer, Integer> logSearch = new HashMap<Integer, Integer>();
 
 	public ArrayList<GeoKadResourceType> kademliaResources = new ArrayList<GeoKadResourceType>();
@@ -155,7 +158,7 @@ public class GeoKadPeer extends Peer {
 		clone.pathCoordinates = new ArrayList<GeoKadPoint>();
 		
 		//Add GPS Points to node's list
-		for (int i = 0; i < pathPoints.length; ++i)
+		for (int i = 0; i < pathPoints.length; i++)
 		{
 			double lat = Double.parseDouble(pathPoints[i].split(",")[0]);
 			double lon = Double.parseDouble(pathPoints[i].split(",")[1]);
@@ -163,6 +166,9 @@ public class GeoKadPeer extends Peer {
 			clone.pathCoordinates.add(new GeoKadPoint(lat, lon));
 		}
 			
+		//Set Start end Final Point for the path
+		clone.startPoint = clone.pathCoordinates.get(0);
+		clone.endPoint = clone.pathCoordinates.get(clone.pathCoordinates.size()-1);
 		
 		//Set Current Position
 		clone.latitude = clone.pathCoordinates.get(0).getLat();
@@ -199,7 +205,7 @@ public class GeoKadPeer extends Peer {
 		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
 		
 		//Check if the peer is already in some KBuckets
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//Find peer index
 			int index = this.kbucket.get(i).indexOf(newPeer);
@@ -262,7 +268,7 @@ public class GeoKadPeer extends Peer {
 		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
 		
 		//Check if the peer is in some KBuckets
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//Find peer index
 			int index = this.kbucket.get(i).indexOf(newPeer);
@@ -433,7 +439,7 @@ public class GeoKadPeer extends Peer {
 		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
 		
 		//Check if the peer is in some KBuckets
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//Find peer index
 			int index = this.kbucket.get(i).indexOf(newPeer);
@@ -519,12 +525,14 @@ public class GeoKadPeer extends Peer {
 			//Remove position 0
 			this.pathCoordinates.remove(0);
 			
+			
 			//Send updated information to its neighbors
 			for(int i=0; i<(numOfKBuckets-1); i++)
 			{
 				for(int k=0; k <  this.kbucket.get(i).size(); k++)
 					this.kbucket.get(i).get(k).updateInfoAboutNode(this);
 			}
+			
 			
 			//Move the peer
 			this.scheduleMove(triggeringTime);
@@ -632,5 +640,21 @@ public class GeoKadPeer extends Peer {
 
 	public void setKbucket(Vector<ArrayList<GeoKadPeer>> kbucket) {
 		this.kbucket = kbucket;
+	}
+
+	public GeoKadPoint getStartPoint() {
+		return startPoint;
+	}
+
+	public void setStartPoint(GeoKadPoint startPoint) {
+		this.startPoint = startPoint;
+	}
+
+	public GeoKadPoint getEndPoint() {
+		return endPoint;
+	}
+
+	public void setEndPoint(GeoKadPoint endPoint) {
+		this.endPoint = endPoint;
 	}
 }
