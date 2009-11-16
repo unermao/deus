@@ -233,8 +233,8 @@ public class GeoKadPeer extends Peer {
 			{
 				
 				//GOSSIP
-				for(int j=0; j<this.kbucket.get(i).size(); j++)
-					this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
+				//for(int j=0; j<this.kbucket.get(i).size(); j++)
+					//this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
 					
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
@@ -464,8 +464,8 @@ public class GeoKadPeer extends Peer {
 			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
 			{
 				//GOSSIP
-				for(int j=0; j<this.kbucket.get(i).size(); j++)
-					this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
+				//for(int j=0; j<this.kbucket.get(i).size(); j++)
+					//this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
 				
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
