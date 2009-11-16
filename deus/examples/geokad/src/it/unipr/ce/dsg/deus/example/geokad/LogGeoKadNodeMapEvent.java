@@ -120,11 +120,11 @@ public class LogGeoKadNodeMapEvent extends Event {
 					file = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
 					PrintStream out = new PrintStream(file);
 					
+					out.println("<markers>");
+					
 					for(int i=0; i<Engine.getDefault().getNodes().size();i++)
 					{
 						GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
-						
-					out.println("<markers>");
 					
 					
 					out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
