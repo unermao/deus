@@ -45,15 +45,24 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
+		
 		if (currNode == null) {
-			Random random = new Random();
-
+			
+			//System.out.println("AAAAAAAAAAAAA");
+			
 			int initialized_nodes = Engine.getDefault().getNodes().size();
-			int random_node = random.nextInt(initialized_nodes);
-			currNode = (GeoKadPeer) Engine.getDefault().getNodes().get(
-					random_node);
+			
+			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
+			
+			currNode = (GeoKadPeer) Engine.getDefault().getNodes().get(random_node);
 		}
-
+		
+		if(currNode.getKey() == Engine.getDefault().getNodes().get(0).getKey())
+		{
+			//System.out.println("SONO IL BOOT");
+			return;
+		}
+		
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 
 //		if (resourceKey == 0) {

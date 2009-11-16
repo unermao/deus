@@ -106,7 +106,7 @@ public class GeoKadPeer extends Peer {
 		
 		try
 		{
-			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result.txt"))));
+			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result_2000.txt"))));
 			
 			String line = null;
 			line = br.readLine();
@@ -120,6 +120,7 @@ public class GeoKadPeer extends Peer {
 				line = br.readLine();
 			}
 			
+			br.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -146,7 +147,7 @@ public class GeoKadPeer extends Peer {
 		clone.logSearch = new HashMap<Integer, Integer>();
 
 		//Get Random Path
-		int index = Engine.getDefault().getSimulationRandom().nextInt(pathList.size());
+		int index = Engine.getDefault().getNodes().size();
 		String path = pathList.get(index);
 		
 		//Remove from available list
@@ -202,6 +203,7 @@ public class GeoKadPeer extends Peer {
 		if (this.getKey() == newPeer.getKey())
 			return;
 		
+		//Update Info
 		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
 		
 		//Check if the peer is already in some KBuckets
@@ -252,7 +254,7 @@ public class GeoKadPeer extends Peer {
 		if(bucketFounded == false)
 		{
 			//Add new Peer in the last Bucket
-			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer))
+			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer)&& this.kbucket.get(numOfKBuckets-1).size() < 20)
 				kbucket.get(numOfKBuckets-1).add(newPeer);
 		}
 		
@@ -361,9 +363,11 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
+		int maxSize = 4*numOfKBuckets;
+		
 		boolean flag = false;
 		int a = 1;
-		while (tempResults.size() < numOfKBuckets) {
+		while (tempResults.size() < maxSize) {
 			flag = false;
 			try {
 				it = kbucket.get(index + a).iterator();
@@ -373,7 +377,7 @@ public class GeoKadPeer extends Peer {
 				flag = true;
 			}
 
-			if (tempResults.size() >= numOfKBuckets)
+			if (tempResults.size() >= maxSize)
 				break;
 
 			try {
@@ -386,10 +390,13 @@ public class GeoKadPeer extends Peer {
 			}
 			a++;
 		}
-		if (tempResults.size() > numOfKBuckets) {
-			tempResults.subList(numOfKBuckets, tempResults.size()).clear();
+		if (tempResults.size() > maxSize) {
+			tempResults.subList(maxSize, tempResults.size()).clear();
 		}
 
+		if(tempResults.size() == 0)
+			System.out.println("FIND NODE ---> RETURN AN EMPTY LIST !");
+		
 		return tempResults;
 	}
 
@@ -481,7 +488,7 @@ public class GeoKadPeer extends Peer {
 		if(bucketFounded == false)
 		{
 			//Add new Peer in the last Bucket
-			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer))
+			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer) && this.kbucket.get(numOfKBuckets-1).size() < 20)
 				kbucket.get(numOfKBuckets-1).add(newPeer);
 		}
 	}
@@ -545,7 +552,7 @@ public class GeoKadPeer extends Peer {
 		//Create a new move element
 		try {
 			
-			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(Engine.getDefault().getMaxVirtualTime()/100);
+			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(25);
 			
 			//System.out.println("Delay: " + delay + " New VT: " + (triggeringTime+delay));
 			
