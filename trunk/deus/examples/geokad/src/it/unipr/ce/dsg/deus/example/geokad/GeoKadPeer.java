@@ -39,6 +39,15 @@ public class GeoKadPeer extends Peer {
 	private double latitude = 0.0;
 	private double longitude = 0.0;
 	
+	//Path Index
+	private int pathIndex = 0;
+	
+	//Direction Delta Value
+	private int deltaValue = 1;
+	
+	//Path Direction Forward
+	private boolean pathDirectionForward = true;
+	
 	private GeoKadPoint startPoint = null;
 	private GeoKadPoint endPoint = null;
 	
@@ -48,8 +57,11 @@ public class GeoKadPeer extends Peer {
 	public ArrayList<GeoKadResourceType> storedResources = new ArrayList<GeoKadResourceType>();
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
 	public ArrayList<GeoKadPeer> nlContactedNodes = new ArrayList<GeoKadPeer>();
+	
 
 	public static ArrayList<String> pathList = new ArrayList<String>();
+	
+	public static ArrayList<Double> graphKey = new ArrayList<Double>();
 	
 	public GeoKadPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -172,11 +184,11 @@ public class GeoKadPeer extends Peer {
 		clone.endPoint = clone.pathCoordinates.get(clone.pathCoordinates.size()-1);
 		
 		//Set Current Position
-		clone.latitude = clone.pathCoordinates.get(0).getLat();
-		clone.longitude = clone.pathCoordinates.get(0).getLon();
+		clone.latitude = clone.pathCoordinates.get(pathIndex).getLat();
+		clone.longitude = clone.pathCoordinates.get(pathIndex).getLon();
 		
 		//Remove position 0
-		clone.pathCoordinates.remove(0);
+		//clone.pathCoordinates.remove(0);
 		
 		return clone;
 	}
@@ -524,15 +536,25 @@ public class GeoKadPeer extends Peer {
 		
 		if(this.pathCoordinates.size() > 0)
 		{
+			//If it is at the end of the path or at the beginning, it changes the direction
+			if( pathCoordinates.size()-1 == pathIndex || ( pathIndex == 0 && deltaValue  == -1) )
+				pathDirectionForward = !pathDirectionForward;	
 
+			if(pathDirectionForward == true)
+				deltaValue = 1;
+			else
+				deltaValue = -1;
+			
+			pathIndex = pathIndex + deltaValue;
+			
 			//Set Current Position
-			this.latitude = this.pathCoordinates.get(0).getLat();
-			this.longitude = this.pathCoordinates.get(0).getLon();
+			this.latitude = this.pathCoordinates.get(pathIndex).getLat();
+			this.longitude = this.pathCoordinates.get(pathIndex).getLon();
 			
 			//Remove position 0
-			this.pathCoordinates.remove(0);
+			//this.pathCoordinates.remove(0);
 			
-			
+			//TODO Edit in order to update only neighbors of the first "alpha" KBuckets
 			//Send updated information to its neighbors
 			for(int i=0; i<(numOfKBuckets-1); i++)
 			{
@@ -552,7 +574,13 @@ public class GeoKadPeer extends Peer {
 		//Create a new move element
 		try {
 			
-			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(25);
+			//Random Time for a single peer move (50VT=3 min)
+			int randomTime = 50;
+			
+			if(Engine.getDefault().getSimulationRandom().nextBoolean() == true)
+				randomTime = 100;
+				
+			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(randomTime);
 			
 			//System.out.println("Delay: " + delay + " New VT: " + (triggeringTime+delay));
 			

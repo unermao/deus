@@ -37,31 +37,45 @@ public class LogGeoKadNodeMapEvent extends Event {
 	}
 
 	public void run() throws RunException {
-		
-		System.out.println("VT:" + triggeringTime + " Node: " + Engine.getDefault().getNodes().size() + " ... Logging MARKERS");
-		
+
+		System.out.println("VT:" + triggeringTime + " Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
+
 		writeAllPeersFile();
-		
-		for(int index=0; index<Engine.getDefault().getNodes().size();index++)
-		{
-			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(index);
-			
-			if(peer != null)
+
+		FileOutputStream file = null;
+		//FileOutputStream file_AllPeer = null;
+		PrintStream out = null;
+		//PrintStream out_AllPeer = null;
+
+		try {
+
+			//file_AllPeer = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
+			//out_AllPeer = new PrintStream(file_AllPeer);
+
+			for(int index=0; index<Engine.getDefault().getNodes().size();index++)
 			{
-				FileOutputStream file = null;
-				
-				try {
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(index);
+
+				if(peer != null)
+				{
+
 					file = new FileOutputStream("/home/Gudhrun/picone/public_html/node_markers/markers_"+peer.getKey()+".xml");
-					PrintStream out = new PrintStream(file);
-					
+					out = new PrintStream(file);
+
+
+
 					out.println("<markers>");
-					
-					
+
+					//Write All Peers file
+					//out_AllPeer.println("<markers>");
+					//out_AllPeer.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+
+
 					out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
-					
+
 					out.println("<marker lat=\""+peer.getStartPoint().getLat()+"\" long=\""+peer.getStartPoint().getLon()+"\" descriz=\""+peer.getKey()+"\"/>");
 					out.println("<marker lat=\""+peer.getEndPoint().getLat()+"\" long=\""+peer.getEndPoint().getLon()+"\" descriz=\""+peer.getKey()+"\"/>");
-					
+
 					for(int i=0; i<peer.getKbucket().size(); i++)
 					{
 						for(int k=0; k<peer.getKbucket().get(i).size();k++)
@@ -69,80 +83,58 @@ public class LogGeoKadNodeMapEvent extends Event {
 							out.println("<marker lat=\""+peer.getKbucket().get(i).get(k).getLatitude()+"\" long=\""+peer.getKbucket().get(i).get(k).getLongitude()+"\" descriz=\""+peer.getKbucket().get(i).get(k).getKey()+"\"/>");
 						}
 					}
-					
+
 					out.println("</markers>");
 
 					out.close();
 					file.close();
-					
-					//Thread.sleep(1000);
-					
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-		}
-	
 
-			/*
-			getLogger().info("<markers>");
-			
-			
-			getLogger().info("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
-			
-			getLogger().info("<marker lat=\""+peer.getStartPoint().getLat()+"\" long=\""+peer.getStartPoint().getLon()+"\" descriz=\""+peer.getKey()+"\"/>");
-			getLogger().info("<marker lat=\""+peer.getEndPoint().getLat()+"\" long=\""+peer.getEndPoint().getLon()+"\" descriz=\""+peer.getKey()+"\"/>");
-			
-			for(int i=0; i<peer.getKbucket().size(); i++)
-			{
-				for(int k=0; k<peer.getKbucket().get(i).size();k++)
-				{
-					getLogger().info("<marker lat=\""+peer.getKbucket().get(i).get(k).getLatitude()+"\" long=\""+peer.getKbucket().get(i).get(k).getLongitude()+"\" descriz=\""+peer.getKbucket().get(i).get(k).getKey()+"\"/>");
+
 				}
 			}
-			
-			getLogger().info("</markers>");
-	*/
 
+		//	out_AllPeer.println("</markers>");
+			//out_AllPeer.close();
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
-	
+
 	private void writeAllPeersFile()
 	{
-			
 
-			FileOutputStream file = null;
-				
-				try {
-					file = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
-					PrintStream out = new PrintStream(file);
-					
-					out.println("<markers>");
-					
-					for(int i=0; i<Engine.getDefault().getNodes().size();i++)
-					{
-						GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
-					
-					
-					out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
-										
-					
-					}
-					out.println("</markers>");
-					out.close();
-					file.close();
-					
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
 
-		}
-	
+		FileOutputStream file = null;
+
+		try {
+			file = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
+			PrintStream out = new PrintStream(file);
+
+			out.println("<markers>");
+
+			for(int i=0; i<Engine.getDefault().getNodes().size();i++)
+			{
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+
+
+				out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+
+
+			}
+			out.println("</markers>");
+			out.close();
+			file.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+	}
+
 }
