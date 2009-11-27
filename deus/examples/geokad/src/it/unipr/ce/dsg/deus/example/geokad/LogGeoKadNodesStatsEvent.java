@@ -3,9 +3,15 @@
  */
 package it.unipr.ce.dsg.deus.example.geokad;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -50,10 +56,104 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		
 		//checkNodeDistance();
 		
+		writeTotalKBucketsDimGraph();
+		writeKBucketsDimGraph();
+		
 		verbose();
 		//compressed();
 		//network_dump();
 		
+
+	}
+	
+	private void writeKBucketsDimGraph()
+	{
+
+
+		FileOutputStream file = null;
+		
+		try {
+			file = new FileOutputStream("/home/Gudhrun/picone/public_html/k_buckets_graph.xml");
+			
+			PrintStream out = new PrintStream(file);
+
+			out.println("<markers>");
+			
+			int numOfKBucket = ((GeoKadPeer)Engine.getDefault().getNodes().get(0)).getNumOfKBuckets();
+			
+			ArrayList<Integer> kBucketAppList = new ArrayList<Integer>(numOfKBucket);
+			for(int j = 0; j<numOfKBucket; j++)
+				kBucketAppList.add(0);
+			
+			for(int i=0; i<Engine.getDefault().getNodes().size();i++)
+			{
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+				
+				for(int j = 0; j<numOfKBucket; j++)
+				{	
+					kBucketAppList.set(j, kBucketAppList.get(j) + peer.getKbucket().get(j).size() ); 
+				}
+			}
+			
+			for(int index=0; index<numOfKBucket;index++)
+			{
+			  	out.println("<marker x=\""+index+"\" y=\""+kBucketAppList.get(index)/Engine.getDefault().getNodes().size()+"\" descriz=\""+Engine.getDefault().getNodes().size()+"\"/>");
+			}
+			
+			out.println("</markers>");
+			out.close();
+			file.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+	}
+	
+	private void writeTotalKBucketsDimGraph()
+	{
+
+		FileOutputStream file = null;
+		
+		try {
+			file = new FileOutputStream("/home/Gudhrun/picone/public_html/totalNeighbours.xml");
+			
+			PrintStream out = new PrintStream(file);
+
+			out.println("<markers>");
+
+			int knowedNodes = 0;
+			
+			for(int i=0; i<Engine.getDefault().getNodes().size();i++)
+			{
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+				
+				for(int j = 0; j<peer.getKbucket().size(); j++)
+						knowedNodes += peer.getKbucket().get(j).size(); 
+			}
+			
+			GeoKadPeer.graphKey.add((double)(knowedNodes/Engine.getDefault().getNodes().size()));
+
+			for(int index=0; index<GeoKadPeer.graphKey.size();index++)
+			{
+			  	out.println("<marker x=\""+index+"\" y=\""+GeoKadPeer.graphKey.get(index)+"\" descriz=\""+Engine.getDefault().getNodes().size()+"\"/>");
+			}
+			
+			out.println("</markers>");
+			out.close();
+			file.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 
 	}
 	

@@ -50,7 +50,7 @@
 	  <aut:params>
 			<aut:param name="period" value="1" />
 			<aut:param name="startVtThreshold" value="1" />
-			<aut:param name="stopVtThreshold" value="100" />
+			<aut:param name="stopVtThreshold" value="500" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -166,7 +166,7 @@
 
   <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="1000" />
+      <aut:param name="period" value="500" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodesData" />
