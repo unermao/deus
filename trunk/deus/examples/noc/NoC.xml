@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <automator xmlns="http://dsg.ce.unipr.it/software/deus/schema/automator">
-    <event handler="it.unipr.ce.dsg.deus.example.noc.CoreToSwitchConnection" id="coreToSwitchConn"/>
-    <event handler="" id="MemoryBlockWrite"/>
+    <event handler="" id="SwitchMessageGeneration"/>
+    <event handler="it.unipr.ce.dsg.deus.example.noc.NoCTime" id="time"/>
+    <event schedulerListener="it.unipr.ce.dsg.deus.example.life.LifeCreationSchedulerListener" handler="it.unipr.ce.dsg.deus.example.life.LifeCreationEvent" id="switchCreation">
+        <events>
+            <reference id="switchToSwitchConnection"/>
+        </events>
+    </event>
+    <event handler="it.unipr.ce.dsg.deus.example.noc.CoreCreation" id="coreCreation">
+        <events>
+            <reference id="coreToSwitchConn"/>
+        </events>
+    </event>
     <event handler="it.unipr.ce.dsg.deus.example.noc.SwitchToSwitchConnection" id="switchToSwitchConnection"/>
+    <event handler="" id="memoryBlockToSwitchConnection"/>
+    <event handler="it.unipr.ce.dsg.deus.example.noc.CoreToSwitchConnection" id="coreToSwitchConn">
+        <events>
+            <reference id="CoreMessageGeneration"/>
+        </events>
+    </event>
+    <event handler="" id="CoreMessageGeneration"/>
+    <event handler="" id="MemoryBlockRead"/>
+    <event handler="" id="MemoryBlockWrite"/>
     <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.noc.MemoryBlockCreation" id="memoryBlockCreation">
         <params>
             <param value="res/Underworld-ToHeal.mp3" name="fileName"/>
@@ -12,23 +31,8 @@
             <reference id="memoryBlockToSwitchConnection"/>
         </events>
     </event>
-    <event handler="it.unipr.ce.dsg.deus.example.noc.NoCTime" id="time"/>
-    <event handler="" id="CoreMessageGeneration"/>
-    <event handler="it.unipr.ce.dsg.deus.example.noc.CoreCreation" id="coreCreation">
-        <events>
-            <reference id="coreToSwitchConn"/>
-        </events>
-    </event>
-    <event handler="" id="SwitchMessageGeneration"/>
-    <event handler="" id="MemoryBlockRead"/>
-    <event schedulerListener="it.unipr.ce.dsg.deus.example.life.LifeCreationSchedulerListener" handler="it.unipr.ce.dsg.deus.example.life.LifeCreationEvent" id="switchCreation">
-        <events>
-            <reference id="switchToSwitchConnection"/>
-        </events>
-    </event>
-    <event handler="" id="memoryBlockToSwitchConnection"/>
-    <node handler="" id="MemoryBlock"/>
     <node handler="" id="Core"/>
+    <node handler="" id="MemoryBlock"/>
     <node handler="it.unipr.ce.dsg.deus.example.noc.Switch" id="switch">
         <logger pathPrefix="" level="INFO"/>
         <params>
@@ -43,14 +47,6 @@
             <reference id="time"/>
         </events>
     </process>
-    <process handler="" id="poisson1">
-        <nodes>
-            <reference id="Core"/>
-        </nodes>
-        <events>
-            <reference id="CoreMessageGeneration"/>
-        </events>
-    </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="periodic3">
         <params>
             <param value="1" name="period"/>
@@ -62,10 +58,10 @@
             <reference id="Core"/>
         </nodes>
         <events>
-            <reference id="coreToSwitchConn"/>
             <reference id="coreCreation"/>
-            <reference id="memoryBlockCreation"/>
             <reference id="memoryBlockToSwitchConnection"/>
+            <reference id="coreToSwitchConn"/>
+            <reference id="memoryBlockCreation"/>
         </events>
     </process>
     <process handler="" id="poisson2">
@@ -74,6 +70,22 @@
         </nodes>
         <events>
             <reference id="SwitchMessageGeneration"/>
+        </events>
+    </process>
+    <process handler="" id="poisson4">
+        <nodes>
+            <reference id="MemoryBlock"/>
+        </nodes>
+        <events>
+            <reference id="MemoryBlockWrite"/>
+        </events>
+    </process>
+    <process handler="" id="poisson1">
+        <nodes>
+            <reference id="Core"/>
+        </nodes>
+        <events>
+            <reference id="CoreMessageGeneration"/>
         </events>
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="periodic2">
@@ -88,6 +100,14 @@
         <events>
             <reference id="switchToSwitchConnection"/>
             <reference id="switchCreation"/>
+        </events>
+    </process>
+    <process handler="" id="poisson3">
+        <nodes>
+            <reference id="MemoryBlock"/>
+        </nodes>
+        <events>
+            <reference id="MemoryBlockRead"/>
         </events>
     </process>
     <engine keyspacesize="100" seed="12345678" maxvt="2500.0">
