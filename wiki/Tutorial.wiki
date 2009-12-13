@@ -1,13 +1,27 @@
-#summary This is a brief tutorial on DEUS.
+#summary This is a brief tutorial on DEUS (v0.4.0).
 
-= Introduction =
 
-Each release contains sources (in the src/ folder), docs and examples.
-Sources include the following packages:
+= DEUS v0.4.0 =
+
+In the home page of the project, you may find:
+
+  * the jar file of DEUS v0.4.0 (deus-0.4.0.jar)
+  * this tutorial in .pdf format (deus-0.4.0-tutorial.pdf)
+  * the full release of DEUS v0.4.0 (deus-0.4.0-full.zip)
+
+To quickly start using DEUS, download the full release, unzip it, run Eclipse and create a new Java project (select "Create project from existing source" and set the path of the unzipped deus-0.4.0 folder; call the project "deus-0.4.0").
+
+This release contains two examples: basic and life. To run them, follow the instructions in the last section of this tutorial.
+
+
+= DEUS API =
+
+DEUS API includes the following packages:
 
   * {{{it.unipr.ce.dsg.deus.automator}}} (classes for batch simulations with automatically changing parameters)
   * {{{it.unipr.ce.dsg.deus.automator.gui}}} (the GUI for managing batch simulations)
   * {{{it.unipr.ce.dsg.deus.core}}} (core interfaces and classes, such as Event, Node, Process)
+  * {{{it.unipr.ce.dsg.deus.editor}}} (implementation of the visual editor)
   * {{{it.unipr.ce.dsg.deus.impl.event}}} (implementation of common events, such as node birth)
   * {{{it.unipr.ce.dsg.deus.impl.node}}} (implementation of basic node classes)
   * {{{it.unipr.ce.dsg.deus.impl.process}}} (implementation of common processes, such as Poisson)
@@ -18,14 +32,14 @@ Sources include the following packages:
   * {{{it.unipr.ce.dsg.deus.schema.automator}}} (classes that map DEUS' XML schema)
   * {{{it.unipr.ce.dsg.deus.util}}} (utility classes)
 
-Moreover, under the "examples" folder there are some useful simulation examples (with source code, configuration file and automator file).
+You can download the source code, or browse it online in the "Source" section of the project web site.
 
 
 = Configuring simulations =
 
 The XML schema basically defines the following concepts: event, node, process, engine. 
 
-In the "revol" example, there are several XML files configuring different simulations. In the following we refer to {{{FixedPop.xml}}}, which configures a simulation which creates a network of 10000 nodes.
+In the following we describe a XML configuration file for a simulation that creates a network of 10000 nodes.
 
 Like any other XML file for the configuration of a DEUS-based simulation, you have to declare nodes like:
 
