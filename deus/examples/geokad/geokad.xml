@@ -37,7 +37,7 @@
 			<aut:param name="numOfKBuckets" value="10" />
 			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
-			<aut:param name="discoveryMaxWait" value="50.0" />
+			<aut:param name="discoveryMaxWait" value="300.0" />
 			<aut:param name="rayDistance" value="1.5" />
 		</aut:params>
 	</aut:node>

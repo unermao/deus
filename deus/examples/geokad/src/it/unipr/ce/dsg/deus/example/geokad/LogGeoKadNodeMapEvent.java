@@ -59,10 +59,9 @@ public class LogGeoKadNodeMapEvent extends Event {
 				if(peer != null)
 				{
 
-					file = new FileOutputStream("/home/Gudhrun/picone/public_html/node_markers/markers_"+peer.getKey()+".xml");
+					file = new FileOutputStream("examples/geokad/map/node_markers/markers_"+peer.getKey()+".xml");
+					//file = new FileOutputStream("/home/Gudhrun/picone/public_html/node_markers/markers_"+peer.getKey()+".xml");
 					out = new PrintStream(file);
-
-
 
 					out.println("<markers>");
 
@@ -109,7 +108,7 @@ public class LogGeoKadNodeMapEvent extends Event {
 		FileOutputStream file = null;
 
 		try {
-			file = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
+			file = new FileOutputStream("examples/geokad/map/marker_ALL.xml");
 			PrintStream out = new PrintStream(file);
 
 			out.println("<markers>");
