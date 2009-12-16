@@ -73,7 +73,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		FileOutputStream file = null;
 		
 		try {
-			file = new FileOutputStream("/home/Gudhrun/picone/public_html/k_buckets_graph.xml");
+			file = new FileOutputStream("examples/geokad/map/k_buckets_graph.xml");
 			
 			PrintStream out = new PrintStream(file);
 
@@ -120,7 +120,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		FileOutputStream file = null;
 		
 		try {
-			file = new FileOutputStream("/home/Gudhrun/picone/public_html/totalNeighbours.xml");
+			file = new FileOutputStream("examples/geokad/map/totalNeighbours.xml");
 			
 			PrintStream out = new PrintStream(file);
 

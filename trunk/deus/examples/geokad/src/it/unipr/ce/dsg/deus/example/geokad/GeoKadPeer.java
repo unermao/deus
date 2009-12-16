@@ -375,7 +375,7 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = 4*numOfKBuckets;
+		int maxSize = numOfKBuckets;
 		
 		boolean flag = false;
 		int a = 1;
@@ -534,7 +534,7 @@ public class GeoKadPeer extends Peer {
 	 */
 	public void move(float triggeringTime) {
 		
-		if(this.pathCoordinates.size() > 0)
+		if(this.pathCoordinates.size() > 0 )
 		{
 			//If it is at the end of the path or at the beginning, it changes the direction
 			if( pathCoordinates.size()-1 == pathIndex || ( pathIndex == 0 && deltaValue  == -1) )

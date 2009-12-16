@@ -79,6 +79,7 @@ public class GeoKadJoinEvent extends NodeEvent {
 //			if(connectingNode.getKey() == 9322)
 //				System.out.println("BootStrap List Size: " + appList.size());
 //			
+			
 			for(int k=0; k < appList.size(); k++)
 			{
 				GeoKadPeer peerFromBoot = appList.get(k);
