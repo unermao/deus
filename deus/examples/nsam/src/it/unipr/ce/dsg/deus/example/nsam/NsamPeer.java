@@ -118,6 +118,7 @@ public void initialize() throws InvalidParamsException {
 			if ( ((AllocableResource) r).getType().equals(MAX_ACCEPTED_CONNECTION) )
 				maxAcceptedConnection = (int) ((AllocableResource) r).getAmount();
 		}	
+		serviceList=createServiceList();
 	}
 	
 	public Object clone() {
