@@ -278,7 +278,7 @@
 			<aut:param name="period" value="200000" /> 
 		</aut:params>
 		<aut:events>
-			<aut:reference id="updateNodeProperties" />  
+			<aut:reference id="updateNodeProperty" />  
 		</aut:events>
 	</aut:process>
 
