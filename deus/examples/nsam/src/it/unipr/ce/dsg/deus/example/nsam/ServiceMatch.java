@@ -9,7 +9,7 @@ public class ServiceMatch {
 //	private ArrayList<Integer> serviceQuality = new ArrayList<Integer>();
 	private int quality = 0;
 	
-//TODO guarda se mettere un metodo initialize per settare un eventuale array list già esistente a false	
+//TODO guarda se mettere un metodo initialize per settare una eventuale array list già esistente a false	
 	
  public ServiceMatch(){
 	 this.matchingInput=null;

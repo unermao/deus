@@ -23,7 +23,8 @@ public class NsamBirthSchedulerListener implements SchedulerListener {
 			((MultipleRandomConnectionsEvent) newEvent).setAssociatedNode((Peer) be.getAssociatedNode());
 				} else if (newEvent instanceof NsamDiscoveryEvent) {
 			((NsamDiscoveryEvent) newEvent).setAssociatedNode((NsamPeer) be.getAssociatedNode());
-		}
+			System.out.println("beschlistener: be.associatedNode " + be.getAssociatedNode());
+				}
 	}
 
 }
