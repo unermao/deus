@@ -127,7 +127,7 @@ In the XML file, you may define processes which regulate the timeliness of event
 </aut:process>
 }}}
 
-Each process may refer to one or more node type, and to one or more events. Important note: if a process referes to N node types, the events scheduled according to that process will be associated to the first node type, unless you define a specific behavior in the event's code. See for example {{{BirthEvent.java}}} - such event selects (with uniformly random probability) one of the node types. 
+Each process may refer to one or more node type, and to one or more events. Important note: the node associated to an event (if the event is a {{{NodeEvent}}}, thus having the associatedEvent variable) must be decided by the event itself! If a process referes to N node types, the events scheduled according to that process can be associated to one of the node types, according to a specific behavior implemented in the event's code. See for example {{{BirthEvent.java}}} - such event selects (with uniformly random probability) one of the node types. 
 
 A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g. "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
 
