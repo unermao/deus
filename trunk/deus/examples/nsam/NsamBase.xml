@@ -102,6 +102,10 @@
 	<!-- 	<aut:param name="bandwidth" value=""/>   -->	
 			<aut:param name="qualityLevel" value="3" />    
 			<aut:param name="maxServiceNum" value="5" />  
+			<aut:param name="maxServiceInputNum" value="5" />
+			<aut:param name="maxServiceOutputNum" value="5" />
+			<aut:param name="serviceInputRange" value="20" />
+			<aut:param name="serviceOutputRange" value="20" /> 
 			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 		<aut:resources>
