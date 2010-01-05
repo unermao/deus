@@ -70,6 +70,7 @@ public class NsamPeer extends Peer {
 	public NsamPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
+		serviceList=createServiceList();
 		initialize();
 	}
 
@@ -118,7 +119,7 @@ public void initialize() throws InvalidParamsException {
 			if ( ((AllocableResource) r).getType().equals(MAX_ACCEPTED_CONNECTION) )
 				maxAcceptedConnection = (int) ((AllocableResource) r).getAmount();
 		}	
-		serviceList=createServiceList();
+		
 	}
 	
 	public Object clone() {
@@ -250,9 +251,10 @@ public void initialize() throws InvalidParamsException {
 	
 		
 	public ArrayList<NsamService> createServiceList (){
-		
+		System.out.println("Inizializzo num servizi sul peer corrente ");
 		 /*creo una array list che al max ha maxServiceNum elementi */
 		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
+		 System.out.println("Numero servizi sul peer corrente: " + numServices);
 		 for (int i=0; i<numServices; i++)
 		 {
 			 NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
