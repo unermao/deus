@@ -30,7 +30,6 @@ public class NsamService {
 			int nextOutput = Engine.getDefault().getSimulationRandom().nextInt(outRange);
 			serviceOutput.add(nextOutput);
 			id += nextOutput;
-			serviceInput.add(nextOutput);
 			if (i!=(numOut-1))
 				id+="-";	
 		}
@@ -42,7 +41,19 @@ public class NsamService {
 		this.serviceInput=  serviceInput;
 		this.serviceOutput= serviceOutput;
 		
-	}
+		if(!serviceInput.isEmpty()){
+		id = serviceInput.get(0).toString();
+		for (int index =1; index<serviceInput.size(); index++)
+			id += serviceInput.get(index);
+		id+="-";
+		}
+		else id="-";
+		if(!serviceOutput.isEmpty()){
+		for (int index =0; index<serviceOutput.size(); index++)
+			id += serviceOutput.get(index);  
+		}
+		System.out.println("ServiceID = " + id);
+	}  
 	
 	public String getServiceId(){
 		return id;
