@@ -27,7 +27,7 @@ public class NsamPeer extends Peer {
 	private static final String SERVICE_INPUT_RANGE = "serviceInputRange";
 	private static final String SERVICE_OUTPUT_RANGE="serviceOutputRange";
 	
-	private boolean isRandomInit = false;
+	
 
 	public static final String ADSL = "adsl";
 	public static final String WIFI = "wifi";
@@ -39,7 +39,7 @@ public class NsamPeer extends Peer {
 	//TODO differenziare il tempo di esecuzione a seconda del nodo che sto impiegando!!!!
 	//posso calcolarlo come evento casuale expRandom(this.getEventRandom()
 	
-	
+	private boolean isRandomInit = false;
 	private int qos = 0;
 	private double battery = 0.0;
 	private String connectionType = "";
@@ -70,7 +70,6 @@ public class NsamPeer extends Peer {
 	public NsamPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
-		serviceList=createServiceList();
 		initialize();
 	}
 
@@ -119,19 +118,31 @@ public void initialize() throws InvalidParamsException {
 			if ( ((AllocableResource) r).getType().equals(MAX_ACCEPTED_CONNECTION) )
 				maxAcceptedConnection = (int) ((AllocableResource) r).getAmount();
 		}	
-		
 	}
 	
 	public Object clone() {
 		NsamPeer clone = (NsamPeer) super.clone();
+		
+		clone.isRandomInit = this.isRandomInit;
+		clone.qos = this.qos;
 		clone.battery = this.battery;
 		clone.connectionType = this.connectionType;
 		clone.maxAcceptedConnection = this.maxAcceptedConnection;
+		clone.activeConnections = 0;
+		clone.bandwidth = this.bandwidth;
+		clone.maxServiceNum =this.maxServiceNum;
+		clone.maxServiceInputNum =this.maxServiceInputNum;
+		clone.maxServiceOutputNum =this.maxServiceOutputNum;
+		clone.serviceInputRange = this.serviceInputRange;
+		clone.serviceOutputRange = this.serviceOutputRange;
+				clone.q = 0;
+		clone.qh = 0;
 		clone.isConnected = true;
-		clone.serviceList = this.serviceList;
-		clone.qos = this.qos;
-	//	clone.cache = new ArrayList<ResourceAdv>();
-	//	clone.cachedQueries = new ArrayList<ResourceAdv>();
+		clone.cache = new ArrayList<CacheElement>();
+		clone.serviceSearchList = new ArrayList<ServiceDiscoveryStructure>();
+		requestedServiceList = new ArrayList<CompositionElement>();
+		
+		clone.serviceList=createServiceList();	
 		return clone;
 	}
 	
@@ -248,16 +259,41 @@ public void initialize() throws InvalidParamsException {
 			
 		}
 	}
+	public ArrayList<NsamService> createServiceList (){
+		
+		int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
+		 System.out.println("Numero servizi sul peer corrente: " + numServices);		 
+		 for (int i=0; i<numServices; i++){
+			ArrayList<Integer> serviceInput = new ArrayList<Integer>();
+			ArrayList<Integer> serviceOutput =new  ArrayList<Integer>();
+			int numIn = Engine.getDefault().getSimulationRandom().nextInt(maxServiceInputNum);
+			for (int j=0; j<numIn; j++){
+				int  nextInput = Engine.getDefault().getSimulationRandom().nextInt(serviceInputRange);
+				serviceInput.add(nextInput);			
+			}
+			int numOut = Engine.getDefault().getSimulationRandom().nextInt(maxServiceOutputNum);
+			for (int j=0; j<numOut; j++){
+				int nextOutput = Engine.getDefault().getSimulationRandom().nextInt(serviceOutputRange);
+				serviceOutput.add(nextOutput);	
+			}
+		 { 
+			 NsamService service = new NsamService(serviceInput, serviceOutput);
+			 System.out.println("ho creato il servizio numero " + i);
+			 serviceList.add(service); 
+		 }
+		 } 
+		 return serviceList;
+	}
 	
 		
-	public ArrayList<NsamService> createServiceList (){
+	public ArrayList<NsamService> createServiceList2 (){
 		System.out.println("Inizializzo num servizi sul peer corrente ");
 		 /*creo una array list che al max ha maxServiceNum elementi */
-		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
+		int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
 		 System.out.println("Numero servizi sul peer corrente: " + numServices);
 		 for (int i=0; i<numServices; i++)
 		 {
-			 NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
+			NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
 			 serviceList.add(service); 
 		 } 
 		 return serviceList;
