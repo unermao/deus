@@ -9,11 +9,10 @@ public class NsamService {
 	
 	private ArrayList<Integer> serviceInput = new ArrayList<Integer>();
 	private ArrayList<Integer> serviceOutput = new ArrayList<Integer>();
-	private Peer interestedNode = null;
+	private NsamPeer interestedNode = null;
 	private boolean found = false;
 	private String id = null;
 	private Peer owner = null;
-	
 	
 	
 	public NsamService (int maxInput, int maxOutput, int inRange, int outRange){
@@ -45,14 +44,16 @@ public class NsamService {
 		
 	}
 	
-	
+	public String getServiceId(){
+		return id;
+	}
 	
 	
 	public ArrayList<Integer> getServiceInput() {
 		return serviceInput;
 	}
 
-	public ArrayList<Integer> getServiceOuput() {
+	public ArrayList<Integer> getServiceOutput() {
 		return serviceOutput;
 	}
 	
@@ -67,7 +68,7 @@ public class NsamService {
 	public Peer getInterestedNode() {
 		return interestedNode;
 	}
-	public void setInterestedNode(Peer interestedNode) {
+	public void setInterestedNode(NsamPeer interestedNode) {
 		this.interestedNode = interestedNode;
 	}
 	

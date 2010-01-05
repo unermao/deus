@@ -10,10 +10,8 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
  * <p>
  * This class is used to initialize the events associated to MultipleRandomConnectionsEvent.
  * </p>
- * 
- * @author Michele Amoretti (michele.amoretti@unipr.it)
- *
  */
+
 public class NsamMultipleRandomConnectionsSchedulerListener implements SchedulerListener {
 
 	public void newEventScheduled(Event parentEvent, Event newEvent) {

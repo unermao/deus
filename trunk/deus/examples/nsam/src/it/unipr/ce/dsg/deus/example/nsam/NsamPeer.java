@@ -3,11 +3,7 @@ package it.unipr.ce.dsg.deus.example.nsam;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
-import it.unipr.ce.dsg.deus.example.simpleDataDriven.ServerPeer;
-import it.unipr.ce.dsg.deus.example.simpleDataDriven.StreamingPeer;
-import it.unipr.ce.dsg.deus.example.simpleDataDriven.VideoChunk;
 import it.unipr.ce.dsg.deus.impl.resource.AllocableResource;
-import it.unipr.ce.dsg.deus.impl.resource.ResourceAdv;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.ArrayList;
@@ -21,9 +17,6 @@ public class NsamPeer extends Peer {
 	
 	private static final String BATTERY = "battery";
 	private static final String CONNECTION_TYPE = "connectionType";
-	private static final String CPU ="cpu";
-	private static final String RAM = "ram";
-	private static final String DISK = "disk";
 	private static final String BANDWIDTH = "bandwidth";
 	private static final String IS_RANDOM_INIT = "isRandomInit";
 	private static final String QUALITY_LEVEL = "qos";
@@ -40,35 +33,40 @@ public class NsamPeer extends Peer {
 	public static final String WIFI = "wifi";
 	public static final String G3 = "3g";
 
+	private static final float SEARCH_TIMEOUT = 18000; //con VT= 100 --> 1 sec, sono 3 minuti
+	private static final int MIN_BATTERY = 20;
+	private static final int EXEC_TIME = 10;   //tempo di esecuzione di un servizio atomico 
+	//TODO differenziare il tempo di esecuzione a seconda del nodo che sto impiegando!!!!
+	//posso calcolarlo come evento casuale expRandom(this.getEventRandom()
+	
 	
 	private int qos = 0;
 	private double battery = 0.0;
 	private String connectionType = "";
+
+
 	private int bandwidth = 0;
 	private int maxServiceNum =0;
 	private int maxServiceInputNum = 0;
 	private int maxServiceOutputNum = 0;
 	private int serviceInputRange = 0;
 	private int serviceOutputRange = 0;
-	private int cpu = 0;
-	private int ram = 0;
-	private int disk = 0;	
+
 	
 	// query log
 	private double q = 0;
 	private double qh = 0;
 	
 	private int maxAcceptedConnection = 0;
+	private int activeConnections = 0;
 
+	private  ArrayList<NsamService> serviceList = new ArrayList<NsamService>();  //lista di servizi sul nodo 
+	private ArrayList<ServiceDiscoveryStructure> serviceSearchList = new ArrayList<ServiceDiscoveryStructure>();  //lista di servizi che sto cercando
+	private ArrayList<CompositionElement> requestedServiceList = new ArrayList<CompositionElement>(); //lista dei servizi che mi sono stati chiesti
+	private ArrayList<CacheElement> cache = new ArrayList<CacheElement>();  //lista di servizi che ho cercato e che ho usato
+	
 	
 
-
-//	private NsamServerPeer serverNode = null;
-	private  ArrayList<NsamService> serviceList = new ArrayList<NsamService>();
-	private ArrayList<NsamService> cache = new ArrayList<NsamService>();
-	
-//	private ArrayList<ResourceAdv> cachedQueries = new ArrayList<ResourceAdv>();
-	
 	public NsamPeer(String id, Properties params, ArrayList<Resource> resources)
 			throws InvalidParamsException {
 		super(id, params, resources);
@@ -127,7 +125,6 @@ public void initialize() throws InvalidParamsException {
 		clone.battery = this.battery;
 		clone.connectionType = this.connectionType;
 		clone.maxAcceptedConnection = this.maxAcceptedConnection;
-		
 		clone.isConnected = true;
 		clone.serviceList = this.serviceList;
 		clone.qos = this.qos;
@@ -135,8 +132,191 @@ public void initialize() throws InvalidParamsException {
 	//	clone.cachedQueries = new ArrayList<ResourceAdv>();
 		return clone;
 	}
-
 	
+
+	//gestisce l'arrivo di una notifica di servizio trovato
+	//se ero io che lo cercavo lo aggiungo nella mia search list
+	//se la ricerca era associata ad un altro servizio (composto) lo associo al mio componente locale e notifico il peer interessato
+	
+	public void manageNotification(String serviceId, ArrayList<CompositionElement> compo){
+		ArrayList<CompositionElement> composition = new ArrayList<CompositionElement>();
+		
+		if (!serviceSearchList.isEmpty())
+			for (int i=0; i<serviceSearchList.size(); i++)
+			{ 
+				if (serviceSearchList.get(i).getRequestService().getServiceId()== serviceId)
+				{
+					float searchTime=serviceSearchList.get(i).getRequestTime();
+					if ((Engine.getDefault().getVirtualTime()-searchTime) > SEARCH_TIMEOUT)
+					{
+						getLogger().fine("the discovery has expired...");
+						serviceSearchList.remove(i);
+						return;
+					}
+					else {
+						if (serviceSearchList.get(i).getAssociatedSearch()==null){
+							serviceSearchList.get(i).getCompositionAlternatives().add(compo);
+						}
+						else if(!requestedServiceList.isEmpty()){
+							for (int j=0; j<requestedServiceList.size(); j++)
+								if ((requestedServiceList.get(j).getService().getServiceId()==serviceSearchList.get(i).getAssociatedSearch().getServiceId())&&
+										!(requestedServiceList.get(j).getPeer()== this))
+								{
+									CompositionElement comp = new CompositionElement(serviceSearchList.get(i).getLocalComponent(), this);
+									composition.add(comp);
+									composition.addAll(compo);
+									NotifyMessage compNotif = new NotifyMessage(serviceSearchList.get(i).getAssociatedSearch().getServiceId(), composition);
+									System.out.println("Sto notificando al peer richiedente che ho trovato il suo servizio!");
+									try {
+										NsamNotifyMessageEvent nme =(NsamNotifyMessageEvent)Engine.getDefault().createEvent(NsamNotifyMessageEvent.class,Engine.getDefault().getVirtualTime());			
+									//	NsamNotifyMessageEvent nme =(NsamNotifyMessageEvent)new NsamNotifyMessageEvent("notify", params, null, notif).createInstance(triggeringTime);
+										nme.setNotifyMsg(compNotif);
+										nme.setOneShot(true);
+										nme.setAssociatedNode(requestedServiceList.get(j).getPeer());
+										Engine.getDefault().insertIntoEventsList(nme);
+									}catch(Exception e1){
+										e1.printStackTrace();
+									}
+									//FIXME elimino la ricerca che ho appena notificato??
+									requestedServiceList.remove(j);
+								}
+							}
+						}
+					}
+				}
+		}
+	
+	
+	//controllo periodico della lista dei servizi trovati; 
+	// per ciascuna composizione scelgo la migliore in termini di qos e la eseguo
+	//salvo nella cache la composizione che ho eseguito 
+	
+	public void checkDiscoveredList()
+	{
+		int quality = 0;
+		float arrayQoS[]=null;
+		
+		for (int i= 0; i<serviceSearchList.size(); i++)
+		{
+			if (!serviceSearchList.get(i).getCompositionAlternatives().isEmpty())
+				for (int j=0; j<serviceSearchList.get(i).getCompositionAlternatives().size(); j++){
+					ArrayList<CompositionElement> comp = serviceSearchList.get(i).getCompositionAlternatives().get(i);
+					for (int k=0; k<comp.size(); k++) 
+						quality =+ comp.get(k).getPeer().getQoS();
+					float avgQoS = quality/comp.size();
+					arrayQoS[j]=avgQoS;	
+					System.out.println("ho il vettore di QoS con num elementi:" + arrayQoS.length);
+				}
+			//calcola il massimo del vettore di QoS		
+		//	int maxIndex = computeMaxQoS(arrayQoS);
+			
+			//ordino il vettore arrayQoS e prendo il primo elemento
+			int[] idxQoS =sortQoS(arrayQoS);
+			boolean newChoice = false;
+			int maxIndex = 0;
+			while ((!newChoice)&&(maxIndex<arrayQoS.length)){
+				ArrayList<CompositionElement> composition = new ArrayList<CompositionElement>(serviceSearchList.get(i).getCompositionAlternatives().get(idxQoS[maxIndex]));
+				int execTime = EXEC_TIME;
+				if (!isCompositionAvailable(composition)){			
+					maxIndex++;
+					newChoice=false;
+				}
+				else {	
+					
+				for (int k= 0; k<composition.size(); k++){
+				//impegno le risorse batteria e aumento le connessioni attive
+				composition.get(k).getPeer().setBattery(composition.get(k).getPeer().getBattery()-10);
+				composition.get(k).getPeer().addActiveConnection();
+				//schedulo un evento free resource fra un tempo pari ad uno slot di esecuzione e lo associo al nodo k della lista
+				try{
+					NsamFreeResourceEvent  free = (NsamFreeResourceEvent)new NsamFreeResourceEvent("free_res", params, null).createInstance(Engine.getDefault().getVirtualTime()+execTime);
+					free.setAssociatedNode(composition.get(k).getPeer());
+					free.setOneShot(true);
+					free.setServ(composition.get(k).getService());
+					Engine.getDefault().insertIntoEventsList(free);
+				}catch (Exception e2) {
+					e2.printStackTrace();
+				}
+				execTime =+ EXEC_TIME; 		
+			}
+				}				
+			addToCache(serviceSearchList.get(i).getRequestService(), serviceSearchList.get(i).getCompositionAlternatives().get(maxIndex));
+			//TODO ogni tanto ripulisci la cache...
+	}
+			
+		}
+	}
+	
+		
+	public ArrayList<NsamService> createServiceList (){
+		
+		 /*creo una array list che al max ha maxServiceNum elementi */
+		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
+		 for (int i=0; i<numServices; i++)
+		 {
+			 NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
+			 serviceList.add(service); 
+		 } 
+		 return serviceList;
+	}
+	
+	
+public void removeActiveConnection(){
+		
+		if( this.activeConnections >= 1 )
+		 this.activeConnections--;
+		else
+			System.out.println("ERRORE PROVIDER PEER ! Connessioni Attive = 0 non posso decrementare");
+	}
+	
+	public void addActiveConnection(){
+		
+		if( this.activeConnections < this.maxAcceptedConnection )
+		 this.activeConnections++;
+		else
+			System.out.println("ERRORE PROVIDER PEER ! Connessioni Attive = "+ this.maxAcceptedConnection  +" non posso incrementare");
+	}
+	
+	
+	
+public boolean isCompositionAvailable(ArrayList<CompositionElement> composition){
+	for (int k=0; k< composition.size(); k++) {				
+	//controllo se i nodi della composizione sono ancora connessi e se non hanno raggiunto il max numero di connessioni	
+		NsamPeer providerPeer = (NsamPeer)composition.get(k).getPeer();
+		if(providerPeer.isConnected)
+			if (providerPeer.getActiveConnections()< providerPeer.getMaxAcceptedConnection())
+				if(checkBatteryValue(providerPeer))
+					return true;
+			}
+	return false;		
+	} 
+	
+	
+	public boolean checkBatteryValue(NsamPeer peer){
+		
+		if ((peer.getId().equals("mobileNode")) || (peer.getId().equals("mobile3GNode"))){
+			if (peer.getBattery()<MIN_BATTERY)
+		{
+			System.out.println("Nodo mobile e batteria insufficiente!!!");
+		/*	if (peer.getBattery()<5){
+				peer.setConnected(false);	
+				System.out.println("Batteria esaurita, il nodo si disconnette!!!");
+			}  */
+			return false;
+		}
+		}
+		return true;
+	}
+	
+	public ArrayList<NsamService> getServiceList() {	
+		return serviceList;
+	}
+	
+	public void setServiceList(ArrayList<NsamService> serviceList) {
+		this.serviceList = serviceList;
+	
+	}
+		
 	public void setConnectionType(String connectionType) {
 		this.connectionType = connectionType;
 	}
@@ -157,29 +337,6 @@ public void initialize() throws InvalidParamsException {
 		return 7;
 	}
 
-	public int getCpu() {
-		return cpu;
-	}
-	
-	public void setCpu(int cpu) {
-		this.cpu = cpu;
-	}
-
-	public int getRam() {
-		return ram;
-	}
-
-	public void setRam(int ram) {
-		this.ram = ram;
-	}
-
-	public int getDisk() {
-		return disk;
-	}
-
-	public void setDisk(int disk) {
-		this.disk = disk;
-	}
 	
 	public double getQ() {
 		return q;
@@ -204,20 +361,36 @@ public void initialize() throws InvalidParamsException {
 			return this.qh / this.q;
 	}
 	
-	public ArrayList<NsamService> getCache() {
-		return cache;
-	}
+
 	
-	public void addToCache(NsamService service) {
-		if (cache.size() < getDMax())    //è la dimensine della cache???
-										//TODO trova un modo per impostarla
-			cache.add(service);
-		else if (cache.size() == getDMax()) {
+	public void addToCache(NsamService service, ArrayList<CompositionElement> selectedComp) {
+		CacheElement selection = new CacheElement(service.getServiceId(), selectedComp);
+		if (cache.size() < getCacheDim(this))    //è la dimensione della cache???
+										//TODO trova un modo per imposta
+			cache.add(selection);
+		else if (cache.size() == getCacheDim(this)) {
 			cache.remove(0);
-			cache.add(service);
+			cache.add(selection);
 		}
-	}
+	} 
 	
+	/*public int computeMaxQoS(float qos[]){
+		int maxIndex = 0;
+		float maxQoS = 0;
+		maxQoS=qos[0];
+		maxIndex=0;
+		for(int index=0; index<qos.length; index++) {
+			if( qos[index]>maxQoS ) {
+			    	  maxQoS=qos[index];
+			    	  maxIndex = index;
+			}
+			   }
+		System.out.println("Il massimo e' "+maxQoS+ "all'indice" + maxIndex);
+		return maxIndex;
+	}  */
+
+	
+	/*	
 	public void removeServiceFromCache(NsamService currentService) {
 		ArrayList<NsamService> newCache = new ArrayList<NsamService>();
 		for (Iterator<NsamService> it = cache.iterator(); it.hasNext();) {
@@ -226,25 +399,74 @@ public void initialize() throws InvalidParamsException {
 				newCache.add(s);
 		}
 		cache = newCache;
+	}   */
+	
+	
+	public int[] sortQoS(float[] qos) {
+		float temp = 0;
+		int[] indexArray = null;
+		for(int j=0;j<qos.length;j++) {
+			for(int i=j;i<qos.length;i++) {
+		if(qos[j]>qos[i]) {
+		temp=qos[j];
+		qos[j]=qos[i];
+		indexArray[j] = i;
+		qos[i]=temp;
+		}
+		else indexArray[j] =j;
+		}
+			}
+		return indexArray;
+		}
+
+public int getCacheDim(NsamPeer peer){
+	int dim = 0;
+	if (peer.getId().equals("pcNode"))
+		dim = 10;
+	else if (peer.getId().equals("mobileNode"))
+		dim= 6;
+	else if (peer.getId().equals("mobile3GNode"))
+		dim = 4;		
+	return dim;
+}
+
+public boolean checkDisconnection( NsamPeer peer ){
+	
+	if(peer == null)
+		return true;
+	
+	if(peer.isConnected() == false)
+		return true;
+	
+	return false;
+	
+}
+	public int getActiveConnections() {
+		return activeConnections;
+	}
+
+	public void setActiveConnections(int activeConnections) {
+		this.activeConnections = activeConnections;
 	}
 	
-	public ArrayList<NsamService> createServiceList (){
-		
-		 /*creo una array list che al max ha maxServiceNum elementi */
-		 int numServices = Engine.getDefault().getSimulationRandom().nextInt(maxServiceNum);
-		 for (int i=0; i<numServices; i++)
-		 {
-			 NsamService service = new NsamService(maxServiceInputNum, maxServiceOutputNum,serviceInputRange, serviceOutputRange);
-			 serviceList.add(service); 
-		 } 
-		 return serviceList;
+	
+	public ArrayList<ServiceDiscoveryStructure> getServiceSearchList() {
+		return serviceSearchList;
+	}
+
+	public void setServiceSearchList(ArrayList<ServiceDiscoveryStructure> serviceSearchList) {
+		this.serviceSearchList = serviceSearchList;
 	}
 	
-	public ArrayList<NsamService> getServiceList() {	
-		return serviceList;
+	public ArrayList<CompositionElement> getRequestedServiceList() {
+		return requestedServiceList;
+	}
+	public double getBattery() {
+		return battery;
+	}
+
+	public void setBattery(double battery) {
+		this.battery = battery;
 	}
 	
-	public void setDisk(ArrayList<NsamService> serviceList) {
-		this.serviceList = serviceList;
-	}
 }
