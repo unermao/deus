@@ -7,11 +7,13 @@
 
 	<!-- *** EVENTS *** -->
 
+<!-- ho due eventi di nascita, uno associato solo alla connessione dei nodi, mentre l'altro prevede le disconnessioni -->
+
 	<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.nsam.NsamBirthSchedulerListener" >
 	 	<aut:events><!-- events to be scheduled on created node -->
 		    <aut:reference id="connection" />
-		   	<aut:reference id="discovery" /> 
+	<!--	   	<aut:reference id="discovery" />    -->
 		</aut:events>
 	</aut:event>
 	
@@ -41,8 +43,11 @@
 			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:event>
+
+
+<!-- l'evento discovery ha questi parametri che ho preso dall'esempio revol, in particolare meanArrivaFreeresource a me serve? -->
 	
- 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.nsam.NsamDiscoveryEvent" >
+ 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.nsam.NsamDiscoveryEvent"  oneShot="true">
 		<aut:logger level="INFO" />
 		<aut:params>
 			<aut:param name="meanArrivalTriggeredDiscovery" value="2" />
@@ -51,18 +56,30 @@
 			<aut:param name="neighborsPercentage" value="60" />
 		</aut:params>
 	</aut:event>
+
+
+<!-- l'evento freeres io lo schedulo dentro al codice, devo metterl anche qui?? -->
 	
 	<aut:event id="freeres" handler="it.unipr.ce.dsg.deus.example.nsam.NsamFreeResourceEvent" >
 		<aut:logger level="INFO" />
 	</aut:event>
 	
-
+<!-- questo l'ho preso sempre da revol, ma non fixedPop...ma non so bene cosa fa -->
 	<aut:event id="disconnection" handler="it.unipr.ce.dsg.deus.p2p.event.DisconnectionEvent" oneShot="true"
 	schedulerListener="it.unipr.ce.dsg.deus.example.nsam.NsamDisconnectionSchedulerListener">
 		<aut:events>
 			<aut:reference id="death" />
 		</aut:events>
 	</aut:event>
+
+<!-- questi sono due eventi periodici che devono essere schedulati ogni tanto, per cui devo associare un processo?? -->	
+  <aut:event id ="updateNodeProperty" handler="it.unipr.ce.dsg.deus.example.nsam.UpdateNodePropertyEvent"> 
+	<aut:logger level="FINE" />
+	</aut:event>	
+	
+	<aut:event id ="discoveredListCheck" handler="it.unipr.ce.dsg.deus.example.nsam.NsamPeriodicDiscoveredListCheck"> 
+	<aut:logger level="FINE" />
+	</aut:event>	
 	
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 	 
@@ -72,38 +89,25 @@
 	
 	<aut:event id="logNsamPeerStats" handler="it.unipr.ce.dsg.deus.example.nsam.LogNsamPeerStatsEvent" />
 	
+	<aut:event id="logNsamServicesDistribution" handler="it.unipr.ce.dsg.deus.example.nsam.LogNsamServicesDistributionEvent" oneShot="true"/>
 	
 	<!-- *** NODE SPECIES *** -->
+	
 
-	<aut:node id="serverNode" handler="it.unipr.ce.dsg.deus.example.nsam.NsamServerPeer">
-			<aut:logger level="FINE" />
-		<aut:params>
-			<aut:param name="qualityLevel" value="5" />     <!-- livello di qualità del servizio offerta  -->
-			<aut:param name="maxServiceNum" value="20" />   <!-- max numero di servizi ospitati  -->
-			<aut:param name="isRandomInit" value="true" />
-		</aut:params>
-		
-		<aut:resources>
-			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.AllocableResource">
-				<aut:params>
-					<aut:param name="type" value="maxAcceptedConnection" />
-					<aut:param name="amount" value="100" />
-				</aut:params>	
-			</aut:resource>
-		</aut:resources>
-	</aut:node>
+<!-- questi sono i tre tipi di nodi presenti nella rete, tutti riferiti ad uno stesso handler  -->
 
 	<aut:node id="pcNode" handler="it.unipr.ce.dsg.deus.example.nsam.NsamPeer">
 			<aut:logger level="FINE" />
 		<aut:params>
 			<aut:param name="battery" value="100" />
 			<aut:param name="connectionType" value="adsl" />
-			<aut:param name="bandwidth" value=""/>
-			<aut:param name="CPU" value=""/>
-			<aut:param name="RAM" value=""/>
-			<aut:param name="disk" value=""/>
+		<!-- 	<aut:param name="bandwidth" value=""/>   -->
 			<aut:param name="qualityLevel" value="4" />    
 			<aut:param name="maxServiceNum" value="10" />  
+			<aut:param name="maxServiceInputNum" value="5" />  <!-- num di in e out per i servizi -->
+			<aut:param name="maxServiceOutputNum" value="5" />
+			<aut:param name="serviceInputRange" value="20" />
+			<aut:param name="serviceOutputRange" value="20" /> 
 			<aut:param name="isRandomInit" value="true" />
 		</aut:params>
 
@@ -122,10 +126,7 @@
 		<aut:params>
 			<aut:param name="battery" value="80" />
 			<aut:param name="connectionType" value="wifi" />
-						<aut:param name="bandwidth" value=""/>
-			<aut:param name="CPU" value="520"/>
-			<aut:param name="RAM" value="64"/>
-			<aut:param name="disk" value="1000"/>
+	<!--  	<aut:param name="bandwidth" value=""/>  -->	
 			<aut:param name="qualityLevel" value="3" />    
 			<aut:param name="maxServiceNum" value="7" /> 
 			<aut:param name="maxServiceInputNum" value="5" />
@@ -150,10 +151,7 @@
 		<aut:params>
 			<aut:param name="battery" value="60" />
 			<aut:param name="connectionType" value="3g" />
-			<aut:param name="bandwidth" value=""/>
-			<aut:param name="CPU" value=""/>
-			<aut:param name="RAM" value=""/>
-			<aut:param name="disk" value=""/>
+	<!-- 	<aut:param name="bandwidth" value=""/>   -->	
 			<aut:param name="qualityLevel" value="3" />    
 			<aut:param name="maxServiceNum" value="5" />  
 			<aut:param name="isRandomInit" value="true" />
@@ -169,104 +167,78 @@
 	</aut:node>
 
 
-
-
-<!-- 	<aut:node id="nsamNode" handler="it.unipr.ce.dsg.deus.example.nsam.NsamPeer">
-		<aut:params>
-			<aut:param name="maxServiceNum" value="3" />
-			<aut:param name="isRandomInit" value="true" />
-		</aut:params>
-		<aut:resources>
-			<aut:resource handler="it.unipr.ce.dsg.deus.impl.resource.Service">
-				<aut:params>
-					<aut:param name="type" value="cpuFactor" />
-					<aut:param name="amount" value="4" /><!-- *512 MHz = 2GHz -->
-<!--  		</aut:params>	
-			</aut:resource>
-			</aut:resources>
-	</aut:node>    -->
-
-
 	<!-- *** PROCESSES *** -->
 
 	<!-- with 1/lambda = 1000 and 1/lambda' = 1000000, we have E[N] = lambda/lambda' = 1000 -->
 
-	<aut:process id="twospeedspoisson" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPoissonProcess">
+<!-- evento di nascita dei nodi, per ora hanno tutti lo stesso processo, poi differenzio come nell'esempio streaming -->
+<aut:process id="rectpulseperiodic" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 		<aut:params>
-			<aut:param name="firstMeanArrival" value="10" />
-			<aut:param name="secondMeanArrival" value="100000" />
-			<aut:param name="vtThreshold" value="50000" />
+			<aut:param name="period" value="10" />
+			<aut:param name="startVtThreshold" value="0" />
+			<aut:param name="stopVtThreshold" value="10000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="pcNode" />
+			<aut:reference id="mobileNode" />
+			<aut:reference id="mobile3GNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birth" />
 		</aut:events>
 	</aut:process>
 
-	<aut:process id="poisson1" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
-		<aut:params>
-			<aut:param name="meanArrival" value="1000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="birth2" />
-		</aut:events>
-	</aut:process>
+<!--evento di connessione dei nodi, sempre tutti uguali -->
 
-	<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+<aut:process id="poisson2" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="5" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="pcNode" />
+			<aut:reference id="mobileNode" />
+			<aut:reference id="mobile3GNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="connection" />
-			<aut:reference id="connection2" />
-			<aut:reference id="death" />
+	<!--		<aut:reference id="connection2" /> 
+			<aut:reference id="death" />   -->  <!-- questi li aggiungo quando pevedo le disconnessioni -->
 		</aut:events>
 	</aut:process>
 
+<!-- questo processo � associato alle disconnessioni, per ora non lo uso -->
 	<aut:process id="poisson3" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="5000000" /> 
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="pcNode" />
+			<aut:reference id="mobileNode" />
+			<aut:reference id="mobile3GNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
 
+<!-- processo associato alla discovery, all'inizio non troppo frequente   -->
 	<aut:process id="poisson4" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
 		<aut:params>
 			<aut:param name="meanArrival" value="500000" />
 		</aut:params>
 		<aut:nodes>
-			<aut:reference id="revolNode" />
+			<aut:reference id="pcNode" />
+			<aut:reference id="mobileNode" />
+			<aut:reference id="mobile3GNode" />
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="discovery" />
 		</aut:events>
 	</aut:process>
+
+
 	
-	<aut:process id="periodic1" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
-			<aut:param name="period" value="100000" />
-		</aut:params>
-		<aut:nodes>
-			<aut:reference id="revolNode" />
-		</aut:nodes>
-		<aut:events>
-			<aut:reference id="adaptation" />
-		</aut:events>
-	</aut:process>
-	
+<!-- questo processo raccoglie le statistiche -->	
 	<aut:process id="periodic2" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
 		<aut:params>
 			<aut:param name="period" value="100000" /> 
@@ -274,20 +246,53 @@
 		<aut:events>
 		    <aut:reference id="logPopulationSize" />
 			<aut:reference id="logNodeDegree" /> 
-			<aut:reference id="logRevolPeerStats" /> 
+		<aut:reference id="logNsamPeerStats" /> 
+		</aut:events>
+	</aut:process>
+	
+		<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="100000" /> 
+		</aut:params>
+		<aut:events> 
+		<aut:reference id="logNsamServicesDistribution" /> 
+		</aut:events>
+	</aut:process>
+
+	<aut:process id="periodicCheckDiscovered" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
+			<aut:params>
+			<aut:param name="period" value="10000" />
+			<aut:param name="startVtThreshold" value="10000" />
+			<aut:param name="stopVtThreshold" value="2000000" />
+			</aut:params>
+		<aut:events>
+			<aut:reference id="discoveredListCheck" />  
 		</aut:events>
 	</aut:process>
 
 
-	<!-- *** SIMULATION *** -->
+	<aut:process id="periodicNodeUpdate" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
+		<aut:params>
+			<aut:param name="period" value="200000" /> 
+		</aut:params>
+		<aut:events>
+			<aut:reference id="updateNodeProperties" />  
+		</aut:events>
+	</aut:process>
 
-	<aut:engine maxvt="20000001" seed="123456789"> 
+	<!-- *** SIMULATION ***   maxvt="2000001" -->
+
+	<aut:engine maxvt="100001" seed="123456789"> 
 		<aut:logger level="INFO" />
 		<aut:processes>
-			<aut:reference id="twospeedspoisson" /> 
-			<!-- aut:reference id="poisson1" / -->
-			<aut:reference id="periodic2" />
+			<aut:reference id="rectpulseperiodic" /> 
+			<aut:reference id="periodic" />
+	<!--  		<aut:reference id="poisson4" />
+			<aut:reference id="periodicCheckDiscovered" />
+			<aut:reference id="periodicNodeUpdate2" />
+			<aut:reference id="periodic2" />   -->
 		</aut:processes>
 	</aut:engine>
+
 
 </aut:automator>
