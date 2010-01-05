@@ -28,17 +28,13 @@
 	<aut:logger level="FINE" />
 	</aut:event>	
 	
-	<aut:event id ="discoveredListCheck" handler="it.unipr.ce.dsg.deus.example.nsam.NsamPeriodicDiscoveredListCheck"> 
-	<aut:logger level="FINE" />
-	</aut:event>	
 	
 	<aut:event id="death" handler="it.unipr.ce.dsg.deus.impl.event.DeathEvent" oneShot="true" />
 	 
 	<aut:event id="logPopulationSize" handler="it.unipr.ce.dsg.deus.impl.event.LogPopulationSizeEvent" />
 
 	<aut:event id="logNodeDegree" handler="it.unipr.ce.dsg.deus.p2p.event.LogNodeDegreeEvent" />
-	
-	<aut:event id="logNsamPeerStats" handler="it.unipr.ce.dsg.deus.example.nsam.LogNsamPeerStatsEvent" />
+
 	
 	<aut:event id="logNsamServicesDistribution" handler="it.unipr.ce.dsg.deus.example.nsam.LogNsamServicesDistributionEvent" oneShot="true"/>
 	
@@ -171,15 +167,6 @@
 		</aut:events>
 	</aut:process>
 	
-		<aut:process id="periodic" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
-		<aut:params>
-			<aut:param name="period" value="100000" /> 
-		</aut:params>
-		<aut:events> 
-		<aut:reference id="logNsamServicesDistribution" /> 
-		</aut:events>
-	</aut:process>
-
 
 
 	<aut:process id="periodicNodeUpdate" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
