@@ -33,8 +33,8 @@ public class LogNsamServicesDistributionEvent extends Event {
 			
 			HashMap<String, Integer> serviceMap = new HashMap<String, Integer>();
 			ArrayList<NsamService> nodeServices = new ArrayList<NsamService>();
-			
-			AutomatorLogger a = new AutomatorLogger("./temp/logger");
+			Integer numService = 0;
+			AutomatorLogger a = new AutomatorLogger("./temp/loggerServices");
 			
 			ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 			
@@ -52,13 +52,16 @@ public class LogNsamServicesDistributionEvent extends Event {
 				{
 					if (serviceMap.containsKey(nodeServices.get(j).getServiceId()))
 					{
-					Integer numService = (Integer)serviceMap.get(nodeServices.get(j).getServiceId());
-					serviceMap.put(nodeServices.get(j).getServiceId(), numService++);
+				
+				numService = (Integer)serviceMap.get(nodeServices.get(j).getServiceId());
+				//	System.out.println("valore associato al servizio : "+ numService);
+					numService+=1;
+					serviceMap.put(nodeServices.get(j).getServiceId(), numService);
+					
 					}
 					else serviceMap.put(nodeServices.get(j).getServiceId(), 1);	
 				}
 			}	
-			
 			System.out.println("Writing file with service IDs and number...");
 			Set<String> keySet = serviceMap.keySet();
 			for(String k:keySet){
