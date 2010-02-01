@@ -56,6 +56,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
+		//Increment number of sent messages
+		currNode.setSentMessages(currNode.getSentMessages() + 1);
+		
 //		if (resourceKey == 0) {
 //			throw new RunException("The resourceKey should really be set in "
 //					+ this);
