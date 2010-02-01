@@ -16,6 +16,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import it.unipr.ce.dsg.deus.automator.AutomatorLogger;
+import it.unipr.ce.dsg.deus.automator.LoggerObject;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
@@ -31,6 +33,9 @@ import it.unipr.ce.dsg.deus.core.RunException;
  * 
  */
 public class LogGeoKadNodesStatsEvent extends Event {
+
+	private AutomatorLogger a;
+	private ArrayList<LoggerObject> fileValue;
 
 	public LogGeoKadNodesStatsEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -54,22 +59,66 @@ public class LogGeoKadNodesStatsEvent extends Event {
 
 		Collections.sort(Engine.getDefault().getNodes());
 		
-		//checkNodeDistance();
+		a = new AutomatorLogger("./temp/logger");
+		fileValue = new ArrayList<LoggerObject>();
+		fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
+
 		
-		writeTotalKBucketsDimGraph();
-		writeKBucketsDimGraph();
+		checkNodeDistance();
 		
-		verbose();
+		logKBucketsDimAndSentMessages();
+		
+		//writeTotalKBucketsDimGraph();
+		//writeKBucketsDimGraph();
+		
+		//verbose();
 		//compressed();
 		//network_dump();
 		
+		a.write(Engine.getDefault().getVirtualTime(), fileValue);
 
+	}
+	
+	private void logKBucketsDimAndSentMessages()
+	{
+		System.out.println("Logging KBuckets Dim & Sent Messages ...");
+		
+		int numOfKBucket = ((GeoKadPeer)Engine.getDefault().getNodes().get(0)).getNumOfKBuckets();
+		int totalNumOfSentMessages = 0;
+		
+		ArrayList<Integer> kBucketAppList = new ArrayList<Integer>(numOfKBucket);
+		for(int j = 0; j<numOfKBucket; j++)
+			kBucketAppList.add(0);
+		
+		for(int i=0; i<Engine.getDefault().getNodes().size();i++)
+		{
+			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+			
+			totalNumOfSentMessages += peer.getSentMessages();
+			
+			for(int j = 0; j<numOfKBucket; j++)
+			{	
+				kBucketAppList.set(j, kBucketAppList.get(j) + peer.getKbucket().get(j).size() ); 
+			}
+		}
+		
+		double sentMessagesPerPeer = (double)((double)totalNumOfSentMessages/(double)Engine.getDefault().getNodes().size());
+		double sentMessagesPerVT = sentMessagesPerPeer/(double)Engine.getDefault().getVirtualTime();
+		
+		fileValue.add(new LoggerObject("Sent_Mess",totalNumOfSentMessages));
+		fileValue.add(new LoggerObject("Sent_Mess_Peer",sentMessagesPerPeer));
+		fileValue.add(new LoggerObject("Sent_Mess_VT",sentMessagesPerVT));
+		
+		double messPerSecond =(1.0 / (60.0*(sentMessagesPerVT * 3.0 / 50.0)));
+		
+		fileValue.add(new LoggerObject("Sent_Mess_Sec",messPerSecond));
+		
+		for(int index=0; index<numOfKBucket;index++)
+			fileValue.add(new LoggerObject("K"+index+"_Dim", kBucketAppList.get(index)/Engine.getDefault().getNodes().size()));	
 	}
 	
 	private void writeKBucketsDimGraph()
 	{
-
-
 		FileOutputStream file = null;
 		
 		try {
@@ -161,11 +210,14 @@ public class LogGeoKadNodesStatsEvent extends Event {
 	{
 		
 		ArrayList<Double> perc = null;
+		ArrayList<Integer> appArray = null;
 		
+		//Read each node available in the system
 		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
 		{
 			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
 			
+			//Init percentages ArrayList
 			if(perc == null)
 			{
 				perc = new ArrayList<Double>(peer.getNumOfKBuckets());
@@ -174,49 +226,49 @@ public class LogGeoKadNodesStatsEvent extends Event {
 					perc.add(0.0);
 			}
 			
-			ArrayList<Integer> appArray = new ArrayList<Integer>();
-			
+			//Support Array for the number of peer of each kbucket
+			appArray = new ArrayList<Integer>();
 			for(int k=0; k<peer.getNumOfKBuckets(); k++)
 					appArray.add(0);
 			
+			//Read all available nodes in the system
 			for(int k=0; k < Engine.getDefault().getNodes().size(); k++)
 			{
 				
-				double distance = GeoKadDistance.distance(peer, (GeoKadPeer) Engine.getDefault().getNodes().get(k));
-				
-				boolean bucketFounded = false;
-				
-				for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+				if(!peer.equals((GeoKadPeer) Engine.getDefault().getNodes().get(k)))
 				{
-					if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
-					{		
-						bucketFounded = true;
-						appArray.set(j, appArray.get(j)+1);
-						break;
+					double distance = GeoKadDistance.distance(peer, (GeoKadPeer) Engine.getDefault().getNodes().get(k));
+					
+					boolean bucketFounded = false;
+					
+					for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+					{
+						if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
+						{		
+							bucketFounded = true;
+							appArray.set(j, appArray.get(j)+1);
+							break;
+						}
 					}
+					
+					if(bucketFounded == false)
+						appArray.set(peer.getNumOfKBuckets()-1, appArray.get(peer.getNumOfKBuckets()-1)+1);
+			
 				}
-				
-				if(bucketFounded == false)
-					appArray.set(peer.getNumOfKBuckets()-1, appArray.get(peer.getNumOfKBuckets()-1)+1);
-				
+					
 			}
 			
-			for(int k=0; k<peer.getNumOfKBuckets(); k++)
-			{	
-				//System.out.println(k + " --> Perc: " + perc.get(k) + " KBucket Size : " + peer.getKbucket().get(k).size() + " AppArray Size:" + appArray.get(k));
-				
-				//if(peer.getKbucket().get(k).size() > appArray.get(k))
-					//System.out.println(k +" Peer: "+peer.getKey()+" --> Diff: " + (Math.abs(peer.getKbucket().get(k).size()-appArray.get(k))));
-				
+			for(int k=0; k<peer.getNumOfKBuckets(); k++)		
 				if(appArray.get(k) != 0)
-					perc.set(k,perc.get(k) + (double)Math.abs(peer.getKbucket().get(k).size()-appArray.get(k)) );
-					//perc.set(k,perc.get(k) + (double)((double)peer.getKbucket().get(k).size() / (double)appArray.get(k)) );
-			}
+					 perc.set(k,(perc.get(k) + (double)((double)Math.abs(peer.getKbucket().get(k).size()-appArray.get(k))/(double)appArray.get(k))));
+					//perc.set(k,(perc.get(k) + (double)Math.abs(peer.getKbucket().get(k).size()-appArray.get(k))));
 		}
 		
 		for(int k=0; k<perc.size(); k++)
 		{
-			System.out.println((double)perc.get(k)/(double)Engine.getDefault().getNodes().size());
+			System.out.println(k+" "+100.0*(double)perc.get(k)/(double)Engine.getDefault().getNodes().size());
+			fileValue.add(new LoggerObject("Perc_Miss_KB_"+k, 100.0*(double)perc.get(k)/(double)Engine.getDefault().getNodes().size()));	
+			//fileValue.add(new LoggerObject("Miss_KB_"+k, (double)perc.get(k)/(double)Engine.getDefault().getNodes().size()));
 		}
 	}
 	

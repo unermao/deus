@@ -48,6 +48,9 @@ public class GeoKadPeer extends Peer {
 	//Path Direction Forward
 	private boolean pathDirectionForward = true;
 	
+	//Number of sent messages
+	private int sentMessages = 0;
+
 	private GeoKadPoint startPoint = null;
 	private GeoKadPoint endPoint = null;
 	
@@ -118,7 +121,7 @@ public class GeoKadPeer extends Peer {
 		
 		try
 		{
-			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result_2000.txt"))));
+			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result_3000.txt"))));
 			
 			String line = null;
 			line = br.readLine();
@@ -163,7 +166,7 @@ public class GeoKadPeer extends Peer {
 		String path = pathList.get(index);
 		
 		//Remove from available list
-		pathList.remove(index);
+		//pathList.remove(index);
 		
 		//Split to find single lat,log point
 		String[] pathPoints = path.split("#");
@@ -362,6 +365,9 @@ public class GeoKadPeer extends Peer {
 	}
 
 	public ArrayList<GeoKadPeer> find_node(GeoKadPeer peer) {
+		
+		//Increment number of sent messages
+		this.sentMessages ++;
 		
 		double distance = GeoKadDistance.distance(this, peer);
 		
@@ -580,14 +586,15 @@ public class GeoKadPeer extends Peer {
 			if(Engine.getDefault().getSimulationRandom().nextBoolean() == true)
 				randomTime = 100;
 				
-			float delay = Engine.getDefault().getSimulationRandom().nextFloat()*(randomTime);
+			float delay = 25 + (float)Engine.getDefault().getSimulationRandom().nextInt(randomTime);
 			
-			//System.out.println("Delay: " + delay + " New VT: " + (triggeringTime+delay));
+			//System.out.println(this.getKey() + " Delay: " + delay + " New VT: " + (triggeringTime+delay));
 			
 			GeoKadMoveNodeEvent moveEvent = (GeoKadMoveNodeEvent) new GeoKadMoveNodeEvent("node_lookup", params, null).createInstance(triggeringTime + delay);
 			moveEvent.setOneShot(true);
 			moveEvent.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(moveEvent);
+		
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -691,5 +698,13 @@ public class GeoKadPeer extends Peer {
 
 	public void setEndPoint(GeoKadPoint endPoint) {
 		this.endPoint = endPoint;
+	}
+	
+	public int getSentMessages() {
+		return sentMessages;
+	}
+
+	public void setSentMessages(int setMessages) {
+		this.sentMessages = setMessages;
 	}
 }
