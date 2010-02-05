@@ -9,18 +9,24 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 
-public class GeoKadMoveNodeEvent extends NodeEvent {
+public class GeoKadGossipEvent extends NodeEvent {
+	//private int resourceKey = -1;
+
+	private GeoKadGossipMessage gossipMessage = null;
 	
-	public GeoKadMoveNodeEvent(String id, Properties params,
+	public GeoKadGossipEvent(String id, Properties params,
 			Process parentProcess)
 			throws InvalidParamsException {
 		
 		super(id, params, parentProcess);
-	
+		this.gossipMessage = gossipMessage;
 	}
 
 	public Object clone() {
-		GeoKadMoveNodeEvent clone = (GeoKadMoveNodeEvent) super.clone();
+		
+		GeoKadGossipEvent clone = (GeoKadGossipEvent) super.clone();
+		clone.gossipMessage = null;
+		
 		return clone;
 	}
 
@@ -28,10 +34,11 @@ public class GeoKadMoveNodeEvent extends NodeEvent {
 		
 		GeoKadPeer currentNode = (GeoKadPeer) getAssociatedNode();
 		
+		currentNode.setSentMessages(currentNode.getSentMessages() + 1);
+		
 		//System.out.println("Move Node: " + currentNode);
 
-		currentNode.move(triggeringTime);
-		
+		currentNode.routeGossipMessage(triggeringTime, gossipMessage);
 		
 		/*
 		try
@@ -47,8 +54,15 @@ public class GeoKadMoveNodeEvent extends NodeEvent {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-		}
-		*/
+		}*/
+	}
+
+	public GeoKadGossipMessage getGossipMessage() {
+		return gossipMessage;
+	}
+
+	public void setGossipMessage(GeoKadGossipMessage gossipMessage) {
+		this.gossipMessage = gossipMessage;
 	}
 
 }

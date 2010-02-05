@@ -105,11 +105,19 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		double sentMessagesPerPeer = (double)((double)totalNumOfSentMessages/(double)Engine.getDefault().getNodes().size());
 		double sentMessagesPerVT = sentMessagesPerPeer/(double)Engine.getDefault().getVirtualTime();
 		
+		
+		
 		fileValue.add(new LoggerObject("Sent_Mess",totalNumOfSentMessages));
 		fileValue.add(new LoggerObject("Sent_Mess_Peer",sentMessagesPerPeer));
 		fileValue.add(new LoggerObject("Sent_Mess_VT",sentMessagesPerVT));
 		
-		double messPerSecond =(1.0 / (60.0*(sentMessagesPerVT * 3.0 / 50.0)));
+		//1VT=3.6sec
+		double messPerSecond =sentMessagesPerVT * 3.6;
+		
+		System.out.println("Sent_Mess ----------->: "+totalNumOfSentMessages);
+		System.out.println("Sent_Mess_Peer ----------->: "+sentMessagesPerPeer);
+		System.out.println("Sent_Mess_VT ----------->: "+sentMessagesPerVT);
+		System.out.println("Sent_Mess_Sec ----------->: "+messPerSecond);
 		
 		fileValue.add(new LoggerObject("Sent_Mess_Sec",messPerSecond));
 		
