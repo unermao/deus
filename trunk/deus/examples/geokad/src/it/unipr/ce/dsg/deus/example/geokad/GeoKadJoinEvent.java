@@ -80,6 +80,7 @@ public class GeoKadJoinEvent extends NodeEvent {
 //				System.out.println("BootStrap List Size: " + appList.size());
 //			
 			
+			//System.out.println("BootStrap List Size: " + appList.size());
 			for(int k=0; k < appList.size(); k++)
 			{
 				GeoKadPeer peerFromBoot = appList.get(k);
@@ -95,6 +96,22 @@ public class GeoKadJoinEvent extends NodeEvent {
 			}
 		}
 			
+		//First Discovery
+		try
+		{
+			if(Engine.getDefault().getSimulationRandom().nextBoolean() == true)
+			{
+				GeoKadNodeLookUpEvent fn = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 1);
+				fn.setOneShot(true);
+				fn.setAssociatedNode(connectingNode);
+				Engine.getDefault().insertIntoEventsList(fn);
+			}
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		/*
 		// Populates the connectingNode's kbuckets by searching its own key
 		try {

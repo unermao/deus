@@ -25,6 +25,7 @@ public class GeoKadPeer extends Peer {
 	private static final String RAY_DISTANCE = "rayDistance";
 	private int alpha = 3;
 	private static final String DISCOVERY_MAX_WAIT = "discoveryMaxWait";
+	private static final String GOSSIP = "gossip";
 	private float discoveryMaxWait = 500;
 
 	private Vector<ArrayList<GeoKadPeer>> kbucket = null;
@@ -36,8 +37,13 @@ public class GeoKadPeer extends Peer {
 	private double rayDistance = 0.0;
 
 	//Latitude and Longitude
+	private double old_latitude = 0.0;
+	private double old_longitude = 0.0;
 	private double latitude = 0.0;
 	private double longitude = 0.0;
+	
+	//Speed
+	private double speed = 0.0;
 	
 	//Path Index
 	private int pathIndex = 0;
@@ -50,6 +56,9 @@ public class GeoKadPeer extends Peer {
 	
 	//Number of sent messages
 	private int sentMessages = 0;
+	
+	//Gossip Flag
+	private boolean isGossipActive = false;
 
 	private GeoKadPoint startPoint = null;
 	private GeoKadPoint endPoint = null;
@@ -109,6 +118,20 @@ public class GeoKadPeer extends Peer {
 			} catch (NumberFormatException ex) {
 				throw new InvalidParamsException(RAY_DISTANCE
 						+ " must be a valid double value.");
+			}
+		}
+		
+		if (params.getProperty(GOSSIP) != null) {
+			
+			try {
+				this.isGossipActive = Boolean.parseBoolean(params
+						.getProperty(GOSSIP));
+				
+				System.out.println("GOSSIP STATUS: " +  this.isGossipActive);
+				
+			} catch (NumberFormatException ex) {
+				throw new InvalidParamsException(GOSSIP
+						+ " must be a valid Boolean value.");
 			}
 		}
 		
@@ -190,6 +213,14 @@ public class GeoKadPeer extends Peer {
 		clone.latitude = clone.pathCoordinates.get(pathIndex).getLat();
 		clone.longitude = clone.pathCoordinates.get(pathIndex).getLon();
 		
+		clone.old_latitude = clone.pathCoordinates.get(pathIndex).getLat();
+		clone.old_longitude = clone.pathCoordinates.get(pathIndex).getLon();
+		
+		//Set Speed Average
+		clone.speed = Engine.getDefault().getSimulationRandom().nextDouble()*100.0 + 5.0;
+		
+		clone.isGossipActive = this.isGossipActive;
+		
 		//Remove position 0
 		//clone.pathCoordinates.remove(0);
 		
@@ -249,9 +280,146 @@ public class GeoKadPeer extends Peer {
 			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
 			{
 				
+				if(this.kbucket.get(i).size() > 0 && this.isGossipActive == true)
+				{
+					int randomIndex = 0;
+					
+					if(this.kbucket.get(i).size() > 1)
+						randomIndex = Engine.getDefault().getSimulationRandom().nextInt(this.kbucket.get(i).size()-1);
+				
+					try
+					{
+						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(Engine.getDefault().getVirtualTime() + 1));
+						gossipEvent.setOneShot(true);
+						gossipEvent.setAssociatedNode(this.kbucket.get(i).get(randomIndex));
+						gossipEvent.setGossipMessage((new GeoKadGossipMessage(newPeer,3)));
+						Engine.getDefault().insertIntoEventsList(gossipEvent);
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				/*
 				//GOSSIP
-				//for(int j=0; j<this.kbucket.get(i).size(); j++)
-					//this.kbucket.get(i).get(j).insertPeerByGossip(newPeer);
+				for(int j=0; j < this.kbucket.get(i).size(); j++)
+				{
+					try
+					{
+						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(Engine.getDefault().getVirtualTime() + 10.0));
+						gossipEvent.setOneShot(true);
+						gossipEvent.setAssociatedNode( this.kbucket.get(i).get(j));
+						gossipEvent.setGossipMessage(new GeoKadGossipMessage(newPeer,2));
+						Engine.getDefault().insertIntoEventsList(gossipEvent);
+					}
+					catch(Exception e)
+					{e.printStackTrace();}
+				}
+				*/
+					
+				//Add the peer in the right bucket
+				if(!this.kbucket.get(i).contains(newPeer))
+					this.kbucket.get(i).add(newPeer);
+				
+				bucketFounded = true;
+				
+				//System.out.println("Distance: " + distance + " KBucket Index: " + i);
+				
+				break;
+			}
+		}
+		
+		//If the peer's distance is very high it will be added in the last available KBucket
+		if(bucketFounded == false)
+		{
+			//Add new Peer in the last Bucket
+			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer)&& this.kbucket.get(numOfKBuckets-1).size() < 20)
+				kbucket.get(numOfKBuckets-1).add(newPeer);
+		}
+		
+	}
+	
+	/**
+	 * Add newPeer in the right K-Bucket
+	 * 
+	 * @param newPeer
+	 */
+	public void insertPeerFromGossipRouting(GeoKadPeer newPeer,GeoKadGossipMessage gossipMessage, float triggeringTime) {
+		
+		if (this.getKey() == newPeer.getKey())
+			return;
+		
+		//Update Info
+		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+		
+		//Check if the peer is already in some KBuckets
+		for(int i=0; i<(numOfKBuckets); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(newPeer);
+			
+			if( index != -1)
+			{
+				//Set new PeerInfo
+				this.kbucket.get(i).remove(index);
+				break;
+			}
+		}
+		
+		//int distance = this.getKey() ^ newPeer.getKey();
+		double distance = GeoKadDistance.distance(this, newPeer);
+		
+		boolean bucketFounded = false;
+		
+		//For each KBucket without the last one that is for all peers out of previous circumferences 
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//System.out.println(this.getKey() + "@Distance: " + distance + " IF: " + (double)(i)*rayDistance);
+			
+			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
+			{
+				
+				
+				if(this.kbucket.get(i).size() > 0 && this.isGossipActive == true)
+				{
+					int randomIndex = 0;
+					
+					if(this.kbucket.get(i).size() > 1)
+						randomIndex = Engine.getDefault().getSimulationRandom().nextInt(this.kbucket.get(i).size()-1);
+				
+					try
+					{
+						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(triggeringTime + 1));
+						gossipEvent.setOneShot(true);
+						gossipEvent.setAssociatedNode(this.kbucket.get(i).get(randomIndex));
+						gossipEvent.setGossipMessage(new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()));
+						Engine.getDefault().insertIntoEventsList(gossipEvent);
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				
+				/*
+				//GOSSIP
+				for(int j=0; j < this.kbucket.get(i).size(); j++)
+				{
+					try
+					{
+						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("node_lookup", params, null).createInstance((float)(triggeringTime + 1));
+						gossipEvent.setOneShot(true);
+						gossipEvent.setAssociatedNode( this.kbucket.get(i).get(j));
+						gossipEvent.setGossipMessage(new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()));
+						Engine.getDefault().insertIntoEventsList(gossipEvent);
+					}
+					catch(Exception e)
+					{}
+				}
+				*/
 					
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
@@ -381,7 +549,7 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = numOfKBuckets;
+		int maxSize = 2*numOfKBuckets;
 		
 		boolean flag = false;
 		int a = 1;
@@ -535,6 +703,103 @@ public class GeoKadPeer extends Peer {
 		this.rayDistance = rayDistance;
 	}
 
+	public void routeGossipMessage(float triggeringTime,
+			GeoKadGossipMessage gossipMessage) {
+		
+		//System.out.println("Routing Gossip Message with Count: " + gossipMessage.getCounter() + " PeerId: " + gossipMessage.getPeer().getKey());
+		
+		//boolean founded = false;
+		
+		//Check if the peer is in some KBuckets
+		/*
+		for(int i=0; i< numOfKBuckets ; i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(gossipMessage.getPeer());
+			
+			if( index != -1)
+			{
+				//founded = true;
+				break;
+			}
+		}
+		*/
+		
+		if(gossipMessage.getCounter() > 0)
+			if(Engine.getDefault().getSimulationRandom().nextBoolean())
+				this.insertPeerFromGossipRouting(gossipMessage.getPeer(), new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()-1), triggeringTime);
+		
+		//if(founded == false)
+		//{
+			//gossipMessage.increaseCounter();
+			//if(Engine.getDefault().getSimulationRandom().nextBoolean())
+			//	this.insertPeerFromGossipRouting(gossipMessage.getPeer(), new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()), triggeringTime);
+		//}
+		/*
+		else 
+		{
+			gossipMessage.decreaseCounter();
+			
+			//System.out.println("Routing Gossip Message with Count 2: " + gossipMessage.getCounter() + " PeerId: " + gossipMessage.getPeer().getKey());
+			
+			if(gossipMessage.getCounter() > 0)
+			{
+				double distance = GeoKadDistance.distance(this, gossipMessage.getPeer());
+				boolean bucketFounded = false;;
+				
+				for(int i=0; i<(numOfKBuckets-1); i++)
+				{
+					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+					if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
+					{
+					
+						if(this.kbucket.get(i).size() > 0)
+						{
+							int randomIndex = 0;
+							
+							if(this.kbucket.get(i).size() > 1)
+								randomIndex = Engine.getDefault().getSimulationRandom().nextInt(this.kbucket.get(i).size()-1);
+						
+							try
+							{
+								GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(triggeringTime + 1));
+								gossipEvent.setOneShot(true);
+								gossipEvent.setAssociatedNode(this.kbucket.get(i).get(randomIndex));
+								gossipEvent.setGossipMessage(new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()));
+								Engine.getDefault().insertIntoEventsList(gossipEvent);
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						/*
+						for(int j=0; j < this.kbucket.get(i).size(); j++)
+						{
+							try
+							{
+								GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(triggeringTime + 1));
+								gossipEvent.setOneShot(true);
+								gossipEvent.setAssociatedNode(this.kbucket.get(i).get(j));
+								gossipEvent.setGossipMessage(new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()));
+								Engine.getDefault().insertIntoEventsList(gossipEvent);
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+						*/
+				/*
+						bucketFounded = true;		
+						break;
+					}
+				}
+			}
+			
+		}*/
+	}
+	
 	/**
 	 * Move the node to a new position according to his path
 	 */
@@ -552,6 +817,10 @@ public class GeoKadPeer extends Peer {
 				deltaValue = -1;
 			
 			pathIndex = pathIndex + deltaValue;
+			
+			//Save Old position
+			this.old_latitude = this.latitude;
+			this.old_longitude = this.longitude;
 			
 			//Set Current Position
 			this.latitude = this.pathCoordinates.get(pathIndex).getLat();
@@ -580,6 +849,7 @@ public class GeoKadPeer extends Peer {
 		//Create a new move element
 		try {
 			
+			/*
 			//Random Time for a single peer move (50VT=3 min)
 			int randomTime = 50;
 			
@@ -587,8 +857,29 @@ public class GeoKadPeer extends Peer {
 				randomTime = 100;
 				
 			float delay = 25 + (float)Engine.getDefault().getSimulationRandom().nextInt(randomTime);
+			*/
+			float delay;
+			double distance = 0.0;
 			
-			//System.out.println(this.getKey() + " Delay: " + delay + " New VT: " + (triggeringTime+delay));
+			if(old_longitude != longitude && old_latitude != latitude)
+			{
+				distance = GeoKadDistance.distance(old_longitude,old_latitude,longitude,latitude);
+				
+				delay = (float)((distance/this.speed)*60.0*16.6);
+			}
+			else
+			{
+				int randomTime = 50;
+				
+				if(Engine.getDefault().getSimulationRandom().nextBoolean() == true)
+					randomTime = 100;
+					
+				delay = 25 + (float)Engine.getDefault().getSimulationRandom().nextInt(randomTime);
+			}
+			
+			
+			//System.out.println(old_longitude+" "+old_latitude+" "+longitude+" "+latitude);
+			//System.out.println(this.getKey() + " Delay: " + delay + " New VT: " + (triggeringTime+delay) + " Distance: " + distance + " Speed: " + this.speed);
 			
 			GeoKadMoveNodeEvent moveEvent = (GeoKadMoveNodeEvent) new GeoKadMoveNodeEvent("node_lookup", params, null).createInstance(triggeringTime + delay);
 			moveEvent.setOneShot(true);
@@ -706,5 +997,21 @@ public class GeoKadPeer extends Peer {
 
 	public void setSentMessages(int setMessages) {
 		this.sentMessages = setMessages;
+	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+
+	public boolean isGossipActive() {
+		return isGossipActive;
+	}
+
+	public void setGossipActive(boolean isGossipActive) {
+		this.isGossipActive = isGossipActive;
 	}
 }

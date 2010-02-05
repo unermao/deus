@@ -11,7 +11,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	private GeoKadPeer closerElement = null;
 	private GeoKadResourceType res = null;
 
-	private float discoveryMaxWait = 500;
+	private float discoveryMaxWait = 25;
 
 	private boolean findNodeK = false;
 

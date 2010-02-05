@@ -9,6 +9,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 
 
 public class GeoKadPingEvent extends NodeEvent {
+
 	private GeoKadPeer peer = null;
 	
 	public GeoKadPingEvent(String id, Properties params, Process parentProcess, GeoKadPeer target) 

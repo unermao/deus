@@ -47,9 +47,7 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 
 		
 		if (currNode == null) {
-			
-			//System.out.println("AAAAAAAAAAAAA");
-			
+						
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			
 			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
@@ -99,7 +97,8 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		for (int i = 0; currNode.nlResults.get(currNode.getKey()).size() > i
 				&& i < currNode.getAlpha(); i++) {
 			try {
-				float delay = expRandom((float) 300.0);
+				//TODO Modifica al tempo da 300.0 a 25
+				float delay = expRandom((float) 25.0);
 				if (delay > discoveryMaxWait)
 					continue;
 				
@@ -117,6 +116,19 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 				e.printStackTrace();
 			}
 		}
+		
+		try
+		{
+				GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 10);
+				discovery.setOneShot(true);
+				discovery.setAssociatedNode(currNode);
+				Engine.getDefault().insertIntoEventsList(discovery);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 //
