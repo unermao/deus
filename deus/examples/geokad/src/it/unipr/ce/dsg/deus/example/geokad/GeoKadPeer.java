@@ -30,6 +30,8 @@ public class GeoKadPeer extends Peer {
 
 	private Vector<ArrayList<GeoKadPeer>> kbucket = null;
 
+	private ArrayList<GeoKadPeer> periodicPeerList = new ArrayList<GeoKadPeer>();
+	
 	private ArrayList<GeoKadPoint> pathCoordinates = new ArrayList<GeoKadPoint>();
 	
 	private int numOfKBuckets = 0;
@@ -127,7 +129,7 @@ public class GeoKadPeer extends Peer {
 				this.isGossipActive = Boolean.parseBoolean(params
 						.getProperty(GOSSIP));
 				
-				System.out.println("GOSSIP STATUS: " +  this.isGossipActive);
+				//System.out.println("GOSSIP STATUS: " +  this.isGossipActive);
 				
 			} catch (NumberFormatException ex) {
 				throw new InvalidParamsException(GOSSIP
@@ -183,6 +185,7 @@ public class GeoKadPeer extends Peer {
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
 		clone.nlContactedNodes = new ArrayList<GeoKadPeer>();
 		clone.logSearch = new HashMap<Integer, Integer>();
+		clone.periodicPeerList = new ArrayList<GeoKadPeer>();
 
 		//Get Random Path
 		int index = Engine.getDefault().getNodes().size();
@@ -251,6 +254,10 @@ public class GeoKadPeer extends Peer {
 		
 		//Update Info
 		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+		
+		//Save Periodic PeerList
+		if(!this.periodicPeerList.contains(newPeer))
+			this.periodicPeerList.add(newPeer);
 		
 		//Check if the peer is already in some KBuckets
 		for(int i=0; i<(numOfKBuckets); i++)
@@ -532,6 +539,8 @@ public class GeoKadPeer extends Peer {
 		return false;
 	}
 
+	
+	
 	public ArrayList<GeoKadPeer> find_node(GeoKadPeer peer) {
 		
 		//Increment number of sent messages
@@ -549,7 +558,7 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = 2*numOfKBuckets;
+		int maxSize = numOfKBuckets;
 		
 		boolean flag = false;
 		int a = 1;
@@ -580,8 +589,10 @@ public class GeoKadPeer extends Peer {
 			tempResults.subList(maxSize, tempResults.size()).clear();
 		}
 
-		if(tempResults.size() == 0)
-			System.out.println("FIND NODE ---> RETURN AN EMPTY LIST !");
+		
+		//if(tempResults.size() == 0)
+			//System.out.println("FIND NODE ---> RETURN AN EMPTY LIST !");
+		
 		
 		return tempResults;
 	}
@@ -805,11 +816,16 @@ public class GeoKadPeer extends Peer {
 	 */
 	public void move(float triggeringTime) {
 		
+		boolean stopWalking = false;
+		
 		if(this.pathCoordinates.size() > 0 )
 		{
 			//If it is at the end of the path or at the beginning, it changes the direction
 			if( pathCoordinates.size()-1 == pathIndex || ( pathIndex == 0 && deltaValue  == -1) )
+			{
+				stopWalking = true;
 				pathDirectionForward = !pathDirectionForward;	
+			}
 
 			if(pathDirectionForward == true)
 				deltaValue = 1;
@@ -831,21 +847,86 @@ public class GeoKadPeer extends Peer {
 			
 			//TODO Edit in order to update only neighbors of the first "alpha" KBuckets
 			//Send updated information to its neighbors
+			/*
 			for(int i=0; i<(numOfKBuckets-1); i++)
 			{
 				for(int k=0; k <  this.kbucket.get(i).size(); k++)
 					this.kbucket.get(i).get(k).updateInfoAboutNode(this);
 			}
+			*/
 			
+			//Update position of all known nodes
 			
-			//Move the peer
-			this.scheduleMove(triggeringTime);
-			
+			if(stopWalking == false)
+			{
+				//Update known peers according to updated position
+				//this.updateGeoBucketInfo();
+				
+				this.scheduleMove(triggeringTime);
+			}
 		}
 			
 	}
 	
+	public void updateGeoBucketInfo() {
+	
+		Vector<ArrayList<GeoKadPeer>> localGeoBucketVector = new Vector<ArrayList<GeoKadPeer>>();
+		
+		//Create the list of KBuckets
+		for (int i = 0; i < this.numOfKBuckets; ++i) {
+			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
+			localGeoBucketVector.add(i, new ArrayList<GeoKadPeer>());
+		}
+		
+		for(int i=0; i<(numOfKBuckets); i++)
+		{
+			for(int j=0; j<this.kbucket.get(i).size();j++)
+			{
+				GeoKadPeer peer = this.kbucket.get(i).get(j);
+	
+				//int distance = this.getKey() ^ newPeer.getKey();
+				double distance = GeoKadDistance.distance(this, peer);
+				
+				boolean bucketFounded = false;
+				
+				//For each KBucket without the last one that is for all peers out of previous circumferences 
+				for(int index=0;index<(numOfKBuckets-1); index++)
+				{
+					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+					if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+					{
+						
+						//Add the peer in the right bucket
+						if(!localGeoBucketVector.get(index).contains(peer))
+							localGeoBucketVector.get(index).add(peer);
+						
+						bucketFounded = true;
+					
+						break;
+					}
+				}
+				
+				//If the peer's distance is very high it will be added in the last available KBucket
+				if(bucketFounded == false)
+				{
+					//Add new Peer in the last Bucket
+					if(!localGeoBucketVector.get(numOfKBuckets-1).contains(peer)&& localGeoBucketVector.get(numOfKBuckets-1).size() < 20)
+						localGeoBucketVector.get(numOfKBuckets-1).add(peer);
+				}
+			}
+		}
+		
+		//Create the list of KBuckets
+		for (int i = 0; i < this.numOfKBuckets; ++i) {
+			this.kbucket.set(i, localGeoBucketVector.get(i));
+		}
+		
+	}
+
 	public void scheduleMove(float triggeringTime) {
+		
+		//System.out.println("MOVING .... ");
+		
 		//Create a new move element
 		try {
 			
@@ -1013,5 +1094,13 @@ public class GeoKadPeer extends Peer {
 
 	public void setGossipActive(boolean isGossipActive) {
 		this.isGossipActive = isGossipActive;
+	}
+
+	public ArrayList<GeoKadPeer> getPeriodicPeerList() {
+		return periodicPeerList;
+	}
+
+	public void setPeriodicPeerList(ArrayList<GeoKadPeer> periodicPeerList) {
+		this.periodicPeerList = periodicPeerList;
 	}
 }

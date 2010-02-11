@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.geokad;
 
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
@@ -12,7 +13,8 @@ import it.unipr.ce.dsg.deus.core.Process;
 public class GeoKadFindNodeEvent extends NodeEvent {
 
 	private GeoKadPeer reqNode = null;
-
+	private ArrayList<GeoKadPeer> periodicPeerList = new ArrayList<GeoKadPeer>();
+	
 	//private int resourceKey = -1;
 
 	public GeoKadFindNodeEvent(String id, Properties params,
@@ -28,6 +30,8 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 		GeoKadFindNodeEvent clone = (GeoKadFindNodeEvent) super.clone();
 	//	clone.resourceKey = -1;
 		clone.reqNode = null;
+		periodicPeerList = new ArrayList<GeoKadPeer>();
+		
 		return clone;
 	}
 
@@ -43,6 +47,11 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 		GeoKadPeer currentNode = (GeoKadPeer) getAssociatedNode();
 
 		if (currentNode.getKey() != reqNode.getKey()) {
+			
+			//System.out.println("Node: "+ currentNode.getKey() +" Adding Gossip Peer: " + this.periodicPeerList.size());
+			
+			for(int i=0; i<this.periodicPeerList.size(); i++)
+				currentNode.insertPeer(this.periodicPeerList.get(i));
 			
 			currentNode.insertPeer(reqNode);
 			reqNode.nlResults.get(reqNode.getKey()).addAll(currentNode.find_node(reqNode));
@@ -72,5 +81,21 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 
 	public void setRequestingNode(GeoKadPeer reqNode) {
 		this.reqNode = reqNode;
+	}
+
+	public GeoKadPeer getReqNode() {
+		return reqNode;
+	}
+
+	public void setReqNode(GeoKadPeer reqNode) {
+		this.reqNode = reqNode;
+	}
+
+	public ArrayList<GeoKadPeer> getPeriodicPeerList() {
+		return periodicPeerList;
+	}
+
+	public void setPeriodicPeerList(ArrayList<GeoKadPeer> periodicPeerList) {
+		this.periodicPeerList = periodicPeerList;
 	}
 }

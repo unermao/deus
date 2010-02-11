@@ -8,6 +8,9 @@ public class GeoKadBirthSchedulerListener implements SchedulerListener {
 		GeoKadBirthEvent be = (GeoKadBirthEvent) parentEvent;
 		if (newEvent instanceof GeoKadJoinEvent) {
 			((GeoKadJoinEvent) newEvent).setAssociatedNode((GeoKadPeer) be.getAssociatedNode());
+		} 
+		else if (newEvent instanceof GeoKadBootStrapJoinEvent) {
+			((GeoKadBootStrapJoinEvent) newEvent).setAssociatedNode((GeoKadPeer) be.getAssociatedNode());
 		} else if (newEvent instanceof GeoKadNodeLookUpEvent)  {
 			((GeoKadNodeLookUpEvent) newEvent).setAssociatedNode((GeoKadPeer) be.getAssociatedNode());
 		} else if (newEvent instanceof GeoKadDisconnectionEvent) {
