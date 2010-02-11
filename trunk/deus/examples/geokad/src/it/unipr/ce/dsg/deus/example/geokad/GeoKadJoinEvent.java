@@ -26,10 +26,24 @@ public class GeoKadJoinEvent extends NodeEvent {
 		
 		// Identify current node
 		GeoKadPeer connectingNode = (GeoKadPeer) this.getAssociatedNode();
-		GeoKadPeer destinationNode = null;
+		connectingNode.setConnected(true);
 		
-		GeoKadPeer bootStrap = null;
+		//GeoKadPeer destinationNode = null;
 		
+		GeoKadBootStrapPeer bootStrap = null;
+		bootStrap = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
+		bootStrap.addIncomingNode(connectingNode);
+		
+		ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(connectingNode);
+		
+		//System.out.println("Boot List: " + peerInfoList.size());
+		
+		if(peerInfoList.size() > 0)
+			for(int index=0; index<peerInfoList.size();index++)
+				connectingNode.insertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey()));
+				
+		
+		/*
 		// If this is the very first node in the network
 		if (Engine.getDefault().getNodes().size() <= 1) {			
 			
@@ -41,10 +55,12 @@ public class GeoKadJoinEvent extends NodeEvent {
 		else
 		{
 			//Add node to the bootstrap list
-			bootStrap = ((GeoKadPeer)Engine.getDefault().getNodes().get(0));
+			bootStrap = ((GeoKadBootStrapPeer)Engine.getDefault().getNodes().get(0));
 			bootStrap.insertPeer(connectingNode);
+			bootStrap.getInitialPeerList(connectingNode);
+			//bootStrap.insertPeer(connectingNode);
 		}
-		
+		*/
 		/*
 		// Find a Random connected node
 		do {
@@ -58,8 +74,7 @@ public class GeoKadJoinEvent extends NodeEvent {
 		connectingNode.insertPeer(destinationNode);
 		*/
 		
-		connectingNode.setConnected(true);
-				
+		/*
 		//Receive a list of available peers
 		if(Engine.getDefault().getNodes().size() <= 20)
 		{
@@ -95,7 +110,8 @@ public class GeoKadJoinEvent extends NodeEvent {
 						connectingNode.insertPeer(appList2.get(z));
 			}
 		}
-			
+		*/	
+		
 		//First Discovery
 		try
 		{

@@ -38,7 +38,8 @@ public class GeoKadBirthEvent extends NodeEvent {
 
 		GeoKadPeer app = (GeoKadPeer) n;
 
-		Engine.getDefault().getNodes().add(app);
+		//Engine.getDefault().getNodes().add(app);
+		Engine.getDefault().addNode(app);
 		associatedNode = app;
 
 		/*

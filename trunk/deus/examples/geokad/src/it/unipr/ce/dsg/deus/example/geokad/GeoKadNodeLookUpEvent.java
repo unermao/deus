@@ -6,6 +6,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
@@ -45,15 +46,37 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
+		//Check if Peer List has a low number of peers
+		int count = 0;
+		for(int i=0; i<currNode.getKbucket().size(); i++)
+			count += currNode.getKbucket().get(i).size();
 		
+		if(count < 20 )
+		{
+			GeoKadBootStrapPeer bootStrap = null;
+			bootStrap = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
+			
+			ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(currNode);
+			
+			//System.out.println("Boot List: " + peerInfoList.size());
+			
+			if(peerInfoList.size() > 0)
+				for(int index=0; index<peerInfoList.size();index++)
+					currNode.insertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey()));		
+		}
+		
+		/*
 		if (currNode == null) {
-						
+		
+			System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+			
 			int initialized_nodes = Engine.getDefault().getNodes().size();
 			
 			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
 			
 			currNode = (GeoKadPeer) Engine.getDefault().getNodes().get(random_node);
 		}
+		*/
 		
 		if(currNode.getKey() == Engine.getDefault().getNodes().get(0).getKey())
 		{
@@ -110,6 +133,10 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 				fn.setRequestingNode(currNode);
 				fn.setOneShot(true);
 				fn.setAssociatedNode(p);
+				
+				//System.out.println("Node Key: " + currNode.getKey() +  " Setting Periodic Node List Size: " + currNode.getPeriodicPeerList().size() );
+				fn.getPeriodicPeerList().addAll(currNode.getPeriodicPeerList());
+				
 				Engine.getDefault().insertIntoEventsList(fn);
 				currNode.nlContactedNodes.add(p);
 			} catch (Exception e) {
@@ -117,9 +144,12 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			}
 		}
 		
+		//Clean Periodic list
+		currNode.getPeriodicPeerList().clear();
+		
 		try
 		{
-				GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 10);
+				GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 25);
 				discovery.setOneShot(true);
 				discovery.setAssociatedNode(currNode);
 				Engine.getDefault().insertIntoEventsList(discovery);

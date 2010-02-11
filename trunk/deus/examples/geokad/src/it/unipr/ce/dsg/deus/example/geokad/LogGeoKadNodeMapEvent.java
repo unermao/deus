@@ -56,7 +56,7 @@ public class LogGeoKadNodeMapEvent extends Event {
 			{
 				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(index);
 
-				if(peer != null)
+				if(peer != null )
 				{
 
 					file = new FileOutputStream("examples/geokad/map/node_markers/markers_"+peer.getKey()+".xml");
@@ -111,18 +111,20 @@ public class LogGeoKadNodeMapEvent extends Event {
 			file = new FileOutputStream("examples/geokad/map/marker_ALL.xml");
 			PrintStream out = new PrintStream(file);
 
+			
 			out.println("<markers>");
-
 			for(int i=0; i<Engine.getDefault().getNodes().size();i++)
 			{
 				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
 
-
 				out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
-
+					
+				
 
 			}
+			
 			out.println("</markers>");
+			
 			out.close();
 			file.close();
 
