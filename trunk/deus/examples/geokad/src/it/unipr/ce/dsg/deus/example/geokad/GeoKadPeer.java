@@ -558,7 +558,7 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = numOfKBuckets;
+		int maxSize = 2*numOfKBuckets;
 		
 		boolean flag = false;
 		int a = 1;
@@ -859,8 +859,11 @@ public class GeoKadPeer extends Peer {
 			
 			if(stopWalking == false)
 			{
+				//Check nodes availability in my GeoBuckets
+				this.checkNodeAvailability();
+				
 				//Update known peers according to updated position
-				//this.updateGeoBucketInfo();
+				this.updateGeoBucketInfo();
 				
 				this.scheduleMove(triggeringTime);
 			}
@@ -972,6 +975,29 @@ public class GeoKadPeer extends Peer {
 		}
 	}
 
+	public void checkNodeAvailability() {
+		//		//Check if Peer List has a low number of peers
+		int count = 0;
+		for(int i=0; i<this.getKbucket().size()-1; i++)
+			count += this.getKbucket().get(i).size();
+		
+		if(count < 20 )
+		{
+			GeoKadBootStrapPeer bootStrap = null;
+			bootStrap = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
+			
+			ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(this);
+			
+			//System.out.println("Boot List: " + peerInfoList.size());
+			
+			if(peerInfoList.size() > 0)
+				for(int index=0; index<peerInfoList.size();index++)
+					this.insertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey()));		
+		}
+		
+		
+	}
+	
 	/**
 	 * Update information about a node
 	 */

@@ -45,26 +45,9 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		//System.out.println("NODE LOOK-UP EVENT");
 		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
+		
+		currNode.checkNodeAvailability();
 
-		//Check if Peer List has a low number of peers
-		int count = 0;
-		for(int i=0; i<currNode.getKbucket().size(); i++)
-			count += currNode.getKbucket().get(i).size();
-		
-		if(count < 20 )
-		{
-			GeoKadBootStrapPeer bootStrap = null;
-			bootStrap = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
-			
-			ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(currNode);
-			
-			//System.out.println("Boot List: " + peerInfoList.size());
-			
-			if(peerInfoList.size() > 0)
-				for(int index=0; index<peerInfoList.size();index++)
-					currNode.insertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey()));		
-		}
-		
 		/*
 		if (currNode == null) {
 		
@@ -91,6 +74,7 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 //			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
 //		}
 
+		//Trova tutti i nodi conosciuti dal peer corrente vicino alla sua posizione
 		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNode));
 		currNode.nlResults.get(currNode.getKey()).addAll(currNode.find_node(currNode));
 
@@ -116,6 +100,7 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			e1.printStackTrace();
 		}
 		
+		//Prendo i primi alfa nodi tra quelli che conosco vicini alla mia posizione e invio una messaggio di FIND_NODE
 		GeoKadFindNodeEvent fn = null;
 		for (int i = 0; currNode.nlResults.get(currNode.getKey()).size() > i
 				&& i < currNode.getAlpha(); i++) {
