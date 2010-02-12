@@ -40,7 +40,7 @@ public class LogGeoKadNodeMapEvent extends Event {
 
 		System.out.println("VT:" + triggeringTime + " Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
 
-		writeAllPeersFile();
+		//writeAllPeersFile();
 
 		FileOutputStream file = null;
 		//FileOutputStream file_AllPeer = null;
@@ -52,13 +52,36 @@ public class LogGeoKadNodeMapEvent extends Event {
 			//file_AllPeer = new FileOutputStream("/home/Gudhrun/picone/public_html/marker_ALL.xml");
 			//out_AllPeer = new PrintStream(file_AllPeer);
 
+			//Write BootFile
+			GeoKadBootStrapPeer bootStrapPeer = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
+			
+			file = new FileOutputStream("examples/geokad/map/marker_ALL.xml");
+			//file = new FileOutputStream("/home/Gudhrun/picone/public_html/node_markers/markers_"+peer.getKey()+".xml");
+			out = new PrintStream(file);
+
+			out.println("<markers>");
+			
+			for(int i=0; i<bootStrapPeer.getPeerList().size(); i++)
+			{
+				
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+				
+				out.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+			}
+			
+			out.println("</markers>");
+
+			out.close();
+			file.close();
+			
 			for(int index=0; index<Engine.getDefault().getNodes().size();index++)
 			{
 				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(index);
-
-				if(peer != null )
+				
+				if(peer != null)
 				{
-
+					peer.updateGeoBucketInfo();
+					
 					file = new FileOutputStream("examples/geokad/map/node_markers/markers_"+peer.getKey()+".xml");
 					//file = new FileOutputStream("/home/Gudhrun/picone/public_html/node_markers/markers_"+peer.getKey()+".xml");
 					out = new PrintStream(file);
