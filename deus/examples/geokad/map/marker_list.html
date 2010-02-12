@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+<title>Visualizzazione markers da file XML</title>
+
+<script src="http://maps.google.com/maps?file=api&v=2 &key=ABQIAAAAlwN03-hocNiAHk5e51eXbxSZaeXHpa4os1GiOOaMiniWyuCSjhRtbY3pm8X8XZAZa1jZAlLhqP_g8A" type="text/javascript">
+</script>
+
+<script type="text/javascript">
+
+function loadAllNodes() {
+ 
+	GDownloadUrl("marker_ALL.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	
+
+	for (var i = 0; i < allMarkers.length; i++) {
+
+		var titolo = (allMarkers[i].getAttribute("descriz"));
+ 		option = new Option(titolo,i)
+    		document.form1.fieldB.options[i] = option;
+	}
+	});
+  
+}
+ 
+function loadSingleNode()
+{
+  //alert(document.form1.fieldB.options[document.form1.fieldB.value].innerHTML);
+  window.location = 'http://www.ce.unipr.it/~picone/marker.html?idPeer='+document.form1.fieldB.options[document.form1.fieldB.value].innerHTML;
+} 
+
+</script>
+
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Helvetica;
+	color: #0000CC;
+}
+body {
+	background-color: #FFFFFF;
+}
+-->
+</style></head>
+
+<p align="center"><img src="Logo.png" alt="" width="800" height="267" /></p>
+<form name="form1">
+  <div align="center">
+    <p>
+      <select name="fieldB">
+        <option size="15">  Select a Node  </option>
+      </select>
+    </p>
+    <p>
+      <input type="button" value="Load Node List" name="choice" onclick="loadAllNodes()">
+    </p>
+    <p>	
+      <input type="button" value="Load Node Map" name="load" onclick="loadSingleNode()">
+      </p>
+  </div>
+</form>
+
+<center>
+<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="400" height="300" id="fvp" align="middle">
+<param name="allowScriptAccess" value="sameDomain" />
+<param name="movie" value="http://www.ce.unipr.it/~picone/FVP/FVP9.swf?video=http://www.ce.unipr.it/~picone/GeoKad_FLV_HD.flv&action=play&color=ADBBC9ℑ=http://www.ce.unipr.it/~picone/GeoKad_Video_Intro.png&buffer=3&fsbtn=yes&textcolor=000000" />
+<param name="allowFullScreen" value="true" />
+<embed src="http://www.ce.unipr.it/~picone/FVP/FVP9.swf?video=http://www.ce.unipr.it/~picone/GeoKad_FLV_HD.flv&action=play&color=ADBBC9ℑ=http://www.ce.unipr.it/~picone/GeoKad_Video_Intro.png&buffer=3&fsbtn=yes&textcolor=000000" quality="high" bgcolor="#ffffff" width="400" height="300" name="fvp" align="middle" allowScriptAccess="sameDomain" allowFullScreen="true" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+</object>
+<p>
+<font size="1" face="Helvetica">
+Flash Player by Enrico Lai distribuito con licenza Creative Commons (<a href="http://www.enricolai.com/">http://www.enricolai.com/</a>) 
+</font>
+</p>
+<center>
+
+
+</body>
+</html>

@@ -14,6 +14,13 @@
 		</aut:events>
 	</aut:event>
 	
+	<aut:event id="birthBootStrap" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadBirthEvent" 
+		schedulerListener="it.unipr.ce.dsg.deus.example.geokad.GeoKadBirthSchedulerListener" oneShot="true">
+	 	<aut:events><!-- events to be scheduled on created node -->
+		    <aut:reference id="joinBootStrap" />
+		</aut:events>
+	</aut:event>
+	
 	
 	<aut:event id="birthPoisson" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadBirthEvent" 
 		schedulerListener="it.unipr.ce.dsg.deus.example.geokad.GeoKadBirthSchedulerListener" >
@@ -22,6 +29,8 @@
 		</aut:events>
 	</aut:event>
 
+	<aut:event id="joinBootStrap" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadBootStrapJoinEvent" oneShot="true" />
+	
 	<aut:event id="join" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadJoinEvent" oneShot="true" />
 
 	<aut:event id="discovery" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadNodeLookUpEvent" />
@@ -46,7 +55,19 @@
 			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
 			<aut:param name="discoveryMaxWait" value="25.0" />
-			<aut:param name="rayDistance" value="1.5" />
+			<aut:param name="rayDistance" value="0.5" />
+			<aut:param name="gossip" value="false" />
+		</aut:params>
+	</aut:node>
+
+	<aut:node id="bootstrapPeer" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadBootStrapPeer">
+		<aut:logger level="FINE" />
+		<aut:params>
+			<aut:param name="numOfKBuckets" value="20" />
+			<aut:param name="resourcesNode" value="20" />
+			<aut:param name="alpha" value="3" />
+			<aut:param name="discoveryMaxWait" value="25.0" />
+			<aut:param name="rayDistance" value="0.5" />
 			<aut:param name="gossip" value="false" />
 		</aut:params>
 	</aut:node>
@@ -64,6 +85,18 @@
 		</aut:nodes>
 		<aut:events>
 			<aut:reference id="birthPoisson" />		
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="poissonBootStrapBirth" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="0" />
+		</aut:params>
+		<aut:nodes>
+			<aut:reference id="bootstrapPeer" />
+		</aut:nodes>
+		<aut:events>
+			<aut:reference id="birthBootStrap" />		
 		</aut:events>
 	</aut:process>
  
@@ -91,6 +124,15 @@
 		</aut:params>
 		<aut:events>
 			<aut:reference id="join" />
+		</aut:events>
+	</aut:process>
+	
+	<aut:process id="poissonBootStrapJoin" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+		<aut:params>
+			<aut:param name="meanArrival" value="0" />
+		</aut:params>
+		<aut:events>
+			<aut:reference id="joinBootStrap" />
 		</aut:events>
 	</aut:process>
 		
@@ -214,12 +256,13 @@
 	<aut:engine maxvt="10000" seed="1234567810" keyspacesize="200000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
+		<aut:reference id="poissonBootStrapBirth"/>
 		<aut:reference id="poissonBirth" />
 		<!-- <aut:reference id="periodicBirth" />  -->
        <!--<aut:reference id="poissonInitialize" /> -->
      	<!--<aut:reference id="periodicDiscovery" />   -->
 	    <aut:reference id="periodicNodeLogging" />
-	    <aut:reference id="periodicNodeMapLogging" /> 
+	    <aut:reference id="periodicNodeMapLogging" />
 		<!-- <aut:reference id="periodicDeath" />  --> 
 		<!-- <aut:reference id="periodicDisconnection" />  --> 
 		</aut:processes>
