@@ -71,12 +71,17 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		}
 
 		if (closerElement == first) {
+			
 			if (this.isFindNodeK()) { 
 				// no new result even from the first k nodes
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey())
 						.getFoundNodes().toArray();
-				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size()
-						&& j < currNode.getKBucketDim(); j++) {
+				
+				//System.out.println(currNode.nlResults.get(currNode.getKey()).size());
+				
+				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
+				//for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size()
+					//	&& j < currNode.getKBucketDim(); j++) {
 					currNode.insertPeer((GeoKadPeer) foundNodes[j]);
 					if (res != null )
 						((GeoKadPeer) foundNodes[j]).store(res);
@@ -94,8 +99,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 			this.setFindNodeK(true);
 			scheduleFindNodeEvent(currNode, currNode.getKBucketDim());
 		} else
-			this.setFindNodeK(false);
-
+			{
+				this.setFindNodeK(false);
+			}
 		if (!this.isFindNodeK()) {
 			scheduleFindNodeEvent(currNode, currNode.getAlpha());
 		}
