@@ -64,7 +64,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
 
 		
-		checkNodeDistance();
+		checkNodesStatistics();
+		
+		//checkNodeDistance();
 		
 		logKBucketsDimAndSentMessages();
 		
@@ -79,6 +81,83 @@ public class LogGeoKadNodesStatsEvent extends Event {
 
 	}
 	
+	private void checkNodesStatistics() {
+		System.out.println("Checking Nodes Statistics ...");
+		
+		double missingNode = 0.0;
+		double gbErrorIndex = 0.0;
+		
+		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
+		{
+			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+			//peer.updateGeoBucketInfo();
+			
+			int optimalNumber = 0;
+			int currentNumber = 0;
+			int geoBucketDistanceError = 0;
+			
+			if(peer.getKey()!=GeoKadBootStrapPeer.BOOTSTRAP_KEY)
+			{
+				//Read all available nodes in the system
+				for(int k=0; k < Engine.getDefault().getNodes().size(); k++)
+				{
+					if(Engine.getDefault().getNodes().get(k).getKey() != GeoKadBootStrapPeer.BOOTSTRAP_KEY)
+					{	
+						GeoKadPeer testPeer = (GeoKadPeer)Engine.getDefault().getNodes().get(k);
+						
+						if(!peer.equals(testPeer))
+						{
+							double distance = GeoKadDistance.distance(peer,testPeer);
+							
+							boolean bucketFounded = false;
+							
+							for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+							{
+								if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
+								{		
+									bucketFounded = true;
+									
+									//Increment the optimal number of peer
+									optimalNumber++;
+									
+									//Check if is in the original peer list
+									if(peer.containsPeerInGeoBuckets(testPeer))
+									{
+										//Increment the number of current available peer
+										currentNumber++;
+									
+										//Check if is in the right GeoBucket
+										int geoBucketPosition = peer.indexOfGeoBucketFor(testPeer);
+										if(geoBucketPosition != -1)
+											geoBucketDistanceError += Math.abs(j - geoBucketPosition);
+									}
+									
+									break;
+								}
+							}
+						}							
+					}
+				}
+				
+				//System.out.println("Current: " +  currentNumber + " - Optimal Number: " + optimalNumber );
+				
+				if(currentNumber != 0)
+					//Calculate the average for the gbDistanceError
+					gbErrorIndex += (double)(geoBucketDistanceError)/(double)(currentNumber);
+				
+				if(optimalNumber != 0)
+					//Calculate the % of missing node
+					missingNode += (double)(optimalNumber-currentNumber)/(double)optimalNumber;
+			}
+		}
+		
+		if(Engine.getDefault().getNodes().size()-1 > 0)
+		{
+			System.out.println("########################## % MISSING NODE: " + 	100.0*(double)(missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
+			System.out.println("########################## % GB DISTANCE ERROR: " + 100.0*(double)(gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
+		}
+	}
+
 	private void logKBucketsDimAndSentMessages()
 	{
 		System.out.println("Logging KBuckets Dim & Sent Messages ...");

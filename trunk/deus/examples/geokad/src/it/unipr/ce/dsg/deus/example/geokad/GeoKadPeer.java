@@ -998,6 +998,42 @@ public class GeoKadPeer extends Peer {
 		
 	}
 	
+	public boolean containsPeerInGeoBuckets(GeoKadPeer peer) {
+		
+		//Check if the peer is already in some KBuckets
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(peer);
+			
+			if( index != -1)
+			{
+				//Set new PeerInfo
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public int indexOfGeoBucketFor(GeoKadPeer testPeer) {
+		
+		//Check if the peer is already in some KBuckets
+		for(int i=0; i<(numOfKBuckets-1); i++)
+		{
+			//Find peer index
+			int index = this.kbucket.get(i).indexOf(testPeer);
+			
+			if( index != -1)
+			{
+				//Set new PeerInfo
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
 	/**
 	 * Update information about a node
 	 */
@@ -1129,4 +1165,5 @@ public class GeoKadPeer extends Peer {
 	public void setPeriodicPeerList(ArrayList<GeoKadPeer> periodicPeerList) {
 		this.periodicPeerList = periodicPeerList;
 	}
+
 }
