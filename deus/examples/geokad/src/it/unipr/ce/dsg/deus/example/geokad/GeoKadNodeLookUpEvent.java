@@ -7,6 +7,8 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.Random;
 
@@ -94,12 +96,13 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			nlk.setAssociatedNode(currNode);
 			nlk.setFindNodeK(false);
 			nlk.setRes(res);
+			nlk.setStepCounter(0);
 			Engine.getDefault().insertIntoEventsList(nlk);
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
+			
 		//Prendo i primi alfa nodi tra quelli che conosco vicini alla mia posizione e invio una messaggio di FIND_NODE
 		GeoKadFindNodeEvent fn = null;
 		for (int i = 0; currNode.nlResults.get(currNode.getKey()).size() > i

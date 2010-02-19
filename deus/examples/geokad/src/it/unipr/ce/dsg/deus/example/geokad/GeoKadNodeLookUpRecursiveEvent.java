@@ -12,7 +12,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	private GeoKadResourceType res = null;
 
 	private float discoveryMaxWait = 25;
-
+	
+	private int stepCounter = 0 ;
+	
 	private boolean findNodeK = false;
 
 	public GeoKadNodeLookUpRecursiveEvent(String id, Properties params,
@@ -36,6 +38,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		clone.discoveryMaxWait = this.discoveryMaxWait;
 		clone.findNodeK = false;
 		clone.closerElement = null;
+		clone.stepCounter = 0;
 	//	clone.resourceKey = 0;
 
 		return clone;
@@ -53,6 +56,8 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	}
 
 	public void run() throws RunException {
+		
+		this.stepCounter ++;
 		
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
@@ -73,6 +78,9 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		if (closerElement == first) {
 			
 			if (this.isFindNodeK()) { 
+				
+				//System.out.println("Key: "+currNode.getKey()+" STEP COUNTER : " + stepCounter);
+				
 				// no new result even from the first k nodes
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey())
 						.getFoundNodes().toArray();
@@ -117,6 +125,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 			nlk.setAssociatedNode(currNode);
 			nlk.setFindNodeK(this.findNodeK);
 			nlk.setRes(res);
+			nlk.setStepCounter(stepCounter);
 			Engine.getDefault().insertIntoEventsList(nlk);
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -183,6 +192,14 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 
 	public void setRes(GeoKadResourceType res) {
 		this.res = res;
+	}
+
+	public int getStepCounter() {
+		return stepCounter;
+	}
+
+	public void setStepCounter(int stepCounter) {
+		this.stepCounter = stepCounter;
 	}
 
 }
