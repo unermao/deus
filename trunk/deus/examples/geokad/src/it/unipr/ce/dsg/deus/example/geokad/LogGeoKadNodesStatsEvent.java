@@ -63,7 +63,6 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		fileValue = new ArrayList<LoggerObject>();
 		fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
 
-		
 		checkNodesStatistics();
 		
 		//checkNodeDistance();
@@ -73,7 +72,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		//writeTotalKBucketsDimGraph();
 		//writeKBucketsDimGraph();
 		
-		verbose();
+		//verbose();
 		//compressed();
 		//network_dump();
 		
@@ -82,7 +81,8 @@ public class LogGeoKadNodesStatsEvent extends Event {
 	}
 	
 	private void checkNodesStatistics() {
-		System.out.println("Checking Nodes Statistics ...");
+		
+		//System.out.println("Checking Nodes Statistics ...");
 		
 		double missingNode = 0.0;
 		double gbErrorIndex = 0.0;
@@ -90,7 +90,6 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
 		{
 			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
-			//peer.updateGeoBucketInfo();
 			
 			int optimalNumber = 0;
 			int currentNumber = 0;
@@ -128,6 +127,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 									
 										//Check if is in the right GeoBucket
 										int geoBucketPosition = peer.indexOfGeoBucketFor(testPeer);
+										
 										if(geoBucketPosition != -1)
 											geoBucketDistanceError += Math.abs(j - geoBucketPosition);
 									}
@@ -143,7 +143,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 				
 				if(currentNumber != 0)
 					//Calculate the average for the gbDistanceError
-					gbErrorIndex += (double)(geoBucketDistanceError)/(double)(currentNumber);
+					gbErrorIndex += (double)((double)geoBucketDistanceError)/(double)(currentNumber);
 				
 				if(optimalNumber != 0)
 					//Calculate the % of missing node
@@ -153,14 +153,16 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		
 		if(Engine.getDefault().getNodes().size()-1 > 0)
 		{
-			System.out.println("########################## % MISSING NODE: " + 	100.0*(double)(missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
-			System.out.println("########################## % GB DISTANCE ERROR: " + 100.0*(double)(gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
+			fileValue.add(new LoggerObject("%_MISSING_NODE", 100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1))));	
+			fileValue.add(new LoggerObject("GB_DISTANCE_ERROR", 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1))));	
+			//System.out.println("########################## % MISSING NODE: " + 	100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
+			//System.out.println("########################## % GB DISTANCE ERROR: " + 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
 		}
 	}
 
 	private void logKBucketsDimAndSentMessages()
 	{
-		System.out.println("Logging KBuckets Dim & Sent Messages ...");
+		//System.out.println("Logging KBuckets Dim & Sent Messages ...");
 		
 		int numOfKBucket = ((GeoKadPeer)Engine.getDefault().getNodes().get(0)).getNumOfKBuckets();
 		int totalNumOfSentMessages = 0;
@@ -197,10 +199,10 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		//1VT=3.6sec
 		double messPerSecond =sentMessagesPerVT * 3.6;
 		
-		System.out.println("Sent_Mess ----------->: "+totalNumOfSentMessages);
-		System.out.println("Sent_Mess_Peer ----------->: "+sentMessagesPerPeer);
-		System.out.println("Sent_Mess_VT ----------->: "+sentMessagesPerVT);
-		System.out.println("Sent_Mess_Sec ----------->: "+messPerSecond);
+		//System.out.println("Sent_Mess ----------->: "+totalNumOfSentMessages);
+		//System.out.println("Sent_Mess_Peer ----------->: "+sentMessagesPerPeer);
+		//System.out.println("Sent_Mess_VT ----------->: "+sentMessagesPerVT);
+		//System.out.println("Sent_Mess_Sec ----------->: "+messPerSecond);
 		
 		fileValue.add(new LoggerObject("Sent_Mess_Sec",messPerSecond));
 		

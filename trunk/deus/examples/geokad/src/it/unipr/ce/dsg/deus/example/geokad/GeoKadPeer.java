@@ -44,6 +44,9 @@ public class GeoKadPeer extends Peer {
 	private double latitude = 0.0;
 	private double longitude = 0.0;
 	
+	//Available Peer Counter
+	private int peerCounter = 0;
+	
 	//Speed
 	private double speed = 0.0;
 	
@@ -307,27 +310,14 @@ public class GeoKadPeer extends Peer {
 						e.printStackTrace();
 					}
 				}
-				
-				/*
-				//GOSSIP
-				for(int j=0; j < this.kbucket.get(i).size(); j++)
-				{
-					try
-					{
-						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("gossipEvent", params, null).createInstance((float)(Engine.getDefault().getVirtualTime() + 10.0));
-						gossipEvent.setOneShot(true);
-						gossipEvent.setAssociatedNode( this.kbucket.get(i).get(j));
-						gossipEvent.setGossipMessage(new GeoKadGossipMessage(newPeer,2));
-						Engine.getDefault().insertIntoEventsList(gossipEvent);
-					}
-					catch(Exception e)
-					{e.printStackTrace();}
-				}
-				*/
 					
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
+				{
 					this.kbucket.get(i).add(newPeer);
+					this.peerCounter ++;
+				}
+					
 				
 				bucketFounded = true;
 				
@@ -342,7 +332,10 @@ public class GeoKadPeer extends Peer {
 		{
 			//Add new Peer in the last Bucket
 			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer)&& this.kbucket.get(numOfKBuckets-1).size() < 20)
+			{
 				kbucket.get(numOfKBuckets-1).add(newPeer);
+				this.peerCounter ++;
+			}
 		}
 		
 	}
@@ -410,27 +403,13 @@ public class GeoKadPeer extends Peer {
 					}
 				}
 				
-				
-				/*
-				//GOSSIP
-				for(int j=0; j < this.kbucket.get(i).size(); j++)
-				{
-					try
-					{
-						GeoKadGossipEvent gossipEvent = (GeoKadGossipEvent) new GeoKadGossipEvent("node_lookup", params, null).createInstance((float)(triggeringTime + 1));
-						gossipEvent.setOneShot(true);
-						gossipEvent.setAssociatedNode( this.kbucket.get(i).get(j));
-						gossipEvent.setGossipMessage(new GeoKadGossipMessage(gossipMessage.getPeer(), gossipMessage.getCounter()));
-						Engine.getDefault().insertIntoEventsList(gossipEvent);
-					}
-					catch(Exception e)
-					{}
-				}
-				*/
 					
 				//Add the peer in the right bucket
 				if(!this.kbucket.get(i).contains(newPeer))
+				{
 					this.kbucket.get(i).add(newPeer);
+					this.peerCounter ++;
+				}
 				
 				bucketFounded = true;
 				
@@ -445,63 +424,6 @@ public class GeoKadPeer extends Peer {
 		{
 			//Add new Peer in the last Bucket
 			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer)&& this.kbucket.get(numOfKBuckets-1).size() < 20)
-				kbucket.get(numOfKBuckets-1).add(newPeer);
-		}
-		
-	}
-
-	public void insertPeerByGossip(GeoKadPeer newPeer) {
-		
-		//System.out.println("INSERTTTTTTTTT");
-		
-		if (this.getKey() == newPeer.getKey())
-			return;
-		
-		newPeer = (GeoKadPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
-		
-		//Check if the peer is in some KBuckets
-		for(int i=0; i<(numOfKBuckets); i++)
-		{
-			//Find peer index
-			int index = this.kbucket.get(i).indexOf(newPeer);
-			
-			if( index != -1)
-			{
-				this.kbucket.get(i).remove(index);
-				break;
-			}
-		}
-		
-		//int distance = this.getKey() ^ newPeer.getKey();
-		double distance = GeoKadDistance.distance(this, newPeer);
-		
-		boolean bucketFounded = false;
-		
-		//For each KBucket without the last one that is for all peers out of previous circumferences 
-		for(int i=0; i<(numOfKBuckets-1); i++)
-		{
-			//System.out.println(this.getKey() + "@Distance: " + distance + " IF: " + (double)(i)*rayDistance);
-			
-			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
-			{		
-				//Add the peer in the right bucket
-				if(!this.kbucket.get(i).contains(newPeer))
-					this.kbucket.get(i).add(newPeer);
-				
-				bucketFounded = true;
-				
-				//System.out.println("Distance: " + distance + " KBucket Index: " + i);
-				
-				break;
-			}
-		}
-		
-		//If the peer's distance is very high it will be added in the last available KBucket
-		if(bucketFounded == false)
-		{
-			//Add new Peer in the last Bucket
-			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer))
 				kbucket.get(numOfKBuckets-1).add(newPeer);
 		}
 		
@@ -1164,6 +1086,66 @@ public class GeoKadPeer extends Peer {
 
 	public void setPeriodicPeerList(ArrayList<GeoKadPeer> periodicPeerList) {
 		this.periodicPeerList = periodicPeerList;
+	}
+
+	public double getOld_latitude() {
+		return old_latitude;
+	}
+
+	public void setOld_latitude(double oldLatitude) {
+		old_latitude = oldLatitude;
+	}
+
+	public double getOld_longitude() {
+		return old_longitude;
+	}
+
+	public void setOld_longitude(double oldLongitude) {
+		old_longitude = oldLongitude;
+	}
+
+	public int getPeerCounter() {
+		return peerCounter;
+	}
+
+	public void setPeerCounter(int peerCounter) {
+		this.peerCounter = peerCounter;
+	}
+
+	public int getPathIndex() {
+		return pathIndex;
+	}
+
+	public void setPathIndex(int pathIndex) {
+		this.pathIndex = pathIndex;
+	}
+
+	public int getDeltaValue() {
+		return deltaValue;
+	}
+
+	public void setDeltaValue(int deltaValue) {
+		this.deltaValue = deltaValue;
+	}
+
+	public boolean isPathDirectionForward() {
+		return pathDirectionForward;
+	}
+
+	public void setPathDirectionForward(boolean pathDirectionForward) {
+		this.pathDirectionForward = pathDirectionForward;
+	}
+
+	public static ArrayList<Double> getGraphKey() {
+		return graphKey;
+	}
+
+	public static void setGraphKey(ArrayList<Double> graphKey) {
+		GeoKadPeer.graphKey = graphKey;
+	}
+
+	public static String getGossip() {
+		return GOSSIP;
 	}
 
 }

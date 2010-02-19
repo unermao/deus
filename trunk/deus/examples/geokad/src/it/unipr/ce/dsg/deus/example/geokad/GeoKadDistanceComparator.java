@@ -70,7 +70,16 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 		double dist2 = distance(peer, o2);
 		
 		if(dist1 == dist2)
-			return 0;
+		{
+			if(o1.getPeerCounter() == o2.getPeerCounter())
+				return 0;
+			
+			if(o1.getPeerCounter() > o2.getPeerCounter())
+				return -1;
+		
+			if(o1.getPeerCounter() < o2.getPeerCounter())
+				return 1;
+		}
 		
 		if(dist1 < dist2)
 			return -1;
