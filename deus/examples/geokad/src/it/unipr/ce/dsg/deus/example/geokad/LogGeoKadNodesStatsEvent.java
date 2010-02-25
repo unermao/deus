@@ -87,6 +87,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		double missingNode = 0.0;
 		double gbErrorIndex = 0.0;
 		
+		double sumOfAverageOfDiscoveryStep = 0.0;
+		int nodeWithDiscoveryCounter = 0;
+		
 		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
 		{
 			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
@@ -97,6 +100,12 @@ public class LogGeoKadNodesStatsEvent extends Event {
 			
 			if(peer.getKey()!=GeoKadBootStrapPeer.BOOTSTRAP_KEY)
 			{
+				if(peer.getDiscoveryCounter() != 0)
+				{	
+					nodeWithDiscoveryCounter++;
+					sumOfAverageOfDiscoveryStep += (double)peer.getAvDiscoveryStepCounter()/(double)peer.getDiscoveryCounter();
+				}
+				
 				//Read all available nodes in the system
 				for(int k=0; k < Engine.getDefault().getNodes().size(); k++)
 				{
@@ -155,8 +164,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		{
 			fileValue.add(new LoggerObject("%_MISSING_NODE", 100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1))));	
 			fileValue.add(new LoggerObject("GB_DISTANCE_ERROR", 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1))));	
-			//System.out.println("########################## % MISSING NODE: " + 	100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
-			//System.out.println("########################## % GB DISTANCE ERROR: " + 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
+			System.out.println("########################## % MISSING NODE: " + 	100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
+			System.out.println("########################## % GB DISTANCE ERROR: " + 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
+			System.out.println("########################## AV Of Discovery Step Counter: " + (double)(sumOfAverageOfDiscoveryStep/(double)(nodeWithDiscoveryCounter)));
 		}
 	}
 
@@ -199,10 +209,10 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		//1VT=3.6sec
 		double messPerSecond =sentMessagesPerVT * 3.6;
 		
-		//System.out.println("Sent_Mess ----------->: "+totalNumOfSentMessages);
-		//System.out.println("Sent_Mess_Peer ----------->: "+sentMessagesPerPeer);
-		//System.out.println("Sent_Mess_VT ----------->: "+sentMessagesPerVT);
-		//System.out.println("Sent_Mess_Sec ----------->: "+messPerSecond);
+		System.out.println("Sent_Mess ----------->: "+totalNumOfSentMessages);
+		System.out.println("Sent_Mess_Peer ----------->: "+sentMessagesPerPeer);
+		System.out.println("Sent_Mess_VT ----------->: "+sentMessagesPerVT);
+		System.out.println("Sent_Mess_Sec ----------->: "+messPerSecond);
 		
 		fileValue.add(new LoggerObject("Sent_Mess_Sec",messPerSecond));
 		

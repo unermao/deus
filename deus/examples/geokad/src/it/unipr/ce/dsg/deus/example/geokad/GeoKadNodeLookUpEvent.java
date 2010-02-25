@@ -50,31 +50,29 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		
 		currNode.checkNodeAvailability();
 
-		/*
-		if (currNode == null) {
-		
-			System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-			
-			int initialized_nodes = Engine.getDefault().getNodes().size();
-			
-			int random_node = Engine.getDefault().getSimulationRandom().nextInt(initialized_nodes);
-			
-			currNode = (GeoKadPeer) Engine.getDefault().getNodes().get(random_node);
-		}
-		*/
-		
-		if(currNode.getKey() == Engine.getDefault().getNodes().get(0).getKey())
+		//Set Discovery Active
+		if(currNode.isDiscoveryActive() == true)
 		{
-			//System.out.println("SONO IL BOOT");
+			//Clean Periodic list
+			currNode.getPeriodicPeerList().clear();
+			
+			try
+			{
+					GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 25);
+					discovery.setOneShot(true);
+					discovery.setAssociatedNode(currNode);
+					Engine.getDefault().insertIntoEventsList(discovery);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			return;
 		}
-		
+		else
+			currNode.setDiscoveryActive(true);
+			
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
-
-//		if (resourceKey == 0) {
-//			Random random = new Random();
-//			resourceKey = random.nextInt(Engine.getDefault().getKeySpaceSize());
-//		}
 
 		//Trova tutti i nodi conosciuti dal peer corrente vicino alla sua posizione
 		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNode));
