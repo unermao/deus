@@ -64,7 +64,14 @@ public class GeoKadPeer extends Peer {
 	
 	//Gossip Flag
 	private boolean isGossipActive = false;
-
+	
+	//Flag for active discovery
+	private boolean isDiscoveryActive = false;
+	
+	//Counter of performed step for each discovery procedure
+	private int avDiscoveryStepCounter = 0;
+	private int discoveryCounter = 0;
+	
 	private GeoKadPoint startPoint = null;
 	private GeoKadPoint endPoint = null;
 	
@@ -1146,6 +1153,30 @@ public class GeoKadPeer extends Peer {
 
 	public static String getGossip() {
 		return GOSSIP;
+	}
+
+	public int getAvDiscoveryStepCounter() {
+		return avDiscoveryStepCounter;
+	}
+
+	public void setAvDiscoveryStepCounter(int avDiscoveryStepCounter) {
+		this.avDiscoveryStepCounter = avDiscoveryStepCounter;
+	}
+
+	public int getDiscoveryCounter() {
+		return discoveryCounter;
+	}
+
+	public void setDiscoveryCounter(int discoveryCounter) {
+		this.discoveryCounter = discoveryCounter;
+	}
+
+	public boolean isDiscoveryActive() {
+		return isDiscoveryActive;
+	}
+
+	public void setDiscoveryActive(boolean isDiscoveryActive) {
+		this.isDiscoveryActive = isDiscoveryActive;
 	}
 
 }

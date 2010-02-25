@@ -81,6 +81,14 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 				
 				//System.out.println("Key: "+currNode.getKey()+" STEP COUNTER : " + stepCounter);
 				
+				//Set Discovery Status False
+				currNode.setDiscoveryActive(false);
+				
+				//Store Step Counter
+				currNode.setAvDiscoveryStepCounter(currNode.getAvDiscoveryStepCounter()+stepCounter);
+				currNode.setDiscoveryCounter(currNode.getDiscoveryCounter()+1);
+				
+				
 				// no new result even from the first k nodes
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey())
 						.getFoundNodes().toArray();
