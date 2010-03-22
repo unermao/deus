@@ -28,19 +28,24 @@ public class GeoKadJoinEvent extends NodeEvent {
 		GeoKadPeer connectingNode = (GeoKadPeer) this.getAssociatedNode();
 		connectingNode.setConnected(true);
 		
+		GeoKadPeerInfo connectingNodeInfo = new GeoKadPeerInfo(connectingNode.getKey(),connectingNode.getLatitude(),connectingNode.getLongitude(),connectingNode.getPeerCounter(),connectingNode.getTimeStamp());
+		
 		//GeoKadPeer destinationNode = null;
 		
 		GeoKadBootStrapPeer bootStrap = null;
 		bootStrap = (GeoKadBootStrapPeer)Engine.getDefault().getNodeByKey(GeoKadBootStrapPeer.BOOTSTRAP_KEY);
 		bootStrap.addIncomingNode(connectingNode);
 		
-		ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(connectingNode);
+		ArrayList<GeoKadPeerInfo> peerInfoList = bootStrap.getInitialPeerList(connectingNodeInfo);
 		
 		//System.out.println("Boot List: " + peerInfoList.size());
 		
-		if(peerInfoList.size() > 0)
+		if(peerInfoList.size() > 0)	
 			for(int index=0; index<peerInfoList.size();index++)
-				connectingNode.insertPeer((GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey()));
+			{
+				GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodeByKey(peerInfoList.get(index).getKey());
+				connectingNode.insertPeer(peer.createPeerInfo());
+			}
 				
 		
 		/*

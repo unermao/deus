@@ -12,13 +12,13 @@ import it.unipr.ce.dsg.deus.core.Process;
 
 public class GeoKadFindNodeEvent extends NodeEvent {
 
-	private GeoKadPeer reqNode = null;
-	private ArrayList<GeoKadPeer> periodicPeerList = new ArrayList<GeoKadPeer>();
+	private GeoKadPeerInfo reqNode = null;
+	private ArrayList<GeoKadPeerInfo> periodicPeerList = new ArrayList<GeoKadPeerInfo>();
 	
 	//private int resourceKey = -1;
 
 	public GeoKadFindNodeEvent(String id, Properties params,
-			Process parentProcess, GeoKadPeer peer)
+			Process parentProcess, GeoKadPeerInfo peer)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		reqNode = peer;
@@ -30,7 +30,7 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 		GeoKadFindNodeEvent clone = (GeoKadFindNodeEvent) super.clone();
 	//	clone.resourceKey = -1;
 		clone.reqNode = null;
-		periodicPeerList = new ArrayList<GeoKadPeer>();
+		periodicPeerList = new ArrayList<GeoKadPeerInfo>();
 		
 		return clone;
 	}
@@ -53,8 +53,12 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 			for(int i=0; i<this.periodicPeerList.size(); i++)
 				currentNode.insertPeer(this.periodicPeerList.get(i));
 			
+			
+			//add a new sent message
+			currentNode.setSentMessages(currentNode.getSentMessages() + 1);
+			
 			currentNode.insertPeer(reqNode);
-			reqNode.nlResults.get(reqNode.getKey()).addAll(currentNode.find_node(reqNode));
+			((GeoKadPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.find_node(reqNode));
 		
 		}
 		
@@ -75,27 +79,27 @@ public class GeoKadFindNodeEvent extends NodeEvent {
 //		this.resourceKey = resourceKey;
 //	}
 
-	public GeoKadPeer getRequestingNode() {
+	public GeoKadPeerInfo getRequestingNode() {
 		return reqNode;
 	}
 
-	public void setRequestingNode(GeoKadPeer reqNode) {
+	public void setRequestingNode(GeoKadPeerInfo reqNode) {
 		this.reqNode = reqNode;
 	}
 
-	public GeoKadPeer getReqNode() {
+	public GeoKadPeerInfo getReqNode() {
 		return reqNode;
 	}
 
-	public void setReqNode(GeoKadPeer reqNode) {
+	public void setReqNode(GeoKadPeerInfo reqNode) {
 		this.reqNode = reqNode;
 	}
 
-	public ArrayList<GeoKadPeer> getPeriodicPeerList() {
+	public ArrayList<GeoKadPeerInfo> getPeriodicPeerList() {
 		return periodicPeerList;
 	}
 
-	public void setPeriodicPeerList(ArrayList<GeoKadPeer> periodicPeerList) {
+	public void setPeriodicPeerList(ArrayList<GeoKadPeerInfo> periodicPeerList) {
 		this.periodicPeerList = periodicPeerList;
 	}
 }

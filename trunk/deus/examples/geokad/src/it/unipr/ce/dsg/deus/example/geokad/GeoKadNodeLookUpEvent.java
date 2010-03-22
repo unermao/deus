@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class GeoKadNodeLookUpEvent extends NodeEvent {
 
+	private static final float DISCOVERY_PERIOD = 100;
 	//private int resourceKey = 0;
 	private GeoKadResourceType res = null;
 
@@ -49,7 +50,8 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 		
 		currNode.checkNodeAvailability();
-
+		currNode.updateGeoBucketInfo();
+		
 		//Set Discovery Active
 		if(currNode.isDiscoveryActive() == true)
 		{
@@ -58,7 +60,7 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			
 			try
 			{
-					GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 25);
+					GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
 					discovery.setOneShot(true);
 					discovery.setAssociatedNode(currNode);
 					Engine.getDefault().insertIntoEventsList(discovery);
@@ -74,11 +76,13 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 			
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 
+		GeoKadPeerInfo currNodeInfo = new GeoKadPeerInfo(currNode.getKey(), currNode.getLatitude(), currNode.getLongitude(),currNode.getPeerCounter(),currNode.getTimeStamp());
+		
 		//Trova tutti i nodi conosciuti dal peer corrente vicino alla sua posizione
-		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNode));
-		currNode.nlResults.get(currNode.getKey()).addAll(currNode.find_node(currNode));
+		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNodeInfo));
+		currNode.nlResults.get(currNode.getKey()).addAll(currNode.find_node(currNodeInfo));
 
-		GeoKadPeer first = null;
+		GeoKadPeerInfo first = null;
 		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
 			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
 		}
@@ -111,14 +115,14 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 				if (delay > discoveryMaxWait)
 					continue;
 				
-				GeoKadPeer p = (GeoKadPeer) currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray()[i];
+				GeoKadPeerInfo p = (GeoKadPeerInfo) currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray()[i];
 				fn = (GeoKadFindNodeEvent) new GeoKadFindNodeEvent(
-						"find_node", new Properties(), null, currNode)
+						"find_node", new Properties(), null, currNodeInfo)
 				.createInstance(triggeringTime + delay);
 
-				fn.setRequestingNode(currNode);
+				fn.setRequestingNode(currNodeInfo);
 				fn.setOneShot(true);
-				fn.setAssociatedNode(p);
+				fn.setAssociatedNode((GeoKadPeer)Engine.getDefault().getNodeByKey(p.getKey()));
 				
 				//System.out.println("Node Key: " + currNode.getKey() +  " Setting Periodic Node List Size: " + currNode.getPeriodicPeerList().size() );
 				fn.getPeriodicPeerList().addAll(currNode.getPeriodicPeerList());
@@ -135,10 +139,10 @@ public class GeoKadNodeLookUpEvent extends NodeEvent {
 		
 		try
 		{
-				GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + 25);
-				discovery.setOneShot(true);
-				discovery.setAssociatedNode(currNode);
-				Engine.getDefault().insertIntoEventsList(discovery);
+			GeoKadNodeLookUpEvent discovery = (GeoKadNodeLookUpEvent) new GeoKadNodeLookUpEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
+			discovery.setOneShot(true);
+			discovery.setAssociatedNode(currNode);
+			Engine.getDefault().insertIntoEventsList(discovery);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

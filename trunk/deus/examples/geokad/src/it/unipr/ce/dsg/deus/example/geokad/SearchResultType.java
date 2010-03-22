@@ -12,26 +12,26 @@ import java.util.TreeSet;
  */
 public class SearchResultType {
 	
-	private TreeSet<GeoKadPeer> foundNodes = null;
+	private TreeSet<GeoKadPeerInfo> foundNodes = null;
 	private boolean valueFound = false;
 
-	public SearchResultType(GeoKadPeer peer) {
-		foundNodes = new TreeSet<GeoKadPeer>(new GeoKadDistanceComparator(peer));
+	public SearchResultType(GeoKadPeerInfo peer) {
+		foundNodes = new TreeSet<GeoKadPeerInfo>(new GeoKadDistanceComparator(peer));
 	}
 
-	public void add(GeoKadPeer peer) {
+	public void add(GeoKadPeerInfo peer) {
 		foundNodes.add(peer);
 	}
 
-	public void addAll(Collection<? extends GeoKadPeer> collPeer) {
+	public void addAll(Collection<? extends GeoKadPeerInfo> collPeer) {
 		foundNodes.addAll(collPeer);
 	}
 
-	public TreeSet<GeoKadPeer> getFoundNodes() {
+	public TreeSet<GeoKadPeerInfo> getFoundNodes() {
 		return foundNodes;
 	}
 
-	public void setFoundNodes(TreeSet<GeoKadPeer> foundNodes) {
+	public void setFoundNodes(TreeSet<GeoKadPeerInfo> foundNodes) {
 		this.foundNodes = foundNodes;
 	}
 

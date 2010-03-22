@@ -8,7 +8,7 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 
-	private GeoKadPeer closerElement = null;
+	private GeoKadPeerInfo closerElement = null;
 	private GeoKadResourceType res = null;
 
 	private float discoveryMaxWait = 25;
@@ -18,7 +18,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	private boolean findNodeK = false;
 
 	public GeoKadNodeLookUpRecursiveEvent(String id, Properties params,
-			Process parentProcess, GeoKadPeer closerElem, float maxWait)
+			Process parentProcess, GeoKadPeerInfo closerElem, float maxWait)
 			throws InvalidParamsException {
 		super(id, params, parentProcess);
 		discoveryMaxWait = maxWait;
@@ -62,14 +62,14 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 		GeoKadPeer currNode = (GeoKadPeer) this.getAssociatedNode();
 
 		//Increment number of sent messages
-		currNode.setSentMessages(currNode.getSentMessages() + 1);
+		//currNode.setSentMessages(currNode.getSentMessages() + 1);
 		
 //		if (resourceKey == 0) {
 //			throw new RunException("The resourceKey should really be set in "
 //					+ this);
 //		}
 
-		GeoKadPeer first = null;
+		GeoKadPeerInfo first = null;
 
 		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
 			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
@@ -79,7 +79,8 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 			
 			if (this.isFindNodeK()) { 
 				
-				//System.out.println("Key: "+currNode.getKey()+" STEP COUNTER : " + stepCounter);
+				if(stepCounter > 20)
+					System.out.println("Key: "+currNode.getKey()+" STEP COUNTER : " + stepCounter + " Peer counter: " + currNode.getPeerCounter());
 				
 				//Set Discovery Status False
 				currNode.setDiscoveryActive(false);
@@ -98,7 +99,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
 				//for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size()
 					//	&& j < currNode.getKBucketDim(); j++) {
-					currNode.insertPeer((GeoKadPeer) foundNodes[j]);
+					currNode.insertPeer((GeoKadPeerInfo) foundNodes[j]);
 					if (res != null )
 						((GeoKadPeer) foundNodes[j]).store(res);
 				}
@@ -141,6 +142,7 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 	}
 
 	private void scheduleFindNodeEvent(GeoKadPeer currNode, int numElements) {
+		GeoKadPeerInfo currNodeInfo = new GeoKadPeerInfo(currNode.getKey(), currNode.getLatitude(), currNode.getLongitude(),currNode.getPeerCounter(),currNode.getTimeStamp());
 		GeoKadFindNodeEvent fn = null;
 		int i = 0;
 		int contactedNodes = 0;
@@ -154,14 +156,14 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 					if (delay > discoveryMaxWait)
 						continue;
 					fn = (GeoKadFindNodeEvent) new GeoKadFindNodeEvent(
-							"find_node", new Properties(), null, currNode)
+							"find_node", new Properties(), null, currNodeInfo)
 							.createInstance(triggeringTime + delay);
 
-					fn.setRequestingNode(currNode);
+					fn.setRequestingNode(currNodeInfo);
 					fn.setOneShot(true);
-					fn.setAssociatedNode((GeoKadPeer) node[i]);
+					fn.setAssociatedNode((GeoKadPeer)Engine.getDefault().getNodeByKey(((GeoKadPeerInfo) node[i]).getKey()));
 					Engine.getDefault().insertIntoEventsList(fn);
-					currNode.nlContactedNodes.add((GeoKadPeer) node[i]);
+					currNode.nlContactedNodes.add((GeoKadPeerInfo) node[i]);
 					contactedNodes++;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -178,11 +180,11 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 //		this.resourceKey = resourceKey;
 //	}
 
-	public GeoKadPeer getCloserElement() {
+	public GeoKadPeerInfo getCloserElement() {
 		return closerElement;
 	}
 
-	public void setCloserElement(GeoKadPeer closerElement) {
+	public void setCloserElement(GeoKadPeerInfo closerElement) {
 		this.closerElement = closerElement;
 	}
 

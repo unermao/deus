@@ -102,7 +102,12 @@ public class LogGeoKadNodeMapEvent extends Event {
 					{
 						for(int k=0; k<peer.getKbucket().get(i).size();k++)
 						{
-							out.println("<marker lat=\""+peer.getKbucket().get(i).get(k).getLatitude()+"\" long=\""+peer.getKbucket().get(i).get(k).getLongitude()+"\" descriz=\""+peer.getKbucket().get(i).get(k).getKey()+"\"/>");
+							out.println("<marker lat=\""+peer.getKbucket().get(i).get(k).getLatitude()+"\" long=\""+peer.getKbucket().get(i).get(k).getLongitude()
+									+"\" descriz=\""+peer.getKbucket().get(i).get(k).getKey()
+									+"\" real_lat=\""+((GeoKadPeer)Engine.getDefault().getNodeByKey(peer.getKbucket().get(i).get(k).getKey())).getLatitude()
+									+"\" real_lon=\""+((GeoKadPeer)Engine.getDefault().getNodeByKey(peer.getKbucket().get(i).get(k).getKey())).getLongitude()
+									+"\" distance=\""+GeoKadDistance.distance(peer.getKbucket().get(i).get(k), ((GeoKadPeer)Engine.getDefault().getNodeByKey(peer.getKbucket().get(i).get(k).getKey())).createPeerInfo())
+									+"\"/>");
 						}
 					}
 
