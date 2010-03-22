@@ -2,18 +2,18 @@ package it.unipr.ce.dsg.deus.example.geokad;
 
 import java.util.Comparator;
 
-public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
+public class GeoKadDistanceComparator implements Comparator<GeoKadPeerInfo>{
 
 	private double lat = 0.0;
 	private double lon = 0.0;
-	private GeoKadPeer peer = null;
+	private GeoKadPeerInfo peer = null;
 
 	/**
 	 * 
 	 * @param lat
 	 * @param lon
 	 */
-	public GeoKadDistanceComparator(GeoKadPeer peer) {
+	public GeoKadDistanceComparator(GeoKadPeerInfo peer) {
 		this.peer  = peer;
 		this.lat = peer.getLatitude();
 		this.lon = peer.getLongitude();
@@ -23,7 +23,7 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 	 * Calculate the distance between two different peers
 	 * 
 	 */
-	public double distance(GeoKadPeer peer1, GeoKadPeer peer2) {
+	public double distance(GeoKadPeerInfo peer1, GeoKadPeerInfo peer2) {
 		
 		double lon1 = peer1.getLongitude();
 		double lon2 = peer2.getLongitude();
@@ -64,7 +64,7 @@ public class GeoKadDistanceComparator implements Comparator<GeoKadPeer>{
 	  return (rad * 180.0 / Math.PI);
 	}
 
-	public int compare(GeoKadPeer o1, GeoKadPeer o2) {
+	public int compare(GeoKadPeerInfo o1, GeoKadPeerInfo o2) {
 		
 		double dist1 = distance(peer, o1);
 		double dist2 = distance(peer, o2);

@@ -22,12 +22,18 @@ public class GeoKadBootStrapPeer extends GeoKadPeer{
 	
 	public void addIncomingNode(GeoKadPeer peer)
 	{
-		GeoKadPeerInfo peerInfo = new GeoKadPeerInfo(peer.getKey(),peer.getLatitude(),peer.getLongitude());
+		GeoKadPeerInfo peerInfo = new GeoKadPeerInfo(peer.getKey(),peer.getLatitude(),peer.getLongitude(),peer.getPeerCounter(),peer.getTimeStamp());
+		
 		if(!peerList.contains(peerInfo))
 			peerList.add(peerInfo);
+		else
+		{
+			peerList.remove(peerInfo);
+			peerList.add(peerInfo);
+		}
 	}
 	
-	public ArrayList<GeoKadPeerInfo> getInitialPeerList(GeoKadPeer peer)
+	public ArrayList<GeoKadPeerInfo> getInitialPeerList(GeoKadPeerInfo peer)
 	{
 		final double peerLat = peer.getLatitude();
 		final double peerLon = peer.getLongitude();
