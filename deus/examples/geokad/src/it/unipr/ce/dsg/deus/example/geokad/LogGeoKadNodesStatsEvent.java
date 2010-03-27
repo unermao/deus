@@ -122,7 +122,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 							
 							boolean bucketFounded = false;
 							
-							for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+							for(int j=0; j<(peer.getNumOfKBuckets()); j++)
 							{
 								if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
 								{		
@@ -188,7 +188,12 @@ public class LogGeoKadNodesStatsEvent extends Event {
 			System.out.println("########################## AV Of Discovery Step Counter: " + (double)(sumOfAverageOfDiscoveryStep/(double)(nodeWithDiscoveryCounter)));
 			
 			if(distanceErrorCounter != 0)
+			{
 				System.out.println("########################## AV Local Distance Error (Km): " + (double)(distanceError/(double)distanceErrorCounter));
+				fileValue.add(new LoggerObject("AV_Local_Distance_Error", (double)(distanceError/(double)distanceErrorCounter)));
+			}
+			else
+				fileValue.add(new LoggerObject("AV_Local_Distance_Error", 0.0));
 		}
 	}
 
@@ -374,7 +379,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 							
 							boolean bucketFounded = false;
 							
-							for(int j=0; j<(peer.getNumOfKBuckets()-1); j++)
+							for(int j=0; j<(peer.getNumOfKBuckets()); j++)
 							{
 								if((distance <= (double)(j)*peer.getRayDistance()) && bucketFounded == false)
 								{		
@@ -393,7 +398,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 					}
 				}
 				
-				for(int k=0; k<peer.getNumOfKBuckets()-1; k++)		
+				for(int k=0; k<peer.getNumOfKBuckets(); k++)		
 				{	
 					if(appArray.get(k) != 0)
 					{
