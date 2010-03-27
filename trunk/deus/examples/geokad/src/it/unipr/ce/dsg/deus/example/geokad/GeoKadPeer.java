@@ -206,8 +206,41 @@ public class GeoKadPeer extends Peer {
 		clone.periodicPeerList = new ArrayList<GeoKadPeerInfo>();
 
 		//Get Random Path
-		int index = Engine.getDefault().getNodes().size();
-		String path = pathList.get(index);
+		//int index = Engine.getDefault().getNodes().size();
+		//String path = pathList.get(index);
+		
+		if(pathList.size() == 0)
+		{
+			try
+			{
+				BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File("examples/geokad/path_result_3000.txt"))));
+				
+				String line = null;
+				line = br.readLine();
+				
+				while(line!= null)
+				{
+					//System.out.println("Linea: "+ line );
+					
+					pathList.add(line);
+					
+					line = br.readLine();
+				}
+				
+				br.close();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		int randomPathIndex = Engine.getDefault().getSimulationRandom().nextInt()%pathList.size();
+		
+		if(randomPathIndex < 0)
+			randomPathIndex = -randomPathIndex;
+		
+		String path = pathList.get(randomPathIndex);
+		pathList.remove(randomPathIndex);
 		
 		//Remove from available list
 		//pathList.remove(index);
@@ -305,7 +338,7 @@ public class GeoKadPeer extends Peer {
 		boolean bucketFounded = false;
 		
 		//For each KBucket without the last one that is for all peers out of previous circumferences 
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//System.out.println(this.getKey() + "@Distance: " + distance + " IF: " + (double)(i)*rayDistance);
 			
@@ -345,36 +378,37 @@ public class GeoKadPeer extends Peer {
 			}
 		}
 		
-		//If the peer's distance is very high it will be added in the last available KBucket
-		if(bucketFounded == false)
-		{
-			//Add new Peer in the last Bucket
-			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer))
-			{
-				//Add as first element
-				kbucket.get(numOfKBuckets-1).add(0,newPeer);
-				
-				if(this.kbucket.get(numOfKBuckets-1).size() > LAST_GEO_BUCKET_SIZE)
-				{
-					//Send Remove Message to node
-					/*
-					try
-					{
-						GeoKadRemoveEvent nlk = (GeoKadRemoveEvent) new GeoKadRemoveEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
-
-						nlk.setOneShot(true);
-						nlk.setAssociatedNode((GeoKadPeer)Engine.getDefault().getNodeByKey(this.kbucket.get(numOfKBuckets-1).get(LAST_GEO_BUCKET_SIZE).getKey()));
-						nlk.setPeerInfo(this.createPeerInfo());
-						Engine.getDefault().insertIntoEventsList(nlk);
-					}
-					catch(Exception e)
-					{e.printStackTrace();}
-					*/
-					
-					this.kbucket.get(numOfKBuckets-1).remove(LAST_GEO_BUCKET_SIZE);
-				}
-			}
-		}
+		
+//		//If the peer's distance is very high it will be added in the last available KBucket
+//		if(bucketFounded == false)
+//		{
+//			//Add new Peer in the last Bucket
+//			if(!this.kbucket.get(numOfKBuckets-1).contains(newPeer))
+//			{
+//				//Add as first element
+//				kbucket.get(numOfKBuckets-1).add(0,newPeer);
+//				
+//				if(this.kbucket.get(numOfKBuckets-1).size() > LAST_GEO_BUCKET_SIZE)
+//				{
+//					//Send Remove Message to node
+//					/*
+//					try
+//					{
+//						GeoKadRemoveEvent nlk = (GeoKadRemoveEvent) new GeoKadRemoveEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
+//
+//						nlk.setOneShot(true);
+//						nlk.setAssociatedNode((GeoKadPeer)Engine.getDefault().getNodeByKey(this.kbucket.get(numOfKBuckets-1).get(LAST_GEO_BUCKET_SIZE).getKey()));
+//						nlk.setPeerInfo(this.createPeerInfo());
+//						Engine.getDefault().insertIntoEventsList(nlk);
+//					}
+//					catch(Exception e)
+//					{e.printStackTrace();}
+//					*/
+//					
+//					this.kbucket.get(numOfKBuckets-1).remove(LAST_GEO_BUCKET_SIZE);
+//				}
+//			}
+//		}
 		
 	}
 	
@@ -384,7 +418,7 @@ public class GeoKadPeer extends Peer {
 		boolean bucketFounded = false;
 		
 		//For each KBucket without the last one that is for all peers out of previous circumferences 
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
 			if((distance <= (double)(i)*rayDistance) && bucketFounded == false)
@@ -394,11 +428,12 @@ public class GeoKadPeer extends Peer {
 				break;
 			}
 		}
-		
+		/*
 		if(bucketFounded == false)
 		{
 			index = numOfKBuckets-1;
 		}
+		*/
 		
 		return index;
 	}
@@ -426,10 +461,10 @@ public class GeoKadPeer extends Peer {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = 2*numOfKBuckets;
+		int maxSize = numOfKBuckets;
 		
 		boolean flag = false;
-		int a = 1;
+		int a = 0;
 		while (tempResults.size() < maxSize) {
 			flag = false;
 			try {
@@ -443,6 +478,7 @@ public class GeoKadPeer extends Peer {
 			if (tempResults.size() >= maxSize)
 				break;
 
+			
 			try {
 				it = kbucket.get(index - a).iterator();
 				while (it.hasNext())
@@ -451,6 +487,7 @@ public class GeoKadPeer extends Peer {
 				if (flag)
 					break;
 			}
+			
 			a++;
 		}
 		if (tempResults.size() > maxSize) {
@@ -647,7 +684,7 @@ public class GeoKadPeer extends Peer {
 				boolean bucketFounded = false;
 					
 					//For each KBucket without the last one that is for all peers out of previous circumferences 
-					for(int index=0;index<(numOfKBuckets-1); index++)
+					for(int index=0;index<(numOfKBuckets); index++)
 					{
 						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
 						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
@@ -667,10 +704,10 @@ public class GeoKadPeer extends Peer {
 					if(bucketFounded == false)
 					{
 						//Add new Peer in the last Bucket
-						if(!localGeoBucketVector.get(numOfKBuckets-1).contains(peerInfo)&& localGeoBucketVector.get(numOfKBuckets-1).size() < 20)
-							localGeoBucketVector.get(numOfKBuckets-1).add(peerInfo);
-						else
-						{
+						//if(!localGeoBucketVector.get(numOfKBuckets-1).contains(peerInfo)&& localGeoBucketVector.get(numOfKBuckets-1).size() < 20)
+							//localGeoBucketVector.get(numOfKBuckets-1).add(peerInfo);
+						//else
+						//{
 							try
 							{
 								GeoKadRemoveEvent nlk = (GeoKadRemoveEvent) new GeoKadRemoveEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
@@ -682,7 +719,7 @@ public class GeoKadPeer extends Peer {
 							}
 							catch(Exception e)
 							{e.printStackTrace();}
-						}
+						//}
 					}
 
 				}
@@ -795,7 +832,7 @@ public class GeoKadPeer extends Peer {
 	public boolean containsPeerInGeoBuckets(GeoKadPeerInfo peer) {
 		
 		//Check if the peer is already in some KBuckets
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//Find peer index
 			int index = this.kbucket.get(i).indexOf(peer);
@@ -813,7 +850,7 @@ public class GeoKadPeer extends Peer {
 	public int indexOfGeoBucketFor(GeoKadPeerInfo testPeer) {
 		
 		//Check if the peer is already in some KBuckets
-		for(int i=0; i<(numOfKBuckets-1); i++)
+		for(int i=0; i<(numOfKBuckets); i++)
 		{
 			//Find peer index
 			int index = this.kbucket.get(i).indexOf(testPeer);
