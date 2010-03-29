@@ -19,11 +19,16 @@
    var line ; 
    var map;
 
+   
+   var path; 
+   
    var oldLat = 0.0;
    var oldLong = 0.0;
    var zoomValue = 10;
    var bootKey = 0;
    var nodeKey = 0;	
+   var numOfGeoBucket = 10;
+   var sizeOfGeoBucket = 0.93205679;
    
    var blueIcon = new GIcon(G_DEFAULT_ICON);
    blueIcon.image = "marker26.png";
@@ -163,9 +168,9 @@ function updateMap() {
 
 		map.addOverlay(new GMarker(puntoNodo, markerOptions));
 
-		//Create Circle (OLD 0.93205679)
-		for(var k = 0; k < 20; k++)
-			drawCircle(map, puntoNodo, k*0.3106856, 40);
+		//Create Circle (1.5Km:0.93205679 0.5Km:0.3106856)
+		for(var k = 0; k < numOfGeoBucket; k++)
+			drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
 
 		//Draw start and end point
 		var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
@@ -176,8 +181,12 @@ function updateMap() {
 
 		for (var i = 3; i < markers.length; i++) {
 			var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+			var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
 			var titolo = (markers[i].getAttribute("descriz"));	
-			map.addOverlay(new GMarker(punto, {title: titolo}));
+			var distance = markers[i].getAttribute("distance");
+			map.addOverlay(createMarker(punto,real_punto,distance));
+			
+			//map.addOverlay(new GMarker(punto, {title: titolo}));
 		}
 
 		map.addOverlay(new GMarker(puntoNodo, markerOptions));
@@ -197,6 +206,28 @@ function updateMap() {
 	//else
 		t=setTimeout("updateMap()",1000);
 } 
+
+function createMarker(latlng, realLatLon, distance) {
+    var marker = new GMarker(latlng);
+    marker.value = distance;
+    GEvent.addListener(marker,"click", function() {
+      var myHtml = "<b>Distance: " + distance + "</b><br/>";
+      var pol=[];
+      
+      if(path != null)
+      	map.removeOverlay(path);
+
+      pol.push(latlng) ;
+      pol.push(realLatLon) ;
+      
+	  path = new GPolyline(pol) ;
+	  map.addOverlay(path) ;
+	  	
+      map.openInfoWindowHtml(latlng, myHtml);
+    });
+    return marker;
+}
+
 
 function updateAllPeer() {
 
@@ -368,7 +399,7 @@ function loadGraph(filename,title,divName)
   <tr>
     <th scope="row">
     <p align="center">
-		<div align="center" id="map_canvas" style="width: 1300px; height: 600px"></div>
+		<div align="center" id="map_canvas" style="width: 1600px; height: 800px"></div>
 			<form name="form1">
  			 <p align="center">
     			<select name="fieldB">
