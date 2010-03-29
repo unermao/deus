@@ -43,19 +43,17 @@
   
   <aut:event id="logNodeMap" handler="it.unipr.ce.dsg.deus.example.geokad.LogGeoKadNodeMapEvent" />
 
-  <aut:event id="initialization" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadNetworkInitializeEvent" oneShot="true" />
-
 	
 	<!-- *** NODE SPECIES *** -->
 
 	<aut:node id="geokadPeer" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="numOfKBuckets" value="20" />
+			<aut:param name="numOfKBuckets" value="10" />
 			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
 			<aut:param name="discoveryMaxWait" value="25.0" />
-			<aut:param name="rayDistance" value="0.5" />
+			<aut:param name="rayDistance" value="1.5" />
 			<aut:param name="gossip" value="false" />
 		</aut:params>
 	</aut:node>
@@ -63,11 +61,11 @@
 	<aut:node id="bootstrapPeer" handler="it.unipr.ce.dsg.deus.example.geokad.GeoKadBootStrapPeer">
 		<aut:logger level="FINE" />
 		<aut:params>
-			<aut:param name="numOfKBuckets" value="20" />
+			<aut:param name="numOfKBuckets" value="10" />
 			<aut:param name="resourcesNode" value="20" />
 			<aut:param name="alpha" value="3" />
 			<aut:param name="discoveryMaxWait" value="25.0" />
-			<aut:param name="rayDistance" value="0.5" />
+			<aut:param name="rayDistance" value="1.5" />
 			<aut:param name="gossip" value="false" />
 		</aut:params>
 	</aut:node>
@@ -76,9 +74,11 @@
 	<!-- *** PROCESSES *** -->
 	
 	
-	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
+	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
-			<aut:param name="meanArrival" value="5" />
+			<aut:param name="firstPeriodArrival" value="5" />
+			<aut:param name="secondPeriodArrival" value="500" />
+			<aut:param name="vtThreshold" value="10000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -104,9 +104,9 @@
 	
 	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 	  <aut:params>
-			<aut:param name="period" value="200" />
-			<aut:param name="startVtThreshold" value="200" />
-			<aut:param name="stopVtThreshold" value="10000" />
+			<aut:param name="period" value="1000" />
+			<aut:param name="startVtThreshold" value="25" />
+			<aut:param name="stopVtThreshold" value="12000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -190,14 +190,6 @@
 		    <aut:reference id="disconnection" />
 		</aut:events>
 	</aut:process>
-
-	<aut:process id="poissonInitialize" handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess">
-		<aut:params>
-			<aut:param name="meanArrival" value="0" />
-		</aut:params>		<aut:events>
-			<aut:reference id="initialization" />
-		</aut:events>
-	</aut:process>
 	
   <!-- Tipo 2 -->
 <!--
@@ -233,7 +225,7 @@
 
   <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="100" />
+      <aut:param name="period" value="10" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodesData" />
@@ -243,7 +235,7 @@
 
   <aut:process id="periodicNodeMapLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="100" />
+      <aut:param name="period" value="10" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodeMap" />
@@ -253,16 +245,15 @@
 		
 		
 	<!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
-	<aut:engine maxvt="10000" seed="1234567810" keyspacesize="200000"> 
+	<aut:engine maxvt="20000" seed="1234567810" keyspacesize="200000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 		<aut:reference id="poissonBootStrapBirth"/>
 		<aut:reference id="poissonBirth" />
-		<!-- <aut:reference id="periodicBirth" />  -->
-       <!--<aut:reference id="poissonInitialize" /> -->
+		<aut:reference id="periodicBirth" />
      	<!--<aut:reference id="periodicDiscovery" />   -->
 	    <aut:reference id="periodicNodeLogging" />
-	    <aut:reference id="periodicNodeMapLogging" />
+	    <!-- <aut:reference id="periodicNodeMapLogging" /> -->
 		<!-- <aut:reference id="periodicDeath" />  --> 
 		<!-- <aut:reference id="periodicDisconnection" />  --> 
 		</aut:processes>
