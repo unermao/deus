@@ -4,10 +4,11 @@ import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.PriorityQueue;
+//import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
+//import java.util.LinkedList;
 import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -63,7 +64,8 @@ public final class Engine extends SimulationObject {
 
 	private int keySpaceSize;
 
-	private LinkedList<Event> eventsList = null;
+	//private LinkedList<Event> eventsList = null;
+	private PriorityQueue<Event> eventsList = null;
 
 	private Random simulationRandom = null;
 
@@ -115,7 +117,8 @@ public final class Engine extends SimulationObject {
 		this.configEvents = configEvents;
 		this.configProcesses = configProcesses;
 		this.referencedProcesses = referencedProcesses;
-		eventsList = new LinkedList<Event>();
+		//eventsList = new LinkedList<Event>();
+		eventsList = new PriorityQueue<Event>();
 		nodes = new ArrayList<Node>();
 		nodeHashMap = new HashMap<String, ArrayList<Integer>>();
 		generatedKeys = new ArrayList<Integer>();
@@ -151,7 +154,7 @@ public final class Engine extends SimulationObject {
 	 */
 	public void insertIntoEventsList(Event e) {
 		eventsList.add(e);
-		Collections.sort(eventsList);
+		//Collections.sort(eventsList);
 	}
 
 	/**
@@ -228,7 +231,8 @@ public final class Engine extends SimulationObject {
 			getLogger().fine(
 					"virtualTime=" + virtualTime + " numOfQueueEvents="
 							+ eventsList.size());
-			Event e = eventsList.removeFirst();
+			//Event e = eventsList.removeFirst();
+			Event e = eventsList.remove();
 			getLogger().fine("extracted event: " + e.getId());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
@@ -363,6 +367,7 @@ public final class Engine extends SimulationObject {
 		if (l.getHandlers().length == 0) {
 			FileHandler fh;
 			try {
+				System.out.println("Engine: " + o.getClass().getCanonicalName());
 				fh = new FileHandler(loggerPathPrefix + "/"
 						+ o.getClass().getCanonicalName() + ".log");
 				fh.setFormatter(new LogEntryFormatter());
