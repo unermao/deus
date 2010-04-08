@@ -1,3 +1,5 @@
+DEUS version 0.4.3
+------------------
 
 It may be necessary to put the jaxb-api.jar in <java-home>/lib/endorsed 
 Here <java-home> refers to the directory where the runtime software is 
