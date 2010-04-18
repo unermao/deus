@@ -224,36 +224,33 @@ public final class Engine extends SimulationObject {
 	 *             if the event fails during its execution.
 	 */
 	public void run() throws SimulationException {
-		getLogger().info(
-				"Starting simulation with maxVirtualTime = " + maxVirtualTime);
+		//getLogger().info("Starting simulation with maxVirtualTime = " + maxVirtualTime);
 
 		while (virtualTime <= maxVirtualTime && eventsList.size() > 0) {
-			getLogger().fine(
-					"virtualTime=" + virtualTime + " numOfQueueEvents="
-							+ eventsList.size());
-			//Event e = eventsList.removeFirst();
+			//getLogger().fine("virtualTime=" + virtualTime + " numOfQueueEvents="+ eventsList.size());
 			Event e = eventsList.remove();
-			getLogger().fine("extracted event: " + e.getId());
+			//getLogger().fine("extracted event: " + e.getId());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
-					getLogger().fine("Running event " + e);
+					//getLogger().fine("Running event " + e);
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot()) {
 						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
 					}
 				} catch (RunException ex) {
-					getLogger().severe(ex.getMessage());
+					//getLogger().severe(ex.getMessage());
 					throw new SimulationException(ex.getMessage());
 				}
 			}
 		}
 
-		getLogger().info(
-				"Simulation ended at virtualTime = " + virtualTime
+		/*
+		getLogger().info("Simulation ended at virtualTime = " + virtualTime
 						+ " (maxVirtualTime=" + maxVirtualTime
 						+ ") with numOfQueueEvents=" + eventsList.size());
+		*/
 	}
 
 	/**
@@ -362,12 +359,14 @@ public final class Engine extends SimulationObject {
 	 * @return the instance of the java file logger.
 	 */
 	public Logger getLogger(Object o, String loggerPathPrefix, Level loggerLevel) {
+		// FIXME
+		//System.out.println("Engine: " + o.getClass().getCanonicalName());
 		Logger l = Logger.getLogger(o.getClass().getCanonicalName());
 		l.setLevel(loggerLevel);
 		if (l.getHandlers().length == 0) {
+			//System.out.println("Engine: l.getHandlers().length == 0");
 			FileHandler fh;
 			try {
-				System.out.println("Engine: " + o.getClass().getCanonicalName());
 				fh = new FileHandler(loggerPathPrefix + "/"
 						+ o.getClass().getCanonicalName() + ".log");
 				fh.setFormatter(new LogEntryFormatter());
