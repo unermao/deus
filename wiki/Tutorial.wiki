@@ -1,11 +1,10 @@
 #summary This is a brief tutorial on DEUS (v0.4.x).
 
 
-= DEUS v0.4.0 =
+= DEUS v0.4.x =
 
 In the home page of the project, you may find:
 
-  * the jar file of DEUS v0.4.x (deus-0.4.x.jar)
   * this tutorial in .pdf format (deus-0.4.x-tutorial.pdf)
   * the full release of DEUS v0.4.0 (deus-0.4.x-full.zip)
 
