@@ -1,15 +1,15 @@
-#summary This is a brief tutorial on DEUS (v0.4.0).
+#summary This is a brief tutorial on DEUS (v0.4.x).
 
 
 = DEUS v0.4.0 =
 
 In the home page of the project, you may find:
 
-  * the jar file of DEUS v0.4.0 (deus-0.4.0.jar)
-  * this tutorial in .pdf format (deus-0.4.0-tutorial.pdf)
-  * the full release of DEUS v0.4.0 (deus-0.4.0-full.zip)
+  * the jar file of DEUS v0.4.x (deus-0.4.x.jar)
+  * this tutorial in .pdf format (deus-0.4.x-tutorial.pdf)
+  * the full release of DEUS v0.4.0 (deus-0.4.x-full.zip)
 
-To quickly start using DEUS, download the full release, unzip it, run Eclipse and create a new Java project (select "Create project from existing source" and set the path of the unzipped deus-0.4.0 folder; call the project "deus-0.4.0").
+To quickly start using DEUS, download the full release, unzip it, run Eclipse and create a new Java project (select "Create project from existing source" and set the path of the unzipped deus-0.4.x folder; call the project "deus-0.4.x").
 
 This release contains two examples: basic and life. To run them, follow the instructions in the last section of this tutorial.
 
@@ -194,7 +194,7 @@ If you modify the XML and declare another event e3 between the declaration of e1
 
 = Writing logs =
 
-In DEUS, there are two logging strategies. One allows to have different logging granularity, by using Java instructions like
+In DEUS, there are two logging strategies. One allows to have different logging granularity (*but slows down your simulations!*), by using Java instructions like
 
 {{{
 getLogger().fine(aLogMessage);
