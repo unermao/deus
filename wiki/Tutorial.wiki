@@ -209,7 +209,7 @@ and deciding which log messages to write by setting the logging level (info, fin
 ...
 }}}
 
-The other approach is the one for producing a log file whose format is good for the GUI automator, in order to produce 2D-graph Gnuplot data (i.e. files with x,y columns).
+The other approach (*highly suggested*) is the one for producing a log file whose format is good for the GUI automator, in order to produce 2D-graph Gnuplot data (i.e. files with x,y columns).
 In your Log event, use the following code:
 
 {{{
