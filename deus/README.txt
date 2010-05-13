@@ -1,4 +1,4 @@
-DEUS version 0.4.3
+DEUS version 0.4.x
 ------------------
 
 It may be necessary to put the jaxb-api.jar in <java-home>/lib/endorsed 
