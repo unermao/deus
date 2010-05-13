@@ -328,6 +328,16 @@ public final class Engine extends SimulationObject {
 		return null;
 	}
 	
+    public Node getNodeByKey(int key, String id) {
+		Node n = null;
+		for(Iterator<Node> it = nodes.iterator(); it.hasNext();){
+			n = it.next();
+		if((n.getKey() == key) && (n.getId().equals(id)))
+			return n;
+		}
+		return null;
+	}
+
 	public ArrayList<Integer> getNodeKeysById(String id) {
 		return nodeHashMap.get(id);
 	}
@@ -339,6 +349,13 @@ public final class Engine extends SimulationObject {
 		nodeHashMap.get(n.getId()).add(n.getKey());
 	}
 	
+    public void removeNode(Node n) {
+		if(nodes.remove((Node)n)){
+			if(nodeHashMap.containsKey(n.getId()))
+				nodeHashMap.get(n.getId()).remove((Object)n.getKey());
+		}
+	}
+
 	private void addNodeIdToHashMap(String id) {
 		nodeHashMap.put(id, new ArrayList<Integer>());
 	}
