@@ -256,3 +256,5 @@ If you want to run a set of simulations without using Eclipse and without runnin
 {{{java -Djava.util.logging.config.file=logging.properties -Xms256M -Xmx1000M it.unipr.ce.dsg.deus.automator.DeusAutomatorCommandLine simulationDescription.xml automatorLog.xml automatorConfig.xml}}} 
 
 where {{{simulationDescription.xml}}} is the file that describes the simulation (e.g. examples/life/Life.xml), {{{automatorLog.xml}}} is the name of the file that the automator will create for logging, and {{{automatorConfig.xml}}} is the file that describes the set of simulation to perform (previously created with te Automator GUI).
+
+Of course you need to set the Java classpath in order to include DEUS libraries. The best solution is to use Eclipse to create a "Run configuration" with the previously listed parameters, and to Export an ant's build.xml file for project deus. That build.xml will include tags with all the "Run configurations" associated with project deus. 
