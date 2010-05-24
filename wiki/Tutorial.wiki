@@ -249,3 +249,10 @@ For example, if a node has an integer parameter "x", you can add in the Node Par
 Very important is the {{{GnuPlot File}}} panel. Here you can define files in which to put bidimensional data to be plotted. 
 
 For example, suppose that you have Logger that periodically computes the value of a variable "y". You can define a file (call it yVariation.txt, for example) with X label "VT" (virtual time) and Y Label "y". Then, after each simulation, you will have a yVariation.txt file reporting the values of y (first column) with respect to virtual time (second column). 
+
+
+If you want to run a set of simulations without using Eclipse and without running the automator's GUI, you have to type:
+
+{{{java -Djava.util.logging.config.file=logging.properties -Xms256M -Xmx1000M it.unipr.ce.dsg.deus.automator.DeusAutomatorCommandLine simulationDescription.xml automatorLog.xml automatorConfig.xml}}} 
+
+where {{{simulationDescription.xml}}} is the file that describes the simulation (e.g. examples/life/Life.xml), {{{automatorLog.xml}}} is the name of the file that the automator will create for logging, and {{{automatorConfig.xml}}} is the file that describes the set of simulation to perform (previously created with te Automator GUI).
