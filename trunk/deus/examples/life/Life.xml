@@ -30,7 +30,7 @@
 	
 	<aut:event id="music" handler="it.unipr.ce.dsg.deus.impl.event.MP3Event" oneShot="true">
 		<aut:params>
-			<aut:param name="fileName" value="res/Underworld-ToHeal.mp3" />
+			<aut:param name="fileName" value="res/UWR_000175-4.mp3" />
 			<aut:param name="modality" value="loop" />
 		</aut:params>
 	</aut:event>
