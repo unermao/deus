@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<project name="deus" default="soap.j2se" basedir=".">
+<project name="deus" default="deus.build" basedir=".">
 
     <property environment="env"/>
     <property name="project" value="deus"/>
