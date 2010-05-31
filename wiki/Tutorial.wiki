@@ -193,10 +193,10 @@ If you modify the XML and declare another event e3 between the declaration of e1
 Important note: to get the default RNG, you can use
 
 {{{
-Engine.getDefault().getSimulationRandom()
+Random rng = Engine.getDefault().getSimulationRandom();
 }}}
 
-in he Java code of your events, nodes, etc., *but do not use it in their constructor!*
+in the Java code of your events, nodes, etc., *but do not use it in their constructor!*
 
 
 = Writing logs =
