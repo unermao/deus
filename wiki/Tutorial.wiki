@@ -184,17 +184,17 @@ Remember to implement all necessary scheduler listeners!!!
 
 = {{{Event}}} and {{{NodeEvent}}} =
 
-The it.unipr.ce.dsg.deus.core package of the DEUS API provides two abstract classes representing events: Event and NodeEvent. The first one is supposed to be for events that affect the system as a whole, without being associated to a specific node. Also log events should be implemented by subclassing Event. The NodeEvent abstract class, on the contrary, must be associated to a specific node. 
+The it.unipr.ce.dsg.deus.core package of the DEUS API provides two abstract classes representing events: {{{Event}}} and {{{NodeEvent}}}. The first one is supposed to be for events that affect the system as a whole, without being associated to a specific node. Also log events should be implemented by subclassing Event{{{Event}}}. The {{{NodeEvent}}} abstract class, on the contrary, must be associated to a specific node. 
 
-NodeEvent has a boolean parameter "hasSameAssociatedNode": if you set it to true, all subsequent instances of your subclass will be associated to the node that was associated with the first instance of the subclass. The following example illustrate one possibile use case.
+{{{NodeEvent}}} has a boolean parameter "hasSameAssociatedNode": if you set it to true, all subsequent instances of your subclass will be associated to the node that was associated with the first instance of the subclass. The following example illustrate one possibile use case.
 
-Suppose you have a BirthEvent (that create a node), a ConnectionEvent (that connect the node with other nodes) and a DiscoveryEvent (that performs searches inside the node) - connected in a reference as illustrated in the previous paragraph. You want that, for the same node, 1 BirthEvent, 1 ConnectionEvent and N DiscoveryEvent are scheduled. Thus you will set the attribute "oneShot" to "true" in BirthEvent and ConnectionEvent, and to "false" in DiscoveryEvent. For the latter, you MUST also set:
+Suppose you have three subclasses of {{{NodeEvent}}}: a {{{BirthEvent}}} (that create a node), a {{{ConnectionEvent}}} (that connect the node with other nodes) and a {{{DiscoveryEvent}}} (that performs searches inside the node) - connected in a reference as illustrated in the previous paragraph. You want that, for the same node, 1 {{{BirthEvent}}}, 1 {{{ConnectionEvent}}} and N {{{DiscoveryEvent}}} are scheduled. Thus you will set the attribute "oneShot" to "true" in {{{BirthEvent}}} and {{{ConnectionEvent}}}, and to "false" in {{{DiscoveryEvent}}}. For the latter, you MUST also set:
 
 {{{
 <aut:param name="hasSameAssociatedNode" value="true" />
 }}}
 
-A different case is that in which you associate the process that manages DiscoveryEvent to the Engine. In this case you want that discovery events are generated at random time points, each time associated to a different node. In this case you MUST set
+A different case is that in which you associate the process that manages {{{DiscoveryEvent}}} to the Engine. In this case you want that discovery events are generated at random time points, each time associated to a different node. In this case you MUST set
 
 {{{
 <aut:param name="hasSameAssociatedNode" value="false" />
