@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+<title>Visualizzazione markers da file XML</title>
+
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript">
+
+function loadAllNodes() {
+ 
+	GDownloadUrl("marker_ALL.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	
+
+	for (var i = 0; i < allMarkers.length; i++) {
+
+		var titolo = (allMarkers[i].getAttribute("descriz"));
+ 		option = new Option(titolo,i)
+    		document.form1.fieldB.options[i] = option;
+	}
+	});
+
+	/*
+	GDownloadUrl("marker_"+1420+".xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var markers = xml.documentElement.getElementsByTagName("marker");
+	
+	for (var i = 3; i < markers.length; i++) {
+		var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+		var titolo = (markers[i].getAttribute("descriz"));	
+		map.addOverlay(new GMarker(punto, {title: titolo}));
+	}
+	
+
+	});*/
+  
+}
+ 
+function loadSingleNode()
+{
+  //alert(document.form1.fieldB.options[document.form1.fieldB.value].innerHTML);
+  window.location = 'marker.html?idPeer='+document.form1.fieldB.options[document.form1.fieldB.value].innerHTML;
+} 
+
+</script>
+
+<style type="text/css">
+<!--
+body,td,th {
+	font-family: Helvetica;
+	color: #0000CC;
+}
+body {
+	background-color: #FFFFFF;
+}
+-->
+</style></head>
+
+<p align="center"><img src="Logo.png" alt="" width="800" height="267" /></p>
+<form name="form1">
+  <div align="center">
+    <p>
+      <select name="fieldB">
+        <option size="15">  Select a Node  </option>
+      </select>
+    </p>
+    <p>
+      <input type="button" value="Load Node List" name="choice" onclick="loadAllNodes()">
+    </p>
+    <p>	
+      <input type="button" value="Load Node Map" name="load" onclick="loadSingleNode()">
+      </p>
+  </div>
+</form>
+</body>
+</html>
