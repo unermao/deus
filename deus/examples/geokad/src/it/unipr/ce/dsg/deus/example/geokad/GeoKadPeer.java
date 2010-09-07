@@ -26,6 +26,7 @@ public class GeoKadPeer extends Peer {
 	private static final String RAY_DISTANCE = "rayDistance";
 	private int alpha = 3;
 	private static final String DISCOVERY_MAX_WAIT = "discoveryMaxWait";
+	private static final String EPSILON = "epsilon";
 	private static final String GOSSIP = "gossip";
 	private static final double MAX_SPEED = 80.0;
 	private static final int LAST_GEO_BUCKET_SIZE = 20;
@@ -79,6 +80,8 @@ public class GeoKadPeer extends Peer {
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
 	private int discoveryCounter = 0;
+	
+	private double epsilon = 0.0;
 	
 	private GeoKadPoint startPoint = null;
 	private GeoKadPoint endPoint = null;
@@ -137,6 +140,16 @@ public class GeoKadPeer extends Peer {
 						.getProperty(RAY_DISTANCE)));
 			} catch (NumberFormatException ex) {
 				throw new InvalidParamsException(RAY_DISTANCE
+						+ " must be a valid double value.");
+			}
+		}
+		
+		if (params.getProperty(EPSILON) != null) {
+			try {
+				setEpsilon(Double.parseDouble(params
+						.getProperty(EPSILON)));
+			} catch (NumberFormatException ex) {
+				throw new InvalidParamsException(EPSILON
 						+ " must be a valid double value.");
 			}
 		}
@@ -306,6 +319,9 @@ public class GeoKadPeer extends Peer {
 	 */
 	public void insertPeer(GeoKadPeerInfo newPeer) {
 		
+		//Add peer to original neighbor list
+		this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
+		
 		if (this.getKey() == newPeer.getKey())
 			return;
 		
@@ -368,7 +384,6 @@ public class GeoKadPeer extends Peer {
 					}
 					
 				}
-					
 				
 				bucketFounded = true;
 				
@@ -605,7 +620,9 @@ public class GeoKadPeer extends Peer {
 				
 				this.timeStamp = triggeringTime + (float)(((this.rayDistance/2.0)/this.speed)*60.0*16.6);
 				
-				if(GeoKadDistance.distance(base_longitude, base_latitude, longitude, latitude) >= this.rayDistance/3.0)
+				//System.out.println("EPSILON: " + epsilon);
+				
+				if(GeoKadDistance.distance(base_longitude, base_latitude, longitude, latitude) >= this.epsilon)
 				{
 					this.base_latitude = this.latitude;
 					this.base_longitude = this.longitude;
@@ -1120,6 +1137,9 @@ public class GeoKadPeer extends Peer {
 			for(int j=0; j<this.kbucket.get(i).size();j++)
 			{
 				this.kbucket.get(i).remove(peerInfo);
+				
+				//Remove the peer from original neighbor list
+				this.removeNeighbor( (Peer) Engine.getDefault().getNodeByKey(peerInfo.getKey()));
 			}
 		}
 		
@@ -1148,5 +1168,14 @@ public class GeoKadPeer extends Peer {
 	public static int getLastGeoBucketSize() {
 		return LAST_GEO_BUCKET_SIZE;
 	}
+
+	public double getEpsilon() {
+		return epsilon;
+	}
+
+	public void setEpsilon(double epsilon) {
+		this.epsilon = epsilon;
+	}
+
 
 }
