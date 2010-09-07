@@ -55,6 +55,7 @@
 			<aut:param name="discoveryMaxWait" value="25.0" />
 			<aut:param name="rayDistance" value="1.5" />
 			<aut:param name="gossip" value="false" />
+			<aut:param name="epsilon" value="0.5" />
 		</aut:params>
 	</aut:node>
 
@@ -67,6 +68,7 @@
 			<aut:param name="discoveryMaxWait" value="25.0" />
 			<aut:param name="rayDistance" value="1.5" />
 			<aut:param name="gossip" value="false" />
+			<aut:param name="epsilon" value="0.5" />
 		</aut:params>
 	</aut:node>
 
@@ -77,8 +79,8 @@
 	<aut:process id="poissonBirth" handler="it.unipr.ce.dsg.deus.impl.process.TwoSpeedsPeriodicProcess">
 		<aut:params>
 			<aut:param name="firstPeriodArrival" value="5" />
-			<aut:param name="secondPeriodArrival" value="500" />
-			<aut:param name="vtThreshold" value="10000" />	
+			<aut:param name="secondPeriodArrival" value="25" />
+			<aut:param name="vtThreshold" value="8000" />	
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -104,9 +106,9 @@
 	
 	<aut:process id="periodicBirth" handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess">
 	  <aut:params>
-			<aut:param name="period" value="1000" />
+			<aut:param name="period" value="100" />
 			<aut:param name="startVtThreshold" value="25" />
-			<aut:param name="stopVtThreshold" value="12000" />
+			<aut:param name="stopVtThreshold" value="8000" />
 		</aut:params>
 		<aut:nodes>
 			<aut:reference id="geokadPeer" />
@@ -225,7 +227,7 @@
 
   <aut:process id="periodicNodeLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="10" />
+      <aut:param name="period" value="100" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodesData" />
@@ -235,7 +237,7 @@
 
   <aut:process id="periodicNodeMapLogging" handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess">
     <aut:params> 
-      <aut:param name="period" value="10" />
+      <aut:param name="period" value="5" />
     </aut:params>
     <aut:events>
       <aut:reference id="logNodeMap" />
@@ -245,12 +247,12 @@
 		
 		
 	<!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
-	<aut:engine maxvt="20000" seed="1234567810" keyspacesize="200000"> 
+	<aut:engine maxvt="1000" seed="1234567810" keyspacesize="200000"> 
 		<aut:logger level="ALL" />
 		<aut:processes>
 		<aut:reference id="poissonBootStrapBirth"/>
 		<aut:reference id="poissonBirth" />
-		<aut:reference id="periodicBirth" />
+		<!-- <aut:reference id="periodicBirth" /> -->
      	<!--<aut:reference id="periodicDiscovery" />   -->
 	    <aut:reference id="periodicNodeLogging" />
 	    <!-- <aut:reference id="periodicNodeMapLogging" /> -->
