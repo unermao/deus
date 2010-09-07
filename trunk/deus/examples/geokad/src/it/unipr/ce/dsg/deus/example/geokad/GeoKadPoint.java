@@ -27,8 +27,4 @@ public class GeoKadPoint {
 		this.lon = lon;
 	}
 	
-	
-	
-	
-	
 }

@@ -16,6 +16,7 @@ public class GeoKadPeerInfo {
 		this.longitude = longitude;
 		this.peerCounter = peerCounter;
 		this.timeStamp = timeStamp;
+		
 	}
 
 	

@@ -100,8 +100,8 @@ public class GeoKadNodeLookUpRecursiveEvent extends GeoKadNodeLookUpEvent {
 				//for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size()
 					//	&& j < currNode.getKBucketDim(); j++) {
 					currNode.insertPeer((GeoKadPeerInfo) foundNodes[j]);
-					if (res != null )
-						((GeoKadPeer) foundNodes[j]).store(res);
+					//if (res != null )
+						//((GeoKadPeer) foundNodes[j]).store(res);
 				}
 
 				currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();

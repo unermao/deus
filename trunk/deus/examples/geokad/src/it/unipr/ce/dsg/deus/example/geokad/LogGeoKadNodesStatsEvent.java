@@ -3,8 +3,10 @@
  */
 package it.unipr.ce.dsg.deus.example.geokad;
 
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.w3c.dom.NodeList;
+
 import it.unipr.ce.dsg.deus.automator.AutomatorLogger;
 import it.unipr.ce.dsg.deus.automator.LoggerObject;
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -24,6 +28,11 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.p2p.node.Peer;
+import it.unipr.ce.dsg.deus.topology.DeusLink;
+import it.unipr.ce.dsg.deus.topology.DeusNode;
+import it.unipr.ce.dsg.deus.topology.GraphGUI;
+import it.unipr.ce.dsg.deus.topology.TopologyMainGUI;
 
 /**
  * This event writes a log file with the kbuckets' data for each node in the network.
@@ -51,11 +60,13 @@ public class LogGeoKadNodesStatsEvent extends Event {
 						+ " Number of nodes: "
 						+ Engine.getDefault().getNodes().size());
 		
+		/*
 		getLogger().info(
 				"#KademliaNodesStats info @ "
 						+ Engine.getDefault().getVirtualTime()
 						+ " Number of nodes: "
 						+ Engine.getDefault().getNodes().size());
+	*/
 
 		Collections.sort(Engine.getDefault().getNodes());
 		
@@ -78,6 +89,57 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		
 		a.write(Engine.getDefault().getVirtualTime(), fileValue);
 
+		if(Engine.getDefault().getVirtualTime() == 100.0)
+		{
+			TopologyMainGUI gui = new TopologyMainGUI();
+			//printNetworkTopology();
+		}
+		
+		
+	}
+	
+	
+	private void printNetworkTopology()
+	{
+		System.out.println("Printing Network Topology ...");
+		
+		  try{
+			    // Create file 
+			    FileWriter fstream = new FileWriter("net_"+Engine.getDefault().getVirtualTime()+"_VT.nwb");
+			    BufferedWriter out = new BufferedWriter(fstream);
+			    
+			    ArrayList<Node> nodeList = Engine.getDefault().getNodes();
+			    
+			    out.write("#NWB Data for Streaming P2P\n");
+			    out.write("*Nodes "+ nodeList.size()+"\n");
+			    out.write("id*int label*string color*string\n");
+			    
+			    for(int i=0; i<nodeList.size();i++)
+				{
+					Peer peer = (Peer)nodeList.get(i);	
+					out.write(peer.getKey()+" \""+peer.getId()+"\" \"blue\"\n");
+				}
+		                
+			    out.write("*DirectedEdges\n");
+			    out.write("source*int	target*int color*string\n");
+			    
+		        for(int k=0; k<nodeList.size();k++)
+				{
+					Peer peer = (Peer)nodeList.get(k);
+					
+					for(int j=0; j<peer.getNeighbors().size(); j++)
+					{
+						if(peer.getKey() != peer.getNeighbors().get(j).getKey())
+							out.write(peer.getKey()+" "+peer.getNeighbors().get(j).getKey()+" \"blue\"\n");
+					}
+				}
+				
+			    out.close();
+			    
+		  }catch (Exception e){//Catch exception if any
+			      System.err.println("Error: " + e.getMessage());
+	      }
+		
 	}
 	
 	private void checkNodesStatistics() {
@@ -87,14 +149,39 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		double missingNode = 0.0;
 		double gbErrorIndex = 0.0;
 		double distanceError = 0;
+		double peerWithMissing = 0.0;
 		int distanceErrorCounter = 0;
+		
+		//int missGeoBucketIndex = 0;
+		//int missNumber = 0;
+		
+		//double missNodesIndex[];
+		double missNodesNumForGB[] = null;
+		
+		
+		int numOfKBucket = ((GeoKadPeer)Engine.getDefault().getNodes().get(0)).getNumOfKBuckets();
+		
+		double totalMissNodesNumForGB[] = new double[numOfKBucket];
+		
+		for(int a=0; a < numOfKBucket; a++)
+			totalMissNodesNumForGB[a] = 0.0;
 		
 		double sumOfAverageOfDiscoveryStep = 0.0;
 		int nodeWithDiscoveryCounter = 0;
 		
 		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
 		{
+			
 			GeoKadPeer peer = (GeoKadPeer)Engine.getDefault().getNodes().get(i);
+		
+			peer.printEdgeList();
+			
+			//missNodesIndex = new double [peer.getNumOfKBuckets()];
+			missNodesNumForGB = new double [peer.getNumOfKBuckets()];
+			
+			for(int a=0; a < peer.getNumOfKBuckets(); a++)
+				missNodesNumForGB[a] = 0.0;
+				
 			
 			int optimalNumber = 0;
 			int currentNumber = 0;
@@ -157,6 +244,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 										
 										//System.out.println("ERROR :" + Math.abs(j - geoBucketPosition));
 									}
+									else
+										missNodesNumForGB[j]++;
+									
 									
 									break;
 								}
@@ -175,13 +265,28 @@ public class LogGeoKadNodesStatsEvent extends Event {
 				{
 					//Calculate the % of missing node
 					missingNode += (double)(optimalNumber-currentNumber)/(double)optimalNumber;
+					
+					//System.out.println("Missing Node: " + (double)(optimalNumber-currentNumber));
+					
+					if( (double)(optimalNumber-currentNumber) > 0.0)
+						peerWithMissing ++;
+					
+					for(int index=0; index < numOfKBucket; index++ )
+					{
+						//System.out.println( (double)(optimalNumber-currentNumber) + "-" + missNodesNumForGB[index]);
+						if( (double)(optimalNumber-currentNumber) > 0.0)
+						{
+							//System.out.println(100.0*(double)missNodesNumForGB[index]/(double)(optimalNumber-currentNumber));
+							totalMissNodesNumForGB[index] += 100.0*((double)(missNodesNumForGB[index]/(double)(optimalNumber-currentNumber))); 
+						}
+					}
 				}
 			}
 		}
 		
 		if(Engine.getDefault().getNodes().size()-1 > 0)
 		{
-			fileValue.add(new LoggerObject("%_MISSING_NODE", 100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1))));	
+			fileValue.add(new LoggerObject("MISSING_NODE", 100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1))));	
 			fileValue.add(new LoggerObject("GB_DISTANCE_ERROR", 100.0*(double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1))));	
 			System.out.println("########################## % MISSING NODE: " + 	100.0*(double)((double)missingNode/(double)(Engine.getDefault().getNodes().size()-1)));
 			System.out.println("########################## % GB DISTANCE ERROR: " + (double)((double)gbErrorIndex/(double)(Engine.getDefault().getNodes().size()-1)));
@@ -194,6 +299,24 @@ public class LogGeoKadNodesStatsEvent extends Event {
 			}
 			else
 				fileValue.add(new LoggerObject("AV_Local_Distance_Error", 0.0));
+			
+			double tot = 0.0;
+			
+			for(int index=0; index < numOfKBucket; index++ )
+			{
+				if(peerWithMissing > 0.0)
+				{
+					System.out.println("########################## Per_Miss_Node_For_GB_"+ index + " --->" + (double)totalMissNodesNumForGB[index]/peerWithMissing);
+					fileValue.add(new LoggerObject("Per_Miss_Node_For_GB_"+index, (double)totalMissNodesNumForGB[index]/peerWithMissing));	
+					tot +=(double)totalMissNodesNumForGB[index]/peerWithMissing;
+				}
+				else
+				{
+					System.out.println("########################## Per_Miss_Node_For_GB_"+ index + " --->" + 0.0);
+					fileValue.add(new LoggerObject("Per_Miss_Node_For_GB_"+index, 0.0));
+				}
+			}
+			System.out.println("TOT:" + tot);
 		}
 	}
 
@@ -227,7 +350,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 		double sentMessagesPerPeer = 0.0;
 		if(Engine.getDefault().getNodes().size() > 0)
 			sentMessagesPerPeer = (double)((double)totalNumOfSentMessages/(double)(Engine.getDefault().getNodes().size()-1));
-		
+
 		double sentMessagesPerVT = (double)sentMessagesPerPeer/(double)Engine.getDefault().getVirtualTime();
 		
 		
@@ -423,7 +546,7 @@ public class LogGeoKadNodesStatsEvent extends Event {
 	public void network_dump() {
 		// Assuming all nodes have the same Properties
 		GeoKadPeer peer =  (GeoKadPeer) Engine.getDefault().getNodes().get(0);
-		getLogger().info("Properties = " + peer.getKBucketDim() + " " + peer.getResourcesNode() + " " + peer.getAlpha() + " " + peer.getDiscoveryMaxWait());
+		//getLogger().info("Properties = " + peer.getKBucketDim() + " " + peer.getResourcesNode() + " " + peer.getAlpha() + " " + peer.getDiscoveryMaxWait());
 		String s;
 		for (Node node: Engine.getDefault().getNodes()) {
 			peer = (GeoKadPeer) node;
@@ -434,17 +557,17 @@ public class LogGeoKadNodesStatsEvent extends Event {
 					s += entry.getKey() + " ";
 				}
 			}
-			getLogger().info(s);
+			//getLogger().info(s);
 		}
 	}
 
 	public void verbose() {
 		
-		getLogger().info("VT: "+Engine.getDefault().getVirtualTime()+"############# VERBOSE ################################");
+		//getLogger().info("VT: "+Engine.getDefault().getVirtualTime()+"############# VERBOSE ################################");
 		
 		for (Node node : Engine.getDefault().getNodes()) {
 			GeoKadPeer peer = (GeoKadPeer) node;
-			getLogger().info("\nn: " + peer.getKey());
+			//getLogger().info("\nn: " + peer.getKey());
 			int size = 0;
 			int i = 0;
 			for (ArrayList<GeoKadPeerInfo> bucket : peer.getKbucket()) {
@@ -453,18 +576,20 @@ public class LogGeoKadNodesStatsEvent extends Event {
 				for (GeoKadPeerInfo entry : bucket) {
 					s += entry.getKey() + " ";
 				}
-				getLogger().info(
-						"\t[" + i + " size: " + bucket.size() + "]:" + s);
+				//getLogger().info(
+					//	"\t[" + i + " size: " + bucket.size() + "]:" + s);
 				i++;
 
 			}
-			getLogger().info(
-					"Size of kbuckets for " + peer.getKey() + ": " + size);
-			getLogger().info("Searches total: " + peer.logSearch.size());
+			//getLogger().info(
+				//	"Size of kbuckets for " + peer.getKey() + ": " + size);
+			//getLogger().info("Searches total: " + peer.logSearch.size());
+			/*
 			for (Integer k : peer.logSearch.keySet()) {
 				getLogger().info(
 						"key= " + k + " (" + peer.logSearch.get(k) + ")");
 			}
+			*/
 		}
 		
 	}
@@ -489,9 +614,9 @@ public class LogGeoKadNodesStatsEvent extends Event {
 			for (Integer v : peer.logSearch.values()) {
 				s3 += " " + v;
 			}
-			getLogger().info(s + s2 + " S " + s3);
+			//getLogger().info(s + s2 + " S " + s3);
 		}
-		getLogger().info("Total known nodes " + knownNodes.size() + "\n");
+		//getLogger().info("Total known nodes " + knownNodes.size() + "\n");
 
 		knownNodes = null;
 	}
