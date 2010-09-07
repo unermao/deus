@@ -34,14 +34,14 @@
     </node>
     <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
         <params>
-            <param value="300.0" name="period"/>
-            <param value="25" name="jamPeriod"/>
+            <param value="1000.0" name="period"/>
+            <param value="1000.0" name="jamPeriod"/>
             <param value="roadWok" name="type"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="TrafficEventBirthPoissonProcess">
         <params>
-            <param value="1000.0" name="meanArrival"/>
+            <param value="1000" name="meanArrival"/>
         </params>
         <nodes>
             <reference id="TrafficElement"/>
@@ -69,7 +69,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogMaPeriodicProcess">
         <params>
-            <param value="5" name="period"/>
+            <param value="100" name="period"/>
         </params>
         <events>
             <reference id="LogMapEvent"/>
@@ -77,9 +77,9 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <params>
-            <param value="100" name="period"/>
+            <param value="50" name="period"/>
             <param value="0" name="startVtThreshold"/>
-            <param value="800" name="stopVtThreshold"/>
+            <param value="5000" name="stopVtThreshold"/>
         </params>
         <nodes>
             <reference id="D2VPeer"/>
@@ -88,7 +88,7 @@
             <reference id="Birth"/>
         </events>
     </process>
-    <engine keyspacesize="200000" seed="123456789" maxvt="1000000.0">
+    <engine keyspacesize="200000" seed="123456789" maxvt="10000.0">
         <processes>
             <reference id="LogMaPeriodicProcess"/>
             <reference id="TrafficEventBirthPoissonProcess"/>
