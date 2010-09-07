@@ -19,11 +19,15 @@ public class D2VTrafficElement extends Node {
 	private static final String JAM_PERIOD = "jamPeriod";
 	private static final String TYPE = "type";
 		
+	private float startTime = 0;
+	
 	private double period = 0.0;
 	private double jamPeriod = 0.0;
 	private String type = null;
 	
 	private GeoLocation location = null;
+	
+	private ArrayList<Integer> nodeKeysInTrafficJam = new ArrayList<Integer>();
 	
 	public D2VTrafficElement(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -67,7 +71,7 @@ public class D2VTrafficElement extends Node {
 	}
 
 	public Object clone() {
-		System.out.println("D2VTrafficElement clone() !");
+		//System.out.println("D2VTrafficElement clone() !");
 		D2VTrafficElement clone = (D2VTrafficElement) super.clone();	
 		return clone;
 	}
@@ -88,6 +92,18 @@ public class D2VTrafficElement extends Node {
 		this.location = path.getPathPoints().get(locationIndex);
 	}
 
+	public void exitTrafficJamStatus(float time) {
+		for(int i=0; i<nodeKeysInTrafficJam.size();i++)
+		{
+			D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(nodeKeysInTrafficJam.get(i));
+			peer.exitTrafficJamStatus(time);
+		}
+		
+		this.nodeKeysInTrafficJam.clear();
+		Engine.getDefault().removeNode(this);
+	}
+
+	
 	public double getPeriod() {
 		return period;
 	}
@@ -120,5 +136,20 @@ public class D2VTrafficElement extends Node {
 		this.location = location;
 	}
 
+	public float getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(float startTime) {
+		this.startTime = startTime;
+	}
+
+	public ArrayList<Integer> getNodeKeysInTrafficJam() {
+		return nodeKeysInTrafficJam;
+	}
+
+	public void setNodeKeysInTrafficJam(ArrayList<Integer> nodeKeysInTrafficJam) {
+		this.nodeKeysInTrafficJam = nodeKeysInTrafficJam;
+	}
 
 }

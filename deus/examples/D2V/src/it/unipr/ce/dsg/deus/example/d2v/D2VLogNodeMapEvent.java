@@ -77,6 +77,7 @@ public class D2VLogNodeMapEvent extends Event {
 							+"\" startlon=\""+peer.getCp().getStartPoint().getLongitude()
 							+"\" endlat=\""+peer.getCp().getEndPoint().getLatitude()
 							+"\" endlon=\""+peer.getCp().getEndPoint().getLongitude()
+							+"\" trafficJam=\""+peer.isTrafficJam()
 							+"\"/>");
 				}
 				
@@ -90,7 +91,7 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			printTrafficElements(trafficElements);
 			
-			Thread.sleep(500);
+			Thread.sleep(100);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

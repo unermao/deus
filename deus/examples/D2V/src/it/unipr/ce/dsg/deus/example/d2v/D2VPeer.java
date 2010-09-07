@@ -29,6 +29,8 @@ public class D2VPeer extends Peer {
 	private static final String EPSILON = "epsilon";
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
 	
+	private boolean isTrafficJam = false;
+	
 	private int alpha = 3;
 	private int k = 10;
 	private int bucketNodeLimit = 20;
@@ -48,7 +50,7 @@ public class D2VPeer extends Peer {
 		// Init the Switch Station Controller for Peer Mobility Model
 		if(ssc == null)
 		{
-			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_Parma.txt");
+			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
 			ssc.readSwitchStationFile();
 			ssc.readPathFile();
 		}
@@ -126,6 +128,7 @@ public class D2VPeer extends Peer {
 	public Object clone() {
 		
 		D2VPeer clone = (D2VPeer) super.clone();	
+		clone.isTrafficJam = false;
 		return clone;
 	}
 
@@ -180,9 +183,11 @@ public class D2VPeer extends Peer {
 		else{
 			//System.out.println("Peer:"+this.key+" changing position !");
 			this.peerDescriptor.setGeoLocation(this.cp.getCurrentLocation());
+			this.checkTrafficJam(triggeringTime);
 		}
 		
-		this.scheduleMove(triggeringTime);
+		if(this.isTrafficJam == false)
+			this.scheduleMove(triggeringTime);
 	
 	}
 
@@ -209,7 +214,7 @@ public class D2VPeer extends Peer {
 			if(!(delay>0) && !(delay==0) && !(delay<0))
 				delay = 0;
 				
-			System.out.println("Distance:"+distance+" Delay:"+delay+" Speed:"+speed);
+			//System.out.println("Distance:"+distance+" Delay:"+delay+" Speed:"+speed);
 			
 			D2VMoveNodeEvent moveEvent = (D2VMoveNodeEvent) new D2VMoveNodeEvent("node_move_event", params, null).createInstance(triggeringTime + delay);
 			moveEvent.setOneShot(true);
@@ -221,6 +226,64 @@ public class D2VPeer extends Peer {
 		}
 	}
 
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void checkTrafficJam(float triggeringTime)
+	{
+		//System.out.println("Peer:"+this.key+" Check Traffic Jam ...");
+		
+		//Retrieve the list of traffic Jam
+		ArrayList<Integer> trafficElementIndexs = Engine.getDefault().getNodeKeysById("TrafficElement");
+		
+		if(trafficElementIndexs!=null)
+		{
+			for(int i=0; i<trafficElementIndexs.size(); i++)
+			{
+				D2VTrafficElement te = (D2VTrafficElement)Engine.getDefault().getNodeByKey(trafficElementIndexs.get(i));
+				
+				//System.out.println("Peer:"+this.key+" Checking Traffic Element: " + te.getKey());
+				
+				for(int k=0; k<te.getNodeKeysInTrafficJam().size();k++)
+				{
+					D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(te.getNodeKeysInTrafficJam().get(k));
+					double distance = GeoDistance.distance(peer.getPeerDescriptor().getGeoLocation(), this.peerDescriptor.getGeoLocation());
+					
+					//System.out.println("Peer:"+this.key+" Distance:" + distance + " Traffic Start:"+te.getStartTime() + " Period: " + te.getJamPeriod());
+					
+					if(distance <= 0.03)// && triggeringTime < te.getStartTime()+te.getJamPeriod() )
+					{
+						//System.out.println("Peer:"+this.key+" Traffic Jam !!! Traffic Element: " + te.getKey());
+						//float delay = (float) (triggeringTime + (triggeringTime+(te.getStartTime()+te.getJamPeriod())));
+						//System.out.println("Peer:"+this.key+" End Traffic Jam Delay: "+delay);
+						this.isTrafficJam = true;
+						te.getNodeKeysInTrafficJam().add(this.key);
+						
+						break;
+					}
+				}
+				
+				if(te.getNodeKeysInTrafficJam().size() == 0)
+				{
+					double distance = GeoDistance.distance(te.getLocation(), this.peerDescriptor.getGeoLocation());
+					
+					if(distance <= 0.03)// && triggeringTime < te.getStartTime()+te.getJamPeriod() )
+					{
+						this.isTrafficJam = true;
+						te.getNodeKeysInTrafficJam().add(this.key);
+					}
+				}
+			
+			}
+		}
+	}
+	
+	public void exitTrafficJamStatus(float triggeringTime)
+	{
+		this.isTrafficJam = false;
+		this.scheduleMove(triggeringTime);
+	}
 	
 	/**
 	 * returns exponentially distributed random variable
@@ -312,6 +375,14 @@ public class D2VPeer extends Peer {
 
 	public void setCp(CityPath cp) {
 		this.cp = cp;
+	}
+
+	public boolean isTrafficJam() {
+		return isTrafficJam;
+	}
+
+	public void setTrafficJam(boolean isTrafficJam) {
+		this.isTrafficJam = isTrafficJam;
 	}
 
 

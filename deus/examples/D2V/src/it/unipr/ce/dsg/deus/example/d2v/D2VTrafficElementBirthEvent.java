@@ -38,11 +38,23 @@ public class D2VTrafficElementBirthEvent extends NodeEvent {
 		Engine.getDefault().addNode(app);
 		try {
 			app.initialize();
+			app.setStartTime(triggeringTime);
 		} catch (InvalidParamsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		associatedNode = app;
+		
+		try
+		{
+			D2VEndTrafficJamEvent moveEvent = (D2VEndTrafficJamEvent) new D2VEndTrafficJamEvent("end_traffic_jam", params, null).createInstance(triggeringTime+(float)app.getJamPeriod());
+			moveEvent.setOneShot(true);
+			moveEvent.setAssociatedNode(app);
+			Engine.getDefault().insertIntoEventsList(moveEvent);
+		}
+		catch(Exception e)
+		{e.printStackTrace();}
+
 		
 	}
 
