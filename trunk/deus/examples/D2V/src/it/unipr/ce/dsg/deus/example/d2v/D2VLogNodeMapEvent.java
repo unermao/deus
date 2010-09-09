@@ -25,12 +25,6 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.example.googleearth.kml.Folder;
-import it.unipr.ce.dsg.example.googleearth.kml.GeographicPoint;
-import it.unipr.ce.dsg.example.googleearth.kml.KmlManager;
-import it.unipr.ce.dsg.example.googleearth.kml.LookAt;
-import it.unipr.ce.dsg.example.googleearth.kml.PlaceMark;
-import it.unipr.ce.dsg.example.googleearth.kml.Style;
 
 /**
  * 
