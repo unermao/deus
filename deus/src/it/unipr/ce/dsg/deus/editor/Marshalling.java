@@ -442,7 +442,8 @@ public class Marshalling {
 			
 			//******** validation before marshalling
 			if(this.doValidation){
-				SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				//OLD SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+				SchemaFactory sf = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 			    try {
 					Schema schema = sf.newSchema(new File("schema/automator.xsd"));
 					
