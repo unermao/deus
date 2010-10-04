@@ -42,7 +42,7 @@
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
         <params>
-            <param value="5" name="period"/>
+            <param value="10" name="period"/>
         </params>
         <events>
             <reference id="Discovery"/>
@@ -77,7 +77,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <params>
-            <param value="10" name="period"/>
+            <param value="20" name="period"/>
             <param value="0" name="startVtThreshold"/>
             <param value="5000" name="stopVtThreshold"/>
         </params>
@@ -99,8 +99,8 @@
      <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="LogDiscoveryStatProcess">
         <params>
             <param value="1" name="period"/>
-            <param value="9999" name="startVtThreshold"/>
-            <param value="10000" name="stopVtThreshold"/>
+            <param value="10000" name="startVtThreshold"/>
+            <param value="10001" name="stopVtThreshold"/>
         </params>
         <events>
             <reference id="LogDiscoveryStatEvent"/>

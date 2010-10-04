@@ -102,21 +102,11 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 					//if (res != null )
 						//((GeoKadPeer) foundNodes[j]).store(res);
 				}
-
 				
 				//System.out.println("################### CLOSING LOOKUP Recursive !!!! Step Counter: " + stepCounter + " PEERS:  " + currNode.nlResults.get(currNode.getKey()).size());
 				
-				//Evaluate node statistics
-				if(currNode.getDiscoveryStatistics().size() < 100)
-				{
-					double missingNodes = currNode.getGb().evaluatePerMissingNodes(currNode.createPeerInfo());
-					currNode.getDiscoveryStatistics().add(missingNodes);
-				}
-				
 				currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
 				currNode.nlContactedNodes.clear();
-				
-				
 				
 				return;
 			}

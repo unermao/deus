@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class D2VDiscoveryEvent extends NodeEvent {
 
-	private static final float DISCOVERY_PERIOD = 100;
+	private static final float DISCOVERY_PERIOD = 25;
 
 	public D2VDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -39,12 +39,13 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		//Set Discovery Active
 		if(currNode.isDiscoveryActive() == true)
 		{
+			
 			try
 			{
-					D2VDiscoveryEvent discovery = (D2VDiscoveryEvent) new D2VDiscoveryEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
-					discovery.setOneShot(true);
-					discovery.setAssociatedNode(currNode);
-					Engine.getDefault().insertIntoEventsList(discovery);
+				D2VDiscoveryEvent discovery = (D2VDiscoveryEvent) new D2VDiscoveryEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
+				discovery.setOneShot(true);
+				discovery.setAssociatedNode(currNode);
+				Engine.getDefault().insertIntoEventsList(discovery);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -54,7 +55,14 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		}
 		else
 			currNode.setDiscoveryActive(true);
-			
+	
+		//Evaluate node statistics
+		if(currNode.getDiscoveryStatistics().size() < 100)
+		{
+			double missingNodes = currNode.getGb().evaluatePerMissingNodes(currNode.createPeerInfo());
+			currNode.getDiscoveryStatistics().add(missingNodes);
+		}
+		
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 		
 		D2VPeerDescriptor currNodeInfo = currNode.createPeerInfo();
