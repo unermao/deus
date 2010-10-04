@@ -13,7 +13,6 @@ import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
-import it.unipr.ce.dsg.deus.example.geokad.GeoKadPeerInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +36,8 @@ public class D2VPeer extends Peer {
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
 	
 	private float discoveryMaxWait = 5;
+	
+	private ArrayList<Double> discoveryStatistics = null;
 	
 	private boolean isTrafficJam = false;
 	
@@ -65,6 +66,8 @@ public class D2VPeer extends Peer {
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
 	private int discoveryCounter = 0;
+	
+	private GeoLocation oldSentPosition = null;
 	
 	private D2VGeoBuckets gb = null;
 	
@@ -160,6 +163,7 @@ public class D2VPeer extends Peer {
 		
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
 		clone.nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
+		clone.discoveryStatistics = new ArrayList<Double>();
 		
 		return clone;
 	}
@@ -192,17 +196,14 @@ public class D2VPeer extends Peer {
 	}
 	
 	/**
-	 * Move the node to a new position according to his path
+	 * 
 	 */
-	public void move(float triggeringTime) {			
-		
-		//Move to next position among CityPath
-		this.ci.next();
-		
-		this.updateBucketInfo(peerDescriptor);
-		
-		if(GeoDistance.distance(this.cp.getPathPoints().get(this.ci.getIndex()), this.cp.getPathPoints().get(this.ci.getIndex()-1)) >= this.epsilon)
+	public void broadcastUpdatePositionMessage(float triggeringTime)
+	{
+		if(oldSentPosition == null || GeoDistance.distance(this.cp.getPathPoints().get(this.ci.getIndex()), oldSentPosition) > this.epsilon)
 		{
+			
+			oldSentPosition = this.cp.getPathPoints().get(this.ci.getIndex());
 			
 			//Sending Update position messages
 			for(int i=0; i < (this.gb.getBucket().size()) ; i++)
@@ -225,6 +226,15 @@ public class D2VPeer extends Peer {
 				}
 			}
 		 }
+	}
+	
+	/**
+	 * Move the node to a new position according to his path
+	 */
+	public void move(float triggeringTime) {			
+		
+		//Move to next position among CityPath
+		this.ci.next();
 		
 		//If there isn't other point on the path pick up a new one
 		//System.out.println("Peer:"+this.key+" City Path Index:"+this.ci.getIndex()+" Max:"+this.cp.getPathPoints().size());
@@ -250,6 +260,9 @@ public class D2VPeer extends Peer {
 			this.peerDescriptor.setGeoLocation(this.cp.getPathPoints().get(this.ci.getIndex()));
 			this.checkTrafficJam(triggeringTime);
 		}
+		
+		this.updateBucketInfo(peerDescriptor);
+		this.broadcastUpdatePositionMessage(triggeringTime);
 		
 		if(this.isTrafficJam == false)
 			this.scheduleMove(triggeringTime);
@@ -547,5 +560,21 @@ public class D2VPeer extends Peer {
 
 	public void setDiscoveryCounter(int discoveryCounter) {
 		this.discoveryCounter = discoveryCounter;
+	}
+
+	public GeoLocation getOldSentPosition() {
+		return oldSentPosition;
+	}
+
+	public void setOldSentPosition(GeoLocation oldSentPosition) {
+		this.oldSentPosition = oldSentPosition;
+	}
+
+	public ArrayList<Double> getDiscoveryStatistics() {
+		return discoveryStatistics;
+	}
+
+	public void setDiscoveryStatistics(ArrayList<Double> discoveryStatistics) {
+		this.discoveryStatistics = discoveryStatistics;
 	}
 }

@@ -1,15 +1,12 @@
 package it.unipr.ce.dsg.deus.example.d2v.buckets;
 
 import it.unipr.ce.dsg.deus.core.Engine;
-import it.unipr.ce.dsg.deus.core.InvalidParamsException;
+import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.example.d2v.D2VAddPeerInfoEvent;
 import it.unipr.ce.dsg.deus.example.d2v.D2VNodeRemoveEvent;
 import it.unipr.ce.dsg.deus.example.d2v.D2VPeer;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
-import it.unipr.ce.dsg.deus.example.geokad.GeoKadAddPeerInfoEvent;
-import it.unipr.ce.dsg.deus.example.geokad.GeoKadPeer;
-import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -289,8 +286,9 @@ public class D2VGeoBuckets {
 		
 	}
 	
-	/*
+	/**
 	 * 
+	 * @param peerInfo
 	 */
 	public void removePeer(D2VPeerDescriptor peerInfo) {
 		for(int i=0; i<kValue; i++)
@@ -342,6 +340,61 @@ public class D2VGeoBuckets {
 		return -1;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public double evaluatePerMissingNodes(D2VPeerDescriptor myDesc)
+	{
+		Vector<ArrayList<D2VPeerDescriptor>> localGeoBucketVector = new Vector<ArrayList<D2VPeerDescriptor>>();
+		
+		//Create the list of KBuckets
+		for (int i = 0; i < kValue; ++i) {
+			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
+			localGeoBucketVector.add(i, new ArrayList<D2VPeerDescriptor>());
+		}
+		
+		for(int peerIndex=0; peerIndex<Engine.getDefault().getNodes().size();peerIndex++)
+		{
+			Node node = Engine.getDefault().getNodes().get(peerIndex);
+			
+			if(node.getId().equals("D2VPeer"))
+			{
+				D2VPeerDescriptor peerInfo = ((D2VPeer)node).createPeerInfo();
+				
+				double distance = GeoDistance.distance(myDesc, peerInfo);
+					
+				boolean bucketFounded = false;
+					
+					//For each KBucket without the last one that is for all peers out of previous circumferences 
+					for(int index=0;index<kValue; index++)
+					{
+						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+						{
+							
+							//Add the peer in the right bucket
+							if(!localGeoBucketVector.get(index).contains(peerInfo))
+								localGeoBucketVector.get(index).add(peerInfo);
+						
+							bucketFounded = true;
+						
+							break;
+						}
+					}
+			}
+		}
+		
+		double optimalNumber = 0.0;
+		double realNumber = 0.0;
+		
+		for (int i = 0; i < kValue; ++i) {
+			optimalNumber += localGeoBucketVector.get(i).size();
+			realNumber += this.bucket.get(i).size();
+		}
+		
+		return (optimalNumber-realNumber)/optimalNumber;
+	}
 	
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {
 		return bucket;
