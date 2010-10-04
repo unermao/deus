@@ -8,28 +8,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
-import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
-import it.unipr.ce.dsg.deus.example.geokad.GeoKadDistance;
-import it.unipr.ce.dsg.deus.example.geokad.GeoKadPeer;
-import it.unipr.ce.dsg.example.googleearth.kml.GeographicPoint;
-import it.unipr.ce.dsg.example.googleearth.kml.PlaceMark;
 
 /**
  * 
@@ -88,10 +73,11 @@ public class D2VLogNodeMapEvent extends Event {
 			out.close();
 			file.close();
 			
-			printTrafficElements(trafficElements);
 			printAllNodeInfo();
 			
-			Thread.sleep(1000);
+			printTrafficElements(trafficElements);
+			
+			//Thread.sleep(1000);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -154,7 +140,7 @@ public class D2VLogNodeMapEvent extends Event {
 				{
 					peer.updateBucketInfo(peer.getPeerDescriptor());
 					
-					file = new FileOutputStream("examples/d2v/map/node_markers/markers_"+peer.getPeerDescriptor().getKey()+".xml");
+					file = new FileOutputStream("examples/D2V/map/node_markers/markers_"+peer.getPeerDescriptor().getKey()+".xml");
 					out = new PrintStream(file);
 
 					out.println("<markers>");

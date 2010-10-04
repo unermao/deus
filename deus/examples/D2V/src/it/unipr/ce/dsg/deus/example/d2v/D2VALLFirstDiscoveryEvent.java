@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
+import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -19,11 +20,11 @@ import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
  * @author Marco Picone picone@ce.unipr.it
  *
  */
-public class D2VFirstDiscoveryEvent extends NodeEvent {
+public class D2VALLFirstDiscoveryEvent extends Event {
 
 	private int NODE_LIST_LIMIT = 20;
 	
-	public D2VFirstDiscoveryEvent(String id, Properties params,
+	public D2VALLFirstDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -34,35 +35,23 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
-		
-		//Retrieve Initial List from BootStrap
-		ArrayList<D2VPeerDescriptor> initList = this.getInitialPeerList(connectingNode.getPeerDescriptor());
-		
-		for(int index=0;index<initList.size();index++)
-			connectingNode.insertPeer(initList.get(index));
-		
-		System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size() + " Total Peers: " + Engine.getDefault().getNodeKeysById("D2VPeer").size());
-		
-		/*
-		try {
+		for(int i=0; i<Engine.getDefault().getNodes().size(); i++)
+		{
+			if(Engine.getDefault().getNodes().get(i).getId().equals("D2VPeer"))
+			{
+				D2VPeer connectingNode = (D2VPeer) Engine.getDefault().getNodes().get(i);
 				
-			int random = Engine.getDefault().getSimulationRandom().nextInt(Engine.getDefault().getNodes().size());
-			
-			D2VPeer randomPeer = (D2VPeer)Engine.getDefault().getNodes().get(random);
-			
-			Message msg = new Message("TEST_MSG", connectingNode.getKey(), randomPeer.getKey(), new String("AHAHAH").getBytes());
-			
-			MessageExchangeEvent event = (MessageExchangeEvent) new MessageExchangeEvent("message_exchange", params, null).createInstance(triggeringTime+25);
-			event.setOneShot(true);
-			event.setAssociatedNode(randomPeer);
-			event.setMsg(msg);
-			Engine.getDefault().insertIntoEventsList(event);
-		} catch (InvalidParamsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				//Retrieve Initial List from BootStrap
+				ArrayList<D2VPeerDescriptor> initList = this.getInitialPeerList(connectingNode.getPeerDescriptor());
+				
+				for(int index=0;index<initList.size();index++)
+					connectingNode.insertPeer(initList.get(index));
+
+				System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size());
+
+			}
 		}
-		*/
+		
 	}
 	
 	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer)
