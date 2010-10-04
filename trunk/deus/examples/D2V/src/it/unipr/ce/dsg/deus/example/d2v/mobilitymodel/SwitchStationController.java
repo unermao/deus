@@ -12,6 +12,7 @@ public class SwitchStationController {
 	private String switchStationFileName = null;
 	private ArrayList<CityPath> pathList = null;
 	private ArrayList<SwitchStation> switchStationList = null;
+	private ArrayList<CityPathPoint> locationList = null;
 	
 	/**
 	 * 
@@ -24,6 +25,7 @@ public class SwitchStationController {
 		this.switchStationFileName = switchStationFileName;
 		this.pathList = new ArrayList<CityPath>();
 		this.switchStationList = new ArrayList<SwitchStation>();
+		this.locationList = new ArrayList<CityPathPoint>();
 	}
 
 	/**
@@ -106,8 +108,16 @@ public class SwitchStationController {
 					double lat = Double.parseDouble(coordinates[0]);
 					double lon = Double.parseDouble(coordinates[1]);
 					
-					GeoLocation point = new GeoLocation(lat, lon, 0);
-					path.addGeoLocation(point);
+					//GeoLocation point = new GeoLocation(lat, lon, 0);
+					CityPathPoint point = new CityPathPoint(lat, lon, 0);
+					
+					//If the point already exist in the locationList
+					if(!this.locationList.contains(point))
+						this.locationList.add(point);
+					
+					int index = this.locationList.indexOf(point);
+					path.addCityPathPoint(this.locationList.get(index));
+					//path.addCityPathPoint(point);
 				}
 				
 				this.pathList.add(path);

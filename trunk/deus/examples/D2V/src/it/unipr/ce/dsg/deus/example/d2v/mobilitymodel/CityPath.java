@@ -4,50 +4,17 @@ import java.util.ArrayList;
 
 public class CityPath {
 
-	private ArrayList<GeoLocation> pathPoints = null;
-	private int index = 0;
-
+	private ArrayList<CityPathPoint> pathPoints = null;
+	private boolean hasTrafficJam = false;
+	
 	/**
 	 * 
 	 */
 	public CityPath() {
-		this.pathPoints = new ArrayList<GeoLocation>();
-		this.index = 0;
-	}
-
-	/**
-	 * 
-	 */
-	public CityPath(CityPath path) {
-		this.pathPoints = new ArrayList<GeoLocation>(path.getPathPoints());
-		this.index = 0;
+		this.pathPoints = new ArrayList<CityPathPoint>();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public int nextStep()
-	{
-		if(this.index < this.pathPoints.size() -1)
-		{
-			this.index ++;
-			return (this.pathPoints.size()-this.index-1);		
-		}
-		
-		return -1;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public GeoLocation getCurrentLocation()
-	{
-		return this.pathPoints.get(index);
-	}
-	
-	public void addGeoLocation(GeoLocation point)
+	public void addCityPathPoint(CityPathPoint point)
 	{
 		this.pathPoints.add(point);
 	}
@@ -68,22 +35,20 @@ public class CityPath {
 			return null;
 	}
 	
-	public ArrayList<GeoLocation> getPathPoints() {
+	public ArrayList<CityPathPoint> getPathPoints() {
 		return pathPoints;
 	}
 
-	public void setPathPoints(ArrayList<GeoLocation> pathPoints) {
+	public void setPathPoints(ArrayList<CityPathPoint> pathPoints) {
 		this.pathPoints = pathPoints;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public boolean isHasTrafficJam() {
+		return hasTrafficJam;
 	}
 
-	public int getIndex() {
-		return index;
+	public void setHasTrafficJam(boolean hasTrafficJam) {
+		this.hasTrafficJam = hasTrafficJam;
 	}
-	
-	
 	
 }
