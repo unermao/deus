@@ -9,6 +9,7 @@
     <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeerMovementEvent" id="PeerMovement"/>
     <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodeMapEvent" id="LogMapEvent"/>
     <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodesStatsEvent" id="LogStatEvent"/>
+    <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogDiscoveryStatEvent" id="LogDiscoveryStatEvent"/>
     <event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VBirthEvent" id="Birth">
         <events>
             <reference id="FirstDiscovery"/>
@@ -19,7 +20,6 @@
             <param value="20" name="peerListLimit"/>
         </params>
         <events>
-            <reference id="PeerMovement"/>
             <reference id="Discovery"/>
         </events>
     </event>
@@ -77,7 +77,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <params>
-            <param value="50" name="period"/>
+            <param value="10" name="period"/>
             <param value="0" name="startVtThreshold"/>
             <param value="5000" name="stopVtThreshold"/>
         </params>
@@ -93,15 +93,25 @@
             <param value="0" name="meanArrival"/>
         </params>
         <events>
-            <reference id="PeerMovement"/>
             <reference id="FirstDiscovery"/>
         </events>
     </process>
-    <engine keyspacesize="200000" seed="123456789" maxvt="10000.0">
+     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="LogDiscoveryStatProcess">
+        <params>
+            <param value="1" name="period"/>
+            <param value="9999" name="startVtThreshold"/>
+            <param value="10000" name="stopVtThreshold"/>
+        </params>
+        <events>
+            <reference id="LogDiscoveryStatEvent"/>
+        </events>
+    </process>
+    <engine keyspacesize="10000" seed="123456789" maxvt="10000.0">
         <processes>
-            <!-- <reference id="LogStatPeriodicProcess"/>  -->
-            <reference id="LogMaPeriodicProcess"/>
-            <reference id="TrafficEventBirthPoissonProcess"/>
+            <reference id="LogStatPeriodicProcess"/>
+            <!-- <reference id="LogMaPeriodicProcess"/>  -->
+            <reference id="LogDiscoveryStatProcess"/>
+            <!-- <reference id="TrafficEventBirthPoissonProcess"/>  -->
             <reference id="RectangularBirth"/>
         </processes>
     </engine>
