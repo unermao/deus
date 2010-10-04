@@ -63,7 +63,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		fileValue = new ArrayList<LoggerObject>();
 		fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
 
-		checkNodesStatistics();
+		//checkNodesStatistics();
 		
 		//checkNodeDistance();
 		

@@ -50,6 +50,16 @@
    redCarIcon.shadow = null,
    redCarIcon.printShadow = null
    redCarIcon.image = "car_marker_red.png";
+
+   var blueCarIcon = new GIcon(G_DEFAULT_ICON);
+   blueCarIcon.shadow = null,
+   blueCarIcon.printShadow = null
+   blueCarIcon.image = "car_marker_blue.png";   
+   
+   var circleCarIcon = new GIcon(G_DEFAULT_ICON);
+   circleCarIcon.shadow = null,
+   circleCarIcon.printShadow = null
+   circleCarIcon.image = "marker_blue.png";
    
    var ssIcon = new GIcon(G_DEFAULT_ICON);
    ssIcon.shadow = null,
@@ -133,104 +143,6 @@ function initialize() {
 	t=setTimeout("updateMap()",1000); 
 	}
 }
-
-function drawNodeTarget()
-{
-	var qst=location.search.substr(1);
-	var dati = new Array()
-	dati=qst.split("&");
-	var dato1 = dati[0].substr(dati[0].indexOf("=")+1);
-       
-	nodeKey = dato1;
-	
-	if(nodeKey.length > 0 )
-	{
-		//console.log("Node Key: " + nodeKey);
-		
-		//GDownloadUrl("marker.xml?"+ new Date().valueOf() , function(data, responseCode) {
-		GDownloadUrl("node_markers/markers_"+dato1+".xml?"+ new Date().valueOf() , function(data, responseCode) {
-	
-		var xml = GXml.parse(data);
-		var markers = xml.documentElement.getElementsByTagName("marker");
-		
-		//Centra la mappa in un punto particolare
-		//map.setCenter(new GLatLng(parseFloat(markers[0].getAttribute("lat")) , parseFloat(markers[0].getAttribute("long"))), 16);
-	
-		if(oldLat != parseFloat(markers[0].getAttribute("lat")) || oldLong != parseFloat(markers[0].getAttribute("long")))
-		{
-	
-			map.clearOverlays();
-	
-			updateAllPeer();
-	
-			oldLat = parseFloat(markers[0].getAttribute("lat"));
-			oldLong = parseFloat(markers[0].getAttribute("long"));
-	
-			var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
-	
-			//map.setCenter(puntoNodo, zoomValue);
-	
-			map.addOverlay(new GMarker(puntoNodo, markerOptions));
-	
-			//Create Circle (1.5Km:0.93205679 0.5Km:0.3106856)
-			for(var k = 0; k < numOfGeoBucket; k++)
-				drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
-	
-			//Draw start and end point
-			var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
-			var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
-	
-			map.addOverlay(new GMarker(startPoint, { icon:greenIconStart }));
-			map.addOverlay(new GMarker(endPoint, { icon:greenIconEnd }));
-	
-			for (var i = 3; i < markers.length; i++) {
-				var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
-				var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
-				var titolo = (markers[i].getAttribute("descriz"));	
-				var distance = markers[i].getAttribute("distance");
-				map.addOverlay(createMarker(punto,real_punto,distance));
-				
-				//map.addOverlay(new GMarker(punto, {title: titolo}));
-			}
-	
-			map.addOverlay(new GMarker(puntoNodo, markerOptions));
-		}
-		
-		});
-	}	
-		
-}
-
-function updateMap() {
-		
-		//map.clearOverlays();
-		
-		drawNodeTarget();	  		
-		updateAllPeer();
-		readTrafficElement();
-
-		t=setTimeout("updateMap()",1000);
-} 
-
-function createMarker(position,startSS,endSS,peerId,markerOption) {
-	//markerBlueOptions = { icon:blueIcon, title: peerId };
-    var marker = new GMarker(position,markerOption);
-  	GEvent.addListener(marker,"click", function() {
-      var myHtml = "<b>Peer Id: " + peerId + "</b><br/>"+"<b>Position: " + position + "</b><br/>";
-	  //route(startSS,endSS,position);	
-      map.openInfoWindowHtml(position, myHtml);
-    });
-    return marker;
-}
-
-function route(from,to,position) {
-      //console.log("Load Route Called ! from:" + from + " to:" + to);
-      directions.clear();
-      //directions.load("from:" + from + " to:" + to, {getPolyline:true,getSteps:true,travelMode:mode}));
-	  directions.loadFromWaypoints([position,to],{getSteps:true,avoidHighways:false, travelmode: G_TRAVEL_MODE_DRIVING});
-	  map.setCenter(position, 13);
-}
-
 
 function updateAllPeer() {
 
@@ -415,6 +327,129 @@ function readTrafficElement() {
 	for(var i=0;i<newTrafficJamArray.length;i++)
 		trafficElementList[i] = newTrafficJamArray[i];
 	
+}
+
+function drawNodeTarget()
+{
+	var qst=location.search.substr(1);
+	var dati = new Array()
+	dati=qst.split("&");
+	var dato1 = dati[0].substr(dati[0].indexOf("=")+1);
+       
+	nodeKey = dato1;
+	
+	if(nodeKey.length > 0 )
+	{
+		//console.log("Node Key: " + nodeKey);
+		
+		//GDownloadUrl("marker.xml?"+ new Date().valueOf() , function(data, responseCode) {
+		GDownloadUrl("node_markers/markers_"+dato1+".xml?"+ new Date().valueOf() , function(data, responseCode) {
+	
+		var xml = GXml.parse(data);
+		var markers = xml.documentElement.getElementsByTagName("marker");
+		
+		//Centra la mappa in un punto particolare
+		//map.setCenter(new GLatLng(parseFloat(markers[0].getAttribute("lat")) , parseFloat(markers[0].getAttribute("long"))), 16);
+	
+		if(oldLat != parseFloat(markers[0].getAttribute("lat")) || oldLong != parseFloat(markers[0].getAttribute("long")))
+		{
+			oldLat = parseFloat(markers[0].getAttribute("lat"));
+			oldLong = parseFloat(markers[0].getAttribute("long"));
+	
+			var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
+	
+			//map.setCenter(puntoNodo, zoomValue);
+	
+			map.addOverlay(new GMarker(puntoNodo, markerOptions));
+	
+			//Create Circle (1.5Km:0.93205679 0.5Km:0.3106856)
+			for(var k = 0; k < numOfGeoBucket; k++)
+				drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
+	
+			//Draw start and end point
+			var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
+			var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
+	
+			map.addOverlay(new GMarker(startPoint, { icon:greenIconStart }));
+			map.addOverlay(new GMarker(endPoint, { icon:greenIconEnd }));
+	
+			for (var i = 3; i < markers.length; i++) {
+
+				var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+				var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
+				var titolo = (markers[i].getAttribute("descriz"));	
+				var distance = markers[i].getAttribute("distance");
+				map.addOverlay(createMarkerWithPath(punto,real_punto,titolo,distance));				
+
+				//var titolo = (markers[i].getAttribute("descriz"));	
+				//var distance = markers[i].getAttribute("distance");
+				//map.addOverlay(createMarker(punto,real_punto,distance));
+				//map.addOverlay(new GMarker(punto, {title: titolo}));
+			}
+	
+			map.addOverlay(new GMarker(puntoNodo, markerOptions));
+		}
+		
+		});
+	}	
+		
+}
+
+function updateMap() {
+		
+		//map.clearOverlays();
+		
+			  		
+		updateAllPeer();
+		drawNodeTarget();		
+		readTrafficElement();
+
+		t=setTimeout("updateMap()",1000);
+} 
+
+function createMarker(position,startSS,endSS,peerId,markerOption) {
+ 	var marker = new GMarker(position,markerOption);
+  	GEvent.addListener(marker,"click", function() {
+	var myHtml = "<b>Peer Id: " + peerId + "</b><br/>"+"<b>Position: " + position + "</b><br/>";		
+ 	map.openInfoWindowHtml(position, myHtml);
+    });
+    return marker;
+}
+
+function createMarkerWithPath(latlng, realLatLon, title,distance) {
+   
+    var options = { icon:blueCarIcon, title: distance };
+
+    if(distance < 0.1)
+	    options = { icon:circleCarIcon, title: distance };
+
+    var marker = new GMarker(latlng, options);
+    // var marker = new GMarker(latlng);
+    marker.value = distance;
+    GEvent.addListener(marker,"click", function() {
+      var myHtml = "<b>ID: "+ title +" Distance: " + distance + "</b><br/>";
+      var pol=[];
+      
+      if(path != null)
+      	map.removeOverlay(path);
+
+      pol.push(latlng) ;
+      pol.push(realLatLon) ;
+      
+	  path = new GPolyline(pol) ;
+	  map.addOverlay(path) ;
+	  	
+      map.openInfoWindowHtml(latlng, myHtml);
+    });
+    return marker;
+}
+
+function route(from,to,position) {
+      //console.log("Load Route Called ! from:" + from + " to:" + to);
+      directions.clear();
+      //directions.load("from:" + from + " to:" + to, {getPolyline:true,getSteps:true,travelMode:mode}));
+	  directions.loadFromWaypoints([position,to],{getSteps:true,avoidHighways:false, travelmode: G_TRAVEL_MODE_DRIVING});
+	  map.setCenter(position, 13);
 }
 
 
