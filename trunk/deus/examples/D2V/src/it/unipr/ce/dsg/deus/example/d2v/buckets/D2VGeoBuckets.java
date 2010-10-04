@@ -366,22 +366,22 @@ public class D2VGeoBuckets {
 					
 				boolean bucketFounded = false;
 					
-					//For each KBucket without the last one that is for all peers out of previous circumferences 
-					for(int index=0;index<kValue; index++)
+				//For each KBucket without the last one that is for all peers out of previous circumferences 
+				for(int index=0;index<kValue; index++)
+				{
+					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+					if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
 					{
-						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
-						{
-							
-							//Add the peer in the right bucket
-							if(!localGeoBucketVector.get(index).contains(peerInfo))
-								localGeoBucketVector.get(index).add(peerInfo);
 						
-							bucketFounded = true;
+						//Add the peer in the right bucket
+						if(!localGeoBucketVector.get(index).contains(peerInfo))
+							localGeoBucketVector.get(index).add(peerInfo);
 						
-							break;
-						}
+						bucketFounded = true;
+						
+						break;
 					}
+				}
 			}
 		}
 		
@@ -393,7 +393,17 @@ public class D2VGeoBuckets {
 			realNumber += this.bucket.get(i).size();
 		}
 		
-		return (optimalNumber-realNumber)/optimalNumber;
+		double percentage = 0.0;
+		
+		if(realNumber > optimalNumber)
+			realNumber = optimalNumber;
+		
+		if(optimalNumber > 0.0)
+			percentage = (optimalNumber-realNumber)/optimalNumber;
+		
+		System.out.println("K:"+myDesc.getKey()+ " Optimal: " + optimalNumber + " Real: " + realNumber + " %: " + 100.0*percentage);
+		
+		return 100.0*percentage;
 	}
 	
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {

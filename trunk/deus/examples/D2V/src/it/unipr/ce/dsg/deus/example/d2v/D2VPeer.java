@@ -192,7 +192,7 @@ public class D2VPeer extends Peer {
 		//System.out.println("Peer:"+this.key+" Starting Position:"+this.peerDescriptor.getGeoLocation().getLatitude()+","+this.peerDescriptor.getGeoLocation().getLongitude());
 		
 		//Schedule the first movement
-		this.scheduleMove(triggeringTime);
+		//this.scheduleMove(triggeringTime);
 	}
 	
 	/**

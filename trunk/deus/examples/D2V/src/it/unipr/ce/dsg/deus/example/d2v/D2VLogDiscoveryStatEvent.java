@@ -3,23 +3,8 @@
  */
 package it.unipr.ce.dsg.deus.example.d2v;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.w3c.dom.NodeList;
-
 import it.unipr.ce.dsg.deus.automator.AutomatorLogger;
 import it.unipr.ce.dsg.deus.automator.LoggerObject;
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -28,15 +13,10 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
-import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
-import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 /**
- * This event writes a log file with the kbuckets' data for each node in the network.
- * This event should be scheduled in the simulation's XML file
  * 
- * @author Vittorio Sozzi
+ * @author Marco Picone picone@ce.unipr.it
  * 
  */
 public class D2VLogDiscoveryStatEvent extends Event {
@@ -54,18 +34,35 @@ public class D2VLogDiscoveryStatEvent extends Event {
 		
 		System.out.println("VT:" + triggeringTime + " LOG_DISCOVERY_STAT_EVENT");
 
-		for(int index=0; index<Engine.getDefault().getNodes().size(); index++)
+		ArrayList<Double> discoveryList = new ArrayList<Double>();
+		ArrayList<Integer> discoveryCountList = new ArrayList<Integer>();
+		
+		for(int i=0;i<100;i++)
 		{
-			Node node = Engine.getDefault().getNodes().get(index);
+			discoveryList.add(0.0);
+			discoveryCountList.add(0);
 			
-			if(node.getId().equals("D2VPeer"))
+			for(int index=0; index<Engine.getDefault().getNodes().size(); index++)
 			{
-				D2VPeer peer = (D2VPeer)node;
+				Node node = Engine.getDefault().getNodes().get(index);
 				
-				System.out.println("VT:" + triggeringTime + " LOG_DISCOVERY_STAT_EVENT Key:" + peer.getKey() + " Discovery Samples: " + peer.getDiscoveryStatistics().size());
+				if(node.getId().equals("D2VPeer"))
+				{
+					D2VPeer peer = (D2VPeer)node;
+					
+					//System.out.println("VT:" + triggeringTime + " LOG_DISCOVERY_STAT_EVENT Key:" + peer.getKey() + " Discovery Samples: " + peer.getDiscoveryStatistics().size());
+				
+					if(peer.getDiscoveryStatistics().size() == 100)
+					{
+						discoveryCountList.set(i, discoveryCountList.get(i)+1);
+						discoveryList.set(i, discoveryList.get(i)+peer.getDiscoveryStatistics().get(i));
+					}
+				}
 			}
 		}
 		
+		for(int i=0;i<100;i++)
+			System.out.println(i+" "+(double)(discoveryList.get(i)/(double)discoveryCountList.get(i)));	
 		
 	}
 	
