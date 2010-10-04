@@ -2,9 +2,11 @@ package it.unipr.ce.dsg.deus.example.d2v;
 
 import it.unipr.ce.dsg.deus.core.*;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
+import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
+
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -28,6 +30,8 @@ public class D2VTrafficElement extends Node {
 	private GeoLocation location = null;
 	
 	private ArrayList<Integer> nodeKeysInTrafficJam = new ArrayList<Integer>();
+	private CityPath path;
+	private CityPathPoint point;
 	
 	public D2VTrafficElement(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -73,6 +77,7 @@ public class D2VTrafficElement extends Node {
 	public Object clone() {
 		//System.out.println("D2VTrafficElement clone() !");
 		D2VTrafficElement clone = (D2VTrafficElement) super.clone();	
+		clone.nodeKeysInTrafficJam = new ArrayList<Integer>();
 		return clone;
 	}
 
@@ -86,13 +91,62 @@ public class D2VTrafficElement extends Node {
 		ArrayList<CityPath> availablePaths = D2VPeer.ssc.getPathListFromSwithStation(ss);
 		
 		//Pick Up a random path among available
-		int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
-		CityPath path = new CityPath(availablePaths.get(pathIndex));
-		int locationIndex = Engine.getDefault().getSimulationRandom().nextInt(path.getPathPoints().size());
-		this.location = path.getPathPoints().get(locationIndex);
+		boolean pathFounded = false;
+		
+		while(pathFounded == false)
+		{
+			int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
+			
+			if(availablePaths.get(pathIndex).isHasTrafficJam()==false)
+			{	
+				this.path = availablePaths.get(pathIndex);
+				this.path.setHasTrafficJam(true);
+				
+				int locationIndex = Engine.getDefault().getSimulationRandom().nextInt(path.getPathPoints().size());
+				//PickUp a random point
+				this.point = path.getPathPoints().get(locationIndex);
+				//Set TrafficJam true in the CityPathPoint
+				this.point.setTe(this);
+				//Set the point for the traffic element
+				this.location = point;
+				
+				/*
+				for(int i=0; i<D2VPeer.ssc.getPathList().size();i++)
+				{
+					CityPath path = D2VPeer.ssc.getPathList().get(i);
+					int index = path.getPathPoints().indexOf(this.point);
+					if(index != -1)
+					{
+						CityPathPoint p = path.getPathPoints().get(index);
+						path.setHasTrafficJam(true);
+						p.setTe(this);
+					}
+				}
+				*/
+				
+				pathFounded = true;
+			}
+		}
 	}
 
 	public void exitTrafficJamStatus(float time) {
+		
+		this.getPath().setHasTrafficJam(false);
+		this.point.setTe(null);
+		
+		for(int i=0; i<D2VPeer.ssc.getPathList().size();i++)
+		{
+			CityPath path = D2VPeer.ssc.getPathList().get(i);
+			int index = path.getPathPoints().indexOf(this.point);
+			if(index != -1)
+			{
+				CityPathPoint p = path.getPathPoints().get(index);
+				path.setHasTrafficJam(false);
+				p.setTe(null);
+			}
+		}
+
+		
 		for(int i=0; i<nodeKeysInTrafficJam.size();i++)
 		{
 			D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(nodeKeysInTrafficJam.get(i));
@@ -150,6 +204,14 @@ public class D2VTrafficElement extends Node {
 
 	public void setNodeKeysInTrafficJam(ArrayList<Integer> nodeKeysInTrafficJam) {
 		this.nodeKeysInTrafficJam = nodeKeysInTrafficJam;
+	}
+
+	public CityPath getPath() {
+		return path;
+	}
+
+	public void setPath(CityPath path) {
+		this.path = path;
 	}
 
 }

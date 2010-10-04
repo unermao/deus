@@ -25,6 +25,11 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
+import it.unipr.ce.dsg.deus.example.geokad.GeoKadDistance;
+import it.unipr.ce.dsg.deus.example.geokad.GeoKadPeer;
+import it.unipr.ce.dsg.example.googleearth.kml.GeographicPoint;
+import it.unipr.ce.dsg.example.googleearth.kml.PlaceMark;
 
 /**
  * 
@@ -41,7 +46,7 @@ public class D2VLogNodeMapEvent extends Event {
 
 	public void run() throws RunException {
 
-		System.out.println("VT:" + triggeringTime + " Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
+		System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT ---> Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
 
 		FileOutputStream file = null;
 		PrintStream out = null;
@@ -84,8 +89,9 @@ public class D2VLogNodeMapEvent extends Event {
 			file.close();
 			
 			printTrafficElements(trafficElements);
+			printAllNodeInfo();
 			
-			Thread.sleep(100);
+			Thread.sleep(1000);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -94,7 +100,7 @@ public class D2VLogNodeMapEvent extends Event {
 	
 	private void printTrafficElements(ArrayList<D2VTrafficElement> trafficElements)
 	{
-		System.out.println("VT:" + triggeringTime + " Node: " + Engine.getDefault().getNodes().size() +" ... Logging Traffic Elements:"+trafficElements.size());
+		System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT --->  Traffic Elements:"+trafficElements.size());
 
 		FileOutputStream file = null;
 		PrintStream out = null;
@@ -108,9 +114,9 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			for(int i=0; i<trafficElements.size(); i++)
 			{
-				
 				D2VTrafficElement peer = (D2VTrafficElement)trafficElements.get(i);
 				
+				//System.out.println("Traffic Element: " + peer.getKey() + " Cars in Jam: " + peer.getNodeKeysInTrafficJam().size());
 				
 				out.println("<marker lat=\""+peer.getLocation().getLatitude()
 							+"\" long=\""+peer.getLocation().getLongitude()
@@ -124,13 +130,68 @@ public class D2VLogNodeMapEvent extends Event {
 
 			out.close();
 			file.close();
-			
-			Thread.sleep(500);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private void printAllNodeInfo() throws IOException
+	{
+		FileOutputStream file = null;
+		PrintStream out = null;
+
+		
+		for(int index=0; index<Engine.getDefault().getNodes().size();index++)
+		{
+			if(Engine.getDefault().getNodes().get(index).getId().equals("D2VPeer"))
+			{
+				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodes().get(index);
+				
+				
+				if(peer != null)
+				{
+					peer.updateBucketInfo(peer.getPeerDescriptor());
+					
+					file = new FileOutputStream("examples/d2v/map/node_markers/markers_"+peer.getPeerDescriptor().getKey()+".xml");
+					out = new PrintStream(file);
+
+					out.println("<markers>");
+
+					//Write All Peers file
+					//out_AllPeer.println("<markers>");
+					//out_AllPeer.println("<marker lat=\""+peer.getLatitude()+"\" long=\""+peer.getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+
+
+					out.println("<marker lat=\""+peer.getPeerDescriptor().getGeoLocation().getLatitude()+"\" long=\""+peer.getPeerDescriptor().getGeoLocation().getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+
+					out.println("<marker lat=\""+peer.getCp().getStartPoint().getLatitude()+"\" long=\""+peer.getCp().getStartPoint().getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+					out.println("<marker lat=\""+peer.getCp().getEndPoint().getLatitude()+"\" long=\""+peer.getCp().getEndPoint().getLongitude()+"\" descriz=\""+peer.getKey()+"\"/>");
+
+					for(int i=0; i<peer.getGb().getBucket().size(); i++)
+					{
+						for(int k=0; k<peer.getGb().getBucket().get(i).size();k++)
+						{
+							out.println("<marker lat=\""+peer.getGb().getBucket().get(i).get(k).getGeoLocation().getLatitude()+"\" long=\""+peer.getGb().getBucket().get(i).get(k).getGeoLocation().getLongitude()
+									+"\" descriz=\""+peer.getGb().getBucket().get(i).get(k).getKey()
+									+"\" real_lat=\""+((D2VPeer)Engine.getDefault().getNodeByKey(peer.getGb().getBucket().get(i).get(k).getKey())).getPeerDescriptor().getGeoLocation().getLatitude()
+									+"\" real_lon=\""+((D2VPeer)Engine.getDefault().getNodeByKey(peer.getGb().getBucket().get(i).get(k).getKey())).getPeerDescriptor().getGeoLocation().getLongitude()
+									+"\" distance=\""+GeoDistance.distance(peer.getGb().getBucket().get(i).get(k), ((D2VPeer)Engine.getDefault().getNodeByKey(peer.getGb().getBucket().get(i).get(k).getKey())).getPeerDescriptor())
+									+"\"/>");
+						}
+					}
+
+					out.println("</markers>");
+
+					out.close();
+					file.close();
+
+
+				}
+			}
+		}
+
 	}
 	
 }

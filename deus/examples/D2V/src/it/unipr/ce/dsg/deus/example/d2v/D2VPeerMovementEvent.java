@@ -25,7 +25,7 @@ public class D2VPeerMovementEvent extends NodeEvent {
 	public void run() throws RunException {
 		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
-		System.out.println("VT:"+triggeringTime+" First Movement Event ---> Peer Key: " + connectingNode.getKey());
+		//System.out.println("VT:"+triggeringTime+" FIRST_MOVEMENT_EVENT ---> Peer Key: " + connectingNode.getKey());
 	}
 
 }

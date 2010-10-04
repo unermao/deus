@@ -1,5 +1,9 @@
 package it.unipr.ce.dsg.deus.example.d2v;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import it.unipr.ce.dsg.deus.core.Engine;
@@ -7,9 +11,8 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.deus.example.d2v.message.Message;
-import it.unipr.ce.dsg.deus.example.d2v.message.MessageExchangeEvent;
-
+import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 /**
  * 
@@ -18,6 +21,8 @@ import it.unipr.ce.dsg.deus.example.d2v.message.MessageExchangeEvent;
  */
 public class D2VFirstDiscoveryEvent extends NodeEvent {
 
+	private int NODE_LIST_LIMIT = 20;
+	
 	public D2VFirstDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
@@ -30,7 +35,14 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 	public void run() throws RunException {
 		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
-		//System.out.println("VT:"+triggeringTime+" First DiscoveryEvent ---> Peer Key: " + connectingNode.getKey());
+		
+		//Retrieve Initial List from BootStrap
+		ArrayList<D2VPeerDescriptor> initList = this.getInitialPeerList(connectingNode.getPeerDescriptor());
+		
+		for(int index=0;index<initList.size();index++)
+			connectingNode.insertPeer(initList.get(index));
+		
+		//System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size());
 		
 		/*
 		try {
@@ -51,6 +63,61 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 			e.printStackTrace();
 		}
 		*/
+	}
+	
+	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer)
+	{
+		final double peerLat = peer.getGeoLocation().getLatitude();
+		final double peerLon = peer.getGeoLocation().getLongitude();
+		
+		
+		ArrayList<D2VPeerDescriptor> peerList = new ArrayList<D2VPeerDescriptor>();
+		
+		ArrayList<Integer> keyList = Engine.getDefault().getNodeKeysById("D2VPeer");
+		
+		for(int i=0; i<keyList.size(); i++)
+		{
+			D2VPeer p = (D2VPeer)Engine.getDefault().getNodeByKey(keyList.get(i));
+			peerList.add(p.getPeerDescriptor());
+		}
+		
+		if(peerList.size() > NODE_LIST_LIMIT)
+		{
+			ArrayList<D2VPeerDescriptor> tempList = new ArrayList<D2VPeerDescriptor>();
+			
+			// Sort PeerInfo according to distance
+			Collections.sort(peerList, new Comparator<D2VPeerDescriptor>() {
+
+				public int compare(D2VPeerDescriptor o1, D2VPeerDescriptor o2) {
+			    
+					double dist1 = GeoDistance.distance(peerLon,peerLat, o1.getGeoLocation().getLongitude(), o1.getGeoLocation().getLatitude());
+					double dist2 = GeoDistance.distance(peerLon,peerLat, o2.getGeoLocation().getLongitude(), o2.getGeoLocation().getLatitude());
+						
+					if(dist1 == dist2)
+						return 0;
+					
+					if(dist1 < dist2)
+						return -1;
+				
+					if(dist1 > dist2)
+						return 1;
+					
+					return 0;
+			    }});
+			
+				for(int index=0; index<NODE_LIST_LIMIT; index++)
+				{
+					D2VPeerDescriptor peerInfo = peerList.get(index);
+					tempList.add(peerInfo);
+				}	
+				//System.out.println("#########################################################");
+				
+				return new ArrayList<D2VPeerDescriptor>(tempList);
+		}
+		else
+			return new ArrayList<D2VPeerDescriptor>(peerList);
+		
+		
 	}
 
 }

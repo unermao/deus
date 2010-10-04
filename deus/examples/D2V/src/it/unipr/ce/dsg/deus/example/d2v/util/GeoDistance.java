@@ -1,8 +1,8 @@
-package it.unipr.ce.dsg.example.d2v.util;
+package it.unipr.ce.dsg.deus.example.d2v.util;
 
 import it.unipr.ce.dsg.deus.example.d2v.D2VPeer;
-import it.unipr.ce.dsg.deus.example.d2v.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
+import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 
 public class GeoDistance {
 
