@@ -28,8 +28,8 @@
    var zoomValue = 10;
    var bootKey = 0;
    var nodeKey = 0;	
-   var numOfGeoBucket = 10;
-   var sizeOfGeoBucket = 0.93205679;
+   var numOfGeoBucket = 5;
+   var sizeOfGeoBucket = 0.93205679/3;
    
    var markerList = new Array();
    
@@ -72,6 +72,34 @@
    var greenIconEnd = new GIcon(G_DEFAULT_ICON);
    greenIconEnd.image = "http://gmaps-samples.googlecode.com/svn/trunk/markers/green/marker2.png";
    
+   
+ 	// Draw a circle on map around center (radius in miles)
+   // Modified by Jeremy Schneider based on http://maps.huge.info/dragcircle2.htm
+   function drawCircle(map, center, radius, numPoints)
+   {
+            poly = [] ; 
+            var lat = center.lat() ;
+            var lng = center.lng() ;
+            var d2r = Math.PI/180 ;                
+            var r2d = 180/Math.PI ;                
+            var Clat = (radius/3963) * r2d ;      
+            var Clng = Clat/Math.cos(lat*d2r);
+            
+            for (var i = 0 ; i < numPoints ; i++)
+            {
+                var theta = Math.PI * (i / (numPoints / 2)) ;
+                Cx = lng + (Clng * Math.cos(theta)) ;
+                Cy = lat + (Clat * Math.sin(theta)) ;
+                poly.push(new GLatLng(Cy,Cx)) ;
+            }
+
+            poly.push(poly[0]) ;
+
+            line = new GPolyline(poly,'#FF0000', 3, 0.8) ;
+            
+            map.addOverlay(line) ;
+   }
+   
 
 function initialize() {	
 	
@@ -106,9 +134,78 @@ function initialize() {
 	}
 }
 
+function drawNodeTarget()
+{
+	var qst=location.search.substr(1);
+	var dati = new Array()
+	dati=qst.split("&");
+	var dato1 = dati[0].substr(dati[0].indexOf("=")+1);
+       
+	nodeKey = dato1;
+	
+	if(nodeKey.length > 0 )
+	{
+		//console.log("Node Key: " + nodeKey);
+		
+		//GDownloadUrl("marker.xml?"+ new Date().valueOf() , function(data, responseCode) {
+		GDownloadUrl("node_markers/markers_"+dato1+".xml?"+ new Date().valueOf() , function(data, responseCode) {
+	
+		var xml = GXml.parse(data);
+		var markers = xml.documentElement.getElementsByTagName("marker");
+		
+		//Centra la mappa in un punto particolare
+		//map.setCenter(new GLatLng(parseFloat(markers[0].getAttribute("lat")) , parseFloat(markers[0].getAttribute("long"))), 16);
+	
+		if(oldLat != parseFloat(markers[0].getAttribute("lat")) || oldLong != parseFloat(markers[0].getAttribute("long")))
+		{
+	
+			map.clearOverlays();
+	
+			updateAllPeer();
+	
+			oldLat = parseFloat(markers[0].getAttribute("lat"));
+			oldLong = parseFloat(markers[0].getAttribute("long"));
+	
+			var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
+	
+			//map.setCenter(puntoNodo, zoomValue);
+	
+			map.addOverlay(new GMarker(puntoNodo, markerOptions));
+	
+			//Create Circle (1.5Km:0.93205679 0.5Km:0.3106856)
+			for(var k = 0; k < numOfGeoBucket; k++)
+				drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
+	
+			//Draw start and end point
+			var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
+			var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
+	
+			map.addOverlay(new GMarker(startPoint, { icon:greenIconStart }));
+			map.addOverlay(new GMarker(endPoint, { icon:greenIconEnd }));
+	
+			for (var i = 3; i < markers.length; i++) {
+				var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+				var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
+				var titolo = (markers[i].getAttribute("descriz"));	
+				var distance = markers[i].getAttribute("distance");
+				map.addOverlay(createMarker(punto,real_punto,distance));
+				
+				//map.addOverlay(new GMarker(punto, {title: titolo}));
+			}
+	
+			map.addOverlay(new GMarker(puntoNodo, markerOptions));
+		}
+		
+		});
+	}	
+		
+}
+
 function updateMap() {
 		
-		//map.clearOverlays();	  		
+		//map.clearOverlays();
+		
+		drawNodeTarget();	  		
 		updateAllPeer();
 		readTrafficElement();
 
