@@ -35,9 +35,9 @@ public class D2VPeer extends Peer {
 	private static final String EPSILON = "epsilon";
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
 	
-	private float discoveryMaxWait = 5;
+	private float discoveryMaxWait = 25;
 	
-	private ArrayList<Double> discoveryStatistics = null;
+	private ArrayList<Double> discoveryStatistics = new ArrayList<Double>();;
 	
 	private boolean isTrafficJam = false;
 	
@@ -159,8 +159,7 @@ public class D2VPeer extends Peer {
 		
 		clone.isTrafficJam = false;
 		
-		clone.gb = new D2VGeoBuckets(clone.getK(), clone.getRadiusKm());
-		
+		clone.gb = new D2VGeoBuckets(this.getK(), this.getRadiusKm());
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
 		clone.nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
 		clone.discoveryStatistics = new ArrayList<Double>();
@@ -170,8 +169,6 @@ public class D2VPeer extends Peer {
 
 	public void init(float triggeringTime)
 	{
-		//System.out.println("Init Peer:"+this.key);
-		
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
 		this.ss = ssc.getSwitchStationList().get(ssIndex);	
@@ -188,11 +185,9 @@ public class D2VPeer extends Peer {
 		this.cp = availablePaths.get(pathIndex);
 		this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
 		this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
-		
-		//System.out.println("Peer:"+this.key+" Starting Position:"+this.peerDescriptor.getGeoLocation().getLatitude()+","+this.peerDescriptor.getGeoLocation().getLongitude());
-		
+			
 		//Schedule the first movement
-		//this.scheduleMove(triggeringTime);
+		this.scheduleMove(triggeringTime);
 	}
 	
 	/**
@@ -202,7 +197,7 @@ public class D2VPeer extends Peer {
 	{
 		if(oldSentPosition == null || GeoDistance.distance(this.cp.getPathPoints().get(this.ci.getIndex()), oldSentPosition) > this.epsilon)
 		{
-			
+
 			oldSentPosition = this.cp.getPathPoints().get(this.ci.getIndex());
 			
 			//Sending Update position messages
@@ -376,11 +371,40 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param d2vPeerDescriptor
 	 */
-	public void insertPeer(D2VPeerDescriptor newPeer) {
+	public void insertPeer(String from,D2VPeerDescriptor newPeer) {
+		
 		if (this.getKey() != newPeer.getKey())
 		{
-			this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
+			if(!this.neighbors.contains((Peer) Engine.getDefault().getNodeByKey(newPeer.getKey())))
+				this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
+			
+			//System.out.println("############################################ INSERT FROM :  " + from);
 			this.gb.insertPeer(params,this.createPeerInfo(), newPeer);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void scheduleDiscovery(float triggeringTime) {
+		try {
+		
+			//At the beginning of a new discovery evaluate and save information about percentage of missing nodes
+			if(this.discoveryStatistics.size() < 100)
+			{	
+				double perMissing = this.getGb().evaluatePerMissingNodes(this.createPeerInfo());
+				this.discoveryStatistics.add(perMissing);
+			}
+			
+			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+15);
+			event.setOneShot(true);
+			event.setAssociatedNode(this);
+			Engine.getDefault().insertIntoEventsList(event);
+		
+		} catch (InvalidParamsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

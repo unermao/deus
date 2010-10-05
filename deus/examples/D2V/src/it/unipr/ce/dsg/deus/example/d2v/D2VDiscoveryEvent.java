@@ -32,36 +32,10 @@ public class D2VDiscoveryEvent extends NodeEvent {
 	public void run() throws RunException {
 		
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();
+		
 		currNode.updateBucketInfo(currNode.createPeerInfo());
 		
 		//System.out.println("VT:"+Engine.getDefault().getVirtualTime()+" PERIODIC_DISCOVERY ---> Peer:" +currNode.getPeerDescriptor().getKey() + " Neighbours: " + currNode.getGb().getPeerCount());
-		
-		//Set Discovery Active
-		if(currNode.isDiscoveryActive() == true)
-		{
-			
-			try
-			{
-				D2VDiscoveryEvent discovery = (D2VDiscoveryEvent) new D2VDiscoveryEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
-				discovery.setOneShot(true);
-				discovery.setAssociatedNode(currNode);
-				Engine.getDefault().insertIntoEventsList(discovery);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			return;
-		}
-		else
-			currNode.setDiscoveryActive(true);
-	
-		//Evaluate node statistics
-		if(currNode.getDiscoveryStatistics().size() < 100)
-		{
-			double missingNodes = currNode.getGb().evaluatePerMissingNodes(currNode.createPeerInfo());
-			currNode.getDiscoveryStatistics().add(missingNodes);
-		}
 		
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 		
@@ -81,11 +55,10 @@ public class D2VDiscoveryEvent extends NodeEvent {
 			//System.out.println("VT:"+triggeringTime+" SENDING LOOK UP RECURSIVE MESSAGE !");
 			
 			D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent(
-					"node_lookup", params, null, first, discoveryMaxWait)
-					.createInstance(triggeringTime + discoveryMaxWait);
+					"node_lookup", params, null, first)
+					.createInstance(triggeringTime);
 
 			nlk.setCloserElement(first);
-			nlk.setDiscoveryMaxWait(discoveryMaxWait);
 			nlk.setOneShot(true);
 			nlk.setAssociatedNode(currNode);
 			nlk.setFindNodeK(false);
@@ -123,19 +96,6 @@ public class D2VDiscoveryEvent extends NodeEvent {
 				e.printStackTrace();
 			}
 		}
-			
-		try
-		{
-			D2VDiscoveryEvent discovery = (D2VDiscoveryEvent) new D2VDiscoveryEvent("find_node", new Properties(), null).createInstance(triggeringTime + DISCOVERY_PERIOD);
-			discovery.setOneShot(true);
-			discovery.setAssociatedNode(currNode);
-			Engine.getDefault().insertIntoEventsList(discovery);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		
 	}
 
 }
