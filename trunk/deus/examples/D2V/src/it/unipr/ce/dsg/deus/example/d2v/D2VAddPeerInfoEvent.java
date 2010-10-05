@@ -23,10 +23,10 @@ public class D2VAddPeerInfoEvent extends NodeEvent {
 
 		D2VPeer currPeer = (D2VPeer) getAssociatedNode();
 	
-		//System.out.println("VT:"+triggeringTime+" ADD PEER INFO EVENT");
+		//System.out.println("VT:"+triggeringTime+"Key:"+currPeer.getKey()+" ADD PEER INFO EVENT FOR Key: " + peerInfo.getKey());
 		
 		currPeer.setSentMessages(currPeer.getSentMessages() + 1);
-		currPeer.insertPeer(peerInfo);
+		currPeer.insertPeer("D2VAddPeerInfoEvent",peerInfo);
 	}
 	
 	public Object clone() {

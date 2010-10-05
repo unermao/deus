@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <automator xmlns="http://dsg.ce.unipr.it/software/deus/schema/automator">
-    <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VDiscoveryEvent" id="Discovery">
-        <params>
-            <param value="TRUE" name="hasSameAssociatedNode"/>
-        </params>
-    </event>
+    
     <event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthScheduler" handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthEvent" id="TrafficEventBirth"/>
     <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeerMovementEvent" id="PeerMovement"/>
     <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodeMapEvent" id="LogMapEvent"/>
@@ -19,9 +15,6 @@
         <params>
             <param value="20" name="peerListLimit"/>
         </params>
-        <events>
-            <reference id="Discovery"/>
-        </events>
     </event>
     <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
         <params>
@@ -35,19 +28,11 @@
             <param value="3" name="alpha"/>
             <param value="5" name="k"/>
             <param value="40" name="bucketNodeLimit"/>
-            <param value="0.5" name="radiusKm"/>
+            <param value="1" name="radiusKm"/>
             <param value="0.1" name="epsilon"/>
             <param value="30.0" name="avgSpeedMax"/>
         </params>
     </node>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
-        <params>
-            <param value="10" name="period"/>
-        </params>
-        <events>
-            <reference id="Discovery"/>
-        </events>
-    </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="TrafficEventBirthPoissonProcess">
         <params>
             <param value="1000" name="meanArrival"/>
@@ -61,7 +46,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogStatPeriodicProcess">
         <params>
-            <param value="15" name="period"/>
+            <param value="500" name="period"/>
         </params>
         <events>
             <reference id="LogStatEvent"/>

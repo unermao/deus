@@ -23,7 +23,7 @@ public class D2VMoveNodeEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		System.out.println("Move Event !");
+		//System.out.println("Move Event !");
 		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
 		currentNode.move(triggeringTime);

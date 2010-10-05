@@ -23,7 +23,7 @@ public class D2VUpdatePositionEvent extends NodeEvent {
 		D2VPeer currPeer = (D2VPeer) getAssociatedNode();
 		//System.out.println("VT:"+triggeringTime+" UPDATE_POSITION_EVENT");
 		currPeer.setSentMessages(currPeer.getSentMessages() + 1);
-		currPeer.insertPeer(peerInfo);
+		currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo);
 	}
 	
 	public Object clone() {

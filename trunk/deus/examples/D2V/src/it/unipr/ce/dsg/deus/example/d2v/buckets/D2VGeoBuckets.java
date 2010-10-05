@@ -58,53 +58,73 @@ public class D2VGeoBuckets {
 	 */
 	public void insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
 		
-		if(!this.containsPeerDescriptor(newPeer))
-		{
-			try
-			{
-				D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
-				
-				D2VAddPeerInfoEvent nlk = (D2VAddPeerInfoEvent) new D2VAddPeerInfoEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
-
-				nlk.setOneShot(true);
-				nlk.setAssociatedNode(peer);
-				nlk.setPeerInfo(myDescr);
-				Engine.getDefault().insertIntoEventsList(nlk);
-			}
-			catch(Exception e)
-			{e.printStackTrace();}
-			
-		}
-			
+		//System.out.println("D2VGeoBucket ---> Peer:" + myDescr.getKey() + " Adding Peer:"+newPeer.getKey());
 		
-		this.removePeer(newPeer);
+		int peerPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
 		
 		double distance = GeoDistance.distance(myDescr, newPeer);
-		
-		boolean bucketFounded = false;
 		
 		//For each KBucket without the last one that is for all peers out of previous circumferences 
 		for(int i=0; i<kValue; i++)
 		{
-			//System.out.println(this.getKey() + "@Distance: " + distance + " IF: " + (double)(i)*rayDistance);
-			
 			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-			if((distance <= (double)(i)*rayDistance ) && bucketFounded == false)
-			{
-					
-				//Add the peer in the right bucket
-				if(!this.bucket.get(i).contains(newPeer))
+			if((distance <= (double)(i)*rayDistance ))
+			{		
+				//System.out.println("D2VGeoBucket ---> FOUNDED ! GB: " +  i);
+				
+				//If Peer Descriptor Already exist in buckets
+				if(peerPositionIndex != -1)
 				{
+					//System.out.println("D2VGeoBucket ---> Already Exist: Index: " + peerPositionIndex);
+					
+					//Is it was in the same bucket
+					if(peerPositionIndex == i)
+					{
+						int bucketIndex = this.bucket.get(i).indexOf(newPeer);
+						this.bucket.get(i).set(bucketIndex, newPeer);
+					}
+					else //If it was in a diffrent bucket
+					{
+						//Remove ref from the old bucket
+						this.bucket.get(peerPositionIndex).remove(newPeer);
+						
+						//Add new ref int the righ bucket
+						this.bucket.get(i).add(newPeer);
+					}
+						
+				}	
+				else
+				{
+					//System.out.println("D2VGeoBucket ---> NOT EXIST: Index: " + peerPositionIndex);
+					
+					//Add new ref int the righ bucket
 					this.bucket.get(i).add(newPeer);
-					//D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
-					//peer.getGb().insertPeer(newPeer, myDescr);
+					
+					//Send Add Peer Info Message
+					this.sendAddPeerInfoMessage(params, myDescr, newPeer);
 				}
 				
-				bucketFounded = true;
 				
 				break;
 			}
+			
 		}
+	}
+	
+	public void sendAddPeerInfoMessage(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer)
+	{
+		try
+		{
+			D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+			
+			D2VAddPeerInfoEvent nlk = (D2VAddPeerInfoEvent) new D2VAddPeerInfoEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
+			nlk.setOneShot(true);
+			nlk.setAssociatedNode(peer);
+			nlk.setPeerInfo(myDescr);
+			Engine.getDefault().insertIntoEventsList(nlk);
+		}
+		catch(Exception e)
+		{e.printStackTrace();}
 	}
 	
 	/**
@@ -112,7 +132,7 @@ public class D2VGeoBuckets {
 	 * @param peerDescr
 	 * @return
 	 */
-	public D2VPeerDescriptor containsAndReturnPeerDescriptor(D2VPeerDescriptor peerDescr)
+	public D2VPeerDescriptor retrievePeerDescriptor(D2VPeerDescriptor peerDescr)
 	{
 		for(int i=0; i<kValue; i++)
 			if(this.bucket.get(i).contains(peerDescr))
@@ -129,13 +149,13 @@ public class D2VGeoBuckets {
 	 * @param peerDescr
 	 * @return
 	 */
-	public boolean containsPeerDescriptor(D2VPeerDescriptor peerDescr)
+	public int bucketIndexOfPeerDescriptor(D2VPeerDescriptor peerDescr)
 	{
 		for(int i=0; i<kValue; i++)
 			if(this.bucket.get(i).contains(peerDescr))
-				return true;
+				return i;
 		
-		return false;
+		return -1;
 	}
 	
 	
@@ -182,16 +202,24 @@ public class D2VGeoBuckets {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = kValue;
+		int maxSize = 100;
 		
 		boolean flag = false;
 		int a = 0;
 		while (tempResults.size() < maxSize) {
+			
 			flag = false;
+			
 			try {
 				it = this.bucket.get(index + a).iterator();
 				while (it.hasNext())
-					tempResults.add(it.next());
+				{
+					D2VPeerDescriptor descr = it.next();
+					if(!tempResults.contains(descr) && !descr.equals(myDesc))
+						tempResults.add(descr);
+						
+					//tempResults.add(it.next());
+				}
 			} catch (IndexOutOfBoundsException e) {
 				flag = true;
 			}
@@ -203,7 +231,13 @@ public class D2VGeoBuckets {
 			try {
 				it = this.bucket.get(index - a).iterator();
 				while (it.hasNext())
-					tempResults.add(it.next());
+				{
+					D2VPeerDescriptor descr = it.next();
+					if(!tempResults.contains(descr) && !descr.equals(myDesc))
+						tempResults.add(descr);
+					
+					//tempResults.add(it.next());
+				}
 			} catch (IndexOutOfBoundsException e) {
 				if (flag)
 					break;
@@ -401,7 +435,7 @@ public class D2VGeoBuckets {
 		if(optimalNumber > 0.0)
 			percentage = (optimalNumber-realNumber)/optimalNumber;
 		
-		System.out.println("K:"+myDesc.getKey()+ " Optimal: " + optimalNumber + " Real: " + realNumber + " %: " + 100.0*percentage);
+		//System.out.println("############################### K:"+myDesc.getKey()+ " Optimal: " + optimalNumber + " Real: " + realNumber + " %: " + 100.0*percentage);
 		
 		return 100.0*percentage;
 	}
@@ -436,7 +470,7 @@ public class D2VGeoBuckets {
 		this.peerCount = 0;
 		
 		for(int i=0; i<(this.kValue); i++)
-			peerCount += this.bucket.size();
+			peerCount += this.bucket.get(i).size();
 		
 		return peerCount;
 	}

@@ -6,11 +6,11 @@ package it.unipr.ce.dsg.deus.example.d2v.discovery;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistanceComparator;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 /**
- * @author Vittorio Sozzi
+ * @author Marco Picone
  * 
  */
 public class SearchResultType {
@@ -23,11 +23,37 @@ public class SearchResultType {
 	}
 
 	public void add(D2VPeerDescriptor peer) {
-		foundNodes.add(peer);
+		if(!this.foundNodes.contains(peer))
+			foundNodes.add(peer);
 	}
 
-	public void addAll(Collection<? extends D2VPeerDescriptor> collPeer) {
-		foundNodes.addAll(collPeer);
+	public void addAll(ArrayList<D2VPeerDescriptor> collPeer) {
+		
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		String app="";
+		Object[] array = foundNodes.toArray();
+		ArrayList<D2VPeerDescriptor> arrayList = new ArrayList<D2VPeerDescriptor>();
+		for(int i=0; i<foundNodes.size(); i++)
+		{
+			app=app+"#"+((D2VPeerDescriptor)array[i]).getKey();
+			arrayList.add((D2VPeerDescriptor)array[i]);
+		}
+		
+		System.out.println(app);
+		
+		for(int i=0; i<collPeer.size(); i++)
+		{
+			D2VPeerDescriptor pd = collPeer.get(i);
+			
+			if(!arrayList.contains(pd))
+			{
+				System.out.println("Adding Node: " + pd.getKey());
+				foundNodes.add(pd);
+			}
+			
+		}
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		//foundNodes.addAll(collPeer);
 	}
 
 	public TreeSet<D2VPeerDescriptor> getFoundNodes() {
