@@ -13,9 +13,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 
 	private D2VPeerDescriptor closerElement = null;
 	
-	private int stepCounter = 0 ;
-	
-	private boolean findNodeK = false;
+	//private boolean findNodeK = false;
 
 	public D2VNodeLookUpRecursiveEvent(String id, Properties params,
 			Process parentProcess, D2VPeerDescriptor closerElem)
@@ -28,9 +26,8 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 	public Object clone() {
 		D2VNodeLookUpRecursiveEvent clone = (D2VNodeLookUpRecursiveEvent) super
 				.clone();
-		clone.findNodeK = false;
+		//clone.findNodeK = false;
 		clone.closerElement = null;
-		clone.stepCounter = 0;
 	
 		return clone;
 	}
@@ -38,16 +35,20 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 	private void initialize() {
 	}
 
+	/*
 	public boolean isFindNodeK() {
 		return findNodeK;
 	}
-
+	*/
+	
 	public void run() throws RunException {
-		
-		this.stepCounter ++;
 		
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();		
 	
+		currNode.setAvDiscoveryStepCounter(currNode.getAvDiscoveryStepCounter()+1);
+		
+		currNode.setSentFindNode(0);
+		
 		//Increment number of sent messages
 		currNode.setSentMessages(currNode.getSentMessages() + 1);
 
@@ -59,25 +60,25 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 
 		if (closerElement == first) {
 			
-			if (this.isFindNodeK()) { 		
-				
+			//if (this.isFindNodeK()) { 		
+			if (currNode.isFindNodeK()) {
 				
 				//Store Step Counter
-				currNode.setAvDiscoveryStepCounter(currNode.getAvDiscoveryStepCounter()+stepCounter);
 				currNode.setDiscoveryCounter(currNode.getDiscoveryCounter()+1);
 				
 				// no new result even from the first k nodes
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray();
 				
 				//Add founded nodes to peerList
-				System.out.println("####################################### NEW NODES: " + foundNodes.length);
+				//System.out.println("####################################### NEW NODES: " + foundNodes.length);
 				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
-					System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
+					//System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
 					currNode.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j]);
 				}
-				System.out.println("#########################################################################");
+				//System.out.println("#########################################################################");
 				
-				currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
+				//currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
+				currNode.nlResults.get(currNode.getKey()).clearAll();
 				currNode.nlContactedNodes.clear();
 				
 				//Schedule a new Discovery Event
@@ -88,16 +89,20 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 			
 			// No closer elements found! find_node-ing k not-already-contacted
 			// closer nodes
-			this.setFindNodeK(true);
+			//this.setFindNodeK(true);
+			currNode.setFindNodeK(true);
 			scheduleFindNodeEvent(currNode, currNode.getGb().getK_VALUE());
 		} else
 			{
-				this.setFindNodeK(false);
+				//this.setFindNodeK(false);
+				currNode.setFindNodeK(false);
 			}
-		if (!this.isFindNodeK()) {
+		//if (!this.isFindNodeK()) {
+		if (!currNode.isFindNodeK()) {
 			scheduleFindNodeEvent(currNode, currNode.getAlpha());
 		}
 
+		/*
 		try {
 			D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent(
 					"node_lookup", params, null, first)
@@ -112,6 +117,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+		*/
 	}
 
 	/**
@@ -156,9 +162,11 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		}
 	}
 
+	/*
 	public void setFindNodeK(boolean findNodeK) {
 		this.findNodeK = findNodeK;
 	}
+	*/
 
 //	public void setResourceKey(int resourceKey) {
 //		this.resourceKey = resourceKey;
@@ -170,14 +178,6 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 
 	public void setCloserElement(D2VPeerDescriptor closerElement) {
 		this.closerElement = closerElement;
-	}
-
-	public int getStepCounter() {
-		return stepCounter;
-	}
-
-	public void setStepCounter(int stepCounter) {
-		this.stepCounter = stepCounter;
 	}
 
 }

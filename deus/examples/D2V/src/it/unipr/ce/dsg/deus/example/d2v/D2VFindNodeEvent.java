@@ -46,7 +46,37 @@ public class D2VFindNodeEvent extends NodeEvent {
 			
 			currentNode.insertPeer("D2VFindNodeEvent",reqNode);
 			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode));
-		
+			
+			D2VPeer reqPeer = ((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey()));
+			
+			//If it is the last received find node
+			if(reqPeer.getSentFindNode() == reqPeer.getAlpha())
+			{
+				D2VPeerDescriptor first = null;
+
+				if (reqPeer.nlResults.get(reqPeer.getKey()).size() != 0) {
+					first = reqPeer.nlResults.get(reqPeer.getKey()).getFoundNodes().first();
+				}
+				
+				try {
+					
+					D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent(
+							"node_lookup", params, null, first)
+							.createInstance(triggeringTime + 25);
+
+					nlk.setCloserElement(first);
+					nlk.setOneShot(true);
+					nlk.setAssociatedNode(reqPeer);
+					
+					Engine.getDefault().insertIntoEventsList(nlk);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+			else //Increment sent Find Node
+			{
+				reqPeer.setSentFindNode(reqPeer.getSentFindNode()+1);
+			}
 		}
 		
 	}
