@@ -48,6 +48,8 @@ public class D2VPeer extends Peer {
 	private double epsilon = 1.5;
 	private double avgSpeedMax = 30.0;
 	
+	private int sentFindNode = 0;
+	
 	private SwitchStation ss = null;
 	private CityPath cp = null;
 	private CityPathIndex ci = null;
@@ -66,6 +68,8 @@ public class D2VPeer extends Peer {
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
 	private int discoveryCounter = 0;
+	
+	private boolean findNodeK = false;
 	
 	private GeoLocation oldSentPosition = null;
 	
@@ -163,6 +167,10 @@ public class D2VPeer extends Peer {
 		clone.nlResults = new HashMap<Integer, SearchResultType>();
 		clone.nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
 		clone.discoveryStatistics = new ArrayList<Double>();
+		clone.sentFindNode = 0;
+		clone.avDiscoveryStepCounter = 0;
+		clone.discoveryCounter = 0;
+		clone.findNodeK = false;
 		
 		return clone;
 	}
@@ -279,7 +287,7 @@ public class D2VPeer extends Peer {
 	 * @param triggeringTime
 	 */
 	public void scheduleMove(float triggeringTime) {
-	
+		
 		try 
 		{
 			
@@ -600,5 +608,21 @@ public class D2VPeer extends Peer {
 
 	public void setDiscoveryStatistics(ArrayList<Double> discoveryStatistics) {
 		this.discoveryStatistics = discoveryStatistics;
+	}
+
+	public int getSentFindNode() {
+		return sentFindNode;
+	}
+
+	public void setSentFindNode(int sentFindNode) {
+		this.sentFindNode = sentFindNode;
+	}
+
+	public boolean isFindNodeK() {
+		return findNodeK;
+	}
+
+	public void setFindNodeK(boolean findNodeK) {
+		this.findNodeK = findNodeK;
 	}
 }

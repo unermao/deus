@@ -53,6 +53,8 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		try {
 			
 			//System.out.println("VT:"+triggeringTime+" SENDING LOOK UP RECURSIVE MESSAGE !");
+	
+			currNode.setFindNodeK(false);
 			
 			D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent(
 					"node_lookup", params, null, first)
@@ -61,8 +63,6 @@ public class D2VDiscoveryEvent extends NodeEvent {
 			nlk.setCloserElement(first);
 			nlk.setOneShot(true);
 			nlk.setAssociatedNode(currNode);
-			nlk.setFindNodeK(false);
-			nlk.setStepCounter(0);
 			Engine.getDefault().insertIntoEventsList(nlk);
 
 		} catch (Exception e1) {
