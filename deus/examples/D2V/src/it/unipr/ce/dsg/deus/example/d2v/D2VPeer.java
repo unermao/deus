@@ -49,6 +49,7 @@ public class D2VPeer extends Peer {
 	private double avgSpeedMax = 30.0;
 	
 	private int sentFindNode = 0;
+	private int findNodeLimit = 0;
 	
 	private SwitchStation ss = null;
 	private CityPath cp = null;
@@ -171,6 +172,7 @@ public class D2VPeer extends Peer {
 		clone.avDiscoveryStepCounter = 0;
 		clone.discoveryCounter = 0;
 		clone.findNodeK = false;
+		clone.findNodeLimit = 0;
 		
 		return clone;
 	}
@@ -405,7 +407,7 @@ public class D2VPeer extends Peer {
 				this.discoveryStatistics.add(perMissing);
 			}
 			
-			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+15);
+			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+50);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
@@ -624,5 +626,13 @@ public class D2VPeer extends Peer {
 
 	public void setFindNodeK(boolean findNodeK) {
 		this.findNodeK = findNodeK;
+	}
+
+	public int getFindNodeLimit() {
+		return findNodeLimit;
+	}
+
+	public void setFindNodeLimit(int findNodeLimit) {
+		this.findNodeLimit = findNodeLimit;
 	}
 }
