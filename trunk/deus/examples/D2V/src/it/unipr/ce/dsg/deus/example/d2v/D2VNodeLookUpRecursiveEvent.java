@@ -70,6 +70,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray();
 				
 				//Add founded nodes to peerList
+				//System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " New Nodes="+(foundNodes.length));
 				//System.out.println("####################################### NEW NODES: " + foundNodes.length);
 				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
 					//System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
@@ -135,6 +136,12 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		int contactedNodes = 0;
 		Object[] node = currNode.nlResults.get(currNode.getKey()).getFoundNodes()
 				.toArray();
+		
+		if(currNode.nlResults.get(currNode.getKey()).size() < numElements)
+			currNode.setFindNodeLimit(currNode.nlResults.get(currNode.getKey()).size());
+		else
+			currNode.setFindNodeLimit(numElements);
+		
 		for (i = 0; i < currNode.nlResults.get(currNode.getKey()).size()
 				&& contactedNodes <= numElements; i++) {
 			if (!currNode.nlContactedNodes.contains(node[i])) {

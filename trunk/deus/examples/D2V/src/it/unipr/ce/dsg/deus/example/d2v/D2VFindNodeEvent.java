@@ -49,9 +49,15 @@ public class D2VFindNodeEvent extends NodeEvent {
 			
 			D2VPeer reqPeer = ((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey()));
 			
-			//If it is the last received find node
-			if(reqPeer.getSentFindNode() == reqPeer.getAlpha())
+			reqPeer.setSentFindNode(reqPeer.getSentFindNode()+1);
+			
+			//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Find Node Count="+(reqPeer.getSentFindNode()) + " Limit:" + reqPeer.getFindNodeLimit());
+			
+			//Check Status of waited FIND_NODE for current Node 
+			if(reqPeer.getSentFindNode() == reqPeer.getFindNodeLimit())
 			{
+				//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Starting LookUp Recursive Procedure ! ");
+				
 				D2VPeerDescriptor first = null;
 
 				if (reqPeer.nlResults.get(reqPeer.getKey()).size() != 0) {
@@ -60,23 +66,18 @@ public class D2VFindNodeEvent extends NodeEvent {
 				
 				try {
 					
-					D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent(
-							"node_lookup", params, null, first)
-							.createInstance(triggeringTime + 25);
-
+					D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent("node_lookup", params, null, first).createInstance(triggeringTime);
 					nlk.setCloserElement(first);
 					nlk.setOneShot(true);
-					nlk.setAssociatedNode(reqPeer);
-					
+					nlk.setAssociatedNode(reqPeer);					
 					Engine.getDefault().insertIntoEventsList(nlk);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
-			else //Increment sent Find Node
-			{
-				reqPeer.setSentFindNode(reqPeer.getSentFindNode()+1);
-			}
+			
+			//else //Increment sent Find Node
+				//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Waiting other FIND_NODE_RPC");
 		}
 		
 	}
