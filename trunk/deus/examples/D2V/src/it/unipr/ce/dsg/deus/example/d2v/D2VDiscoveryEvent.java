@@ -7,8 +7,11 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.discovery.SearchResultType;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
 import java.util.Properties;
+
+import com.sun.net.ssl.internal.ssl.Debug;
 
 public class D2VDiscoveryEvent extends NodeEvent {
 
@@ -30,9 +33,13 @@ public class D2VDiscoveryEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();
+	
 		
+		DebugLog log = new DebugLog();
+		log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		
+	
 		currNode.updateBucketInfo(currNode.createPeerInfo());
 		
 		//System.out.println("VT:"+Engine.getDefault().getVirtualTime()+" PERIODIC_DISCOVERY ---> Peer:" +currNode.getPeerDescriptor().getKey() + " Neighbours: " + currNode.getGb().getPeerCount());
@@ -96,6 +103,8 @@ public class D2VDiscoveryEvent extends NodeEvent {
 				e.printStackTrace();
 			}
 		}
+		
+		log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 }

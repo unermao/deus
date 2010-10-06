@@ -12,6 +12,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 /**
@@ -34,7 +35,11 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
+		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
+		
+		DebugLog log = new DebugLog();
+		log.printStart(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
 		
 		//Retrieve Initial List from BootStrap
 		ArrayList<D2VPeerDescriptor> initList = this.getInitialPeerList(connectingNode.getPeerDescriptor());
@@ -66,6 +71,8 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 			e.printStackTrace();
 		}
 		*/
+		
+		log.printEnd(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 	
 	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer)
