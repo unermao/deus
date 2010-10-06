@@ -5,6 +5,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
 public class D2VMoveNodeEvent extends NodeEvent {
 	
@@ -23,11 +24,14 @@ public class D2VMoveNodeEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		//System.out.println("Move Event !");
-		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
+		
+		DebugLog log = new DebugLog();
+		log.printStart(currentNode.getKey(),this.getClass().getName(),triggeringTime);
+		
 		currentNode.move(triggeringTime);
 		
+		log.printEnd(currentNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 }

@@ -245,7 +245,7 @@ public class D2VPeer extends Peer {
 		//System.out.println("Peer:"+this.key+" City Path Index:"+this.ci.getIndex()+" Max:"+this.cp.getPathPoints().size());
 		if(!this.ci.hasNextStep())
 		{	
-			//System.out.println("Peer:"+this.key+" changing switch station !");
+			System.out.println("Peer:"+this.key+" changing switch station !");
 	
 			//Actual Switch Station is the last point of the path
 			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude(), this.cp.getEndPoint().getTimeStamp());
@@ -401,11 +401,13 @@ public class D2VPeer extends Peer {
 		try {
 		
 			//At the beginning of a new discovery evaluate and save information about percentage of missing nodes
+			/*
 			if(this.discoveryStatistics.size() < 100)
 			{	
 				double perMissing = this.getGb().evaluatePerMissingNodes(this.createPeerInfo());
 				this.discoveryStatistics.add(perMissing);
 			}
+			*/
 			
 			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+50);
 			event.setOneShot(true);

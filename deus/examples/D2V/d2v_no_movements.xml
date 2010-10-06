@@ -91,6 +91,7 @@
             <reference id="LogDiscoveryStatEvent"/>
         </events>
     </process>
+    <!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
     <engine keyspacesize="10000" seed="123456789" maxvt="10000.0">
         <processes>
             <reference id="LogStatPeriodicProcess"/>

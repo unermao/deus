@@ -10,6 +10,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
 public class D2VFindNodeEvent extends NodeEvent {
 
@@ -37,8 +38,11 @@ public class D2VFindNodeEvent extends NodeEvent {
 
 	public void run() throws RunException {
 
+		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
-
+		DebugLog log = new DebugLog();
+		log.printStart(currentNode.getKey(),this.getClass().getName(),triggeringTime);
+		
 		if (currentNode.getKey() != reqNode.getKey()) {
 		
 			//add a new sent message
@@ -66,7 +70,7 @@ public class D2VFindNodeEvent extends NodeEvent {
 				
 				try {
 					
-					D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent("node_lookup", params, null, first).createInstance(triggeringTime);
+					D2VNodeLookUpRecursiveEvent nlk = (D2VNodeLookUpRecursiveEvent) new D2VNodeLookUpRecursiveEvent("node_lookup", params, null, first).createInstance(triggeringTime+1);
 					nlk.setCloserElement(first);
 					nlk.setOneShot(true);
 					nlk.setAssociatedNode(reqPeer);					
@@ -75,11 +79,11 @@ public class D2VFindNodeEvent extends NodeEvent {
 					e1.printStackTrace();
 				}
 			}
-			
 			//else //Increment sent Find Node
 				//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Waiting other FIND_NODE_RPC");
 		}
-		
+			
+		log.printEnd(currentNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 //	public void setResourceKey(int resourceKey) {

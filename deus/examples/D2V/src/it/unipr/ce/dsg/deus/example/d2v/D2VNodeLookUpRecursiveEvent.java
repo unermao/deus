@@ -8,6 +8,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
 public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 
@@ -45,6 +46,9 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();		
 	
+		DebugLog log = new DebugLog();
+		log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		
 		currNode.setAvDiscoveryStepCounter(currNode.getAvDiscoveryStepCounter()+1);
 		
 		currNode.setSentFindNode(0);
@@ -119,6 +123,8 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 			e1.printStackTrace();
 		}
 		*/
+		
+		log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 	/**
