@@ -114,6 +114,7 @@ public class D2VGeoBuckets {
 			
 		}
 		
+		//System.out.println("Returning: " + isNodeNew);
 		return isNodeNew;
 	}
 	
@@ -191,12 +192,12 @@ public class D2VGeoBuckets {
 
 	/**
 	 * 
-	 * @param peer
+	 * @param peerDescr
 	 * @return
 	 */
-	public ArrayList<D2VPeerDescriptor> find_node(D2VPeerDescriptor myDesc, D2VPeerDescriptor peer) {
+	public ArrayList<D2VPeerDescriptor> find_node(D2VPeerDescriptor myDesc, D2VPeerDescriptor peerDescr) {
 		
-		double distance = GeoDistance.distance(myDesc, peer);
+		double distance = GeoDistance.distance(myDesc, peerDescr);
 		
 		int index = findIndexForDistance(distance);
 		
@@ -208,7 +209,9 @@ public class D2VGeoBuckets {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		int maxSize = 100;
+		D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(myDesc.getKey());
+		
+		int maxSize = peer.getDiscoveryMaxPeerNumber();
 		
 		boolean flag = false;
 		int a = 0;

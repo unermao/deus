@@ -102,6 +102,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		double totalPercentageMissing = 0.0;
 		int nodeWithDiscoveryCounter = 0;
 		double sumOfAverageOfDiscoveryStep = 0.0;
+		double discoveryPeriodSum = 0.0;
 		
 		if(d2vPeerIndexList != null)
 		{
@@ -111,6 +112,8 @@ public class D2VLogNodesStatsEvent extends Event {
 				
 				totalPercentageMissing += peer.getGb().evaluatePerMissingNodes(peer.createPeerInfo());
 				
+				discoveryPeriodSum += peer.getDiscoveryPeriod();
+				
 				if(peer.getDiscoveryCounter() != 0)
 				{	
 					nodeWithDiscoveryCounter++;
@@ -118,9 +121,11 @@ public class D2VLogNodesStatsEvent extends Event {
 				}
 			}
 			
-			System.out.println("VT:" + triggeringTime + "  % Active Nodes: " +  d2vPeerIndexList.size());
+			System.out.println("VT:" + triggeringTime + "  Active Nodes: " +  d2vPeerIndexList.size());
 			System.out.println("VT:" + triggeringTime + "  % Missing Nodes: " +  totalPercentageMissing/(double)d2vPeerIndexList.size());
-			System.out.println("VT:" + triggeringTime + "  % Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
+			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
+			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
+			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vPeerIndexList.size());
 		}
 		
 		ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");

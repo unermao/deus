@@ -34,8 +34,10 @@ public class D2VPeer extends Peer {
 	private static final String RADIUS_KM = "radiusKm";
 	private static final String EPSILON = "epsilon";
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
-	private static final String DISCOVERY_MAX_PERIOD = "discoveryMinPeriod";
-	private static final String DISCOVERY_MIN_PERIOD = "discoveryMaxPeriod";
+	private static final String DISCOVERY_MAX_PERIOD = "discoveryMaxPeriod";
+	private static final String DISCOVERY_MIN_PERIOD = "discoveryMinPeriod";
+	private static final String DISCOVER_PERIOD_PEER_LIMIT = "discoveryPeriodPeerLimit";
+	private static final String DISCOVER_MAX_PEER_NUMBER = "discoveryMaxPeerNumber";
 	
 	private float discoveryMaxWait = 25;
 	
@@ -51,6 +53,9 @@ public class D2VPeer extends Peer {
 	private double avgSpeedMax = 30.0;
 	private float discoveryMinPeriod = 25;
 	private float discoveryMaxPeriod = 100;
+	private int discoveryMaxPeerNumber = 100;
+	
+	private float discoveryPeriod = 25;
 	
 	private int sentFindNode = 0;
 	private int findNodeLimit = 0;
@@ -79,6 +84,8 @@ public class D2VPeer extends Peer {
 	private GeoLocation oldSentPosition = null;
 	
 	private D2VGeoBuckets gb = null;
+
+	private int discoveryPeriodPeerLimit = 20;
 	
 	public D2VPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -180,6 +187,28 @@ public class D2VPeer extends Peer {
 					+ " must be a valid float value.");
 		}
 		
+		
+		
+		if (params.getProperty(DISCOVER_PERIOD_PEER_LIMIT) == null)
+			throw new InvalidParamsException(DISCOVER_PERIOD_PEER_LIMIT
+					+ " param is expected");
+		try {
+			discoveryPeriodPeerLimit  = Integer.parseInt(params.getProperty(DISCOVER_PERIOD_PEER_LIMIT));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(DISCOVER_PERIOD_PEER_LIMIT
+					+ " must be a valid int value.");
+		}
+		
+		if (params.getProperty(DISCOVER_MAX_PEER_NUMBER) == null)
+			throw new InvalidParamsException(DISCOVER_MAX_PEER_NUMBER
+					+ " param is expected");
+		try {
+			discoveryMaxPeerNumber = Integer.parseInt(params.getProperty(DISCOVER_MAX_PEER_NUMBER));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(DISCOVER_MAX_PEER_NUMBER
+					+ " must be a valid int value.");
+		}
+		
 		System.out.println("D2VPeer Created !");
 			
 	}
@@ -199,6 +228,8 @@ public class D2VPeer extends Peer {
 		clone.discoveryCounter = 0;
 		clone.findNodeK = false;
 		clone.findNodeLimit = 0;
+		
+		clone.discoveryPeriod = clone.discoveryMinPeriod;
 		
 		return clone;
 	}
@@ -409,7 +440,7 @@ public class D2VPeer extends Peer {
 	 */
 	public boolean insertPeer(String from,D2VPeerDescriptor newPeer) {
 		
-		if (this.getKey() != newPeer.getKey())
+		if(this.getKey() != newPeer.getKey())
 		{
 			if(!this.neighbors.contains((Peer) Engine.getDefault().getNodeByKey(newPeer.getKey())))
 				this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
@@ -437,7 +468,7 @@ public class D2VPeer extends Peer {
 			}
 			*/
 			
-			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+50);
+			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+this.discoveryPeriod);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
@@ -680,5 +711,29 @@ public class D2VPeer extends Peer {
 
 	public void setDiscoveryMaxPeriod(float discoveryMaxPeriod) {
 		this.discoveryMaxPeriod = discoveryMaxPeriod;
+	}
+
+	public float getDiscoveryPeriod() {
+		return discoveryPeriod;
+	}
+
+	public void setDiscoveryPeriod(float discoveryPeriod) {
+		this.discoveryPeriod = discoveryPeriod;
+	}
+
+	public int getDiscoveryMaxPeerNumber() {
+		return discoveryMaxPeerNumber;
+	}
+
+	public void setDiscoveryMaxPeerNumber(int discoveryMaxPeerNumber) {
+		this.discoveryMaxPeerNumber = discoveryMaxPeerNumber;
+	}
+
+	public int getDiscoveryPeriodPeerLimit() {
+		return discoveryPeriodPeerLimit;
+	}
+
+	public void setDiscoveryPeriodPeerLimit(int discoveryPeriodPeerLimit) {
+		this.discoveryPeriodPeerLimit = discoveryPeriodPeerLimit;
 	}
 }

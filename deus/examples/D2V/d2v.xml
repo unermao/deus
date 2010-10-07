@@ -40,6 +40,8 @@
             <param value="30.0" name="avgSpeedMax"/>
             <param value="25.0" name="discoveryMinPeriod"/>
             <param value="100.0" name="discoveryMaxPeriod"/>
+            <param value="25" name="discoveryPeriodPeerLimit"/>
+            <param value="100" name="discoveryMaxPeerNumber"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
@@ -63,7 +65,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogStatPeriodicProcess">
         <params>
-            <param value="15" name="period"/>
+            <param value="25" name="period"/>
         </params>
         <events>
             <reference id="LogStatEvent"/>

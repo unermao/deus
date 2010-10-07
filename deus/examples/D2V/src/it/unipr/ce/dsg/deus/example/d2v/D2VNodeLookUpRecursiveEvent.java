@@ -83,7 +83,19 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 						newNodeCount ++;
 				}
 				
-				System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " New Nodes="+newNodeCount);
+				//EVALUATE DISCOVERY PERIOD VALUE
+				double k1 = currNode.getDiscoveryMaxPeriod();
+				double k2 = (k1 - (double)currNode.getDiscoveryMinPeriod())/(double)(currNode.getDiscoveryMaxPeerNumber()*currNode.getDiscoveryMinPeriod());
+				
+				float discoveryValue = (float) (k1 / (double)((k2*(double)newNodeCount)+1));
+				
+				currNode.setDiscoveryPeriod(discoveryValue);
+				
+				//System.out.println("NewNodes: " +  newNodeCount);
+				//System.out.println("K1: " +  k1);
+				//System.out.println("K2: " +  k2);
+				//System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " Found Nodes="+(foundNodes.length));
+				//System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " New Nodes="+newNodeCount + " Discovery Value: " + discoveryValue);
 				
 				//System.out.println("#########################################################################");
 				

@@ -22,7 +22,7 @@ import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
  */
 public class D2VFirstDiscoveryEvent extends NodeEvent {
 
-	private int NODE_LIST_LIMIT = 20;
+	private int NODE_LIST_LIMIT = 3;
 	
 	public D2VFirstDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -114,6 +114,9 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 					
 					return 0;
 			    }});
+			
+				//Remove Peer Info
+				peerList.remove(peer);
 			
 				for(int index=0; index<NODE_LIST_LIMIT; index++)
 				{
