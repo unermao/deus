@@ -36,8 +36,8 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();
 	
 		
-		DebugLog log = new DebugLog();
-		log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		//DebugLog log = new DebugLog();
+		//log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
 		
 	
 		currNode.updateBucketInfo(currNode.createPeerInfo());
@@ -104,7 +104,7 @@ public class D2VDiscoveryEvent extends NodeEvent {
 			}
 		}
 		
-		log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		//log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 }
