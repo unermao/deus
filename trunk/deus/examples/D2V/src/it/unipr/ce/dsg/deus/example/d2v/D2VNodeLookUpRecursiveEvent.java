@@ -46,8 +46,8 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		
 		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();		
 	
-		DebugLog log = new DebugLog();
-		log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		//DebugLog log = new DebugLog();
+		//log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
 		
 		currNode.setAvDiscoveryStepCounter(currNode.getAvDiscoveryStepCounter()+1);
 		
@@ -74,12 +74,17 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				Object[] foundNodes = currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray();
 				
 				//Add founded nodes to peerList
-				//System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " New Nodes="+(foundNodes.length));
+				//System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " Found Nodes="+(foundNodes.length));
 				//System.out.println("####################################### NEW NODES: " + foundNodes.length);
+				int newNodeCount = 0;
 				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
 					//System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
-					currNode.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j]);
+					if(currNode.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j]) == true)
+						newNodeCount ++;
 				}
+				
+				System.out.println("LOOKUP END ! ---> ReqPeer:" + currNode.getPeerDescriptor().getKey() + " New Nodes="+newNodeCount);
+				
 				//System.out.println("#########################################################################");
 				
 				//currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
@@ -124,7 +129,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		}
 		*/
 		
-		log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
+		//log.printEnd(currNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 	/**

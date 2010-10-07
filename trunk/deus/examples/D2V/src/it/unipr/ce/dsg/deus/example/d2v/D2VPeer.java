@@ -34,6 +34,8 @@ public class D2VPeer extends Peer {
 	private static final String RADIUS_KM = "radiusKm";
 	private static final String EPSILON = "epsilon";
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
+	private static final String DISCOVERY_MAX_PERIOD = "discoveryMinPeriod";
+	private static final String DISCOVERY_MIN_PERIOD = "discoveryMaxPeriod";
 	
 	private float discoveryMaxWait = 25;
 	
@@ -47,6 +49,8 @@ public class D2VPeer extends Peer {
 	private double radiusKm = 1.5;
 	private double epsilon = 1.5;
 	private double avgSpeedMax = 30.0;
+	private float discoveryMinPeriod = 25;
+	private float discoveryMaxPeriod = 100;
 	
 	private int sentFindNode = 0;
 	private int findNodeLimit = 0;
@@ -154,6 +158,28 @@ public class D2VPeer extends Peer {
 					+ " must be a valid int value.");
 		}
 		
+		//Read value of parameter discoveryMinPeriod
+		if (params.getProperty(DISCOVERY_MIN_PERIOD) == null)
+			throw new InvalidParamsException(DISCOVERY_MIN_PERIOD
+					+ " param is expected");
+		try {
+			discoveryMinPeriod = Float.parseFloat(params.getProperty(DISCOVERY_MIN_PERIOD));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(DISCOVERY_MIN_PERIOD
+					+ " must be a valid float value.");
+		}
+		
+		//Read value of parameter discoveryMaxPeriod
+		if (params.getProperty(DISCOVERY_MAX_PERIOD) == null)
+			throw new InvalidParamsException(DISCOVERY_MAX_PERIOD
+					+ " param is expected");
+		try {
+			discoveryMaxPeriod = Float.parseFloat(params.getProperty(DISCOVERY_MAX_PERIOD));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(DISCOVERY_MAX_PERIOD
+					+ " must be a valid float value.");
+		}
+		
 		System.out.println("D2VPeer Created !");
 			
 	}
@@ -245,7 +271,7 @@ public class D2VPeer extends Peer {
 		//System.out.println("Peer:"+this.key+" City Path Index:"+this.ci.getIndex()+" Max:"+this.cp.getPathPoints().size());
 		if(!this.ci.hasNextStep())
 		{	
-			System.out.println("Peer:"+this.key+" changing switch station !");
+			//System.out.println("Peer:"+this.key+" changing switch station !");
 	
 			//Actual Switch Station is the last point of the path
 			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude(), this.cp.getEndPoint().getTimeStamp());
@@ -381,7 +407,7 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param d2vPeerDescriptor
 	 */
-	public void insertPeer(String from,D2VPeerDescriptor newPeer) {
+	public boolean insertPeer(String from,D2VPeerDescriptor newPeer) {
 		
 		if (this.getKey() != newPeer.getKey())
 		{
@@ -389,8 +415,10 @@ public class D2VPeer extends Peer {
 				this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
 			
 			//System.out.println("############################################ INSERT FROM :  " + from);
-			this.gb.insertPeer(params,this.createPeerInfo(), newPeer);
+			return this.gb.insertPeer(params,this.createPeerInfo(), newPeer);
 		}
+		
+		return false;
 	}
 	
 	/**
@@ -636,5 +664,21 @@ public class D2VPeer extends Peer {
 
 	public void setFindNodeLimit(int findNodeLimit) {
 		this.findNodeLimit = findNodeLimit;
+	}
+
+	public float getDiscoveryMinPeriod() {
+		return discoveryMinPeriod;
+	}
+
+	public void setDiscoveryMinPeriod(float discoveryMinPeriod) {
+		this.discoveryMinPeriod = discoveryMinPeriod;
+	}
+
+	public float getDiscoveryMaxPeriod() {
+		return discoveryMaxPeriod;
+	}
+
+	public void setDiscoveryMaxPeriod(float discoveryMaxPeriod) {
+		this.discoveryMaxPeriod = discoveryMaxPeriod;
 	}
 }

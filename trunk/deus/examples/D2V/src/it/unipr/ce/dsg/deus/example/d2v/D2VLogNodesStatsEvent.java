@@ -57,13 +57,13 @@ public class D2VLogNodesStatsEvent extends Event {
 		else
 			System.out.println("VT:" + triggeringTime + " LOG_STAT_EVENT NODES: 0");
 			
-		Collections.sort(Engine.getDefault().getNodes());
+		//Collections.sort(Engine.getDefault().getNodes());
 		
-		a = new AutomatorLogger("./temp/logger");
-		fileValue = new ArrayList<LoggerObject>();
-		fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
+		//a = new AutomatorLogger("./temp/logger");
+		//fileValue = new ArrayList<LoggerObject>();
+		//fileValue.add(new LoggerObject("Peers",Engine.getDefault().getNodes().size()));	
 
-		checkNodesStatistics();
+		//checkNodesStatistics();
 		
 		//checkNodeDistance();
 		
@@ -76,7 +76,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		//compressed();
 		//network_dump();
 		
-		a.write(Engine.getDefault().getVirtualTime(), fileValue);
+		//a.write(Engine.getDefault().getVirtualTime(), fileValue);
 
 		/*
 		if(Engine.getDefault().getVirtualTime() == 100.0)
@@ -86,9 +86,56 @@ public class D2VLogNodesStatsEvent extends Event {
 		}
 		*/
 		
+		this.evaluateNodeStatistics();
 	}
 	
+	/**
+	 * 
+	 */
+	public void evaluateNodeStatistics()
+	{
+		System.out.println("################################################################################################");
+		System.out.println("VT:" + triggeringTime + " EVALUATING NODE STATISTICS");
+		
+		ArrayList<Integer> d2vPeerIndexList = Engine.getDefault().getNodeKeysById("D2VPeer");
+		
+		double totalPercentageMissing = 0.0;
+		int nodeWithDiscoveryCounter = 0;
+		double sumOfAverageOfDiscoveryStep = 0.0;
+		
+		if(d2vPeerIndexList != null)
+		{
+			for(int index=0; index<d2vPeerIndexList.size();index++)
+			{
+				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
+				
+				totalPercentageMissing += peer.getGb().evaluatePerMissingNodes(peer.createPeerInfo());
+				
+				if(peer.getDiscoveryCounter() != 0)
+				{	
+					nodeWithDiscoveryCounter++;
+					sumOfAverageOfDiscoveryStep += (double)peer.getAvDiscoveryStepCounter()/(double)peer.getDiscoveryCounter();
+				}
+			}
+			
+			System.out.println("VT:" + triggeringTime + "  % Active Nodes: " +  d2vPeerIndexList.size());
+			System.out.println("VT:" + triggeringTime + "  % Missing Nodes: " +  totalPercentageMissing/(double)d2vPeerIndexList.size());
+			System.out.println("VT:" + triggeringTime + "  % Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
+		}
+		
+		ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
+		int numOfTrafficElements = 0;
+		
+		if(trafficElementIndexList != null)
+			numOfTrafficElements = trafficElementIndexList.size();
+			
+		System.out.println("VT:" + triggeringTime + " Num Of Traffic Element: " +  numOfTrafficElements);
+		
+		
+		System.out.println("################################################################################################");	
+	}
 	
+	/*
 	private void printNetworkTopology()
 	{
 		System.out.println("Printing Network Topology ...");
@@ -315,5 +362,5 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("TOT:" + tot);
 		}
 	}
-
+	*/
 }

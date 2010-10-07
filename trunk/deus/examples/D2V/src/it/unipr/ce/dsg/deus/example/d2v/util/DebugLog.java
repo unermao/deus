@@ -20,15 +20,6 @@ public class DebugLog {
 	{
 		this.end = System.currentTimeMillis();
 		System.out.println("VT:"+time+" PeerKey: " + peerKey + " Event: "+className+" End At: " +  this.end + " PERIOD:"+(this.end-this.start)+"\n");
-		if(this.end-this.start > 5)
-		{
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	

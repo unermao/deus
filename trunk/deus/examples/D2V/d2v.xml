@@ -38,6 +38,8 @@
             <param value="0.5" name="radiusKm"/>
             <param value="0.1" name="epsilon"/>
             <param value="30.0" name="avgSpeedMax"/>
+            <param value="25.0" name="discoveryMinPeriod"/>
+            <param value="100.0" name="discoveryMaxPeriod"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
@@ -100,8 +102,8 @@
     <!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
     <engine keyspacesize="10000" seed="123456789" maxvt="10000.0">
         <processes>
-            <!-- <reference id="LogStatPeriodicProcess"/>  -->
-            <reference id="LogMaPeriodicProcess"/>
+            <reference id="LogStatPeriodicProcess"/>
+            <!-- <reference id="LogMaPeriodicProcess"/>  -->
             <reference id="TrafficEventBirthPoissonProcess"/>
             <reference id="RectangularBirth"/>
         </processes>

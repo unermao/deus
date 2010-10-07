@@ -40,8 +40,9 @@ public class D2VFindNodeEvent extends NodeEvent {
 
 		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
-		DebugLog log = new DebugLog();
-		log.printStart(currentNode.getKey(),this.getClass().getName(),triggeringTime);
+		
+		//DebugLog log = new DebugLog();
+		//log.printStart(currentNode.getKey(),this.getClass().getName(),triggeringTime);
 		
 		if (currentNode.getKey() != reqNode.getKey()) {
 		
@@ -83,7 +84,7 @@ public class D2VFindNodeEvent extends NodeEvent {
 				//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Waiting other FIND_NODE_RPC");
 		}
 			
-		log.printEnd(currentNode.getKey(),this.getClass().getName(),triggeringTime);
+		//log.printEnd(currentNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 
 //	public void setResourceKey(int resourceKey) {

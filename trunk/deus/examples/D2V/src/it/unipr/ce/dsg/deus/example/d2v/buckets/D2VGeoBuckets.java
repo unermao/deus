@@ -56,9 +56,11 @@ public class D2VGeoBuckets {
 	 * @param newPeer
 	 * 
 	 */
-	public void insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
+	public boolean insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
 		
 		//System.out.println("D2VGeoBucket ---> Peer:" + myDescr.getKey() + " Adding Peer:"+newPeer.getKey());
+		
+		boolean isNodeNew = false;
 		
 		int peerPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
 		
@@ -97,6 +99,8 @@ public class D2VGeoBuckets {
 				{
 					//System.out.println("D2VGeoBucket ---> NOT EXIST: Index: " + peerPositionIndex);
 					
+					isNodeNew = true;
+					
 					//Add new ref int the righ bucket
 					this.bucket.get(i).add(newPeer);
 					
@@ -109,6 +113,8 @@ public class D2VGeoBuckets {
 			}
 			
 		}
+		
+		return isNodeNew;
 	}
 	
 	public void sendAddPeerInfoMessage(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer)

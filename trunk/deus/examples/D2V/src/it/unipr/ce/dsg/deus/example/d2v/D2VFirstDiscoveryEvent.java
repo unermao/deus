@@ -38,8 +38,8 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
 		
-		DebugLog log = new DebugLog();
-		log.printStart(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
+		//DebugLog log = new DebugLog();
+		//log.printStart(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
 		
 		//Retrieve Initial List from BootStrap
 		ArrayList<D2VPeerDescriptor> initList = this.getInitialPeerList(connectingNode.getPeerDescriptor());
@@ -47,7 +47,7 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 		for(int index=0;index<initList.size();index++)
 			connectingNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index));
 		
-		System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size() + " Total Peers: " + Engine.getDefault().getNodeKeysById("D2VPeer").size());
+		//System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size() + " Total Peers: " + Engine.getDefault().getNodeKeysById("D2VPeer").size());
 		
 		//Schedule a new DISCOVERY EVENT
 		connectingNode.scheduleDiscovery(triggeringTime);
@@ -72,7 +72,7 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 		}
 		*/
 		
-		log.printEnd(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
+		//log.printEnd(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 	
 	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer)
