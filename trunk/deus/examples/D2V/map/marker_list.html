@@ -24,9 +24,11 @@ function loadAllNodes() {
 		for (var i = 0; i < allMarkers.length; i++) {
 	
 			var titolo = (allMarkers[i].getAttribute("descriz"));
-	 		option = new Option(titolo,i)
-	    		document.form1.fieldB.options[i] = option;
+	 		option = new Option(titolo,i+1)
+	    		document.form1.fieldB.options[i+1] = option;
 		}
+
+		document.form1.fieldB.options[0] = new Option("ALL",0);
 		
 	});
   
