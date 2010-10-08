@@ -47,7 +47,8 @@ public class D2VFindNodeEvent extends NodeEvent {
 		if (currentNode.getKey() != reqNode.getKey()) {
 		
 			//add a new sent message
-			currentNode.setSentMessages(currentNode.getSentMessages() + 1);
+			//currentNode.setSentMessages(currentNode.getSentMessages() + 1);
+			currentNode.incrementSentMessages();
 			
 			currentNode.insertPeer("D2VFindNodeEvent",reqNode);
 			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode));

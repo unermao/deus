@@ -601,6 +601,11 @@ public class D2VPeer extends Peer {
 		this.sentMessages = sentMessages;
 	}
 
+	public void incrementSentMessages()
+	{
+		this.sentMessages ++;
+	}
+	
 	public HashMap<Integer, SearchResultType> getNlResults() {
 		return nlResults;
 	}
