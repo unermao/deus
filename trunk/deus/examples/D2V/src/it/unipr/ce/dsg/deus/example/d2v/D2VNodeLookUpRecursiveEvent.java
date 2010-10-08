@@ -54,7 +54,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		currNode.setSentFindNode(0);
 		
 		//Increment number of sent messages
-		currNode.setSentMessages(currNode.getSentMessages() + 1);
+		//currNode.setSentMessages(currNode.getSentMessages() + 1);
 
 		D2VPeerDescriptor first = null;
 

@@ -18,6 +18,10 @@
    var poly = [] ; 	
    var line ; 
    var map;
+   var circles = new Array();
+
+   var targetMarker;
+   var targetMarkers = new Array();
 
    var newMarker;
    
@@ -39,7 +43,7 @@
    
    var mapCentered = 0;
    
-   var directions = null;;
+   var directions = null;
    
    var blueIcon = new GIcon(G_DEFAULT_ICON);
    blueIcon.shadow = null,
@@ -83,7 +87,23 @@
    greenIconEnd.image = "http://gmaps-samples.googlecode.com/svn/trunk/markers/green/marker2.png";
    
    
- 	// Draw a circle on map around center (radius in miles)
+   function drawAllCircles(map,puntoNodo)
+   {
+     //Clean map from old circles
+     for(var k = 0; k < circles.length; k++)
+     {
+	map.removeOverlay(circles[k]);
+     }
+
+     //Clean circles array
+     circles = new Array();
+
+     //draw new circles
+     for(var k = 0; k < numOfGeoBucket; k++)
+	drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
+   }
+
+   // Draw a circle on map around center (radius in miles)
    // Modified by Jeremy Schneider based on http://maps.huge.info/dragcircle2.htm
    function drawCircle(map, center, radius, numPoints)
    {
@@ -107,6 +127,8 @@
 
             line = new GPolyline(poly,'#FF0000', 3, 0.8) ;
             
+	    circles.push(line);
+
             map.addOverlay(line) ;
    }
    
@@ -145,8 +167,6 @@ function initialize() {
 }
 
 function updateAllPeer() {
-
-	//map.removeOverlay(overlay); 	
 
 	GDownloadUrl("marker_ALL.xml?"+ new Date().valueOf() , function(data, responseCode) {
 
@@ -239,8 +259,6 @@ function updateAllPeer() {
 
 function readSwitchStation() {
 
-	//map.removeOverlay(overlay); 	
-
 	GDownloadUrl("switch_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
 
 	var xml = GXml.parse(data);
@@ -264,8 +282,6 @@ function readSwitchStation() {
 }
 
 function readTrafficElement() {
-
-	//map.removeOverlay(overlay); 	
 
 	var newTrafficJamArray = new Array();
 
@@ -331,6 +347,7 @@ function readTrafficElement() {
 
 function drawNodeTarget()
 {
+
 	var qst=location.search.substr(1);
 	var dati = new Array()
 	dati=qst.split("&");
@@ -353,18 +370,28 @@ function drawNodeTarget()
 	
 		if(oldLat != parseFloat(markers[0].getAttribute("lat")) || oldLong != parseFloat(markers[0].getAttribute("long")))
 		{
+			//Clear old information
+			if(targetMarker)
+			  map.removeOverlay(targetMarker);
+	
+			for(var index=0; index<targetMarkers.length;index++)
+			  if(targetMarkers[index])
+			    map.removeOverlay(targetMarkers[index]);
+
+			targetMarkers = new Array();
+
 			oldLat = parseFloat(markers[0].getAttribute("lat"));
 			oldLong = parseFloat(markers[0].getAttribute("long"));
 	
 			var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
 	
 			//map.setCenter(puntoNodo, zoomValue);
+
+			targetMarker = new GMarker(puntoNodo, markerOptions);
+
+			map.addOverlay(targetMarker);
 	
-			map.addOverlay(new GMarker(puntoNodo, markerOptions));
-	
-			//Create Circle (1.5Km:0.93205679 0.5Km:0.3106856)
-			for(var k = 0; k < numOfGeoBucket; k++)
-				drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
+			drawAllCircles(map, puntoNodo);
 	
 			//Draw start and end point
 			var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
@@ -374,12 +401,17 @@ function drawNodeTarget()
 			map.addOverlay(new GMarker(endPoint, { icon:greenIconEnd }));
 	
 			for (var i = 3; i < markers.length; i++) {
-
+				
 				var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
 				var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
 				var titolo = (markers[i].getAttribute("descriz"));	
 				var distance = markers[i].getAttribute("distance");
-				map.addOverlay(createMarkerWithPath(punto,real_punto,titolo,distance));				
+				  
+				var localMarker = createMarkerWithPath(punto,real_punto,titolo,distance)
+				
+				targetMarkers.push(localMarker);
+
+				map.addOverlay(localMarker);				
 
 				//var titolo = (markers[i].getAttribute("descriz"));	
 				//var distance = markers[i].getAttribute("distance");
@@ -387,7 +419,8 @@ function drawNodeTarget()
 				//map.addOverlay(new GMarker(punto, {title: titolo}));
 			}
 	
-			map.addOverlay(new GMarker(puntoNodo, markerOptions));
+			//map.addOverlay(new GMarker(puntoNodo, markerOptions));
+			//map.addOverlay(targetMarker);
 		}
 		
 		});
@@ -397,9 +430,9 @@ function drawNodeTarget()
 
 function updateMap() {
 
-		updateAllPeer();
-		drawNodeTarget();		
+		updateAllPeer();		
 		readTrafficElement();
+		drawNodeTarget();    
 
 		t=setTimeout("updateMap()",1000);
 } 

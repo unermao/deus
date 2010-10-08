@@ -25,7 +25,8 @@ public class D2VNodeRemoveEvent extends NodeEvent {
 		
 		D2VPeer currPeer = (D2VPeer) getAssociatedNode();
 		
-		currPeer.setSentMessages(currPeer.getSentMessages() + 1);
+		//currPeer.setSentMessages(currPeer.getSentMessages() + 1);
+		currPeer.incrementSentMessages();
 		currPeer.getGb().removePeer(peerInfo);
 		
 		//Remove the peer from original neighbor list
