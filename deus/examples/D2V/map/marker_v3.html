@@ -200,9 +200,6 @@ function updateAllPeer() {
 		{	
 			if(markerList[k].id == allMarkers[i].getAttribute("descriz") )
 			{
-				//console.log("Stored ID:"+markerList[k].id);
-				//console.log("ID:"+allMarkers[i].getAttribute("descriz"));
-				//console.log("FOUNDED:"+titolo);
 				
 				markerIndex = k;
 				
@@ -411,12 +408,7 @@ function drawNodeTarget()
 				
 				targetMarkers.push(localMarker);
 
-				map.addOverlay(localMarker);				
-
-				//var titolo = (markers[i].getAttribute("descriz"));	
-				//var distance = markers[i].getAttribute("distance");
-				//map.addOverlay(createMarker(punto,real_punto,distance));
-				//map.addOverlay(new GMarker(punto, {title: titolo}));
+				map.addOverlay(localMarker);
 			}
 	
 			//map.addOverlay(new GMarker(puntoNodo, markerOptions));
@@ -450,7 +442,8 @@ function createMarkerWithPath(latlng, realLatLon, title,distance) {
    
     var options = { icon:blueCarIcon, title: distance };
 
-    if(distance < 0.1)
+	//Check distance to change marker's icon
+    if( distance < 0.01 )
 	    options = { icon:circleCarIcon, title: distance };
 
     var marker = new GMarker(latlng, options);

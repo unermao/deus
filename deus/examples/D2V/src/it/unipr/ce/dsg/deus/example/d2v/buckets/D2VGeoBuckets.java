@@ -19,10 +19,12 @@ public class D2VGeoBuckets {
 	private int kValue = 20;
 	private double rayDistance = 1.5;
 	private int peerCount = 0;
+	private PeerKnowledgeMap pm = null;
 
 	public D2VGeoBuckets() {
 		super();
 		this.bucket = new Vector<ArrayList<D2VPeerDescriptor>>();
+		this.pm = new PeerKnowledgeMap();
 		
 		//Create the list of KBuckets
 		for (int i = 0; i < kValue; ++i) {
@@ -34,6 +36,7 @@ public class D2VGeoBuckets {
 		super();
 		this.kValue = kValue;
 		this.rayDistance = rayDistance;
+		this.pm = new PeerKnowledgeMap();
 		
 		this.bucket = new Vector<ArrayList<D2VPeerDescriptor>>();
 		
@@ -47,6 +50,7 @@ public class D2VGeoBuckets {
 	public D2VGeoBuckets(Vector<ArrayList<D2VPeerDescriptor>> bucket, double rayDistance) {
 		super();
 		this.bucket = bucket;
+		this.pm = new PeerKnowledgeMap();
 		this.rayDistance = rayDistance;
 	}
 	
@@ -58,13 +62,18 @@ public class D2VGeoBuckets {
 	 */
 	public boolean insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
 		
-		//System.out.println("D2VGeoBucket ---> Peer:" + myDescr.getKey() + " Adding Peer:"+newPeer.getKey());
-		
+		PeerKnowledge pk = this.pm.getPeerMap().get(newPeer.getKey());
+		if( pk != null)
+			if(pk.getAction().equals(PeerKnowledge.REMOVE_ACTION) && pk.getTimeStamp() > newPeer.getTimeStamp())
+				return false;
+			
 		boolean isNodeNew = false;
 		
 		int peerPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
 		
 		double distance = GeoDistance.distance(myDescr, newPeer);
+		
+		boolean founded = false;
 		
 		//For each KBucket without the last one that is for all peers out of previous circumferences 
 		for(int i=0; i<kValue; i++)
@@ -72,6 +81,8 @@ public class D2VGeoBuckets {
 			//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
 			if((distance <= (double)(i)*rayDistance ))
 			{		
+				founded = true;
+				
 				//System.out.println("D2VGeoBucket ---> FOUNDED ! GB: " +  i);
 				
 				//If Peer Descriptor Already exist in buckets
@@ -100,22 +111,45 @@ public class D2VGeoBuckets {
 					//System.out.println("D2VGeoBucket ---> NOT EXIST: Index: " + peerPositionIndex);
 					
 					isNodeNew = true;
-					
+				
 					//Add new ref int the righ bucket
 					this.bucket.get(i).add(newPeer);
 					
 					//Send Add Peer Info Message
 					this.sendAddPeerInfoMessage(params, myDescr, newPeer);
-				}
-				
-				
+				}		
 				break;
 			}
+		}
+		
+		//If Node doesn't exist in peerList send a remove message to remote node
+		if(founded==false && peerPositionIndex != -1)
+		{
+			//Remove Peer references from GB
+			this.bucket.get(peerPositionIndex).remove(newPeer);
 			
+			//Send a remove message to newPeer to remove my reference
+			this.sendRemovePeerMessage(params,newPeer,myDescr);			
 		}
 		
 		//System.out.println("Returning: " + isNodeNew);
 		return isNodeNew;
+	}
+	
+	public void sendRemovePeerMessage(Properties params,D2VPeerDescriptor destPeer,D2VPeerDescriptor myDescr)
+	{
+		try
+		{
+			D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(destPeer.getKey());
+			D2VNodeRemoveEvent nlk = (D2VNodeRemoveEvent) new D2VNodeRemoveEvent("node_remove", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
+
+			nlk.setOneShot(true);
+			nlk.setAssociatedNode(peer);
+			nlk.setPeerInfo(myDescr);
+			Engine.getDefault().insertIntoEventsList(nlk);
+		}
+		catch(Exception e)
+		{e.printStackTrace();}
 	}
 	
 	public void sendAddPeerInfoMessage(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer)
@@ -285,41 +319,26 @@ public class D2VGeoBuckets {
 					
 				boolean bucketFounded = false;
 					
-					//For each KBucket without the last one that is for all peers out of previous circumferences 
-					for(int index=0;index<kValue; index++)
+				//For each KBucket without the last one that is for all peers out of previous circumferences 
+				for(int index=0;index<kValue; index++)
+				{
+					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+					if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
 					{
-						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
-						{
-							
-							//Add the peer in the right bucket
-							if(!localGeoBucketVector.get(index).contains(peerInfo))
-								localGeoBucketVector.get(index).add(peerInfo);
 						
-							bucketFounded = true;
-						
-							break;
-						}
-					}
+						//Add the peer in the right bucket
+						if(!localGeoBucketVector.get(index).contains(peerInfo))
+							localGeoBucketVector.get(index).add(peerInfo);
 					
-					//If the peer's distance is very high it will be added in the last available KBucket
-					if(bucketFounded == false)
-					{
-							try
-							{
-								D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(myDesc.getKey());
-								D2VNodeRemoveEvent nlk = (D2VNodeRemoveEvent) new D2VNodeRemoveEvent("node_lookup", params, null).createInstance(Engine.getDefault().getVirtualTime()+1);
-
-								nlk.setOneShot(true);
-								nlk.setAssociatedNode(peer);
-								nlk.setPeerInfo(myDesc);
-								Engine.getDefault().insertIntoEventsList(nlk);
-							}
-							catch(Exception e)
-							{e.printStackTrace();}
+						bucketFounded = true;
+					
+						break;
 					}
-
 				}
+				
+				if(bucketFounded == false)
+					this.sendRemovePeerMessage(params, peerInfo, myDesc);	
+			}
 		}
 		
 		//Create the list of KBuckets
@@ -333,12 +352,20 @@ public class D2VGeoBuckets {
 	 * 
 	 * @param peerInfo
 	 */
-	public void removePeer(D2VPeerDescriptor peerInfo) {
+	public void removePeer(D2VPeerDescriptor peerInfo, float timeStamp) {
+		
 		for(int i=0; i<kValue; i++)
 		{
 			for(int j=0; j<this.bucket.get(i).size();j++)
 			{
-				this.bucket.get(i).remove(peerInfo);
+				if(this.bucket.get(i).contains(peerInfo))
+				{
+					//Remove Peer Info
+					this.bucket.get(i).remove(peerInfo);
+					
+					//Save Operation Information in the peer Knowledge 
+					this.pm.getPeerMap().put(peerInfo.getKey(), new PeerKnowledge(timeStamp, PeerKnowledge.REMOVE_ACTION));
+				}
 			}
 		}
 	}
@@ -486,5 +513,13 @@ public class D2VGeoBuckets {
 
 	public void setPeerCount(int peerCount) {
 		this.peerCount = peerCount;
+	}
+
+	public PeerKnowledgeMap getPm() {
+		return pm;
+	}
+
+	public void setPm(PeerKnowledgeMap pm) {
+		this.pm = pm;
 	}
 }
