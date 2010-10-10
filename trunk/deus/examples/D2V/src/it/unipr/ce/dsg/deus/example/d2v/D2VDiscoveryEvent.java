@@ -39,8 +39,7 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		//DebugLog log = new DebugLog();
 		//log.printStart(currNode.getKey(),this.getClass().getName(),triggeringTime);
 		
-	
-		currNode.updateBucketInfo(currNode.createPeerInfo());
+		//currNode.updateBucketInfo(currNode.createPeerInfo());
 		
 		//System.out.println("VT:"+Engine.getDefault().getVirtualTime()+" PERIODIC_DISCOVERY ---> Peer:" +currNode.getPeerDescriptor().getKey() + " Neighbours: " + currNode.getGb().getPeerCount());
 		

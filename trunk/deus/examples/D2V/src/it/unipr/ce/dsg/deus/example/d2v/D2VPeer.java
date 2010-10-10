@@ -252,6 +252,7 @@ public class D2VPeer extends Peer {
 		this.cp = availablePaths.get(pathIndex);
 		this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
 		this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
+		this.peerDescriptor.setTimeStamp(triggeringTime);
 			
 		//Schedule the first movement
 		this.scheduleMove(triggeringTime);
@@ -264,7 +265,7 @@ public class D2VPeer extends Peer {
 	{
 		if(oldSentPosition == null || GeoDistance.distance(this.cp.getPathPoints().get(this.ci.getIndex()), oldSentPosition) > this.epsilon)
 		{
-
+			//Set the reference to sent position
 			oldSentPosition = this.cp.getPathPoints().get(this.ci.getIndex());
 			
 			//Sending Update position messages
@@ -315,15 +316,20 @@ public class D2VPeer extends Peer {
 			this.cp = availablePaths.get(pathIndex);
 			this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
 			this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
+			this.peerDescriptor.setTimeStamp(triggeringTime);
 			
 		}
 		else{
 			//System.out.println("Peer:"+this.key+" changing position !");
 			this.peerDescriptor.setGeoLocation(this.cp.getPathPoints().get(this.ci.getIndex()));
+			this.peerDescriptor.setTimeStamp(triggeringTime);
 			this.checkTrafficJam(triggeringTime);
 		}
 		
+		//According to new position, check peer position in GB and if necessary remove them from list
 		this.updateBucketInfo(peerDescriptor);
+		
+		//Send Position update to peer in the same area
 		this.broadcastUpdatePositionMessage(triggeringTime);
 		
 		if(this.isTrafficJam == false)
@@ -337,8 +343,8 @@ public class D2VPeer extends Peer {
 	 */
 	public D2VPeerDescriptor createPeerInfo()
 	{
-		GeoLocation gl = new GeoLocation(this.peerDescriptor.getGeoLocation().getLatitude(), this.peerDescriptor.getGeoLocation().getLongitude(), this.peerDescriptor.getGeoLocation().getTimeStamp());
-		return new D2VPeerDescriptor(gl,this.key,Engine.getDefault().getVirtualTime());
+		GeoLocation gl = new GeoLocation(this.peerDescriptor.getGeoLocation().getLatitude(), this.peerDescriptor.getGeoLocation().getLongitude(), Engine.getDefault().getVirtualTime());
+		return new D2VPeerDescriptor(gl,this.key,this.peerDescriptor.getTimeStamp());
 	}
 	
 	/**
