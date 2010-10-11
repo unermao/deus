@@ -67,7 +67,8 @@ public class D2VFindNodeEvent extends NodeEvent {
 				D2VPeerDescriptor first = null;
 
 				if (reqPeer.nlResults.get(reqPeer.getKey()).size() != 0) {
-					first = reqPeer.nlResults.get(reqPeer.getKey()).getFoundNodes().first();
+					//first = reqPeer.nlResults.get(reqPeer.getKey()).getFoundNodes().first();
+					first = reqPeer.nlResults.get(reqPeer.getKey()).first();
 				}
 				
 				try {

@@ -11,8 +11,8 @@ public class CityPathPoint extends GeoLocation {
 
 	private D2VTrafficElement te = null;
 	
-	public CityPathPoint(double latitude, double longitude, float timeStamp) {
-		super(latitude, longitude, timeStamp);
+	public CityPathPoint(double latitude, double longitude) {
+		super(latitude, longitude);
 	}
 
 	public D2VTrafficElement getTe() {

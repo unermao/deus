@@ -306,7 +306,7 @@ public class D2VPeer extends Peer {
 			//System.out.println("Peer:"+this.key+" changing switch station !");
 	
 			//Actual Switch Station is the last point of the path
-			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude(), this.cp.getEndPoint().getTimeStamp());
+			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
 			
 			//Select a path from its starting switch station
 			ArrayList<CityPath> availablePaths = ssc.getPathListFromSwithStation(actualSS);
@@ -343,7 +343,7 @@ public class D2VPeer extends Peer {
 	 */
 	public D2VPeerDescriptor createPeerInfo()
 	{
-		GeoLocation gl = new GeoLocation(this.peerDescriptor.getGeoLocation().getLatitude(), this.peerDescriptor.getGeoLocation().getLongitude(), Engine.getDefault().getVirtualTime());
+		GeoLocation gl = new GeoLocation(this.peerDescriptor.getGeoLocation().getLatitude(), this.peerDescriptor.getGeoLocation().getLongitude());
 		return new D2VPeerDescriptor(gl,this.key,this.peerDescriptor.getTimeStamp());
 	}
 	

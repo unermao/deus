@@ -59,7 +59,8 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 		D2VPeerDescriptor first = null;
 
 		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
-			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
+			//first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
+			first = currNode.nlResults.get(currNode.getKey()).first();
 		}
 
 		if (closerElement == first) {

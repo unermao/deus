@@ -71,12 +71,15 @@ public class GeoDistanceComparator implements Comparator<D2VPeerDescriptor>{
 		double dist1 = distance(peer, o1);
 		double dist2 = distance(peer, o2);
 		
+		if(o1.getKey() == o2.getKey())
+			return 0;
+		
 		if(dist1 < dist2)
 			return -1;
 	
 		if(dist1 > dist2)
 			return 1;
 		
-		return 0;
+		return -1;
 	}
 }
