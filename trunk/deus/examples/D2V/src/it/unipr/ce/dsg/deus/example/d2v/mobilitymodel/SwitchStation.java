@@ -7,8 +7,8 @@ package it.unipr.ce.dsg.deus.example.d2v.mobilitymodel;
  */
 public class SwitchStation extends GeoLocation {
 
-	public SwitchStation(double latitude, double longitude, float timeStamp) {
-		super(latitude, longitude, timeStamp);
+	public SwitchStation(double latitude, double longitude) {
+		super(latitude, longitude);
 	}
 
 }

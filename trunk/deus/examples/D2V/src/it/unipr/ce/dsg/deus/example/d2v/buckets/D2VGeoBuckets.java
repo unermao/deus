@@ -62,14 +62,19 @@ public class D2VGeoBuckets {
 	 */
 	public boolean insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
 		
-		PeerKnowledge pk = this.pm.getPeerMap().get(newPeer.getKey());
-		if( pk != null)
-			if(pk.getAction().equals(PeerKnowledge.REMOVE_ACTION) && pk.getTimeStamp() > newPeer.getTimeStamp())
-				return false;
-			
 		boolean isNodeNew = false;
 		
-		int peerPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
+		int peerBucketPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
+		
+		//If peer already exist in bucket
+		if(peerBucketPositionIndex != -1)
+		{
+			int peerIndex = this.bucket.get(peerBucketPositionIndex).indexOf(newPeer);
+			D2VPeerDescriptor storedDescriptor = this.bucket.get(peerBucketPositionIndex).get(peerIndex);
+			
+			if(storedDescriptor.getTimeStamp() > newPeer.getTimeStamp())
+				return false;
+		}
 		
 		double distance = GeoDistance.distance(myDescr, newPeer);
 		
@@ -86,12 +91,12 @@ public class D2VGeoBuckets {
 				//System.out.println("D2VGeoBucket ---> FOUNDED ! GB: " +  i);
 				
 				//If Peer Descriptor Already exist in buckets
-				if(peerPositionIndex != -1)
+				if(peerBucketPositionIndex != -1)
 				{
 					//System.out.println("D2VGeoBucket ---> Already Exist: Index: " + peerPositionIndex);
 					
 					//Is it was in the same bucket
-					if(peerPositionIndex == i)
+					if(peerBucketPositionIndex == i)
 					{
 						int bucketIndex = this.bucket.get(i).indexOf(newPeer);
 						this.bucket.get(i).set(bucketIndex, newPeer);
@@ -99,7 +104,7 @@ public class D2VGeoBuckets {
 					else //If it was in a diffrent bucket
 					{
 						//Remove ref from the old bucket
-						this.bucket.get(peerPositionIndex).remove(newPeer);
+						this.bucket.get(peerBucketPositionIndex).remove(newPeer);
 						
 						//Add new ref int the righ bucket
 						this.bucket.get(i).add(newPeer);
@@ -123,10 +128,10 @@ public class D2VGeoBuckets {
 		}
 		
 		//If Node doesn't exist in peerList send a remove message to remote node
-		if(founded==false && peerPositionIndex != -1)
+		if(founded==false && peerBucketPositionIndex != -1)
 		{
 			//Remove Peer references from GB
-			this.bucket.get(peerPositionIndex).remove(newPeer);
+			this.bucket.get(peerBucketPositionIndex).remove(newPeer);
 			
 			//Send a remove message to newPeer to remove my reference
 			this.sendRemovePeerMessage(params,newPeer,myDescr);			

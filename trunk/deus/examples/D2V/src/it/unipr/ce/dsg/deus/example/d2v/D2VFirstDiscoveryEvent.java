@@ -22,7 +22,7 @@ import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
  */
 public class D2VFirstDiscoveryEvent extends NodeEvent {
 
-	private int NODE_LIST_LIMIT = 3;
+	private int NODE_LIST_LIMIT = 20;
 	
 	public D2VFirstDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {

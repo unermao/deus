@@ -67,7 +67,7 @@ public class SwitchStationController {
 				double lat = Double.parseDouble(coordinates[0]);
 				double lon = Double.parseDouble(coordinates[1]);
 					
-				SwitchStation ss = new SwitchStation(lat, lon, 0);
+				SwitchStation ss = new SwitchStation(lat, lon);
 				
 				this.switchStationList.add(ss);
 	
@@ -109,7 +109,7 @@ public class SwitchStationController {
 					double lon = Double.parseDouble(coordinates[1]);
 					
 					//GeoLocation point = new GeoLocation(lat, lon, 0);
-					CityPathPoint point = new CityPathPoint(lat, lon, 0);
+					CityPathPoint point = new CityPathPoint(lat, lon);
 					
 					//If the point already exist in the locationList
 					if(!this.locationList.contains(point))

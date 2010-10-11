@@ -21,6 +21,8 @@
    var circles = new Array();
 
    var targetMarker;
+   var startMarker;
+   var endMarker;
    var targetMarkers = new Array();
 
    var newMarker;
@@ -352,7 +354,7 @@ function drawNodeTarget()
        
 	nodeKey = dato1;
 	
-	if(nodeKey.length > 0 )
+	if(nodeKey.length > 0 && nodeKey!="ALL")
 	{
 		//console.log("Node Key: " + nodeKey);
 		
@@ -365,56 +367,56 @@ function drawNodeTarget()
 		//Centra la mappa in un punto particolare
 		//map.setCenter(new GLatLng(parseFloat(markers[0].getAttribute("lat")) , parseFloat(markers[0].getAttribute("long"))), 16);
 	
-		if(oldLat != parseFloat(markers[0].getAttribute("lat")) || oldLong != parseFloat(markers[0].getAttribute("long")))
-		{
-			//Clear old information
-			if(targetMarker)
-			  map.removeOverlay(targetMarker);
-	
-			for(var index=0; index<targetMarkers.length;index++)
-			  if(targetMarkers[index])
-			    map.removeOverlay(targetMarkers[index]);
-
-			targetMarkers = new Array();
-
-			oldLat = parseFloat(markers[0].getAttribute("lat"));
-			oldLong = parseFloat(markers[0].getAttribute("long"));
-	
-			var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
-	
-			//map.setCenter(puntoNodo, zoomValue);
-
-			targetMarker = new GMarker(puntoNodo, markerOptions);
-
-			map.addOverlay(targetMarker);
-	
-			drawAllCircles(map, puntoNodo);
-	
-			//Draw start and end point
-			var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
-			var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
-	
-			map.addOverlay(new GMarker(startPoint, { icon:greenIconStart }));
-			map.addOverlay(new GMarker(endPoint, { icon:greenIconEnd }));
-	
-			for (var i = 3; i < markers.length; i++) {
-				
-				var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
-				var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
-				var titolo = (markers[i].getAttribute("descriz"));	
-				var distance = markers[i].getAttribute("distance");
-				  
-				var localMarker = createMarkerWithPath(punto,real_punto,titolo,distance)
-				
-				targetMarkers.push(localMarker);
-
-				map.addOverlay(localMarker);
-			}
-	
-			//map.addOverlay(new GMarker(puntoNodo, markerOptions));
-			//map.addOverlay(targetMarker);
-		}
+		//Clear old information
+		if(targetMarker)
+		  map.removeOverlay(targetMarker);
 		
+		if(startMarker)
+		  map.removeOverlay(startMarker);
+		  
+		if(endMarker)
+		  map.removeOverlay(endMarker);    
+	
+		for(var index=0; index<targetMarkers.length;index++)
+		  if(targetMarkers[index])
+		    map.removeOverlay(targetMarkers[index]);
+		
+		targetMarkers = new Array();
+
+		
+		var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
+	
+		
+		targetMarker = new GMarker(puntoNodo, markerOptions);
+
+		map.addOverlay(targetMarker);
+	
+		drawAllCircles(map, puntoNodo);
+	
+		//Draw start and end point
+		var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
+		var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
+	
+		startMarker = new GMarker(startPoint, { icon:greenIconStart })
+		endMarker = new GMarker(endPoint, { icon:greenIconEnd });
+	
+		map.addOverlay(startMarker);
+		map.addOverlay(endMarker);
+	
+		for (var i = 3; i < markers.length; i++) {
+				
+			var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+			var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
+			var titolo = (markers[i].getAttribute("descriz"));	
+			var distance = markers[i].getAttribute("distance");
+			  
+			var localMarker = createMarkerWithPath(punto,real_punto,titolo,distance)
+				
+			targetMarkers.push(localMarker);
+
+			map.addOverlay(localMarker);
+		}
+	
 		});
 	}	
 		

@@ -53,7 +53,8 @@ public class D2VDiscoveryEvent extends NodeEvent {
 
 		D2VPeerDescriptor first = null;
 		if (currNode.nlResults.get(currNode.getKey()).size() != 0) {
-			first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
+			//first = currNode.nlResults.get(currNode.getKey()).getFoundNodes().first();
+			first = currNode.nlResults.get(currNode.getKey()).first();
 		}
 
 		try {
