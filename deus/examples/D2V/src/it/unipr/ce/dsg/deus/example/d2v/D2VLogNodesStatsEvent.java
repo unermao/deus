@@ -114,11 +114,12 @@ public class D2VLogNodesStatsEvent extends Event {
 			{
 				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
 				
-				//Init array if necessary
+				//Initialize array only the first time
 				if(missingNodesPerGB.size() == 0)	
 					for(int k=0;k<peer.getK();k++)
 						missingNodesPerGB.add(0.0);
 				
+				//Evaluate global missing node and missing per GB 
 				ArrayList<Double> results = peer.getGb().evaluateCompletePerMissingNodes(peer.createPeerInfo());
 				
 				//sum percentage of globla missing node
@@ -146,9 +147,8 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + "  % TOTAL Missing Nodes: " +  totalPercentageMissing/(double)d2vPeerIndexList.size());
 			
 			for(int k=0;k<missingNodesPerGB.size();k++)
-				System.out.println("VT:" + triggeringTime + "  % Missing Nodes GB("+ k +"/"+missingNodesPerGB.size()+"):" +  missingNodesPerGB.get(k)/(double)d2vPeerIndexList.size());
+				System.out.println("VT:" + triggeringTime + "  % Missing Nodes GB("+ k +"/"+missingNodesPerGB.size()+"):" +  (double)missingNodesPerGB.get(k)/(double)d2vPeerIndexList.size());
 			
-			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
 			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
 			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vPeerIndexList.size());
 			System.out.println("VT:" + triggeringTime + "  Average Sent Messages: " +  (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime));
