@@ -570,6 +570,15 @@ public class D2VGeoBuckets {
 		//Add the total percentage of missing nodes
 		result.add(totalPerMissing);
 		
+		/*
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		for (int i = 0; i < result.size(); i++)
+		{
+			System.out.println("Result("+i+"):" + result.get(i));
+		}
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		*/
+		
 		return result;
 	}
 	
