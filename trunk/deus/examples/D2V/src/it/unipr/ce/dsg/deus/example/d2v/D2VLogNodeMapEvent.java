@@ -78,7 +78,7 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			printTrafficElements(trafficElements);
 			
-			//Thread.sleep(2000);
+			//Thread.sleep(500);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

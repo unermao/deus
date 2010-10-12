@@ -481,6 +481,98 @@ public class D2VGeoBuckets {
 		return 100.0*percentage;
 	}
 	
+	/**
+	 * 
+	 * Return an array list that contains the percentage of missing node for each GB and as last element the total 
+	 * percentage of missing node.
+	 * 
+	 * @param myDesc
+	 * @return
+	 */
+	public ArrayList<Double> evaluateCompletePerMissingNodes(D2VPeerDescriptor myDesc)
+	{
+		Vector<ArrayList<D2VPeerDescriptor>> localGeoBucketVector = new Vector<ArrayList<D2VPeerDescriptor>>();
+		
+		ArrayList<Double> result = new ArrayList<Double>();
+		ArrayList<Double> missingPerGB = new ArrayList<Double>();
+		
+		//Create the list of KBuckets
+		for (int i = 0; i < kValue; i++) {
+			// clone.kbucket.add(i, new LinkedList<KademliaPeer>());
+			localGeoBucketVector.add(i, new ArrayList<D2VPeerDescriptor>());
+			result.add(0.0);
+			missingPerGB.add(0.0);
+		}
+		
+		for(int peerIndex=0; peerIndex<Engine.getDefault().getNodes().size();peerIndex++)
+		{
+			Node node = Engine.getDefault().getNodes().get(peerIndex);
+			
+			if(node.getId().equals("D2VPeer"))
+			{
+				
+				D2VPeerDescriptor peerInfo = ((D2VPeer)node).createPeerInfo();
+				
+				if(peerInfo.getKey() != myDesc.getKey())
+				{
+					double distance = GeoDistance.distance(myDesc, peerInfo);
+					
+					boolean bucketFounded = false;
+						
+					//For each KBucket without the last one that is for all peers out of previous circumferences 
+					for(int index=0;index<kValue; index++)
+					{
+						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+						{
+							
+							//Add the peer in the right bucket
+							if(!localGeoBucketVector.get(index).contains(peerInfo))
+								localGeoBucketVector.get(index).add(peerInfo);
+							
+							bucketFounded = true;
+							
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		int totalMissingNumber = 0;
+		int totalSum = 0;
+		double totalPerMissing = 0.0;
+		
+		for(int gbIndex=0; gbIndex<localGeoBucketVector.size();gbIndex++)
+		{
+			totalSum += localGeoBucketVector.get(gbIndex).size();
+			
+			for(int nodeIndex=0; nodeIndex < localGeoBucketVector.get(gbIndex).size();nodeIndex++)
+			{
+				D2VPeerDescriptor pd = localGeoBucketVector.get(gbIndex).get(nodeIndex);
+				int position = this.indexOfGeoBucketFor(pd);
+				
+				if(position==-1)
+				{
+					totalMissingNumber++;
+					missingPerGB.set(gbIndex,missingPerGB.get(gbIndex)+1);
+				}
+			}
+		}
+		
+		if(totalSum > 0)
+			totalPerMissing = 100.0*(double)totalMissingNumber/(double)totalSum;
+		
+		for (int i = 0; i < kValue; i++) 	
+			if(totalMissingNumber > 0)
+				result.set(i,100.0*(double)((double)missingPerGB.get(i)/(double)totalMissingNumber));
+			
+		//Add the total percentage of missing nodes
+		result.add(totalPerMissing);
+		
+		return result;
+	}
+	
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {
 		return bucket;
 	}
