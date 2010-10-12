@@ -85,10 +85,19 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				}
 				
 				//EVALUATE DISCOVERY PERIOD VALUE
-				double k1 = currNode.getDiscoveryMaxPeriod();
-				double k2 = (k1 - (double)currNode.getDiscoveryMinPeriod())/(double)(currNode.getDiscoveryMaxPeerNumber()*currNode.getDiscoveryMinPeriod());
 				
-				float discoveryValue = (float) (k1 / (double)((k2*(double)newNodeCount)+1));
+				float discoveryValue = currNode.getDiscoveryMinPeriod();
+				
+				if(newNodeCount != 0)
+				{
+					
+					double k1 = currNode.getDiscoveryMaxPeriod();
+					double k2 = (k1 - (double)currNode.getDiscoveryMinPeriod())/(double)(currNode.getDiscoveryPeriodPeerLimit()*currNode.getDiscoveryMinPeriod());
+					
+					discoveryValue = (float) (k1 / (double)((k2*(double)newNodeCount)+1));
+					
+					//currNode.setDiscoveryPeriodPeerLimit(newNodeCount);
+				}
 				
 				currNode.setDiscoveryPeriod(discoveryValue);
 				
