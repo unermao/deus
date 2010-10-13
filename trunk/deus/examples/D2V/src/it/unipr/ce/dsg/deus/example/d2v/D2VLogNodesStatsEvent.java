@@ -97,6 +97,8 @@ public class D2VLogNodesStatsEvent extends Event {
 		System.out.println("################################################################################################");
 		System.out.println("VT:" + triggeringTime + " EVALUATING NODE STATISTICS");
 		
+		
+		
 		ArrayList<Integer> d2vPeerIndexList = Engine.getDefault().getNodeKeysById("D2VPeer");
 		
 		double totalPercentageMissing = 0.0;
@@ -104,11 +106,18 @@ public class D2VLogNodesStatsEvent extends Event {
 		double sumOfAverageOfDiscoveryStep = 0.0;
 		double discoveryPeriodSum = 0.0;
 		double sentMessagesSum = 0.0;
-		
+		int missingPerGBCounter = 0;
+		int peerNumber = 0;
+		int numOfTrafficElements = 0;
 		
 		if(d2vPeerIndexList != null)
 		{
+			a = new AutomatorLogger("./temp/logger");
+			fileValue = new ArrayList<LoggerObject>();
+			
 			ArrayList<Double> missingNodesPerGB = new ArrayList<Double>();
+			
+			peerNumber = d2vPeerIndexList.size();
 			
 			for(int index=0; index<d2vPeerIndexList.size();index++)
 			{
@@ -126,9 +135,13 @@ public class D2VLogNodesStatsEvent extends Event {
 				totalPercentageMissing += results.get(results.size()-1);
 				
 				//Store and sum percentage of missing node per GB
-				for(int k=0;k<peer.getK();k++)
-					missingNodesPerGB.set(k,missingNodesPerGB.get(k)+results.get(k));
-				
+				if(results.get(results.size()-1) > 0.0)
+				{
+					missingPerGBCounter ++;
+					for(int k=0;k<peer.getK();k++)
+						missingNodesPerGB.set(k,missingNodesPerGB.get(k)+results.get(k));
+				}
+					
 				//sum discovery period of the peer
 				discoveryPeriodSum += peer.getDiscoveryPeriod();
 				
@@ -143,25 +156,55 @@ public class D2VLogNodesStatsEvent extends Event {
 				}
 			}
 			
-			System.out.println("VT:" + triggeringTime + "  Active Nodes: " +  d2vPeerIndexList.size());
-			System.out.println("VT:" + triggeringTime + "  % TOTAL Missing Nodes: " +  totalPercentageMissing/(double)d2vPeerIndexList.size());
 			
-			for(int k=0;k<missingNodesPerGB.size();k++)
-				System.out.println("VT:" + triggeringTime + "  % Missing Nodes GB("+ k +"/"+missingNodesPerGB.size()+"):" +  (double)missingNodesPerGB.get(k)/(double)d2vPeerIndexList.size());
+			System.out.println("VT:" + triggeringTime + "  Active Nodes: " +  peerNumber);
+			fileValue.add(new LoggerObject("Peers",peerNumber));
 			
-			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter);
+			System.out.println("VT:" + triggeringTime + "  % TOTAL Missing Nodes: " +  totalPercentageMissing/(double)peerNumber);
+			fileValue.add(new LoggerObject("TotalMissingPercentage",totalPercentageMissing/(double)peerNumber));
+			
+			if(missingPerGBCounter > 0)
+			{	
+				for(int k=0;k<missingNodesPerGB.size();k++)
+				{
+					System.out.println("VT:" + triggeringTime + "  % Missing Nodes GB("+ k +"/"+missingNodesPerGB.size()+"):" +  (double)missingNodesPerGB.get(k)/(double)missingPerGBCounter);
+					fileValue.add(new LoggerObject("Miss_GB_"+k,(double)missingNodesPerGB.get(k)/(double)missingPerGBCounter));
+				}
+			}
+			else
+			{
+				for(int k=0;k<missingNodesPerGB.size();k++)
+				{
+					System.out.println("VT:" + triggeringTime + "  % Missing Nodes GB("+ k +"/"+missingNodesPerGB.size()+"):" +  0.0);
+					fileValue.add(new LoggerObject("Miss_GB_"+k,0.0));
+				}
+			}
+			
+			
+			double avDiscoveryStep = 0.0;
+			
+			if(nodeWithDiscoveryCounter > 0)
+				avDiscoveryStep = sumOfAverageOfDiscoveryStep/(double)nodeWithDiscoveryCounter;
+			
+			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  avDiscoveryStep);
+			fileValue.add(new LoggerObject("Av_DiscStep",avDiscoveryStep));
+			
 			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vPeerIndexList.size());
-			System.out.println("VT:" + triggeringTime + "  Average Sent Messages: " +  (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime));
-		}
-		
-		ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
-		int numOfTrafficElements = 0;
-		
-		if(trafficElementIndexList != null)
-			numOfTrafficElements = trafficElementIndexList.size();
+			fileValue.add(new LoggerObject("Av_DiscPeriod",(double)discoveryPeriodSum/(double)d2vPeerIndexList.size()));
 			
-		System.out.println("VT:" + triggeringTime + " Num Of Traffic Element: " +  numOfTrafficElements);
-		
+			System.out.println("VT:" + triggeringTime + "  Average Sent Messages: " +  (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime));
+			fileValue.add(new LoggerObject("Av_SentMess",(sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime)));
+			
+			ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
+			
+			if(trafficElementIndexList != null)
+				numOfTrafficElements = trafficElementIndexList.size();
+				
+			System.out.println("VT:" + triggeringTime + " Num Of Traffic Element: " +  numOfTrafficElements);
+			fileValue.add(new LoggerObject("TrafficElements",numOfTrafficElements));
+			
+			a.write(Engine.getDefault().getVirtualTime(), fileValue);
+		}
 		
 		System.out.println("################################################################################################");	
 	}
