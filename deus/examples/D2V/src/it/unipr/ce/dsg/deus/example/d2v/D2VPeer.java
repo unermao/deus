@@ -363,14 +363,12 @@ public class D2VPeer extends Peer {
 			
 			distance = GeoDistance.distance(this.peerDescriptor.getGeoLocation().getLongitude(),this.peerDescriptor.getGeoLocation().getLatitude(),nextStep.getLongitude(),nextStep.getLatitude());
 			
-			double speed = (double)expRandom(Engine.getDefault().getSimulationRandom(), (float)this.avgSpeedMax);
+			double speed = (double)expRandom(Engine.getDefault().getSimulationRandom(),(float)this.avgSpeedMax);
 			
 			delay = (float)( ( (double)distance / (double)speed ) *60.0*16.6);
 			
 			if(!(delay>0) && !(delay==0) && !(delay<0))
 				delay = 0;
-				
-			//System.out.println("Distance:"+distance+" Delay:"+delay+" Speed:"+speed);
 			
 			D2VMoveNodeEvent moveEvent = (D2VMoveNodeEvent) new D2VMoveNodeEvent("node_move_event", params, null).createInstance(triggeringTime + delay);
 			moveEvent.setOneShot(true);
