@@ -38,6 +38,7 @@
             <param value="0.5" name="radiusKm"/>
             <param value="0.1" name="epsilon"/>
             <param value="30.0" name="avgSpeedMax"/>
+            <param value="10.0" name="carMinSpeed"/>
             <param value="25.0" name="discoveryMinPeriod"/>
             <param value="100.0" name="discoveryMaxPeriod"/>
             <param value="25" name="discoveryPeriodPeerLimit"/>
