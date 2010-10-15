@@ -203,6 +203,16 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + " Num Of Traffic Element: " +  numOfTrafficElements);
 			fileValue.add(new LoggerObject("TrafficElements",numOfTrafficElements));
 			
+			//Evaluate average of node in each path.
+			D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(0));
+			double carSumInPaths = 0.0;
+			for(int ci=0; ci < peer.ssc.getPathList().size(); ci++)
+			{
+				carSumInPaths += peer.ssc.getPathList().get(ci).getNumOfCars();
+			}
+			System.out.println("VT:" + triggeringTime + " Avg Cars in Paths: " +  carSumInPaths/(double)peer.ssc.getPathList().size());
+			fileValue.add(new LoggerObject("AvgCarsInPaths",carSumInPaths/(double)peer.ssc.getPathList().size()));
+			
 			a.write(Engine.getDefault().getVirtualTime(), fileValue);
 		}
 		
