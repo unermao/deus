@@ -38,6 +38,7 @@ public class D2VPeer extends Peer {
 	private static final String DISCOVERY_MIN_PERIOD = "discoveryMinPeriod";
 	private static final String DISCOVER_PERIOD_PEER_LIMIT = "discoveryPeriodPeerLimit";
 	private static final String DISCOVER_MAX_PEER_NUMBER = "discoveryMaxPeerNumber";
+	private static final String CAR_MIN_SPEED = "carMinSpeed";
 	
 	private float discoveryMaxWait = 25;
 	
@@ -54,6 +55,7 @@ public class D2VPeer extends Peer {
 	private float discoveryMinPeriod = 25;
 	private float discoveryMaxPeriod = 100;
 	private int discoveryMaxPeerNumber = 100;
+	private double carMinSpeed = 10.0;
 	
 	private float discoveryPeriod = 25;
 	
@@ -99,6 +101,17 @@ public class D2VPeer extends Peer {
 			ssc.readPathFile();
 		}
 
+		//Read value of parameter carMinSpeed
+		if (params.getProperty(CAR_MIN_SPEED) == null)
+			throw new InvalidParamsException(CAR_MIN_SPEED
+					+ " param is expected");
+		try {
+			carMinSpeed = Double.parseDouble(params.getProperty(CAR_MIN_SPEED));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(CAR_MIN_SPEED
+					+ " must be a valid double value.");
+		}
+		
 		//Read value of parameter avgSpeed
 		if (params.getProperty(AVG_SPEED_MAX) == null)
 			throw new InvalidParamsException(AVG_SPEED_MAX
@@ -250,6 +263,7 @@ public class D2VPeer extends Peer {
 		//Pick Up a random path among available
 		int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
 		this.cp = availablePaths.get(pathIndex);
+		this.cp.incrementNumOfCars();
 		this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
 		this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
 		this.peerDescriptor.setTimeStamp(triggeringTime);
@@ -305,6 +319,9 @@ public class D2VPeer extends Peer {
 		{	
 			//System.out.println("Peer:"+this.key+" changing switch station !");
 	
+			//Decrement the number of cars for actual path
+			this.cp.decrementNumOfCars();
+			
 			//Actual Switch Station is the last point of the path
 			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
 			
@@ -314,6 +331,7 @@ public class D2VPeer extends Peer {
 			//Pick Up a random path among available
 			int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
 			this.cp = availablePaths.get(pathIndex);
+			this.cp.incrementNumOfCars();
 			this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
 			this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
 			this.peerDescriptor.setTimeStamp(triggeringTime);
@@ -363,7 +381,11 @@ public class D2VPeer extends Peer {
 			
 			distance = GeoDistance.distance(this.peerDescriptor.getGeoLocation().getLongitude(),this.peerDescriptor.getGeoLocation().getLatitude(),nextStep.getLongitude(),nextStep.getLatitude());
 			
-			double speed = (double)expRandom(Engine.getDefault().getSimulationRandom(),(float)this.avgSpeedMax);
+			//double speed = (double)expRandom(Engine.getDefault().getSimulationRandom(),(float)this.avgSpeedMax);
+			
+			//double speed = this.kraussModelSpeed(triggeringTime);
+			
+			double speed = this.ftmModelSpeed();
 			
 			delay = (float)( ( (double)distance / (double)speed ) *60.0*16.6);
 			
@@ -378,6 +400,75 @@ public class D2VPeer extends Peer {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	private double ftmModelSpeed()
+	{
+		double v_min = this.carMinSpeed;
+		double v_max = this.cp.getSpeedLimit();
+		double k_jam = 0.25; //250 cars in 1 km
+		
+		double path_len = this.cp.getLenght();
+		double car_in_path = this.cp.getNumOfCars();
+		
+		double k = car_in_path/(path_len*1000.0);
+		
+		double speed = Math.max(v_min, v_max*(1-(k/k_jam)));
+		
+		if(car_in_path > 10.0)
+		{
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FTM SPEED: " + speed);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Vmin: " + v_min);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Vmax: " + v_max);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Kjam: " + k_jam);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ pathLen: " + path_len);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ carInPath: " + car_in_path);
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ k: " + k);
+		}
+		
+		return speed;
+	}
+	
+	/**
+	 * Evaluate speed according to Krauss Mobility Model
+	 * 
+	 * @return
+	 */
+	private double kraussModelSpeed(float triggeringTime) {
+	
+		double v_t = 20.0;
+		double v_next_t = 0.0;
+		double distance_next_car = 0.0;
+		double v_max = 40.0;
+		double a = 1.0;
+		double b = 2.5;
+		double t = 1.0;
+		
+		double ni = Engine.getDefault().getSimulationRandom().nextDouble();
+		
+		//Evaluate Delta t
+		double delta_t = triggeringTime;//-this.old_speedtime
+		
+		//Find Next Car 
+		
+		//Get Next Car Speed
+		
+		//Evaluate Next Car Distance
+		
+		//Evaluate difference between speed of this car and speed of the next one
+		double delta_v_t = Math.abs(v_t-v_next_t);
+		
+		double v_safe_next = v_next_t + (distance_next_car - v_next_t*t)/(delta_v_t/(2.0*b+t));
+		
+		double v_des_next = Math.min(Math.min(v_max, v_safe_next), v_t+(a*delta_t));
+		
+		double v_next = Math.max(0, v_des_next-ni);
+		
+		return v_next;
 	}
 
 	/**

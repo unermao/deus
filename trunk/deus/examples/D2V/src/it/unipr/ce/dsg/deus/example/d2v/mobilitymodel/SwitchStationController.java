@@ -1,5 +1,7 @@
 package it.unipr.ce.dsg.deus.example.d2v.mobilitymodel;
 
+import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,7 +105,7 @@ public class SwitchStationController {
 				
 				for(int i=0; i<points.length; i++)
 				{
-					 String[] coordinates = points[i].split(",");
+					String[] coordinates = points[i].split(",");
 					
 					double lat = Double.parseDouble(coordinates[0]);
 					double lon = Double.parseDouble(coordinates[1]);
@@ -116,7 +118,22 @@ public class SwitchStationController {
 						this.locationList.add(point);
 					
 					int index = this.locationList.indexOf(point);
+					
+					//Add new point to path
 					path.addCityPathPoint(this.locationList.get(index));
+					
+					//Increment Path Length
+					if(path.getPathPoints().size() >= 2)
+					{
+						CityPathPoint point1 = path.getPathPoints().get(path.getPathPoints().size()-1);
+						CityPathPoint point2 = path.getPathPoints().get(path.getPathPoints().size()-2);
+						
+						double distance = GeoDistance.distance(point1, point2);
+						
+						if(!( !(distance > 0.0) && distance !=0.0 && !(distance <0.0) ))
+								path.incrementPathLength(distance);
+					}
+					
 					//path.addCityPathPoint(point);
 				}
 				
