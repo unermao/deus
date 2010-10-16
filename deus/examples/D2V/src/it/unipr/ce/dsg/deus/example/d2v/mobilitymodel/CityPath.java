@@ -25,16 +25,16 @@ public class CityPath {
 		
 		switch (randomCase) {
 		case 0:
-			this.speedLimit = 50.0;
+			this.speedLimit = 30.0;
 			break;
 		case 1:
-			this.speedLimit = 60.0;
+			this.speedLimit = 50.0;
 			break;
 		case 2:
-			this.speedLimit = 70.0;
+			this.speedLimit = 60.0;
 			break;
 		case 3:
-			this.speedLimit = 80.0;
+			this.speedLimit = 70.0;
 			break;
 
 			

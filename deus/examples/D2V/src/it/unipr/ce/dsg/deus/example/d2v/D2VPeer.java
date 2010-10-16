@@ -5,6 +5,9 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 import it.unipr.ce.dsg.deus.core.*;
 import it.unipr.ce.dsg.deus.example.d2v.buckets.D2VGeoBuckets;
 import it.unipr.ce.dsg.deus.example.d2v.discovery.SearchResultType;
+import it.unipr.ce.dsg.deus.example.d2v.message.Message;
+import it.unipr.ce.dsg.deus.example.d2v.message.MessageExchangeEvent;
+import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathIndex;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
+import java.util.TreeMap;
 
 /**
  * 
@@ -39,6 +43,7 @@ public class D2VPeer extends Peer {
 	private static final String DISCOVER_PERIOD_PEER_LIMIT = "discoveryPeriodPeerLimit";
 	private static final String DISCOVER_MAX_PEER_NUMBER = "discoveryMaxPeerNumber";
 	private static final String CAR_MIN_SPEED = "carMinSpeed";
+	private static final String IS_CONTENT_DISTRIBUTION_ACTIVE = "isContentDistributionActive";
 	
 	private float discoveryMaxWait = 25;
 	
@@ -57,6 +62,7 @@ public class D2VPeer extends Peer {
 	private int discoveryMaxPeerNumber = 100;
 	private double carMinSpeed = 10.0;
 	
+	private boolean isContentDistributionActive = true;
 	private float discoveryPeriod = 25;
 	
 	private int sentFindNode = 0;
@@ -77,6 +83,8 @@ public class D2VPeer extends Peer {
 	//Flag for active discovery
 	private boolean isDiscoveryActive = false;
 	
+	private boolean isPathChanged = false;
+	
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
 	private int discoveryCounter = 0;
@@ -88,6 +96,9 @@ public class D2VPeer extends Peer {
 	private D2VGeoBuckets gb = null;
 
 	private int discoveryPeriodPeerLimit = 20;
+
+	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
+	private ArrayList<Message> incomingMessageHistory = null;
 	
 	public D2VPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -101,6 +112,17 @@ public class D2VPeer extends Peer {
 			ssc.readPathFile();
 		}
 
+		//Read value of parameter carMinSpeed
+		if (params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE) == null)
+			throw new InvalidParamsException(IS_CONTENT_DISTRIBUTION_ACTIVE
+					+ " param is expected");
+		try {
+			isContentDistributionActive = Boolean.parseBoolean(params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE));
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(IS_CONTENT_DISTRIBUTION_ACTIVE
+					+ " must be a valid double value.");
+		}
+		
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(CAR_MIN_SPEED) == null)
 			throw new InvalidParamsException(CAR_MIN_SPEED
@@ -244,6 +266,9 @@ public class D2VPeer extends Peer {
 		
 		clone.discoveryPeriod = clone.discoveryMinPeriod;
 		
+		clone.sentInformationMessages = new TreeMap<String,ArrayList<Integer>>();
+		clone.incomingMessageHistory = new ArrayList<Message>();
+		
 		return clone;
 	}
 
@@ -325,17 +350,48 @@ public class D2VPeer extends Peer {
 			//Actual Switch Station is the last point of the path
 			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
 			
+			boolean newPathFounded = false;
+			
+			this.isPathChanged = false;
+			
 			//Select a path from its starting switch station
 			ArrayList<CityPath> availablePaths = ssc.getPathListFromSwithStation(actualSS);
 			
-			//Pick Up a random path among available
-			int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
-			this.cp = availablePaths.get(pathIndex);
-			this.cp.incrementNumOfCars();
-			this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
-			this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
-			this.peerDescriptor.setTimeStamp(triggeringTime);
-			
+			while(newPathFounded == false)
+			{
+				//Pick Up a random path among available
+				int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
+				
+				CityPath path = availablePaths.get(pathIndex);
+				
+				boolean isPathClean = true;
+				
+				for(int i=0; i<this.incomingMessageHistory.size(); i++)
+					if(this.incomingMessageHistory.get(i) instanceof TrafficJamMessage)
+					{
+						TrafficJamMessage tm = (TrafficJamMessage)this.incomingMessageHistory.get(i);
+						if(path.getPathPoints().contains(tm.getLocation()))
+						{
+							isPathClean = false;
+							this.isPathChanged = true;
+							break;
+						}
+					}
+				
+				if(isPathClean == true)
+				{
+					newPathFounded = true;
+					this.cp = availablePaths.get(pathIndex);
+					this.cp.incrementNumOfCars();
+					this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
+					this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
+					this.peerDescriptor.setTimeStamp(triggeringTime);
+				}
+				else
+				{
+					availablePaths.remove(pathIndex);
+				}
+			}
 		}
 		else{
 			//System.out.println("Peer:"+this.key+" changing position !");
@@ -355,6 +411,15 @@ public class D2VPeer extends Peer {
 	
 	}
 
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void changeMovingDirection(float triggeringTime) {
+		//System.out.println("Changing Moving Direction !!!!!!");
+		this.ci.setBackward(true);
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -418,17 +483,6 @@ public class D2VPeer extends Peer {
 		double k = car_in_path/(path_len*1000.0);
 		
 		double speed = Math.max(v_min, v_max*(1-(k/k_jam)));
-		
-		if(car_in_path > 10.0)
-		{
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FTM SPEED: " + speed);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Vmin: " + v_min);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Vmax: " + v_max);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Kjam: " + k_jam);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ pathLen: " + path_len);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ carInPath: " + car_in_path);
-			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ k: " + k);
-		}
 		
 		return speed;
 	}
@@ -497,6 +551,22 @@ public class D2VPeer extends Peer {
 					p.setTe(nextCpPoint.getTe());
 				}
 			}
+			
+			
+			if(isContentDistributionActive == true)
+			{
+				//Create trafficJam Message
+				double range = 3.0;
+				String payloadString = nextCpPoint.getTe().getLocation().getLatitude()+"#"+nextCpPoint.getTe().getLocation().getLongitude()+"#"+triggeringTime+"#"+range;
+				TrafficJamMessage tm = new TrafficJamMessage(this.getKey(), payloadString.getBytes());
+				
+				//Distribute Traffic Jam
+				this.distributeTrafficaJamMessage(tm, triggeringTime);
+				
+				//Schedule Periodic Traffic Jam Event
+				this.scheduleTrafficJamPeriodicEvent(tm, triggeringTime);
+			}
+			
 		}		
 	}
 	
@@ -574,10 +644,81 @@ public class D2VPeer extends Peer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void scheduleTrafficJamPeriodicEvent(TrafficJamMessage tm,float triggeringTime) {
+		try {
+			D2VTrafficJamPeriodicEvent event = (D2VTrafficJamPeriodicEvent) new D2VTrafficJamPeriodicEvent("discovery", params, null).createInstance(triggeringTime+10);
+			event.setOneShot(true);
+			event.setMsg(tm);
+			event.setAssociatedNode(this);
+			Engine.getDefault().insertIntoEventsList(event);
+		
+		} catch (InvalidParamsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void updateBucketInfo(D2VPeerDescriptor peerDescriptor2) {
 		this.gb.updateBucketInfo(params,peerDescriptor2);	
 	}
 
+	/**
+	 * 
+	 * @param trafficMessage
+	 */
+	public void distributeTrafficaJamMessage(TrafficJamMessage trafficMessage, float triggeringTime) {
+		
+		this.updateBucketInfo(peerDescriptor);
+		
+		//Check if message hash is available in cache list
+		if(this.sentInformationMessages.get(trafficMessage.getMessageHash()) == null)
+			this.sentInformationMessages.put(trafficMessage.getMessageHash(), new ArrayList<Integer>());
+			
+		
+		//Same range of traffic Message
+		double range = trafficMessage.getRange();
+		
+		//Find known nodes that have a distance from traffic element between 0 and range value
+		ArrayList<D2VPeerDescriptor> interestedNodes = this.getGb().findNodeNearPoint(trafficMessage.getLocation(),range);
+		ArrayList<Integer> contactedNodes = this.sentInformationMessages.get(trafficMessage.getMessageHash());
+		
+		for(int index=0; index<interestedNodes.size(); index++)
+		{
+			D2VPeerDescriptor pd = interestedNodes.get(index);
+			
+			if(!contactedNodes.contains(pd.getKey()))
+			{
+				contactedNodes.add(pd.getKey());
+				this.sendMessage((D2VPeer)Engine.getDefault().getNodeByKey(pd.getKey()), trafficMessage, triggeringTime);
+			}
+		}
+		
+	}
+	
+	/**
+	 * Send a Message to a destination peer 
+	 * 
+	 * @param destPeer
+	 * @param message
+	 * @param triggeringTime
+	 */
+	public void sendMessage(D2VPeer destPeer, Message message, float triggeringTime)
+	{
+		try {
+			MessageExchangeEvent event = (MessageExchangeEvent) new MessageExchangeEvent("message_exchange", params, null).createInstance(triggeringTime+1);
+			event.setOneShot(true);
+			event.setAssociatedNode(destPeer);
+			event.setMsg(message);
+			Engine.getDefault().insertIntoEventsList(event);
+		} catch (InvalidParamsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	public static SwitchStationController getSsc() {
 		return ssc;
@@ -836,4 +977,48 @@ public class D2VPeer extends Peer {
 	public void setDiscoveryPeriodPeerLimit(int discoveryPeriodPeerLimit) {
 		this.discoveryPeriodPeerLimit = discoveryPeriodPeerLimit;
 	}
+
+	public double getCarMinSpeed() {
+		return carMinSpeed;
+	}
+
+	public void setCarMinSpeed(double carMinSpeed) {
+		this.carMinSpeed = carMinSpeed;
+	}
+
+	public TreeMap<String, ArrayList<Integer>> getSentInformationMessages() {
+		return sentInformationMessages;
+	}
+
+	public void setSentInformationMessages(
+			TreeMap<String, ArrayList<Integer>> sentInformationMessages) {
+		this.sentInformationMessages = sentInformationMessages;
+	}
+
+	public ArrayList<Message> getIncomingMessageHistory() {
+		return incomingMessageHistory;
+	}
+
+	public void setIncomingMessageHistory(ArrayList<Message> incomingMessageHistory) {
+		this.incomingMessageHistory = incomingMessageHistory;
+	}
+
+	public boolean isPathChanged() {
+		return isPathChanged;
+	}
+
+	public void setPathChanged(boolean isPathChanged) {
+		this.isPathChanged = isPathChanged;
+	}
+
+	public boolean isContentDistributionActive() {
+		return isContentDistributionActive;
+	}
+
+	public void setContentDistributionActive(boolean isContentDistributionActive) {
+		this.isContentDistributionActive = isContentDistributionActive;
+	}
+
+	
+	
 }

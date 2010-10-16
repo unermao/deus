@@ -15,7 +15,6 @@ public class Message {
 
 	private String type = null;
 	private int senderNodeId;
-	private int destinationNodeId;
 	private byte[] payload;
 	
 	/**
@@ -26,13 +25,17 @@ public class Message {
 	 * @param destinationNodeId
 	 * @param payload
 	 */
-	public Message(String type, int senderNodeId, int destinationNodeId,
+	public Message(String type, int senderNodeId,
 			byte[] payload) {
 		super();
 		this.type = type;
 		this.senderNodeId = senderNodeId;
-		this.destinationNodeId = destinationNodeId;
 		this.payload = payload;
+	}
+	
+	public String getMessageHash()
+	{
+		return senderNodeId+"#"+payload;
 	}
 	
 	public String getType() {
@@ -46,12 +49,6 @@ public class Message {
 	}
 	public void setSenderNodeId(int senderNodeId) {
 		this.senderNodeId = senderNodeId;
-	}
-	public int getDestinationNodeId() {
-		return destinationNodeId;
-	}
-	public void setDestinationNodeId(int destinationNodeId) {
-		this.destinationNodeId = destinationNodeId;
 	}
 	public byte[] getPayload() {
 		return payload;

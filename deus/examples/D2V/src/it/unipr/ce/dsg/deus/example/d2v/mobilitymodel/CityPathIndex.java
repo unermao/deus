@@ -3,7 +3,8 @@ package it.unipr.ce.dsg.deus.example.d2v.mobilitymodel;
 public class CityPathIndex {
 
 	private int index = 0;
-	private int maxIndex = 0;;
+	private int maxIndex = 0;
+	private boolean isBackward = false;
 
 	public CityPathIndex(int index, int maxIndex) {
 		super();
@@ -15,8 +16,9 @@ public class CityPathIndex {
 	{
 		//System.out.println("Index: " +  index + " Max: " + maxIndex);
 		
-		if(index == maxIndex)
+		if( (isBackward== false && index == maxIndex) || (isBackward==true && index == -1) || (isBackward==true && index == 0))
 			return false;
+			
 		
 		return true;
 	}
@@ -39,7 +41,18 @@ public class CityPathIndex {
 	}
 
 	public void next() {
-		this.index++;
+		if(isBackward == false)
+			this.index++;
+		else
+			this.index--;
+	}
+
+	public boolean isBackward() {
+		return isBackward;
+	}
+
+	public void setBackward(boolean isBackward) {
+		this.isBackward = isBackward;
 	}
 	
 }

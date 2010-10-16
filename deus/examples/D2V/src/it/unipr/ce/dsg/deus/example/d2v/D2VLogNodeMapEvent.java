@@ -3,7 +3,6 @@
  */
 package it.unipr.ce.dsg.deus.example.d2v;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,7 +31,7 @@ public class D2VLogNodeMapEvent extends Event {
 
 	public void run() throws RunException {
 
-		System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT ---> Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
+		//System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT ---> Node: " + Engine.getDefault().getNodes().size() +" ... Logging MARKERS");
 
 		FileOutputStream file = null;
 		PrintStream out = null;
@@ -63,6 +62,8 @@ public class D2VLogNodeMapEvent extends Event {
 							+"\" endlat=\""+peer.getCp().getEndPoint().getLatitude()
 							+"\" endlon=\""+peer.getCp().getEndPoint().getLongitude()
 							+"\" trafficJam=\""+peer.isTrafficJam()
+							+"\" backward=\""+peer.getCi().isBackward()
+							+"\" isPathChanged=\""+peer.isPathChanged()
 							+"\"/>");
 				}
 				
@@ -78,7 +79,7 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			printTrafficElements(trafficElements);
 			
-			//Thread.sleep(500);
+			//Thread.sleep(300);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -87,7 +88,7 @@ public class D2VLogNodeMapEvent extends Event {
 	
 	private void printTrafficElements(ArrayList<D2VTrafficElement> trafficElements)
 	{
-		System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT --->  Traffic Elements:"+trafficElements.size());
+		//System.out.println("VT:" + triggeringTime + " LOG_MAP_EVENT --->  Traffic Elements:"+trafficElements.size());
 
 		FileOutputStream file = null;
 		PrintStream out = null;

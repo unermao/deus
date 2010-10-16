@@ -103,6 +103,10 @@ public class D2VTrafficElement extends Node {
 				this.path.setHasTrafficJam(true);
 				
 				int locationIndex = Engine.getDefault().getSimulationRandom().nextInt(path.getPathPoints().size());
+				
+				if(locationIndex == 0)
+					locationIndex += 1 + Engine.getDefault().getSimulationRandom().nextInt(path.getPathPoints().size())/2;
+				
 				//PickUp a random point
 				this.point = path.getPathPoints().get(locationIndex);
 				//Set TrafficJam true in the CityPathPoint
