@@ -6,6 +6,7 @@ import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.D2VPeer;
+import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 /**
  * 
@@ -27,15 +28,33 @@ public class MessageExchangeEvent extends NodeEvent {
 
 	public void run() throws RunException {
 		
-		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
+		D2VPeer currNode = (D2VPeer) this.getAssociatedNode();
 		
 		if(this.msg != null)
 		{
-			System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> From: " + msg.getSenderNodeId() + " To: " + msg.getDestinationNodeId() +"("+connectingNode.getKey()+")");
-			System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> Type: " + msg.getType());
+			//System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> From: " + msg.getSenderNodeId() + " To: " + currNode.getKey());
+			//System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> Type: " + msg.getType());
+		
+			if(msg.getType().equals(TrafficJamMessage.typeName))
+			{
+				//System.out.println("VT:"+triggeringTime+" EVALUATING MESSAGE: "+TrafficJamMessage.typeName);
+				TrafficJamMessage trafficMessage = (TrafficJamMessage)this.msg;
+				currNode.distributeTrafficaJamMessage(trafficMessage,this.triggeringTime);
+				
+				if(!currNode.getIncomingMessageHistory().contains(trafficMessage))
+					currNode.getIncomingMessageHistory().add(trafficMessage);
+				
+				//Check validity of traffic message
+				double distance = GeoDistance.distance(trafficMessage.getLocation(), currNode.getPeerDescriptor().getGeoLocation());
+				
+				if(distance<=trafficMessage.getRange() && currNode.getCp().getPathPoints().contains(trafficMessage.getLocation()))
+				{
+					currNode.changeMovingDirection(triggeringTime);
+				}
+			}
 		}
 		else
-			System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> NULL Message !!!");
+			System.err.println("VT:"+triggeringTime+" Message Exchange Event ---> NULL Message !!!");
 	}
 
 	public Message getMsg() {

@@ -5,6 +5,7 @@ import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.example.d2v.D2VAddPeerInfoEvent;
 import it.unipr.ce.dsg.deus.example.d2v.D2VNodeRemoveEvent;
 import it.unipr.ce.dsg.deus.example.d2v.D2VPeer;
+import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
@@ -582,6 +583,24 @@ public class D2VGeoBuckets {
 		return result;
 	}
 	
+	public ArrayList<D2VPeerDescriptor> findNodeNearPoint(GeoLocation location,double range) {
+		
+		ArrayList<D2VPeerDescriptor> resultList = new ArrayList<D2VPeerDescriptor>();
+		
+		for(int gbIndex=0; gbIndex < this.bucket.size(); gbIndex++)
+		{
+			for(int peerIndex=0; peerIndex<this.bucket.get(gbIndex).size(); peerIndex++)
+			{
+				D2VPeerDescriptor pd = this.bucket.get(gbIndex).get(peerIndex);
+				double distance = GeoDistance.distance(location, pd.getGeoLocation());
+				if(distance<=range)
+					resultList.add(pd);
+			}
+		}
+		
+		return resultList;
+	}
+	
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {
 		return bucket;
 	}
@@ -628,4 +647,5 @@ public class D2VGeoBuckets {
 	public void setPm(PeerKnowledgeMap pm) {
 		this.pm = pm;
 	}
+
 }

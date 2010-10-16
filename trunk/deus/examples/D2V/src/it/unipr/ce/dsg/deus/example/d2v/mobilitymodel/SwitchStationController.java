@@ -52,6 +52,25 @@ public class SwitchStationController {
 	
 	/**
 	 * 
+	 * @param geoLocation
+	 * @param geoLocation2
+	 * @return
+	 */
+	public CityPath getPathBetweenPoints(GeoLocation geoLocation, GeoLocation geoLocation2)
+	{
+		 
+		 for(int i=0; i<this.pathList.size();i++)
+		 {
+			 if(this.pathList.get(i).getStartPoint().equals(geoLocation) && this.pathList.get(i).getEndPoint().equals(geoLocation2))
+				 return this.pathList.get(i);
+		 }
+		
+		return null;
+	}
+	
+	
+	/**
+	 * 
 	 */
 	public void readSwitchStationFile()
 	{

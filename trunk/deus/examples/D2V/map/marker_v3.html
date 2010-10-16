@@ -56,6 +56,11 @@
    redCarIcon.shadow = null,
    redCarIcon.printShadow = null
    redCarIcon.image = "car_marker_red.png";
+   
+   var greenCarIcon = new GIcon(G_DEFAULT_ICON);
+   greenCarIcon.shadow = null,
+   greenCarIcon.printShadow = null
+   greenCarIcon.image = "car_marker_green.png";
 
    var blueCarIcon = new GIcon(G_DEFAULT_ICON);
    blueCarIcon.shadow = null,
@@ -186,10 +191,23 @@ function updateAllPeer() {
 	
 		var trafficJam = allMarkers[i].getAttribute("trafficJam");
 		
+		var backward = allMarkers[i].getAttribute("backward");
+		
+		var isPathChanged = allMarkers[i].getAttribute("isPathChanged");
+		
+		//console.log(isPathChanged);
+		
 		if(trafficJam == "false")			
-			markerBlueOptions = { icon:blueIcon, title: titolo };
+		{
+			if(backward == "false" && isPathChanged == "false")
+				markerBlueOptions = { icon:blueIcon, title: titolo };
+			else
+				markerBlueOptions = { icon:greenCarIcon, title: titolo };
+		}
 		else
 			markerBlueOptions = { icon:redCarIcon, title: titolo };
+			
+			
 		
 		newMarker = createMarker(punto,startSS,endSS,titolo,markerBlueOptions);
 		//newMarker = new GMarker(punto, markerBlueOptions);
@@ -354,7 +372,16 @@ function drawNodeTarget()
        
 	nodeKey = dato1;
 	
-	if(nodeKey.length > 0 && nodeKey!="ALL")
+	if(targetMarker)
+		map.removeOverlay(targetMarker);
+		
+	if(startMarker)
+		map.removeOverlay(startMarker);
+		  
+	if(endMarker)
+		map.removeOverlay(endMarker);    
+	
+	if(nodeKey.length > 0 && nodeKey != "ALL")
 	{
 		//console.log("Node Key: " + nodeKey);
 		
@@ -368,14 +395,6 @@ function drawNodeTarget()
 		//map.setCenter(new GLatLng(parseFloat(markers[0].getAttribute("lat")) , parseFloat(markers[0].getAttribute("long"))), 16);
 	
 		//Clear old information
-		if(targetMarker)
-		  map.removeOverlay(targetMarker);
-		
-		if(startMarker)
-		  map.removeOverlay(startMarker);
-		  
-		if(endMarker)
-		  map.removeOverlay(endMarker);    
 	
 		for(var index=0; index<targetMarkers.length;index++)
 		  if(targetMarkers[index])

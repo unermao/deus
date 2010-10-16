@@ -28,6 +28,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -192,18 +193,37 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vPeerIndexList.size());
 			fileValue.add(new LoggerObject("Av_DiscPeriod",(double)discoveryPeriodSum/(double)d2vPeerIndexList.size()));
 			
-			System.out.println("VT:" + triggeringTime + "  Average Sent Messages: " +  (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime));
-			fileValue.add(new LoggerObject("Av_SentMess",(sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime)));
+			double avSentMessageInVT = (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (sec): " +  avSentMessageInVT/36.0);
+			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/36.0));
 			
 			ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
 			
+			double carInTrafficJam = 0.0;
+			
 			if(trafficElementIndexList != null)
+			{
 				numOfTrafficElements = trafficElementIndexList.size();
 				
+				for(int index=0; index<trafficElementIndexList.size(); index++)
+				{
+					D2VTrafficElement te = (D2VTrafficElement)Engine.getDefault().getNodeByKey(trafficElementIndexList.get(index));
+					carInTrafficJam += te.getNodeKeysInTrafficJam().size();
+				}
+			}
+			
+			double avgCarInTrafficJam = 0.0;
+			
+			if(numOfTrafficElements > 0)
+				avgCarInTrafficJam = carInTrafficJam / (double)numOfTrafficElements;
+			
 			System.out.println("VT:" + triggeringTime + " Num Of Traffic Element: " +  numOfTrafficElements);
+			System.out.println("VT:" + triggeringTime + " Avg Cars in Traffic Element: " +  avgCarInTrafficJam);
 			fileValue.add(new LoggerObject("TrafficElements",numOfTrafficElements));
+			fileValue.add(new LoggerObject("AvgCarInTraffic",avgCarInTrafficJam));
 			
 			//Evaluate average of node in each path.
+			/*
 			D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(0));
 			double carSumInPaths = 0.0;
 			for(int ci=0; ci < peer.ssc.getPathList().size(); ci++)
@@ -212,6 +232,7 @@ public class D2VLogNodesStatsEvent extends Event {
 			}
 			System.out.println("VT:" + triggeringTime + " Avg Cars in Paths: " +  carSumInPaths/(double)peer.ssc.getPathList().size());
 			fileValue.add(new LoggerObject("AvgCarsInPaths",carSumInPaths/(double)peer.ssc.getPathList().size()));
+			*/
 			
 			a.write(Engine.getDefault().getVirtualTime(), fileValue);
 		}

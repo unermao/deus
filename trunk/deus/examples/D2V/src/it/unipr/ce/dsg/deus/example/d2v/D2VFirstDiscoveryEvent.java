@@ -52,26 +52,6 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 		//Schedule a new DISCOVERY EVENT
 		connectingNode.scheduleDiscovery(triggeringTime);
 		
-		/*
-		try {
-				
-			int random = Engine.getDefault().getSimulationRandom().nextInt(Engine.getDefault().getNodes().size());
-			
-			D2VPeer randomPeer = (D2VPeer)Engine.getDefault().getNodes().get(random);
-			
-			Message msg = new Message("TEST_MSG", connectingNode.getKey(), randomPeer.getKey(), new String("AHAHAH").getBytes());
-			
-			MessageExchangeEvent event = (MessageExchangeEvent) new MessageExchangeEvent("message_exchange", params, null).createInstance(triggeringTime+25);
-			event.setOneShot(true);
-			event.setAssociatedNode(randomPeer);
-			event.setMsg(msg);
-			Engine.getDefault().insertIntoEventsList(event);
-		} catch (InvalidParamsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
-		
 		//log.printEnd(connectingNode.getKey(),this.getClass().getName(),triggeringTime);
 	}
 	
