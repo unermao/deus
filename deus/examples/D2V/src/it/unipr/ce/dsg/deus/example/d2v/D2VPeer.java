@@ -15,9 +15,12 @@ import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
@@ -104,6 +107,7 @@ public class D2VPeer extends Peer {
 			ArrayList<Resource> resources) throws InvalidParamsException {
 		super(id, params, resources);
 		
+		/*
 		// Init the Switch Station Controller for Peer Mobility Model
 		if(ssc == null)
 		{
@@ -111,6 +115,7 @@ public class D2VPeer extends Peer {
 			ssc.readSwitchStationFile();
 			ssc.readPathFile();
 		}
+		*/
 
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE) == null)
@@ -274,6 +279,14 @@ public class D2VPeer extends Peer {
 
 	public void init(float triggeringTime)
 	{
+		// Init the Switch Station Controller for Peer Mobility Model
+		if(ssc == null)
+		{
+			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
+			ssc.readSwitchStationFile();
+			ssc.readPathFile();
+		}
+
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
 		this.ss = ssc.getSwitchStationList().get(ssIndex);	
@@ -349,49 +362,20 @@ public class D2VPeer extends Peer {
 			
 			//Actual Switch Station is the last point of the path
 			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
-			
-			boolean newPathFounded = false;
-			
+					
 			this.isPathChanged = false;
 			
 			//Select a path from its starting switch station
 			ArrayList<CityPath> availablePaths = ssc.getPathListFromSwithStation(actualSS);
 			
-			while(newPathFounded == false)
-			{
-				//Pick Up a random path among available
-				int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
-				
-				CityPath path = availablePaths.get(pathIndex);
-				
-				boolean isPathClean = true;
-				
-				for(int i=0; i<this.incomingMessageHistory.size(); i++)
-					if(this.incomingMessageHistory.get(i) instanceof TrafficJamMessage)
-					{
-						TrafficJamMessage tm = (TrafficJamMessage)this.incomingMessageHistory.get(i);
-						if(path.getPathPoints().contains(tm.getLocation()))
-						{
-							isPathClean = false;
-							this.isPathChanged = true;
-							break;
-						}
-					}
-				
-				if(isPathClean == true)
-				{
-					newPathFounded = true;
-					this.cp = availablePaths.get(pathIndex);
-					this.cp.incrementNumOfCars();
-					this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
-					this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
-					this.peerDescriptor.setTimeStamp(triggeringTime);
-				}
-				else
-				{
-					availablePaths.remove(pathIndex);
-				}
-			}
+			int pathIndex = Engine.getDefault().getSimulationRandom().nextInt(availablePaths.size());
+			
+			this.cp = availablePaths.get(pathIndex);
+			this.cp.incrementNumOfCars();
+			this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
+			this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
+			this.peerDescriptor.setTimeStamp(triggeringTime);
+		
 		}
 		else{
 			//System.out.println("Peer:"+this.key+" changing position !");
@@ -399,6 +383,8 @@ public class D2VPeer extends Peer {
 			this.peerDescriptor.setTimeStamp(triggeringTime);
 			this.checkTrafficJam(triggeringTime);
 		}
+		
+		this.checkReceivedTrafficInformation();
 		
 		//According to new position, check peer position in GB and if necessary remove them from list
 		this.updateBucketInfo(peerDescriptor);
@@ -411,12 +397,86 @@ public class D2VPeer extends Peer {
 	
 	}
 
+	private void checkReceivedTrafficInformation() {
+		
+		for(int i=0; i<this.incomingMessageHistory.size(); i++)
+			if(this.incomingMessageHistory.get(i) instanceof TrafficJamMessage)
+			{
+				TrafficJamMessage tm = (TrafficJamMessage)this.incomingMessageHistory.get(i);
+				
+				double distance = GeoDistance.distance(tm.getLocation(), this.peerDescriptor.getGeoLocation());
+				
+				if(distance <= 0.5)
+					this.changeMovingDirection();
+				
+			}
+		
+	}
+
+	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer, int peerLimit)
+	{
+		final double peerLat = peer.getGeoLocation().getLatitude();
+		final double peerLon = peer.getGeoLocation().getLongitude();
+		
+		
+		ArrayList<D2VPeerDescriptor> peerList = new ArrayList<D2VPeerDescriptor>();
+		
+		ArrayList<Integer> keyList = Engine.getDefault().getNodeKeysById("D2VPeer");
+		
+		for(int i=0; i<keyList.size(); i++)
+		{
+			D2VPeer p = (D2VPeer)Engine.getDefault().getNodeByKey(keyList.get(i));
+			peerList.add(p.getPeerDescriptor());
+		}
+		
+		if(peerList.size() > peerLimit)
+		{
+			ArrayList<D2VPeerDescriptor> tempList = new ArrayList<D2VPeerDescriptor>();
+			
+			// Sort PeerInfo according to distance
+			Collections.sort(peerList, new Comparator<D2VPeerDescriptor>() {
+
+				public int compare(D2VPeerDescriptor o1, D2VPeerDescriptor o2) {
+			    
+					double dist1 = GeoDistance.distance(peerLon,peerLat, o1.getGeoLocation().getLongitude(), o1.getGeoLocation().getLatitude());
+					double dist2 = GeoDistance.distance(peerLon,peerLat, o2.getGeoLocation().getLongitude(), o2.getGeoLocation().getLatitude());
+						
+					if(dist1 == dist2)
+						return 0;
+					
+					if(dist1 < dist2)
+						return -1;
+				
+					if(dist1 > dist2)
+						return 1;
+					
+					return 0;
+			    }});
+			
+				//Remove Peer Info
+				peerList.remove(peer);
+			
+				for(int index=0; index<peerLimit; index++)
+				{
+					D2VPeerDescriptor peerInfo = peerList.get(index);
+					tempList.add(peerInfo);
+				}	
+				//System.out.println("#########################################################");
+				
+				return new ArrayList<D2VPeerDescriptor>(tempList);
+		}
+		else
+			return new ArrayList<D2VPeerDescriptor>(peerList);
+		
+		
+	}
+	
 	/**
 	 * 
 	 * @param triggeringTime
 	 */
-	public void changeMovingDirection(float triggeringTime) {
-		//System.out.println("Changing Moving Direction !!!!!!");
+	public void changeMovingDirection() {
+		//System.out.println(this.getKey()+": Changing Moving Direction !!!!!!");
 		this.ci.setBackward(true);
 	}
 	
@@ -532,26 +592,61 @@ public class D2VPeer extends Peer {
 	public void checkTrafficJam(float triggeringTime)
 	{
 		CityPathPoint nextCpPoint = this.cp.getPathPoints().get(this.ci.getIndex()+1);
+		
+		ArrayList<Integer> trafficElements = Engine.getDefault().getNodeKeysById("TrafficElement");
+		
+		if(trafficElements != null)
+			for(int index=0; index<trafficElements.size(); index++)
+			{
+				D2VTrafficElement te = (D2VTrafficElement)Engine.getDefault().getNodeByKey(trafficElements.get(index));
+				
+				double distance = GeoDistance.distance(nextCpPoint, te.getLocation());
+				
+				if(te.getLocation().equals(nextCpPoint) || distance < 0.05 || ( nextCpPoint.getTe() != null && nextCpPoint.getTe().equals(te)))
+				{
+					this.isTrafficJam = true;
+					te.addCarInTrafficJam(this.key);
+					this.cp.getPathPoints().get(this.ci.getIndex()).setTe(te);
+						
+					if(isContentDistributionActive == true)
+					{
+						//Create trafficJam Message
+						double range = 3.0;
+						String payloadString = te.getLocation().getLatitude()+"#"+te.getLocation().getLongitude()+"#"+triggeringTime+"#"+range;
+						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(), payloadString.getBytes());
+						
+						//Store message in it's own history
+						this.incomingMessageHistory.add(tm);
+						
+						//Distribute Traffic Jam
+						this.distributeTrafficaJamMessage(tm, triggeringTime);
+						
+						//Schedule Periodic Traffic Jam Event
+						this.scheduleTrafficJamPeriodicEvent(tm, triggeringTime);
+					}
+				}
+			}
 			
 		//System.out.println("Peer:"+this.key+" Check Traffic Jam ...");
 		
+		/*
 		if(nextCpPoint.getTe() != null)
 		{
 			this.isTrafficJam = true;
 			nextCpPoint.getTe().getNodeKeysInTrafficJam().add(this.key);
 			this.cp.getPathPoints().get(this.ci.getIndex()).setTe(nextCpPoint.getTe());
 			
-			for(int i=0; i<D2VPeer.ssc.getPathList().size();i++)
-			{
-				CityPath path = D2VPeer.ssc.getPathList().get(i);
-				int index = path.getPathPoints().indexOf(this.cp.getPathPoints().get(this.ci.getIndex()));
-				if(index != -1)
-				{
-					CityPathPoint p = path.getPathPoints().get(index);
-					p.setTe(nextCpPoint.getTe());
-				}
-			}
 			
+			//for(int i=0; i<D2VPeer.ssc.getPathList().size();i++)
+			//{
+				//CityPath path = D2VPeer.ssc.getPathList().get(i);
+				//int index = path.getPathPoints().indexOf(this.cp.getPathPoints().get(this.ci.getIndex()));
+				//if(index != -1)
+				//{
+					//CityPathPoint p = path.getPathPoints().get(index);
+					//p.setTe(nextCpPoint.getTe());
+				//}
+			//}
 			
 			if(isContentDistributionActive == true)
 			{
@@ -560,6 +655,9 @@ public class D2VPeer extends Peer {
 				String payloadString = nextCpPoint.getTe().getLocation().getLatitude()+"#"+nextCpPoint.getTe().getLocation().getLongitude()+"#"+triggeringTime+"#"+range;
 				TrafficJamMessage tm = new TrafficJamMessage(this.getKey(), payloadString.getBytes());
 				
+				//Store message in it's own history
+				this.incomingMessageHistory.add(tm);
+				
 				//Distribute Traffic Jam
 				this.distributeTrafficaJamMessage(tm, triggeringTime);
 				
@@ -567,7 +665,8 @@ public class D2VPeer extends Peer {
 				this.scheduleTrafficJamPeriodicEvent(tm, triggeringTime);
 			}
 			
-		}		
+		}
+		*/
 	}
 	
 	public void exitTrafficJamStatus(float triggeringTime)
@@ -591,13 +690,6 @@ public class D2VPeer extends Peer {
 		this.scheduleMove(triggeringTime);
 	}
 	
-	/**
-	 * returns exponentially distributed random variable
-	 */
-	private float expRandom(Random random, float meanValue) {
-		float myRandom = (float) (-Math.log(1-random.nextFloat()) * meanValue);
-		return myRandom;
-	}
 	
 	/**
 	 * 
@@ -677,7 +769,6 @@ public class D2VPeer extends Peer {
 		//Check if message hash is available in cache list
 		if(this.sentInformationMessages.get(trafficMessage.getMessageHash()) == null)
 			this.sentInformationMessages.put(trafficMessage.getMessageHash(), new ArrayList<Integer>());
-			
 		
 		//Same range of traffic Message
 		double range = trafficMessage.getRange();
@@ -690,8 +781,11 @@ public class D2VPeer extends Peer {
 		{
 			D2VPeerDescriptor pd = interestedNodes.get(index);
 			
-			if(!contactedNodes.contains(pd.getKey()))
+			if(!contactedNodes.contains(pd.getKey()) && pd.getKey() != this.getKey())
 			{
+				//DebugLog log = new DebugLog();
+				//log.print(this.getKey() + "-" + "Sending Message To: " + pd.getKey(),triggeringTime);
+			
 				contactedNodes.add(pd.getKey());
 				this.sendMessage((D2VPeer)Engine.getDefault().getNodeByKey(pd.getKey()), trafficMessage, triggeringTime);
 			}

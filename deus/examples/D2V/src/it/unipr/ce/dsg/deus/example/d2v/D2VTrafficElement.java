@@ -161,6 +161,11 @@ public class D2VTrafficElement extends Node {
 		Engine.getDefault().removeNode(this);
 	}
 
+	public void addCarInTrafficJam(int key_value) {
+		if(!this.nodeKeysInTrafficJam.contains(key_value))
+			this.nodeKeysInTrafficJam.add(key_value);
+	}
+	
 	
 	public double getPeriod() {
 		return period;

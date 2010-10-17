@@ -21,25 +21,25 @@ public class CityPath {
 		this.numOfCars = 0;
 		
 		//Random select a speed limit
-		int randomCase =  0;
+		int randomCase =  Engine.getDefault().getSimulationRandom().nextInt(4);
 		
 		switch (randomCase) {
 		case 0:
 			this.speedLimit = 30.0;
 			break;
 		case 1:
-			this.speedLimit = 50.0;
+			this.speedLimit = 40.0;
 			break;
 		case 2:
-			this.speedLimit = 60.0;
+			this.speedLimit = 50.0;
 			break;
 		case 3:
-			this.speedLimit = 70.0;
+			this.speedLimit = 60.0;
 			break;
 
 			
 		default:
-			this.speedLimit = 50.0;
+			this.speedLimit = 30.0;
 			break;
 		}
 		

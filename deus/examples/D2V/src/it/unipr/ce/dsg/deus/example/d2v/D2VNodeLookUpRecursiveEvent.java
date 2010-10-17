@@ -161,7 +161,8 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 	 * returns exponentially distributed random variable
 	 */
 	private float expRandom(Random random, float meanValue) {
-		float myRandom = (float) (-Math.log(1-random.nextFloat()) * meanValue);
+		float myRandom = (float) (-Math.log(1-Engine.getDefault().getSimulationRandom().nextFloat()) * meanValue);
+		//float myRandom = (float) (-Math.log(1-random.nextFloat()) * meanValue);
 		return myRandom;
 	}
 	
