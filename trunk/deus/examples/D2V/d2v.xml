@@ -43,7 +43,7 @@
             <param value="100.0" name="discoveryMaxPeriod"/>
             <param value="25" name="discoveryPeriodPeerLimit"/>
             <param value="200" name="discoveryMaxPeerNumber"/>
-            <param value="false" name="isContentDistributionActive"/>
+            <param value="true" name="isContentDistributionActive"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
@@ -109,7 +109,7 @@
     <engine keyspacesize="1000000" seed="123456789" maxvt="10000.0">
         <processes>
             <reference id="LogStatPeriodicProcess"/>
-            <reference id="LogMaPeriodicProcess"/>
+            <!-- <reference id="LogMaPeriodicProcess"/> -->
           	<reference id="TrafficEventBirthPoissonProcess"/>
             <reference id="RectangularBirth"/>
         </processes>

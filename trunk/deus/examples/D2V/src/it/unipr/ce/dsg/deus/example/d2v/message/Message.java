@@ -16,6 +16,7 @@ public class Message {
 	private String type = null;
 	private int senderNodeId;
 	private byte[] payload;
+	private float ttl = 1000;
 	
 	/**
 	 * Build a message instance starting from input parameters
@@ -55,6 +56,14 @@ public class Message {
 	}
 	public void setPayload(byte[] payload) {
 		this.payload = payload;
+	}
+
+	public float getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(float ttl) {
+		this.ttl = ttl;
 	}
 	
 	

@@ -41,8 +41,16 @@ public class D2VTrafficJamPeriodicEvent extends NodeEvent {
 		
 		if(this.msg != null && connectingNode.isTrafficJam() == true)
 		{
-			connectingNode.distributeTrafficaJamMessage(msg, triggeringTime);
-			connectingNode.scheduleTrafficJamPeriodicEvent(msg, triggeringTime);
+			if(triggeringTime-this.msg.getTime() < this.msg.getTtl())
+			{
+				//DebugLog log = new DebugLog();
+				//log.print(connectingNode.getKey() + "-" +this.getClass().getName(),triggeringTime);
+				
+				connectingNode.distributeTrafficaJamMessage(msg, triggeringTime);
+				connectingNode.scheduleTrafficJamPeriodicEvent(msg, triggeringTime);
+			}
+			else
+				connectingNode.getIncomingMessageHistory().remove(this.msg);
 		}
 	}
 

@@ -593,7 +593,7 @@ public class D2VGeoBuckets {
 			{
 				D2VPeerDescriptor pd = this.bucket.get(gbIndex).get(peerIndex);
 				double distance = GeoDistance.distance(location, pd.getGeoLocation());
-				if(distance<=range)
+				if(distance<=range && !resultList.contains(pd))
 					resultList.add(pd);
 			}
 		}

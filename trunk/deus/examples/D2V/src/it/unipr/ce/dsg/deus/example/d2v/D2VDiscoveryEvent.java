@@ -9,6 +9,7 @@ import it.unipr.ce.dsg.deus.example.d2v.discovery.SearchResultType;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import com.sun.net.ssl.internal.ssl.Debug;
@@ -17,6 +18,8 @@ public class D2VDiscoveryEvent extends NodeEvent {
 
 	private static final float DISCOVERY_PERIOD = 25;
 
+	private int PEER_LIMIT = 20;
+	
 	public D2VDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
@@ -46,6 +49,17 @@ public class D2VDiscoveryEvent extends NodeEvent {
 		float discoveryMaxWait = currNode.getDiscoveryMaxWait();
 		
 		D2VPeerDescriptor currNodeInfo = currNode.createPeerInfo();
+		
+		//Check number of known nodes
+		if(currNode.getGb().getPeerCount() < PEER_LIMIT)
+		{
+
+			//Retrieve Initial List from BootStrap
+			ArrayList<D2VPeerDescriptor> initList = currNode.getInitialPeerList(currNode.getPeerDescriptor(),PEER_LIMIT);
+			
+			for(int index=0;index<initList.size();index++)
+				currNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index));
+		}
 		
 		//Trova tutti i nodi conosciuti dal peer corrente vicino alla sua posizione
 		currNode.nlResults.put(currNode.getKey(), new SearchResultType(currNodeInfo));

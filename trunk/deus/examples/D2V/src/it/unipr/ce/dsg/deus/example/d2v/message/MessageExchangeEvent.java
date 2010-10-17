@@ -41,16 +41,22 @@ public class MessageExchangeEvent extends NodeEvent {
 				TrafficJamMessage trafficMessage = (TrafficJamMessage)this.msg;
 				currNode.distributeTrafficaJamMessage(trafficMessage,this.triggeringTime);
 				
+				//Store if necessary the incoming message
 				if(!currNode.getIncomingMessageHistory().contains(trafficMessage))
 					currNode.getIncomingMessageHistory().add(trafficMessage);
 				
-				//Check validity of traffic message
-				double distance = GeoDistance.distance(trafficMessage.getLocation(), currNode.getPeerDescriptor().getGeoLocation());
+				//Check distance between current node and traffic information
+				//double distance = GeoDistance.distance(trafficMessage.getLocation(), currNode.getPeerDescriptor().getGeoLocation());
 				
+				//System.out.println("VT:"+triggeringTime+" Distance: "+distance + " Range: " + trafficMessage.getRange());
+				
+				/*
 				if(distance<=trafficMessage.getRange() && currNode.getCp().getPathPoints().contains(trafficMessage.getLocation()))
 				{
+					System.out.println("VT:"+triggeringTime+" CHANGING MOVING DIRECTION !!!!" + currNode.getKey());
 					currNode.changeMovingDirection(triggeringTime);
 				}
+				*/
 			}
 		}
 		else
