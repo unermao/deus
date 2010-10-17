@@ -15,15 +15,12 @@ import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
-import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Properties;
-import java.util.Random;
 import java.util.TreeMap;
 
 /**
@@ -86,7 +83,6 @@ public class D2VPeer extends Peer {
 	//Flag for active discovery
 	private boolean isDiscoveryActive = false;
 	
-	private boolean isPathChanged = false;
 	
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
@@ -361,9 +357,12 @@ public class D2VPeer extends Peer {
 			this.cp.decrementNumOfCars();
 			
 			//Actual Switch Station is the last point of the path
-			SwitchStation actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
-					
-			this.isPathChanged = false;
+			SwitchStation actualSS = null;
+			
+			if(this.ci.isBackward() == false)
+				actualSS = new SwitchStation(this.cp.getEndPoint().getLatitude(), this.cp.getEndPoint().getLongitude());
+			else
+				actualSS = new SwitchStation(this.cp.getStartPoint().getLatitude(), this.cp.getStartPoint().getLongitude());
 			
 			//Select a path from its starting switch station
 			ArrayList<CityPath> availablePaths = ssc.getPathListFromSwithStation(actualSS);
@@ -1095,14 +1094,6 @@ public class D2VPeer extends Peer {
 
 	public void setIncomingMessageHistory(ArrayList<Message> incomingMessageHistory) {
 		this.incomingMessageHistory = incomingMessageHistory;
-	}
-
-	public boolean isPathChanged() {
-		return isPathChanged;
-	}
-
-	public void setPathChanged(boolean isPathChanged) {
-		this.isPathChanged = isPathChanged;
 	}
 
 	public boolean isContentDistributionActive() {
