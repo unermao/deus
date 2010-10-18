@@ -15,7 +15,7 @@ import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
  */
 public class MessageExchangeEvent extends NodeEvent {
 
-	private Message msg = null;
+	private TrafficInformationMessage msg = null;
 	
 	public MessageExchangeEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -32,42 +32,36 @@ public class MessageExchangeEvent extends NodeEvent {
 		
 		if(this.msg != null)
 		{
-			//System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> From: " + msg.getSenderNodeId() + " To: " + currNode.getKey());
-			//System.out.println("VT:"+triggeringTime+" Message Exchange Event ---> Type: " + msg.getType());
-		
+			//TrafficJamMessage
 			if(msg.getType().equals(TrafficJamMessage.typeName))
 			{
-				//System.out.println("VT:"+triggeringTime+" EVALUATING MESSAGE: "+TrafficJamMessage.typeName);
 				TrafficJamMessage trafficMessage = (TrafficJamMessage)this.msg;
-				currNode.distributeTrafficaJamMessage(trafficMessage,this.triggeringTime);
+				currNode.distributeTrafficInformationMessage(trafficMessage,this.triggeringTime);
 				
 				//Store if necessary the incoming message
-				if(!currNode.getIncomingMessageHistory().contains(trafficMessage))
-					currNode.getIncomingMessageHistory().add(trafficMessage);
-				
-				//Check distance between current node and traffic information
-				//double distance = GeoDistance.distance(trafficMessage.getLocation(), currNode.getPeerDescriptor().getGeoLocation());
-				
-				//System.out.println("VT:"+triggeringTime+" Distance: "+distance + " Range: " + trafficMessage.getRange());
-				
-				/*
-				if(distance<=trafficMessage.getRange() && currNode.getCp().getPathPoints().contains(trafficMessage.getLocation()))
-				{
-					System.out.println("VT:"+triggeringTime+" CHANGING MOVING DIRECTION !!!!" + currNode.getKey());
-					currNode.changeMovingDirection(triggeringTime);
-				}
-				*/
+				if(!currNode.getTrafficInformationKnowledge().contains(trafficMessage))
+					currNode.getTrafficInformationKnowledge().add(trafficMessage);			
 			}
+			
+			//RoadSurfaceConditionMessage
+			if(msg.getType().equals(RoadSurfaceConditionMessage.typeName))
+			{
+				RoadSurfaceConditionMessage rcm = (RoadSurfaceConditionMessage)this.msg;
+				
+				if(!currNode.getTrafficInformationKnowledge().contains(rcm))
+					currNode.getTrafficInformationKnowledge().add(rcm);
+			}
+			
 		}
 		else
 			System.err.println("VT:"+triggeringTime+" Message Exchange Event ---> NULL Message !!!");
 	}
 
-	public Message getMsg() {
+	public TrafficInformationMessage getMsg() {
 		return msg;
 	}
 
-	public void setMsg(Message msg) {
+	public void setMsg(TrafficInformationMessage msg) {
 		this.msg = msg;
 	}
 

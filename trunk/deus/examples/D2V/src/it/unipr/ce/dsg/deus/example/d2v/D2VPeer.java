@@ -5,7 +5,8 @@ import it.unipr.ce.dsg.deus.p2p.node.Peer;
 import it.unipr.ce.dsg.deus.core.*;
 import it.unipr.ce.dsg.deus.example.d2v.buckets.D2VGeoBuckets;
 import it.unipr.ce.dsg.deus.example.d2v.discovery.SearchResultType;
-import it.unipr.ce.dsg.deus.example.d2v.message.Message;
+import it.unipr.ce.dsg.deus.example.d2v.message.RoadSurfaceConditionMessage;
+import it.unipr.ce.dsg.deus.example.d2v.message.TrafficInformationMessage;
 import it.unipr.ce.dsg.deus.example.d2v.message.MessageExchangeEvent;
 import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
@@ -62,6 +63,8 @@ public class D2VPeer extends Peer {
 	private int discoveryMaxPeerNumber = 100;
 	private double carMinSpeed = 10.0;
 	
+	private double actualSpeed = 10.0;
+	
 	private boolean isContentDistributionActive = true;
 	private float discoveryPeriod = 25;
 	
@@ -97,7 +100,7 @@ public class D2VPeer extends Peer {
 	private int discoveryPeriodPeerLimit = 20;
 
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
-	private ArrayList<Message> incomingMessageHistory = null;
+	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
 	
 	public D2VPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -268,7 +271,7 @@ public class D2VPeer extends Peer {
 		clone.discoveryPeriod = clone.discoveryMinPeriod;
 		
 		clone.sentInformationMessages = new TreeMap<String,ArrayList<Integer>>();
-		clone.incomingMessageHistory = new ArrayList<Message>();
+		clone.trafficInformationKnowledge = new ArrayList<TrafficInformationMessage>();
 		
 		return clone;
 	}
@@ -281,6 +284,8 @@ public class D2VPeer extends Peer {
 			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
 			ssc.readSwitchStationFile();
 			ssc.readPathFile();
+			
+			ssc.addMultipleBadSurfaceCondition(5);
 		}
 
 		//Select Randomly a starting Switch Station
@@ -304,6 +309,9 @@ public class D2VPeer extends Peer {
 			
 		//Schedule the first movement
 		this.scheduleMove(triggeringTime);
+		
+		//Schedule periodic Content Distribution Event
+		this.schedulePeriodicContentDistributionEvent(triggeringTime);
 	}
 	
 	/**
@@ -383,7 +391,11 @@ public class D2VPeer extends Peer {
 			this.checkTrafficJam(triggeringTime);
 		}
 		
-		this.checkReceivedTrafficInformation();
+		//Check road surface of actual point
+		this.checkRoadSurfaceCondition(triggeringTime);
+		
+		//Check received information about traffic
+		this.checkReceivedTrafficJamInformation();
 		
 		//According to new position, check peer position in GB and if necessary remove them from list
 		this.updateBucketInfo(peerDescriptor);
@@ -396,20 +408,44 @@ public class D2VPeer extends Peer {
 	
 	}
 
-	private void checkReceivedTrafficInformation() {
+	private void checkRoadSurfaceCondition(float triggeringTime) {
 		
-		for(int i=0; i<this.incomingMessageHistory.size(); i++)
-			if(this.incomingMessageHistory.get(i) instanceof TrafficJamMessage)
+		//If path has BadSurface Condition store speed for each point
+		if(this.cp.isBadSurfaceCondition() == true)
+			this.cp.getPathPoints().get(this.ci.getIndex()).addMonitoredSpeed(this.actualSpeed);
+		
+		CityPathPoint actualPoint = this.cp.getPathPoints().get(this.ci.getIndex());
+		
+		if(actualPoint.getSurfaceCondition() != null)
+		{
+			//System.err.println(this.getKey()+" BAR SURFACE CONDITION: " + actualPoint.getSurfaceCondition());
+			
+			//Create a new RoadSurfaceConditionMessage
+			double range = 2.0;
+			String payload = actualPoint.getSurfaceCondition();
+			RoadSurfaceConditionMessage rcm = new RoadSurfaceConditionMessage(RoadSurfaceConditionMessage.typeName, this.getKey(), this.peerDescriptor.getGeoLocation(), triggeringTime, range, payload.getBytes());
+			
+			//Store message in it's own history
+			if(!this.trafficInformationKnowledge.contains(rcm))
+				this.trafficInformationKnowledge.add(rcm);
+			
+			//Distribute Traffic Jam
+			this.distributeTrafficInformationMessage(rcm, triggeringTime);
+			
+		}
+	}
+
+	private void checkReceivedTrafficJamInformation() {
+		for(int i=0; i<this.trafficInformationKnowledge.size(); i++)
+			if(this.trafficInformationKnowledge.get(i) instanceof TrafficJamMessage)
 			{
-				TrafficJamMessage tm = (TrafficJamMessage)this.incomingMessageHistory.get(i);
+				TrafficJamMessage tm = (TrafficJamMessage)this.trafficInformationKnowledge.get(i);
 				
 				double distance = GeoDistance.distance(tm.getLocation(), this.peerDescriptor.getGeoLocation());
 				
 				if(distance <= 0.5)
 					this.changeMovingDirection();
-				
 			}
-		
 	}
 
 	public ArrayList<D2VPeerDescriptor> getInitialPeerList(D2VPeerDescriptor peer, int peerLimit)
@@ -509,7 +545,9 @@ public class D2VPeer extends Peer {
 			
 			//double speed = this.kraussModelSpeed(triggeringTime);
 			
-			double speed = this.ftmModelSpeed();
+			//double speed = this.ftmModelSpeed();
+			
+			double speed = this.ftmModelSpeedWithRoadConditionEvaluation();
 			
 			delay = (float)( ( (double)distance / (double)speed ) *60.0*16.6);
 			
@@ -543,8 +581,64 @@ public class D2VPeer extends Peer {
 		
 		double speed = Math.max(v_min, v_max*(1-(k/k_jam)));
 		
+		this.actualSpeed = speed;
+		
 		return speed;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private double ftmModelSpeedWithRoadConditionEvaluation()
+	{
+		
+		double d_limit = 0.2;
+		double distance = -1.0;
+		
+		//Check received information about road condition
+		for(int i=0; i<this.trafficInformationKnowledge.size(); i++)
+			if(this.trafficInformationKnowledge.get(i) instanceof RoadSurfaceConditionMessage)
+			{
+				RoadSurfaceConditionMessage rcm = (RoadSurfaceConditionMessage)this.trafficInformationKnowledge.get(i);
+				
+				if(this.cp.getPathPoints().contains(rcm.getLocation()))
+				{
+					distance = GeoDistance.distance(rcm.getLocation(), this.peerDescriptor.getGeoLocation());
+				}
+			}
+		
+		double v_min = this.carMinSpeed;
+		double v_max = this.cp.getSpeedLimit();
+		double k_jam = 0.25; //250 cars in 1 km
+		
+		double path_len = this.cp.getLenght();
+		double car_in_path = this.cp.getNumOfCars();
+		
+		double k = car_in_path/(path_len*1000.0);
+		
+		double speed = Math.max(v_min, v_max*(1-(k/k_jam)));
+		
+		//System.out.println(this.key+" Speed: " + speed + " Distance: " + distance);
+		
+		if(distance != -1.0 && distance <= 0.2)
+		{
+			//Evaluate speed according to 
+			double k1 = this.carMinSpeed;
+			double k2 = (Math.E*(speed-k1))/d_limit;
+			double k3 = d_limit;
+			
+			speed = k1 + (k2*distance)/(Math.exp(distance/k3));
+			
+			//System.out.println(this.key+" Road Surface Updated Speed: " + speed + " Distance: " + distance);
+			
+		}
+		
+		this.actualSpeed = speed;
+		
+		return speed;
+	}
+	
 	
 	/**
 	 * Evaluate speed according to Krauss Mobility Model
@@ -611,17 +705,14 @@ public class D2VPeer extends Peer {
 					{
 						//Create trafficJam Message
 						double range = 3.0;
-						String payloadString = te.getLocation().getLatitude()+"#"+te.getLocation().getLongitude()+"#"+triggeringTime+"#"+range;
-						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(), payloadString.getBytes());
+						String payloadString = "";
+						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(),te.getLocation(),triggeringTime,range,payloadString.getBytes());
 						
 						//Store message in it's own history
-						this.incomingMessageHistory.add(tm);
+						this.trafficInformationKnowledge.add(tm);
 						
 						//Distribute Traffic Jam
-						this.distributeTrafficaJamMessage(tm, triggeringTime);
-						
-						//Schedule Periodic Traffic Jam Event
-						this.scheduleTrafficJamPeriodicEvent(tm, triggeringTime);
+						this.distributeTrafficInformationMessage(tm, triggeringTime);
 					}
 				}
 			}
@@ -739,11 +830,10 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param triggeringTime
 	 */
-	public void scheduleTrafficJamPeriodicEvent(TrafficJamMessage tm,float triggeringTime) {
+	public void schedulePeriodicContentDistributionEvent(float triggeringTime) {
 		try {
-			D2VTrafficJamPeriodicEvent event = (D2VTrafficJamPeriodicEvent) new D2VTrafficJamPeriodicEvent("discovery", params, null).createInstance(triggeringTime+10);
+			D2VContentDistributionPeriodicEvent event = (D2VContentDistributionPeriodicEvent) new D2VContentDistributionPeriodicEvent("discovery", params, null).createInstance(triggeringTime+25);
 			event.setOneShot(true);
-			event.setMsg(tm);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
 		
@@ -753,40 +843,64 @@ public class D2VPeer extends Peer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param peerDescriptor2
+	 */
 	public void updateBucketInfo(D2VPeerDescriptor peerDescriptor2) {
 		this.gb.updateBucketInfo(params,peerDescriptor2);	
 	}
 
 	/**
 	 * 
-	 * @param trafficMessage
 	 */
-	public void distributeTrafficaJamMessage(TrafficJamMessage trafficMessage, float triggeringTime) {
+	public void distributeAllKnownTrafficInformation(float triggeringTime) {
 		
+		//Clean old Info
+		for(int index=0; index<this.trafficInformationKnowledge.size(); index++)
+		{	
+			TrafficInformationMessage msg = this.trafficInformationKnowledge.get(index);
+			
+			if(triggeringTime-msg.getTime() > msg.getTtl())
+				this.trafficInformationKnowledge.remove(index);
+		}
+		
+		for(int index=0; index<this.trafficInformationKnowledge.size(); index++)
+		{
+			TrafficInformationMessage msg = this.trafficInformationKnowledge.get(index);
+			this.distributeTrafficInformationMessage(msg, triggeringTime);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param tim
+	 */
+	public void distributeTrafficInformationMessage(TrafficInformationMessage tim, float triggeringTime) {
+		
+		//Update peer list
 		this.updateBucketInfo(peerDescriptor);
 		
 		//Check if message hash is available in cache list
-		if(this.sentInformationMessages.get(trafficMessage.getMessageHash()) == null)
-			this.sentInformationMessages.put(trafficMessage.getMessageHash(), new ArrayList<Integer>());
+		if(this.sentInformationMessages.get(tim.getMessageHash()) == null)
+			this.sentInformationMessages.put(tim.getMessageHash(), new ArrayList<Integer>());
 		
 		//Same range of traffic Message
-		double range = trafficMessage.getRange();
+		double range = tim.getRange();
 		
 		//Find known nodes that have a distance from traffic element between 0 and range value
-		ArrayList<D2VPeerDescriptor> interestedNodes = this.getGb().findNodeNearPoint(trafficMessage.getLocation(),range);
-		ArrayList<Integer> contactedNodes = this.sentInformationMessages.get(trafficMessage.getMessageHash());
+		ArrayList<D2VPeerDescriptor> interestedNodes = this.getGb().findNodeNearPoint(tim.getLocation(),range);
+		ArrayList<Integer> contactedNodes = this.sentInformationMessages.get(tim.getMessageHash());
 		
+		//Send message to interest Nodes
 		for(int index=0; index<interestedNodes.size(); index++)
 		{
 			D2VPeerDescriptor pd = interestedNodes.get(index);
 			
 			if(!contactedNodes.contains(pd.getKey()) && pd.getKey() != this.getKey())
 			{
-				//DebugLog log = new DebugLog();
-				//log.print(this.getKey() + "-" + "Sending Message To: " + pd.getKey(),triggeringTime);
-			
 				contactedNodes.add(pd.getKey());
-				this.sendMessage((D2VPeer)Engine.getDefault().getNodeByKey(pd.getKey()), trafficMessage, triggeringTime);
+				this.sendMessage((D2VPeer)Engine.getDefault().getNodeByKey(pd.getKey()), tim, triggeringTime);
 			}
 		}
 		
@@ -799,7 +913,7 @@ public class D2VPeer extends Peer {
 	 * @param message
 	 * @param triggeringTime
 	 */
-	public void sendMessage(D2VPeer destPeer, Message message, float triggeringTime)
+	public void sendMessage(D2VPeer destPeer, TrafficInformationMessage message, float triggeringTime)
 	{
 		try {
 			MessageExchangeEvent event = (MessageExchangeEvent) new MessageExchangeEvent("message_exchange", params, null).createInstance(triggeringTime+1);
@@ -1088,12 +1202,12 @@ public class D2VPeer extends Peer {
 		this.sentInformationMessages = sentInformationMessages;
 	}
 
-	public ArrayList<Message> getIncomingMessageHistory() {
-		return incomingMessageHistory;
+	public ArrayList<TrafficInformationMessage> getTrafficInformationKnowledge() {
+		return trafficInformationKnowledge;
 	}
 
-	public void setIncomingMessageHistory(ArrayList<Message> incomingMessageHistory) {
-		this.incomingMessageHistory = incomingMessageHistory;
+	public void setTrafficInformationKnowledge(ArrayList<TrafficInformationMessage> trafficInformationKnowledge) {
+		this.trafficInformationKnowledge = trafficInformationKnowledge;
 	}
 
 	public boolean isContentDistributionActive() {
@@ -1104,6 +1218,11 @@ public class D2VPeer extends Peer {
 		this.isContentDistributionActive = isContentDistributionActive;
 	}
 
-	
-	
+	public double getActualSpeed() {
+		return actualSpeed;
+	}
+
+	public void setActualSpeed(double actualSpeed) {
+		this.actualSpeed = actualSpeed;
+	}	
 }

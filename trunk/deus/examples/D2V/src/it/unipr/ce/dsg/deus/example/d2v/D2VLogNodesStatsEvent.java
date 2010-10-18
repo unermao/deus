@@ -29,6 +29,8 @@ import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
+import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
+import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -237,7 +239,57 @@ public class D2VLogNodesStatsEvent extends Event {
 			a.write(Engine.getDefault().getVirtualTime(), fileValue);
 		}
 		
-		System.out.println("################################################################################################");	
+		System.out.println("################################################################################################");
+		
+		if(triggeringTime == Engine.getDefault().getMaxVirtualTime())
+		{
+			System.out.println("################################################################################################");
+			System.out.println("Avg Speed near Bad Surface Condition");
+			ArrayList<ArrayList<Double>> speedAvgSum = new ArrayList<ArrayList<Double>>();
+			
+			int numOfValue = 40;
+			
+			for(int i=0; i< numOfValue; i++)
+			{
+				speedAvgSum.add(new ArrayList<Double>());
+			}
+			
+			for(int index=0; index<D2VPeer.ssc.getPathList().size(); index++)
+			{
+				CityPath cp = D2VPeer.ssc.getPathList().get(index);
+				
+				if(cp.isBadSurfaceCondition() == true)
+				{
+					int surfaceIndex = cp.getBadSurfaceIndex();
+					
+					int basePosition = surfaceIndex-numOfValue/2;
+					
+					for(int i=0; i< numOfValue; i++)
+					{
+						CityPathPoint point = cp.getPathPoints().get(basePosition+i);
+						for(int speedValueIndex=0; speedValueIndex< point.getLogMonitoredSpeed().size(); speedValueIndex++)
+							speedAvgSum.get(i).add(point.getLogMonitoredSpeed().get(speedValueIndex));
+					}
+				}
+			}
+			
+			for(int index=0; index< speedAvgSum.size(); index++)
+			{
+				System.out.println("Stored Values: "+speedAvgSum.get(index).size());		
+			}
+			
+			for(int index=0; index< speedAvgSum.size(); index++)
+			{
+				double sum = 0.0;
+				for(int k=0; k<speedAvgSum.get(index).size(); k++)
+					sum += speedAvgSum.get(index).get(k);
+					
+				System.out.println(index+" "+((double)sum/(double)speedAvgSum.get(index).size()));		
+			}
+			
+			System.out.println("################################################################################################");
+		}
+		
 	}
 	
 	/*

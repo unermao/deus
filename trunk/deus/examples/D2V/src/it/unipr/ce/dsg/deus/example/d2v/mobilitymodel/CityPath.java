@@ -11,6 +11,8 @@ public class CityPath {
 	private double lenght = 0.0;
 	private int numOfCars = 0;
 	private double speedLimit = 0.0;
+	private boolean hasBadSurfaceCondition = false;
+	private int badSurfaceIndex = -1;
 	
 	/**
 	 * 
@@ -122,6 +124,26 @@ public class CityPath {
 
 	public void setSpeedLimit(double speedLimit) {
 		this.speedLimit = speedLimit;
+	}
+
+	public boolean isBadSurfaceCondition() {
+		return hasBadSurfaceCondition;
+	}
+
+	public void setHasBadSurfaceCondition(boolean hadBadSurfaceCondition) {
+		this.hasBadSurfaceCondition = hadBadSurfaceCondition;
+	}
+
+	public int getBadSurfaceIndex() {
+		return badSurfaceIndex;
+	}
+
+	public void setBadSurfaceIndex(int badSurfaceIndex) {
+		this.badSurfaceIndex = badSurfaceIndex;
+	}
+
+	public boolean isHasBadSurfaceCondition() {
+		return hasBadSurfaceCondition;
 	}
 	
 }
