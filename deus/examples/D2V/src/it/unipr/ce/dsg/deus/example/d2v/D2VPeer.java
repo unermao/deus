@@ -635,7 +635,7 @@ public class D2VPeer extends Peer {
 		
 		//System.out.println(this.key+" Speed: " + speed + " Distance: " + distance);
 		
-		if(distance != -1.0 && distance <= 0.2)
+		if(distance != -1.0 && distance <= d_limit)
 		{
 			//Evaluate speed according to 
 			double k1 = this.carMinSpeed;
