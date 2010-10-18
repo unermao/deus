@@ -21,11 +21,11 @@ import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
  * @author Marco Picone picone@ce.unipr.it
  *
  */
-public class D2VTrafficJamPeriodicEvent extends NodeEvent {
+public class D2VContentDistributionPeriodicEvent extends NodeEvent {
 	
 	private TrafficJamMessage msg = null;
 	
-	public D2VTrafficJamPeriodicEvent(String id, Properties params,
+	public D2VContentDistributionPeriodicEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
@@ -39,6 +39,11 @@ public class D2VTrafficJamPeriodicEvent extends NodeEvent {
 		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
 		
+		connectingNode.distributeAllKnownTrafficInformation(triggeringTime);
+		
+		connectingNode.schedulePeriodicContentDistributionEvent(triggeringTime);
+		
+		/*
 		if(this.msg != null && connectingNode.isTrafficJam() == true)
 		{
 			if(triggeringTime-this.msg.getTime() < this.msg.getTtl())
@@ -46,12 +51,13 @@ public class D2VTrafficJamPeriodicEvent extends NodeEvent {
 				//DebugLog log = new DebugLog();
 				//log.print(connectingNode.getKey() + "-" +this.getClass().getName(),triggeringTime);
 				
-				connectingNode.distributeTrafficaJamMessage(msg, triggeringTime);
+				connectingNode.distributeTrafficInformationMessage(msg, triggeringTime);
 				connectingNode.scheduleTrafficJamPeriodicEvent(msg, triggeringTime);
 			}
 			else
 				connectingNode.getIncomingMessageHistory().remove(this.msg);
 		}
+		*/
 	}
 
 	public TrafficJamMessage getMsg() {

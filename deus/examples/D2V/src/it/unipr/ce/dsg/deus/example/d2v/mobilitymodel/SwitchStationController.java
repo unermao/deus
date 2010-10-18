@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.d2v.mobilitymodel;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 import java.io.BufferedReader;
@@ -7,6 +8,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import com.sun.xml.internal.ws.api.pipe.NextAction;
 
 public class SwitchStationController {
 
@@ -170,6 +173,76 @@ public class SwitchStationController {
 		System.out.println("City Paths: " + this.pathList.size());
 	}
 
+	/**
+	 * 
+	 * @param numOfInterestedPath
+	 */
+	public void addMultipleBadSurfaceCondition(int numOfInterestedPath)
+	{
+		System.out.println("Adding Multiple Bad Surface Condition to " + numOfInterestedPath + " Paths");
+		
+		ArrayList<Integer> selectedPath = new ArrayList<Integer>();
+		
+		while(selectedPath.size() < numOfInterestedPath)
+		{
+			int newPathIndex = Engine.getDefault().getSimulationRandom().nextInt(this.pathList.size());
+			
+			if(!selectedPath.contains(newPathIndex))
+			{
+				selectedPath.add(newPathIndex);
+				this.addRandomBadSurfaceConditionToPath(newPathIndex);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param numberOfPath
+	 */
+	public void addRandomBadSurfaceConditionToPath(int pathIndex)
+	{
+		
+		System.out.println("Adding Bad Surface Condition to Path: " + pathIndex);
+		
+		CityPath cp = this.pathList.get(pathIndex);
+		
+		//Take the middle point of the path 
+		int pointPosition = (cp.getPathPoints().size()-1)/2;
+		
+		//CityPoint
+		CityPathPoint point = cp.getPathPoints().get(pointPosition);
+		
+		int surfaceConditionIndex = Engine.getDefault().getSimulationRandom().nextInt(3);
+		String surfaceConditionType = "POTHOLE";
+		
+		switch (surfaceConditionIndex) {
+		case 0:
+			surfaceConditionType = "ICE";
+			break;
+		case 1:
+			surfaceConditionType = "SNOW";
+			break;
+		case 2:
+			surfaceConditionType = "WATER";
+			break;
+		case 3:
+			surfaceConditionType = "OIL";
+			break;
+		case 4:
+			surfaceConditionType = "POTHOLE";
+			break;
+		default:
+			surfaceConditionType = "POTHOLE";
+			break;
+		}
+		
+		cp.setHasBadSurfaceCondition(true);
+		cp.setBadSurfaceIndex(pointPosition);
+		point.setSurfaceCondition(surfaceConditionType);
+		
+		System.out.println("Added "+surfaceConditionType+" to Path: " + pathIndex);
+	}
+	
 	public String getPathFileName() {
 		return pathFileName;
 	}
