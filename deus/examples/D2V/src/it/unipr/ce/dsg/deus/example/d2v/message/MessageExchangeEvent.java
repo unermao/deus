@@ -40,7 +40,9 @@ public class MessageExchangeEvent extends NodeEvent {
 				
 				//Store if necessary the incoming message
 				if(!currNode.getTrafficInformationKnowledge().contains(trafficMessage))
-					currNode.getTrafficInformationKnowledge().add(trafficMessage);			
+					currNode.getTrafficInformationKnowledge().add(trafficMessage);		
+				else
+					currNode.incrementDuplicateReceivedMessages();
 			}
 			
 			//RoadSurfaceConditionMessage
@@ -50,6 +52,8 @@ public class MessageExchangeEvent extends NodeEvent {
 				
 				if(!currNode.getTrafficInformationKnowledge().contains(rcm))
 					currNode.getTrafficInformationKnowledge().add(rcm);
+				else
+					currNode.incrementDuplicateReceivedMessages();
 			}
 			
 		}

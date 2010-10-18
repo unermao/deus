@@ -31,7 +31,7 @@ public class TrafficInformationMessage {
 	 * @param destinationNodeId
 	 * @param payload
 	 */
-	public TrafficInformationMessage(String type, int senderNodeId,GeoLocation location, float time, double range, byte[] payload) {
+	public TrafficInformationMessage(String type, int senderNodeId,GeoLocation location, float time, double range, float ttl, byte[] payload) {
 		super();
 		this.type = type;
 		this.senderNodeId = senderNodeId;
@@ -39,10 +39,11 @@ public class TrafficInformationMessage {
 		this.location = location;
 		this.time = time;
 		this.range = range;
+		this.ttl = ttl;
 	}
 	
 	public String getMessageHash() {
-		return this.type+"#"+this.location.getLatitude()+"#"+this.location.getLatitude();
+		return this.time+"#"+this.type+"#"+this.location.getLatitude()+"#"+this.location.getLatitude();
 	}
 	
 	@Override

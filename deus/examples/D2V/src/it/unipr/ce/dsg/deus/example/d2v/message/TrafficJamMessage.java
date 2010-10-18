@@ -19,9 +19,9 @@ public class TrafficJamMessage extends TrafficInformationMessage{
 	 * @param destinationNodeId
 	 * @param payload
 	 */
-	public TrafficJamMessage(int senderNodeId, GeoLocation location,float time, double range, byte[] payload) {
+	public TrafficJamMessage(int senderNodeId, GeoLocation location,float time, double range, float ttl,  byte[] payload) {
 		
-		super(TrafficJamMessage.typeName, senderNodeId, location,time,range,payload);	
+		super(TrafficJamMessage.typeName, senderNodeId, location,time,range,ttl,payload);	
 	}
 	
 }

@@ -80,12 +80,13 @@ public class D2VPeer extends Peer {
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
 	public ArrayList<D2VPeerDescriptor> nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
 	
+	private int duplicateReceivedMessageCount = 0;
+	
 	//Number of sent messages
 	private int sentMessages = 0;
 	
 	//Flag for active discovery
 	private boolean isDiscoveryActive = false;
-	
 	
 	//Counter of performed step for each discovery procedure
 	private int avDiscoveryStepCounter = 0;
@@ -101,6 +102,7 @@ public class D2VPeer extends Peer {
 
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
 	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
+	public static ArrayList<TrafficInformationMessage> globalMessageKnowledge = null;
 	
 	public D2VPeer(String id, Properties params,
 			ArrayList<Resource> resources) throws InvalidParamsException {
@@ -115,6 +117,12 @@ public class D2VPeer extends Peer {
 			ssc.readPathFile();
 		}
 		*/
+		
+		if(globalMessageKnowledge == null)
+		{
+			globalMessageKnowledge = new ArrayList<TrafficInformationMessage>();
+		}
+		
 
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE) == null)
@@ -287,7 +295,7 @@ public class D2VPeer extends Peer {
 			
 			ssc.addMultipleBadSurfaceCondition(5);
 		}
-
+		
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
 		this.ss = ssc.getSwitchStationList().get(ssIndex);	
@@ -423,14 +431,20 @@ public class D2VPeer extends Peer {
 			//Create a new RoadSurfaceConditionMessage
 			double range = 2.0;
 			String payload = actualPoint.getSurfaceCondition();
-			RoadSurfaceConditionMessage rcm = new RoadSurfaceConditionMessage(RoadSurfaceConditionMessage.typeName, this.getKey(), this.peerDescriptor.getGeoLocation(), triggeringTime, range, payload.getBytes());
+			RoadSurfaceConditionMessage rcm = new RoadSurfaceConditionMessage(RoadSurfaceConditionMessage.typeName, this.getKey(), this.peerDescriptor.getGeoLocation(), triggeringTime, range, 2000, payload.getBytes());
 			
 			//Store message in it's own history
 			if(!this.trafficInformationKnowledge.contains(rcm))
+			{
 				this.trafficInformationKnowledge.add(rcm);
+				
+				//Distribute Traffic Jam
+				this.distributeTrafficInformationMessage(rcm, triggeringTime);
+			}
 			
-			//Distribute Traffic Jam
-			this.distributeTrafficInformationMessage(rcm, triggeringTime);
+			//Store message in global knowledge
+			if(!globalMessageKnowledge.contains(rcm))
+				globalMessageKnowledge.add(rcm);
 			
 		}
 	}
@@ -706,13 +720,20 @@ public class D2VPeer extends Peer {
 						//Create trafficJam Message
 						double range = 3.0;
 						String payloadString = "";
-						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(),te.getLocation(),triggeringTime,range,payloadString.getBytes());
+						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(),te.getLocation(),triggeringTime,range,(float)te.getJamPeriod(),payloadString.getBytes());
 						
 						//Store message in it's own history
-						this.trafficInformationKnowledge.add(tm);
+						if(!this.trafficInformationKnowledge.contains(tm))
+						{
+							this.trafficInformationKnowledge.add(tm);
+							//Distribute Traffic Jam
+							this.distributeTrafficInformationMessage(tm, triggeringTime);
+						}
+					
+						//Store message in global knowledge
+						if(!globalMessageKnowledge.contains(tm))
+							globalMessageKnowledge.add(tm);
 						
-						//Distribute Traffic Jam
-						this.distributeTrafficInformationMessage(tm, triggeringTime);
 					}
 				}
 			}
@@ -1224,5 +1245,17 @@ public class D2VPeer extends Peer {
 
 	public void setActualSpeed(double actualSpeed) {
 		this.actualSpeed = actualSpeed;
+	}
+
+	public int getDuplicateReceivedMessageCount() {
+		return duplicateReceivedMessageCount;
+	}
+
+	public void setDuplicateReceivedMessageCount(int duplicateReceivedMessageCount) {
+		this.duplicateReceivedMessageCount = duplicateReceivedMessageCount;
+	}
+
+	public void incrementDuplicateReceivedMessages() {
+		this.duplicateReceivedMessageCount++;
 	}	
 }

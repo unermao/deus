@@ -28,6 +28,7 @@ import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.example.d2v.message.TrafficInformationMessage;
 import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
@@ -109,6 +110,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		double sumOfAverageOfDiscoveryStep = 0.0;
 		double discoveryPeriodSum = 0.0;
 		double sentMessagesSum = 0.0;
+		double duplicateMessageSum = 0.0;
 		int missingPerGBCounter = 0;
 		int peerNumber = 0;
 		int numOfTrafficElements = 0;
@@ -150,6 +152,9 @@ public class D2VLogNodesStatsEvent extends Event {
 				
 				//sum sent messages
 				sentMessagesSum += peer.getSentMessages();
+				
+				//sum of received duplicated messages
+				duplicateMessageSum += peer.getDuplicateReceivedMessageCount();
 				
 				//sum discovery's step 
 				if(peer.getDiscoveryCounter() != 0)
@@ -199,6 +204,10 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (sec): " +  avSentMessageInVT/36.0);
 			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/36.0));
 			
+			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (sec): " +  avDuplicateMessageInVT/36.0);
+			fileValue.add(new LoggerObject("Av_DuplicateMess",avDuplicateMessageInVT/36.0));
+			
 			ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
 			
 			double carInTrafficJam = 0.0;
@@ -240,6 +249,60 @@ public class D2VLogNodesStatsEvent extends Event {
 		}
 		
 		System.out.println("################################################################################################");
+		
+		double distributionCoveragePercentageSUM = 0.0;
+		double nodeCount = 0;
+		
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		for(int i=0; i<D2VPeer.globalMessageKnowledge.size(); i++)
+		{
+			TrafficInformationMessage msg = D2VPeer.globalMessageKnowledge.get(i);
+			
+			if(triggeringTime-msg.getTime() < msg.getTtl())
+			{
+				
+				double contactedNode = 0.0;
+				double optimalNode = 0.0;
+				
+				if(d2vPeerIndexList != null)
+				{
+					for(int index=0; index<d2vPeerIndexList.size();index++)
+					{
+						D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
+						
+						double distance = GeoDistance.distance(peer.getPeerDescriptor().getGeoLocation(), msg.getLocation());
+						
+						if(distance <= msg.getRange())
+						{
+							optimalNode ++;
+							
+							if(peer.getTrafficInformationKnowledge().contains(msg))
+								contactedNode ++;
+						}
+					}
+				}
+				
+				double messageCoveragePercentage = 100.0 * (contactedNode / optimalNode );
+				distributionCoveragePercentageSUM += messageCoveragePercentage;
+				
+				nodeCount ++;
+				
+				System.out.println("Birth Time:" + msg.getTime() + " Message: " + msg.getType() + " in " + msg.getLocation().getLatitude()+";"+msg.getLocation().getLongitude() + " PayLoad: " + new String(msg.getPayload()) + " Distribution Coverage: " + messageCoveragePercentage);
+			}
+			else
+				D2VPeer.globalMessageKnowledge.remove(msg);
+		}
+		
+		double globalAvgCoveragePercentage = 0.0;
+		
+		if(nodeCount > 0)
+			globalAvgCoveragePercentage = distributionCoveragePercentageSUM/(double)nodeCount;
+		else
+			globalAvgCoveragePercentage = 100.0;
+		
+		System.out.println("GLOBAL COVERAGE PERCENTAGE: " + globalAvgCoveragePercentage);
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		
 		
 		if(triggeringTime == Engine.getDefault().getMaxVirtualTime())
 		{
