@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 import javax.swing.JProgressBar;
@@ -156,13 +157,22 @@ public class RunnerCommandLine implements Runnable{
 			String averageFileName = "";
 			String varFileName = "";
 			String sqrtvarFileName = "";
-
+			
+			//Add HostName in Destination File
+			String computerName = "";
+		    try{
+		    	computerName=InetAddress.getLocalHost().getHostName();
+		       // System.out.println(computerName);
+		      }catch (Exception e){
+		        System.out.println("Exception caught ="+e.getMessage());
+		    }
+			
 			// Compute the mean and the variance (with several seeds) of the data in the log files
 			 try {
 					resultAutomator.readTotalResults();
-					averageFileName = "./results//Average_" + simulations.get(j).getSimulationName()+"-"+k;
-					varFileName = "./results//Var_" + simulations.get(j).getSimulationName()+"-"+k;
-					sqrtvarFileName = "./results//SqrtVar_" + simulations.get(j).getSimulationName()+"-"+k;
+					averageFileName = "./results//"+computerName+"_Average_" + simulations.get(j).getSimulationName()+"-"+k;
+					varFileName = "./results//"+computerName+"_Var_" + simulations.get(j).getSimulationName()+"-"+k;
+					sqrtvarFileName = "./results//"+computerName+"_SqrtVar_" + simulations.get(j).getSimulationName()+"-"+k;
 					resultAutomator.resultsAverage(averageFileName);
 					resultAutomator.resultsVar(varFileName,sqrtvarFileName,averageFileName);
 				} 
@@ -211,7 +221,16 @@ public class RunnerCommandLine implements Runnable{
 			InputStreamReader isr = new InputStreamReader(fis);
 			BufferedReader br = new BufferedReader(isr);
 						
-			FileOutputStream fos = new FileOutputStream("./results/gnuplot/" + destinationFile);
+			//Add HostName in Destination File
+			String computerName = "";
+		    try{
+		    	computerName=InetAddress.getLocalHost().getHostName();
+		        //System.out.println(computerName);
+		      }catch (Exception e){
+		        System.out.println("Exception caught ="+e.getMessage());
+		    }
+			
+			FileOutputStream fos = new FileOutputStream("./results/gnuplot/" + computerName + "_" + destinationFile);
 			
 			
 			String linea=br.readLine();
