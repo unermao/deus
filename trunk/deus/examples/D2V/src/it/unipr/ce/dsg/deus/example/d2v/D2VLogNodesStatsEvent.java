@@ -115,10 +115,11 @@ public class D2VLogNodesStatsEvent extends Event {
 		int peerNumber = 0;
 		int numOfTrafficElements = 0;
 		
+		a = new AutomatorLogger("./temp/logger");
+		fileValue = new ArrayList<LoggerObject>();
+		
 		if(d2vPeerIndexList != null)
 		{
-			a = new AutomatorLogger("./temp/logger");
-			fileValue = new ArrayList<LoggerObject>();
 			
 			ArrayList<Double> missingNodesPerGB = new ArrayList<Double>();
 			
@@ -245,13 +246,13 @@ public class D2VLogNodesStatsEvent extends Event {
 			fileValue.add(new LoggerObject("AvgCarsInPaths",carSumInPaths/(double)peer.ssc.getPathList().size()));
 			*/
 			
-			a.write(Engine.getDefault().getVirtualTime(), fileValue);
+			
 		}
 		
 		System.out.println("################################################################################################");
 		
 		double distributionCoveragePercentageSUM = 0.0;
-		double nodeCount = 0;
+		double nodeCount = 0.0;
 		
 		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		for(int i=0; i<D2VPeer.globalMessageKnowledge.size(); i++)
@@ -282,7 +283,11 @@ public class D2VLogNodesStatsEvent extends Event {
 					}
 				}
 				
-				double messageCoveragePercentage = 100.0 * (contactedNode / optimalNode );
+				double messageCoveragePercentage = 100.0;
+				
+				if(optimalNode > 0)
+					messageCoveragePercentage = 100.0 * (contactedNode / optimalNode );
+				
 				distributionCoveragePercentageSUM += messageCoveragePercentage;
 				
 				nodeCount ++;
@@ -295,12 +300,13 @@ public class D2VLogNodesStatsEvent extends Event {
 		
 		double globalAvgCoveragePercentage = 0.0;
 		
-		if(nodeCount > 0)
+		if(nodeCount > 0.0)
 			globalAvgCoveragePercentage = distributionCoveragePercentageSUM/(double)nodeCount;
 		else
 			globalAvgCoveragePercentage = 100.0;
 		
 		System.out.println("GLOBAL COVERAGE PERCENTAGE: " + globalAvgCoveragePercentage);
+		fileValue.add(new LoggerObject("CoveragePercentage",globalAvgCoveragePercentage));
 		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		
 		
@@ -310,7 +316,7 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("Avg Speed near Bad Surface Condition");
 			ArrayList<ArrayList<Double>> speedAvgSum = new ArrayList<ArrayList<Double>>();
 			
-			int numOfValue = 40;
+			int numOfValue = 60;
 			
 			for(int i=0; i< numOfValue; i++)
 			{
@@ -353,6 +359,7 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("################################################################################################");
 		}
 		
+		a.write(Engine.getDefault().getVirtualTime(), fileValue);
 	}
 	
 	/*

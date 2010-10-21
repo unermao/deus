@@ -118,11 +118,12 @@ public class D2VPeer extends Peer {
 		}
 		*/
 		
+		/*
 		if(globalMessageKnowledge == null)
 		{
 			globalMessageKnowledge = new ArrayList<TrafficInformationMessage>();
 		}
-		
+		*/
 
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE) == null)
@@ -287,6 +288,7 @@ public class D2VPeer extends Peer {
 	public void init(float triggeringTime)
 	{
 		// Init the Switch Station Controller for Peer Mobility Model
+		/*
 		if(ssc == null)
 		{
 			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
@@ -295,6 +297,7 @@ public class D2VPeer extends Peer {
 			
 			ssc.addMultipleBadSurfaceCondition(5);
 		}
+		*/
 		
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
@@ -607,7 +610,7 @@ public class D2VPeer extends Peer {
 	private double ftmModelSpeedWithRoadConditionEvaluation()
 	{
 		
-		double d_limit = 0.2;
+		double d_limit = 0.3;
 		double distance = -1.0;
 		
 		//Check received information about road condition
@@ -637,14 +640,19 @@ public class D2VPeer extends Peer {
 		
 		if(distance != -1.0 && distance <= d_limit)
 		{
-			//Evaluate speed according to 
+			/*
+			//Evaluate speed according to exponential function\ 
 			double k1 = this.carMinSpeed;
 			double k2 = (Math.E*(speed-k1))/d_limit;
 			double k3 = d_limit;
-			
 			speed = k1 + (k2*distance)/(Math.exp(distance/k3));
+			*/
 			
-			//System.out.println(this.key+" Road Surface Updated Speed: " + speed + " Distance: " + distance);
+			//Evaluate speed according to a Parabola equation
+			double k1 = Math.pow(d_limit, 2.0)/(v_max - v_min);
+			double k2 = v_min;
+			
+			speed = Math.pow(distance, 2.0)/k1 + k2;
 			
 		}
 		
