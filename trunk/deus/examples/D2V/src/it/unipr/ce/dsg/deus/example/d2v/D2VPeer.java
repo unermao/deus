@@ -130,11 +130,18 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(IS_CONTENT_DISTRIBUTION_ACTIVE
 					+ " param is expected");
 		try {
-			isContentDistributionActive = Boolean.parseBoolean(params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE));
+			
+			double appValue = Double.parseDouble(params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE));
+			if(appValue == 0.0)
+				isContentDistributionActive = false;
+			else
+				isContentDistributionActive = true;
+			
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(IS_CONTENT_DISTRIBUTION_ACTIVE
 					+ " must be a valid double value.");
 		}
+		System.out.println("Is Content Distribution Active ?: " +  isContentDistributionActive);
 		
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(CAR_MIN_SPEED) == null)

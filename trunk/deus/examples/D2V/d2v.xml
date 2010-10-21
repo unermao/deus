@@ -26,8 +26,8 @@
     <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration"></event>
     <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
         <params>
-            <param value="2000.0" name="period"/>
-            <param value="2000.0" name="jamPeriod"/>
+            <param value="500.0" name="period"/>
+            <param value="500.0" name="jamPeriod"/>
             <param value="roadWok" name="type"/>
         </params>
     </node>
@@ -44,7 +44,7 @@
             <param value="100.0" name="discoveryMaxPeriod"/>
             <param value="25" name="discoveryPeriodPeerLimit"/>
             <param value="200" name="discoveryMaxPeerNumber"/>
-            <param value="false" name="isContentDistributionActive"/>
+            <param value="0.0" name="isContentDistributionActive"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
@@ -86,7 +86,7 @@
     </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <params>
-            <param value="50" name="period"/>
+            <param value="10" name="period"/>
             <param value="0" name="startVtThreshold"/>
             <param value="5000" name="stopVtThreshold"/>
         </params>
