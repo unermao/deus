@@ -2,7 +2,16 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="3" simulationName="D2V_Simulations">
+<simulation simulationNumberSeed="3" simulationName="500_Nodes_Standard">
+
+<node id="D2VPeer">
+	<paramName name="isContentDistributionActive">
+		<initialValue>0.0</initialValue>
+		<finalValue>1.0</finalValue>
+		<stepValue>1.0</stepValue>
+	</paramName>
+	
+</node>
 
 <engine>
 	<seed>
@@ -26,6 +35,7 @@
 <resultXYFile fileName="Av_SentMess.txt" axisX="VT" axisY="Av_SentMess" />
 <resultXYFile fileName="AvgCarInTraffic.txt" axisX="VT" axisY="AvgCarInTraffic" />
 <resultXYFile fileName="TrafficElements.txt" axisX="VT" axisY="TrafficElements" />
+<resultXYFile fileName="CoveragePercentage.txt" axisX="VT" axisY="CoveragePercentage" />
 
 </simulation>
 
