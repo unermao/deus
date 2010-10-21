@@ -23,6 +23,7 @@
             <reference id="Discovery"/>
         </events>
     </event>
+    <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration"></event>
     <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
         <params>
             <param value="2000.0" name="period"/>
@@ -43,7 +44,7 @@
             <param value="100.0" name="discoveryMaxPeriod"/>
             <param value="25" name="discoveryPeriodPeerLimit"/>
             <param value="200" name="discoveryMaxPeerNumber"/>
-            <param value="true" name="isContentDistributionActive"/>
+            <param value="false" name="isContentDistributionActive"/>
         </params>
     </node>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
@@ -96,6 +97,14 @@
             <reference id="Birth"/>
         </events>
     </process>
+    <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="ConfigurationProcess">
+        <params>
+            <param value="0" name="meanArrival"/>
+        </params>
+        <events>
+            <reference id="Configuration"/>
+        </events>
+    </process>
     <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="PoissonProcess">
         <params>
             <param value="0" name="meanArrival"/>
@@ -108,8 +117,9 @@
     <!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
     <engine keyspacesize="1000000" seed="123456789" maxvt="10000.0">
         <processes>
+ 	        <reference id="ConfigurationProcess"/>
             <reference id="LogStatPeriodicProcess"/>
-            <!-- <reference id="LogMaPeriodicProcess"/> -->
+            <!--<reference id="LogMaPeriodicProcess"/> -->
           	<reference id="TrafficEventBirthPoissonProcess"/>
             <reference id="RectangularBirth"/>
         </processes>
