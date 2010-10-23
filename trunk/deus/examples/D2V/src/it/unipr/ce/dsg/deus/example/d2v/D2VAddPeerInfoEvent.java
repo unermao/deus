@@ -30,7 +30,7 @@ public class D2VAddPeerInfoEvent extends NodeEvent {
 		double kbValue = 0.0;
 		String messageString = "ADD_INFO";
 		kbValue = ((double)messageString.getBytes().length) / 1000.0;
-		currPeer.addSentKbAmount(kbValue + D2VPeerDescriptor.getStructureKbLenght());
+		currPeer.addSentKbAmountForDGT(kbValue + D2VPeerDescriptor.getStructureKbLenght());
 		currPeer.insertPeer("D2VAddPeerInfoEvent",peerInfo);
 	}
 	

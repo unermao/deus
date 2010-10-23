@@ -46,6 +46,11 @@ public class D2VPeer extends Peer {
 	private static final String CAR_MIN_SPEED = "carMinSpeed";
 	private static final String IS_CONTENT_DISTRIBUTION_ACTIVE = "isContentDistributionActive";
 	
+	private static final String TTL_VALUE = "ttlValue";
+	private static final String RANGE_VALUE = "rangeValue";
+	public static float ttl = 1000;
+	public static double range = 2.0;
+	
 	private float discoveryMaxWait = 25;
 	
 	private ArrayList<Double> discoveryStatistics = new ArrayList<Double>();;
@@ -100,7 +105,9 @@ public class D2VPeer extends Peer {
 
 	private int discoveryPeriodPeerLimit = 20;
 	
-	private double totalKbSent = 0.0;
+	private double totalKbSentForDGT = 0.0;
+	
+	private double totalKbSentForDissemination = 0.0;
 
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
 	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
@@ -269,6 +276,32 @@ public class D2VPeer extends Peer {
 					+ " must be a valid int value.");
 		}
 		
+		//Read value of parameter carMinSpeed
+		if (params.getProperty(TTL_VALUE) == null)
+			throw new InvalidParamsException(TTL_VALUE
+					+ " param is expected");
+		try {
+			
+			D2VPeer.ttl = (float)Double.parseDouble(params.getProperty(TTL_VALUE));		
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(TTL_VALUE
+					+ " must be a valid double value.");
+		}
+		
+		//Read value of parameter carMinSpeed
+		if (params.getProperty(RANGE_VALUE) == null)
+			throw new InvalidParamsException(RANGE_VALUE
+					+ " param is expected");
+		try {
+			
+			D2VPeer.range = (float)Double.parseDouble(params.getProperty(RANGE_VALUE));		
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(RANGE_VALUE
+					+ " must be a valid double value.");
+		}
+		
+		System.out.println("Message Conf: TTL:" + D2VPeer.ttl + " Range: " + D2VPeer.range);
+		
 		System.out.println("D2VPeer Created !");
 			
 	}
@@ -288,7 +321,8 @@ public class D2VPeer extends Peer {
 		clone.discoveryCounter = 0;
 		clone.findNodeK = false;
 		clone.findNodeLimit = 0;
-		clone.totalKbSent = 0.0;
+		clone.totalKbSentForDGT = 0.0;
+		clone.totalKbSentForDissemination = 0.0;
 		
 		clone.discoveryPeriod = clone.discoveryMinPeriod;
 		
@@ -437,9 +471,11 @@ public class D2VPeer extends Peer {
 			//System.err.println(this.getKey()+" BAR SURFACE CONDITION: " + actualPoint.getSurfaceCondition());
 			
 			//Create a new RoadSurfaceConditionMessage
-			double range = 2.0;
+			//double range = 2.0;
+			double range = D2VPeer.range;
+			float ttl = D2VPeer.ttl;
 			String payload = actualPoint.getSurfaceCondition();
-			RoadSurfaceConditionMessage rcm = new RoadSurfaceConditionMessage(RoadSurfaceConditionMessage.typeName, this.getKey(), this.peerDescriptor.getGeoLocation(), triggeringTime, range, 2000, payload.getBytes());
+			RoadSurfaceConditionMessage rcm = new RoadSurfaceConditionMessage(RoadSurfaceConditionMessage.typeName, this.getKey(), this.peerDescriptor.getGeoLocation(), triggeringTime, range, ttl, payload.getBytes());
 			
 			//Store message in it's own history
 			if(!this.trafficInformationKnowledge.contains(rcm))
@@ -731,9 +767,12 @@ public class D2VPeer extends Peer {
 					if(isContentDistributionActive == true)
 					{
 						//Create trafficJam Message
-						double range = 3.0;
+						//double range = 3.0;
+						//float ttl = (float)te.getJamPeriod();
+						double range = D2VPeer.range;
+						float ttl = D2VPeer.ttl;
 						String payloadString = "";
-						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(),te.getLocation(),triggeringTime,range,(float)te.getJamPeriod(),payloadString.getBytes());
+						TrafficJamMessage tm = new TrafficJamMessage(this.getKey(),te.getLocation(),triggeringTime,range,ttl,payloadString.getBytes());
 						
 						//Store message in it's own history
 						if(!this.trafficInformationKnowledge.contains(tm))
@@ -1272,16 +1311,29 @@ public class D2VPeer extends Peer {
 		this.duplicateReceivedMessageCount++;
 	}
 
-	public double getTotalKbSent() {
-		return totalKbSent;
+	public double getTotalKbSentForDGT() {
+		return totalKbSentForDGT;
 	}
 
-	public void setTotalKbSent(double totalKbSent) {
-		this.totalKbSent = totalKbSent;
+	public void setTotalKbSentForDGT(double totalKbSent) {
+		this.totalKbSentForDGT = totalKbSent;
 	}	
 	
-	public void addSentKbAmount(double kbValue)
+	public void addSentKbAmountForDGT(double kbValue)
 	{
-		this.totalKbSent += kbValue;
+		this.totalKbSentForDGT += kbValue;
+	}
+
+	public double getTotalKbSentForDissemination() {
+		return totalKbSentForDissemination;
+	}
+
+	public void setTotalKbSentForDissemination(double totalKbSentForDissemination) {
+		this.totalKbSentForDissemination = totalKbSentForDissemination;
+	}
+	
+	public void addSentKbAmountForDissemination(double kbValue)
+	{
+		this.totalKbSentForDissemination += kbValue;
 	}
 }

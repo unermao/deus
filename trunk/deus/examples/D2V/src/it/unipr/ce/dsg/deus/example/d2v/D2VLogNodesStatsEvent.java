@@ -110,7 +110,8 @@ public class D2VLogNodesStatsEvent extends Event {
 		double sumOfAverageOfDiscoveryStep = 0.0;
 		double discoveryPeriodSum = 0.0;
 		double sentMessagesSum = 0.0;
-		double sentKbSum = 0.0;
+		double sentKbSumDGT = 0.0;
+		double sentKbSumDissemination = 0.0;
 		double duplicateMessageSum = 0.0;
 		int missingPerGBCounter = 0;
 		int peerNumber = 0;
@@ -155,8 +156,11 @@ public class D2VLogNodesStatsEvent extends Event {
 				//sum sent messages
 				sentMessagesSum += peer.getSentMessages();
 				
-				//sum sent Kb
-				sentKbSum += peer.getTotalKbSent();
+				//sum sent Kb for DGT maintainance
+				sentKbSumDGT += peer.getTotalKbSentForDGT();
+				
+				//sum sent Kb for dissemination
+				sentKbSumDissemination += peer.getTotalKbSentForDissemination();
 				
 				//sum of received duplicated messages
 				duplicateMessageSum += peer.getDuplicateReceivedMessageCount();
@@ -206,16 +210,21 @@ public class D2VLogNodesStatsEvent extends Event {
 			fileValue.add(new LoggerObject("Av_DiscPeriod",(double)discoveryPeriodSum/(double)d2vPeerIndexList.size()));
 			
 			double avSentMessageInVT = (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
-			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (sec): " +  avSentMessageInVT/36.0);
-			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/36.0));
+			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (min): " +  avSentMessageInVT/16.6666666666);
+			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/16.6666666666));
 			
-			double avSentKbInVT = (sentKbSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
-			System.out.println("VT:" + triggeringTime + "  Average Sent Kb/sec: " +  avSentKbInVT/36.0);
-			fileValue.add(new LoggerObject("Av_Sent_Kb_sec",avSentKbInVT/36.0));
+			double avSentKbForDGTInVT = (sentKbSumDGT/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			System.out.println("VT:" + triggeringTime + "  Average Sent DGT Messages Kb/min: " +  avSentKbForDGTInVT/16.6666666666);
+			fileValue.add(new LoggerObject("Av_Sent_Kb_DGT_min",avSentKbForDGTInVT/16.6666666666));
+			
+			double avSentKbForDisseminationInVT = (sentKbSumDissemination/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			System.out.println("VT:" + triggeringTime + "  Average Sent Dissemination Messages Kb/min: " +  avSentKbForDisseminationInVT/16.6666666666);
+			fileValue.add(new LoggerObject("Av_Sent_Kb_Dissemination_min",avSentKbForDisseminationInVT/16.6666666666));
+			
 			
 			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
-			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (sec): " +  avDuplicateMessageInVT/36.0);
-			fileValue.add(new LoggerObject("Av_DuplicateMess",avDuplicateMessageInVT/36.0));
+			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (min): " +  avDuplicateMessageInVT/16.6666666666);
+			fileValue.add(new LoggerObject("Av_DuplicateMess",avDuplicateMessageInVT/16.6666666666));
 			
 			ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
 			

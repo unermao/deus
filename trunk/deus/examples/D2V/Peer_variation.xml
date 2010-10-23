@@ -2,17 +2,16 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="3" simulationName="Area_Variation_D2V">
+<simulation simulationNumberSeed="3" simulationName="Peer_Variation">
 
-<node id="D2VPeer">
-	<paramName name="alpha">
-		<initialValue>1.0</initialValue>
+<process id="RectangularBirth">
+	<paramName name="period">
+		<initialValue>2.5</initialValue>
 		<finalValue>5.0</finalValue>
-		<stepValue>1.0</stepValue>
-	</paramName>
+		<stepValue>2.5</stepValue>
+	</paramName>	
+</process>
 	
-</node>
-
 <engine>
 	<seed>
 		<seedValue>123456789</seedValue>
@@ -36,7 +35,8 @@
 <resultXYFile fileName="AvgCarInTraffic.txt" axisX="VT" axisY="AvgCarInTraffic" />
 <resultXYFile fileName="TrafficElements.txt" axisX="VT" axisY="TrafficElements" />
 <resultXYFile fileName="CoveragePercentage.txt" axisX="VT" axisY="CoveragePercentage" />
-<resultXYFile fileName="Av_Sent_Kb_sec.txt" axisX="VT" axisY="Av_Sent_Kb_sec" />
+<resultXYFile fileName="Av_Sent_Kb_DGT_min.txt" axisX="VT" axisY="Av_Sent_Kb_DGT_min" />
+<resultXYFile fileName="Av_Sent_Kb_Dissemination_min.txt" axisX="VT" axisY="Av_Sent_Kb_Dissemination_min" />
 
 </simulation>
 
