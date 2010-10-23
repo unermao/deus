@@ -39,7 +39,7 @@ public class D2VContentDistributionPeriodicEvent extends NodeEvent {
 		
 		D2VPeer connectingNode = (D2VPeer) this.getAssociatedNode();
 		
-		connectingNode.distributeAllKnownTrafficInformation(triggeringTime);
+		connectingNode.distributeAllKnownTrafficInformationToAllPeers(triggeringTime);
 		
 		connectingNode.schedulePeriodicContentDistributionEvent(triggeringTime);
 		

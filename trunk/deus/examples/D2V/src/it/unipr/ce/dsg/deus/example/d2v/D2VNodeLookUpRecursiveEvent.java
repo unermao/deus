@@ -80,7 +80,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				int newNodeCount = 0;
 				for (int j = 0; j < currNode.nlResults.get(currNode.getKey()).size(); j++) {
 					//System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
-					if(currNode.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j]) == true)
+					if(currNode.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j],triggeringTime) == true)
 						newNodeCount ++;
 				}
 				

@@ -483,7 +483,7 @@ public class D2VPeer extends Peer {
 				this.trafficInformationKnowledge.add(rcm);
 				
 				//Distribute Traffic Jam
-				this.distributeTrafficInformationMessage(rcm, triggeringTime);
+				this.distributeTrafficInformationMessageToAllPeers(rcm, triggeringTime);
 			}
 			
 			//Store message in global knowledge
@@ -779,7 +779,7 @@ public class D2VPeer extends Peer {
 						{
 							this.trafficInformationKnowledge.add(tm);
 							//Distribute Traffic Jam
-							this.distributeTrafficInformationMessage(tm, triggeringTime);
+							this.distributeTrafficInformationMessageToAllPeers(tm, triggeringTime);
 						}
 					
 						//Store message in global knowledge
@@ -858,15 +858,20 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param d2vPeerDescriptor
 	 */
-	public boolean insertPeer(String from,D2VPeerDescriptor newPeer) {
+	public boolean insertPeer(String from,D2VPeerDescriptor newPeer, float triggeringTime) {
 		
 		if(this.getKey() != newPeer.getKey())
 		{
 			if(!this.neighbors.contains((Peer) Engine.getDefault().getNodeByKey(newPeer.getKey())))
 				this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
 			
-			//System.out.println("############################################ INSERT FROM :  " + from);
-			return this.gb.insertPeer(params,this.createPeerInfo(), newPeer);
+			//Add new Peer
+			boolean isNew = this.gb.insertPeer(params,this.createPeerInfo(), newPeer);
+			
+			//Distribute Information
+			this.distributeAllKnownTrafficInformationToSinglePeer(newPeer, triggeringTime);	
+				
+			return isNew;
 		}
 		
 		return false;
@@ -924,11 +929,8 @@ public class D2VPeer extends Peer {
 		this.gb.updateBucketInfo(params,peerDescriptor2);	
 	}
 
-	/**
-	 * 
-	 */
-	public void distributeAllKnownTrafficInformation(float triggeringTime) {
-		
+	public void checkTrafficInformationKnowledge(float triggeringTime)
+	{
 		//Clean old Info
 		for(int index=0; index<this.trafficInformationKnowledge.size(); index++)
 		{	
@@ -937,11 +939,36 @@ public class D2VPeer extends Peer {
 			if(triggeringTime-msg.getTime() > msg.getTtl())
 				this.trafficInformationKnowledge.remove(index);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void distributeAllKnownTrafficInformationToAllPeers(float triggeringTime) {
+		
+		this.checkTrafficInformationKnowledge(triggeringTime);
 		
 		for(int index=0; index<this.trafficInformationKnowledge.size(); index++)
 		{
 			TrafficInformationMessage msg = this.trafficInformationKnowledge.get(index);
-			this.distributeTrafficInformationMessage(msg, triggeringTime);
+			this.distributeTrafficInformationMessageToAllPeers(msg, triggeringTime);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param pd
+	 * @param triggeringTime
+	 */
+	public void distributeAllKnownTrafficInformationToSinglePeer(D2VPeerDescriptor pd,float triggeringTime) {
+		
+		this.checkTrafficInformationKnowledge(triggeringTime);
+		
+		for(int index=0; index<this.trafficInformationKnowledge.size(); index++)
+		{
+			TrafficInformationMessage msg = this.trafficInformationKnowledge.get(index);
+			this.distributeTrafficInformationMessageToSinglePeers(pd, msg, triggeringTime);
 		}
 	}
 	
@@ -949,7 +976,7 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param tim
 	 */
-	public void distributeTrafficInformationMessage(TrafficInformationMessage tim, float triggeringTime) {
+	public void distributeTrafficInformationMessageToAllPeers(TrafficInformationMessage tim, float triggeringTime) {
 		
 		//Update peer list
 		this.updateBucketInfo(peerDescriptor);
@@ -977,6 +1004,36 @@ public class D2VPeer extends Peer {
 			}
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @param tim
+	 */
+	public void distributeTrafficInformationMessageToSinglePeers(D2VPeerDescriptor pd, TrafficInformationMessage tim, float triggeringTime) {
+		
+		//Check if message hash is available in cache list
+		if(this.sentInformationMessages.get(tim.getMessageHash()) == null)
+			this.sentInformationMessages.put(tim.getMessageHash(), new ArrayList<Integer>());
+		
+		//Same range of traffic Message
+		double range = tim.getRange();
+		
+		//Evaluate distance between Message and peer
+		double distance = GeoDistance.distance(tim.getLocation(), pd.getGeoLocation());
+		
+		//If node is in the right range
+		if(distance <= range)
+		{
+			//Retrieve contacted node for this message
+			ArrayList<Integer> contactedNodes = this.sentInformationMessages.get(tim.getMessageHash());
+			
+			if(!contactedNodes.contains(pd.getKey()) && pd.getKey() != this.getKey())
+			{
+				contactedNodes.add(pd.getKey());
+				this.sendMessage((D2VPeer)Engine.getDefault().getNodeByKey(pd.getKey()), tim, triggeringTime);
+			}
+		}
 	}
 	
 	/**

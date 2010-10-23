@@ -31,7 +31,7 @@ public class D2VUpdatePositionEvent extends NodeEvent {
 		currPeer.addSentKbAmountForDGT(kbValue+D2VPeerDescriptor.getStructureKbLenght());
 		
 		
-		currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo);
+		currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo,triggeringTime);
 	}
 	
 	public Object clone() {

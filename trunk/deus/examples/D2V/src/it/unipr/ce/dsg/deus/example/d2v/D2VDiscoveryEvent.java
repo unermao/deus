@@ -58,7 +58,7 @@ public class D2VDiscoveryEvent extends NodeEvent {
 			ArrayList<D2VPeerDescriptor> initList = currNode.getInitialPeerList(currNode.getPeerDescriptor(),PEER_LIMIT);
 			
 			for(int index=0;index<initList.size();index++)
-				currNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index));
+				currNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index),triggeringTime);
 		}
 		
 		//Trova tutti i nodi conosciuti dal peer corrente vicino alla sua posizione
