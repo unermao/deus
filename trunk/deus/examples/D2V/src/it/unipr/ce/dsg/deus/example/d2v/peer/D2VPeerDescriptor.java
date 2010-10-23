@@ -57,5 +57,11 @@ public class D2VPeerDescriptor {
 
 	public void setTimeStamp(float timeStamp) {
 		this.timeStamp = timeStamp;
-	}	
+	}
+	
+	public static double getStructureKbLenght()
+	{
+		String defaultString = "00000#255.255.255.255:8080";
+		return ((double)defaultString.getBytes().length + ((double)(2*Double.SIZE + Integer.SIZE + Float.SIZE))/8.0)/1000.0;
+	}
 }

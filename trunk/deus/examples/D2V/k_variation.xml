@@ -2,12 +2,12 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="3" simulationName="Area_Variation_D2V">
+<simulation simulationNumberSeed="3" simulationName="K_VARIATION_D2V">
 
 <node id="D2VPeer">
-	<paramName name="alpha">
+	<paramName name="k">
 		<initialValue>1.0</initialValue>
-		<finalValue>5.0</finalValue>
+		<finalValue>10.0</finalValue>
 		<stepValue>1.0</stepValue>
 	</paramName>
 	
