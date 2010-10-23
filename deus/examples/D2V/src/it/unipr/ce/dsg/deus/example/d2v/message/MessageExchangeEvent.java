@@ -1,6 +1,8 @@
 package it.unipr.ce.dsg.deus.example.d2v.message;
 
 import java.util.Properties;
+
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.Process;
@@ -32,6 +34,9 @@ public class MessageExchangeEvent extends NodeEvent {
 		
 		if(this.msg != null)
 		{
+			D2VPeer sender = (D2VPeer)Engine.getDefault().getNodeByKey(this.msg.getSenderNodeId());
+			sender.addSentKbAmountForDissemination((double)(this.msg.getMessageHash().getBytes().length + this.msg.getPayload().length)/1000.0);
+			
 			//TrafficJamMessage
 			if(msg.getType().equals(TrafficJamMessage.typeName))
 			{

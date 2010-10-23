@@ -28,7 +28,8 @@
             <aut:reference id="Discovery"/>
         </aut:events>
     </aut:event>
-    <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration"></aut:event>
+    <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration">
+    </aut:event>
     <aut:node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
         <aut:params>
             <aut:param value="1000.0" name="period"/>
@@ -50,6 +51,8 @@
             <aut:param value="25" name="discoveryPeriodPeerLimit"/>
             <aut:param value="200" name="discoveryMaxPeerNumber"/>
             <aut:param value="1.0" name="isContentDistributionActive"/>
+            <aut:param value="1000.0" name="ttlValue"/>
+            <aut:param value="2.0" name="rangeValue"/>
         </aut:params>
     </aut:node>
     <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">

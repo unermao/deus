@@ -28,7 +28,7 @@ public class D2VUpdatePositionEvent extends NodeEvent {
 		double kbValue = 0.0;
 		String messageString = "UPDATE_POS#";
 		kbValue = (double)messageString.getBytes().length / 1000.0;
-		currPeer.addSentKbAmount(kbValue+D2VPeerDescriptor.getStructureKbLenght());
+		currPeer.addSentKbAmountForDGT(kbValue+D2VPeerDescriptor.getStructureKbLenght());
 		
 		
 		currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo);
