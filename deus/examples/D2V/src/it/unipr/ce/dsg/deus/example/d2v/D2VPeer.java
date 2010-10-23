@@ -231,6 +231,7 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(K_VALUE
 					+ " must be a valid int value.");
 		}
+		System.out.println("K: " +  this.k);
 		
 		//Read value of parameter discoveryMinPeriod
 		if (params.getProperty(DISCOVERY_MIN_PERIOD) == null)
