@@ -34,18 +34,34 @@ public class MessageExchangeEvent extends NodeEvent {
 		
 		if(this.msg != null)
 		{
+			
 			D2VPeer sender = (D2VPeer)Engine.getDefault().getNodeByKey(this.msg.getSenderNodeId());
 			sender.addSentKbAmountForDissemination((double)(this.msg.getMessageHash().getBytes().length + this.msg.getPayload().length)/1000.0);
 			
+			//Check Traffic Information Knowledge of current peer
+			currNode.checkTrafficInformationKnowledge(triggeringTime);
+			
+			//Store if necessary the incoming message
+			if(!currNode.getTrafficInformationKnowledge().contains(this.msg))
+			{	
+				currNode.getTrafficInformationKnowledge().add(this.msg);
+				currNode.distributeTrafficInformationMessageToAllPeers(this.msg,this.triggeringTime);
+			}
+			else
+				currNode.incrementDuplicateReceivedMessages();
+			
+			/*
 			//TrafficJamMessage
 			if(msg.getType().equals(TrafficJamMessage.typeName))
 			{
 				TrafficJamMessage trafficMessage = (TrafficJamMessage)this.msg;
-				currNode.distributeTrafficInformationMessage(trafficMessage,this.triggeringTime);
 				
 				//Store if necessary the incoming message
 				if(!currNode.getTrafficInformationKnowledge().contains(trafficMessage))
-					currNode.getTrafficInformationKnowledge().add(trafficMessage);		
+				{	
+					currNode.getTrafficInformationKnowledge().add(trafficMessage);
+					currNode.distributeTrafficInformationMessage(trafficMessage,this.triggeringTime);
+				}
 				else
 					currNode.incrementDuplicateReceivedMessages();
 			}
@@ -60,7 +76,7 @@ public class MessageExchangeEvent extends NodeEvent {
 				else
 					currNode.incrementDuplicateReceivedMessages();
 			}
-			
+			*/
 		}
 		else
 			System.err.println("VT:"+triggeringTime+" Message Exchange Event ---> NULL Message !!!");

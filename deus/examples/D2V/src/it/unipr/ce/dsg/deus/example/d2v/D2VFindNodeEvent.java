@@ -61,7 +61,7 @@ public class D2VFindNodeEvent extends NodeEvent {
 			messageString = "FIND_NODE_RESULT#";
 			currentNode.addSentKbAmountForDGT((findNodeResult.size())*D2VPeerDescriptor.getStructureKbLenght());
 			
-			currentNode.insertPeer("D2VFindNodeEvent",reqNode);
+			currentNode.insertPeer("D2VFindNodeEvent",reqNode,triggeringTime);
 			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(findNodeResult);
 			//((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode));
 			

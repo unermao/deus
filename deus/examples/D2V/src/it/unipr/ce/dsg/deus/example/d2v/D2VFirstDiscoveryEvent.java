@@ -45,7 +45,7 @@ public class D2VFirstDiscoveryEvent extends NodeEvent {
 		ArrayList<D2VPeerDescriptor> initList = connectingNode.getInitialPeerList(connectingNode.getPeerDescriptor(),NODE_LIST_LIMIT);
 		
 		for(int index=0;index<initList.size();index++)
-			connectingNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index));
+			connectingNode.insertPeer("D2VFirstDiscoveryEvent",initList.get(index),triggeringTime);
 		
 		//System.out.println("VT:"+triggeringTime+" FIRST_DISCOVERY_EVENT ---> Peer Key: " + connectingNode.getKey() + " InitList: " + initList.size() + " Total Peers: " + Engine.getDefault().getNodeKeysById("D2VPeer").size());
 		
