@@ -110,6 +110,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		double sumOfAverageOfDiscoveryStep = 0.0;
 		double discoveryPeriodSum = 0.0;
 		double sentMessagesSum = 0.0;
+		double sentKbSum = 0.0;
 		double duplicateMessageSum = 0.0;
 		int missingPerGBCounter = 0;
 		int peerNumber = 0;
@@ -153,6 +154,9 @@ public class D2VLogNodesStatsEvent extends Event {
 				
 				//sum sent messages
 				sentMessagesSum += peer.getSentMessages();
+				
+				//sum sent Kb
+				sentKbSum += peer.getTotalKbSent();
 				
 				//sum of received duplicated messages
 				duplicateMessageSum += peer.getDuplicateReceivedMessageCount();
@@ -204,6 +208,10 @@ public class D2VLogNodesStatsEvent extends Event {
 			double avSentMessageInVT = (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (sec): " +  avSentMessageInVT/36.0);
 			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/36.0));
+			
+			double avSentKbInVT = (sentKbSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			System.out.println("VT:" + triggeringTime + "  Average Sent Kb/sec: " +  avSentKbInVT/36.0);
+			fileValue.add(new LoggerObject("Av_Sent_Kb_sec",avSentKbInVT/36.0));
 			
 			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (sec): " +  avDuplicateMessageInVT/36.0);

@@ -1,127 +1,132 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<automator xmlns="http://dsg.ce.unipr.it/software/deus/schema/automator">
-    <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VDiscoveryEvent" id="Discovery">
-        <params>
-            <param value="TRUE" name="hasSameAssociatedNode"/>
-        </params>
-    </event>
-    <event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthScheduler" handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthEvent" id="TrafficEventBirth"/>
-    <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeerMovementEvent" id="PeerMovement"/>
-    <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodeMapEvent" id="LogMapEvent"/>
-    <event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodesStatsEvent" id="LogStatEvent"/>
-    <event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VBirthEvent" id="Birth">
-        <events>
-            <reference id="FirstDiscovery"/>
-        </events>
-    </event>
-    <event oneShot="true" schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VFirstDiscoverySchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VFirstDiscoveryEvent" id="FirstDiscovery">
-        <params>
-            <param value="20" name="peerListLimit"/>
-        </params>
-        <events>
-            <reference id="PeerMovement"/>
-            <reference id="Discovery"/>
-        </events>
-    </event>
-    <event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration"></event>
-    <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
-        <params>
-            <param value="500.0" name="period"/>
-            <param value="500.0" name="jamPeriod"/>
-            <param value="roadWok" name="type"/>
-        </params>
-    </node>
-    <node handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeer" id="D2VPeer">
-        <params>
-            <param value="3" name="alpha"/>
-            <param value="5" name="k"/>
-            <param value="40" name="bucketNodeLimit"/>
-            <param value="0.5" name="radiusKm"/>
-            <param value="0.1" name="epsilon"/>
-            <param value="30.0" name="avgSpeedMax"/>
-            <param value="10.0" name="carMinSpeed"/>
-            <param value="25.0" name="discoveryMinPeriod"/>
-            <param value="100.0" name="discoveryMaxPeriod"/>
-            <param value="25" name="discoveryPeriodPeerLimit"/>
-            <param value="200" name="discoveryMaxPeerNumber"/>
-            <param value="0.0" name="isContentDistributionActive"/>
-        </params>
-    </node>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
-        <params>
-            <param value="5" name="period"/>
-        </params>
-        <events>
-            <reference id="Discovery"/>
-        </events>
-    </process>
+
+<aut:automator
+	xmlns:aut="http://dsg.ce.unipr.it/software/deus/schema/automator"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
+	
+    <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VDiscoveryEvent" id="Discovery">
+        <aut:params>
+            <aut:param value="TRUE" name="hasSameAssociatedNode"/>
+        </aut:params>
+    </aut:event>
+    <aut:event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthScheduler" handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElementBirthEvent" id="TrafficEventBirth"/>
+    <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeerMovementEvent" id="PeerMovement"/>
+    <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodeMapEvent" id="LogMapEvent"/>
+    <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodesStatsEvent" id="LogStatEvent"/>
+    <aut:event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VBirthEvent" id="Birth">
+        <aut:events>
+            <aut:reference id="FirstDiscovery"/>
+        </aut:events>
+    </aut:event>
+    <aut:event oneShot="true" schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VFirstDiscoverySchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VFirstDiscoveryEvent" id="FirstDiscovery">
+        <aut:params>
+            <aut:param value="20" name="peerListLimit"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="PeerMovement"/>
+            <aut:reference id="Discovery"/>
+        </aut:events>
+    </aut:event>
+    <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VConfigurationEvent" id="Configuration"></aut:event>
+    <aut:node handler="it.unipr.ce.dsg.deus.example.d2v.D2VTrafficElement" id="TrafficElement">
+        <aut:params>
+            <aut:param value="1000.0" name="period"/>
+            <aut:param value="1000.0" name="jamPeriod"/>
+            <aut:param value="roadWok" name="type"/>
+        </aut:params>
+    </aut:node>
+    <aut:node handler="it.unipr.ce.dsg.deus.example.d2v.D2VPeer" id="D2VPeer">
+        <aut:params>
+            <aut:param value="3.0" name="alpha"/>
+            <aut:param value="5" name="k"/>
+            <aut:param value="40" name="bucketNodeLimit"/>
+            <aut:param value="0.5" name="radiusKm"/>
+            <aut:param value="0.1" name="epsilon"/>
+            <aut:param value="30.0" name="avgSpeedMax"/>
+            <aut:param value="10.0" name="carMinSpeed"/>
+            <aut:param value="25.0" name="discoveryMinPeriod"/>
+            <aut:param value="100.0" name="discoveryMaxPeriod"/>
+            <aut:param value="25" name="discoveryPeriodPeerLimit"/>
+            <aut:param value="200" name="discoveryMaxPeerNumber"/>
+            <aut:param value="1.0" name="isContentDistributionActive"/>
+        </aut:params>
+    </aut:node>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
+        <aut:params>
+            <aut:param value="5" name="period"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="Discovery"/>
+        </aut:events>
+    </aut:process>
     
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="TrafficEventBirthPoissonProcess">
-        <params>
-            <param value="4000" name="meanArrival"/>
-        </params>
-        <nodes>
-            <reference id="TrafficElement"/>
-        </nodes>
-        <events>
-            <reference id="TrafficEventBirth"/>
-        </events>
-    </process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="TrafficEventBirthPoissonProcess">
+        <aut:params>
+            <aut:param value="2000" name="meanArrival"/>
+        </aut:params>
+        <aut:nodes>
+            <aut:reference id="TrafficElement"/>
+        </aut:nodes>
+        <aut:events>
+            <aut:reference id="TrafficEventBirth"/>
+        </aut:events>
+    </aut:process>
     
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogStatPeriodicProcess">
-        <params>
-            <param value="25" name="period"/>
-        </params>
-        <events>
-            <reference id="LogStatEvent"/>
-        </events>
-    </process>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogMaPeriodicProcess">
-        <params>
-            <param value="2" name="period"/>
-        </params>
-        <events>
-            <reference id="LogMapEvent"/>
-        </events>
-    </process>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
-        <params>
-            <param value="10" name="period"/>
-            <param value="0" name="startVtThreshold"/>
-            <param value="5000" name="stopVtThreshold"/>
-        </params>
-        <nodes>
-            <reference id="D2VPeer"/>
-        </nodes>
-        <events>
-            <reference id="Birth"/>
-        </events>
-    </process>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="ConfigurationProcess">
-        <params>
-            <param value="0" name="meanArrival"/>
-        </params>
-        <events>
-            <reference id="Configuration"/>
-        </events>
-    </process>
-    <process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="PoissonProcess">
-        <params>
-            <param value="0" name="meanArrival"/>
-        </params>
-        <events>
-            <reference id="PeerMovement"/>
-            <reference id="FirstDiscovery"/>
-        </events>
-    </process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogStatPeriodicProcess">
+        <aut:params>
+            <aut:param value="100" name="period"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="LogStatEvent"/>
+        </aut:events>
+    </aut:process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogMaPeriodicProcess">
+        <aut:params>
+            <aut:param value="2" name="period"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="LogMapEvent"/>
+        </aut:events>
+    </aut:process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
+        <aut:params>
+            <aut:param value="25" name="period"/>
+            <aut:param value="0" name="startVtThreshold"/>
+            <aut:param value="5000" name="stopVtThreshold"/>
+        </aut:params>
+        <aut:nodes>
+            <aut:reference id="D2VPeer"/>
+        </aut:nodes>
+        <aut:events>
+            <aut:reference id="Birth"/>
+        </aut:events>
+    </aut:process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="ConfigurationProcess">
+        <aut:params>
+            <aut:param value="0" name="meanArrival"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="Configuration"/>
+        </aut:events>
+    </aut:process>
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="PoissonProcess">
+        <aut:params>
+            <aut:param value="0" name="meanArrival"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="PeerMovement"/>
+            <aut:reference id="FirstDiscovery"/>
+        </aut:events>
+    </aut:process>
     <!-- *** SIMULATION *** (10000=10h 100VT = 6 min )-->
-    <engine keyspacesize="1000000" seed="123456789" maxvt="10000.0">
-        <processes>
- 	        <reference id="ConfigurationProcess"/>
-            <reference id="LogStatPeriodicProcess"/>
-            <!--<reference id="LogMaPeriodicProcess"/> -->
-          	<reference id="TrafficEventBirthPoissonProcess"/>
-            <reference id="RectangularBirth"/>
-        </processes>
-    </engine>
-</automator>
+    <aut:engine keyspacesize="10000" seed="123456789" maxvt="10000.0">
+        <aut:processes>
+ 	        <aut:reference id="ConfigurationProcess"/>
+            <aut:reference id="LogStatPeriodicProcess"/>
+            <!--<aut:reference id="LogMaPeriodicProcess"/> -->
+          	<aut:reference id="TrafficEventBirthPoissonProcess"/>
+            <aut:reference id="RectangularBirth"/>
+        </aut:processes>
+    </aut:engine>
+</aut:automator>

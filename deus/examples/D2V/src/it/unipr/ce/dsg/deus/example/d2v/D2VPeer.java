@@ -99,6 +99,8 @@ public class D2VPeer extends Peer {
 	private D2VGeoBuckets gb = null;
 
 	private int discoveryPeriodPeerLimit = 20;
+	
+	private double totalKbSent = 0.0;
 
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
 	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
@@ -175,6 +177,7 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(EPSILON
 					+ " must be a valid double value.");
 		}
+		System.out.println("Epsilon: " +  this.epsilon);
 		
 		//Read value of parameter radius
 		if (params.getProperty(RADIUS_KM) == null)
@@ -186,6 +189,7 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(RADIUS_KM
 					+ " must be a valid double value.");
 		}
+		System.out.println("Radius (Km): " +  this.radiusKm);
 		
 		//Read value of parameter bucketNodeLimit
 		if (params.getProperty(BUCKET_NODE_LIMIT) == null)
@@ -203,18 +207,19 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(ALPHA
 					+ " param is expected");
 		try {
-			alpha = Integer.parseInt(params.getProperty(ALPHA));
+			alpha = (int)Double.parseDouble(params.getProperty(ALPHA));
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(ALPHA
 					+ " must be a valid int value.");
 		}
+		System.out.println("Alpha: " +  this.alpha);
 		
 		//Read value of parameter k
 		if (params.getProperty(K_VALUE) == null)
 			throw new InvalidParamsException(K_VALUE
 					+ " param is expected");
 		try {
-			k = Integer.parseInt(params.getProperty(K_VALUE));
+			k = (int)Double.parseDouble(params.getProperty(K_VALUE));
 		} catch (NumberFormatException ex) {
 			throw new InvalidParamsException(K_VALUE
 					+ " must be a valid int value.");
@@ -283,6 +288,7 @@ public class D2VPeer extends Peer {
 		clone.discoveryCounter = 0;
 		clone.findNodeK = false;
 		clone.findNodeLimit = 0;
+		clone.totalKbSent = 0.0;
 		
 		clone.discoveryPeriod = clone.discoveryMinPeriod;
 		
@@ -294,17 +300,6 @@ public class D2VPeer extends Peer {
 
 	public void init(float triggeringTime)
 	{
-		// Init the Switch Station Controller for Peer Mobility Model
-		/*
-		if(ssc == null)
-		{
-			ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
-			ssc.readSwitchStationFile();
-			ssc.readPathFile();
-			
-			ssc.addMultipleBadSurfaceCondition(5);
-		}
-		*/
 		
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
@@ -409,11 +404,14 @@ public class D2VPeer extends Peer {
 			this.checkTrafficJam(triggeringTime);
 		}
 		
-		//Check road surface of actual point
-		this.checkRoadSurfaceCondition(triggeringTime);
+		if(isContentDistributionActive == true)
+		{
+			//Check road surface of actual point
+			this.checkRoadSurfaceCondition(triggeringTime);
 		
-		//Check received information about traffic
-		this.checkReceivedTrafficJamInformation();
+			//Check received information about traffic
+			this.checkReceivedTrafficJamInformation();
+		}
 		
 		//According to new position, check peer position in GB and if necessary remove them from list
 		this.updateBucketInfo(peerDescriptor);
@@ -1272,5 +1270,18 @@ public class D2VPeer extends Peer {
 
 	public void incrementDuplicateReceivedMessages() {
 		this.duplicateReceivedMessageCount++;
+	}
+
+	public double getTotalKbSent() {
+		return totalKbSent;
+	}
+
+	public void setTotalKbSent(double totalKbSent) {
+		this.totalKbSent = totalKbSent;
 	}	
+	
+	public void addSentKbAmount(double kbValue)
+	{
+		this.totalKbSent += kbValue;
+	}
 }

@@ -46,12 +46,24 @@ public class D2VFindNodeEvent extends NodeEvent {
 		
 		if (currentNode.getKey() != reqNode.getKey()) {
 		
-			//add a new sent message
-			//currentNode.setSentMessages(currentNode.getSentMessages() + 1);
+			//Add a new sent message of sender 
+			D2VPeer senderPeer = ((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey()));
+			senderPeer.incrementSentMessages();
+			double kbValue = 0.0;
+			String messageString = "FIND_NODE#48.0000000#76.0000000";
+			kbValue = (double)messageString.getBytes().length / 1000.0;
+			senderPeer.addSentKbAmount(kbValue+D2VPeerDescriptor.getStructureKbLenght());
+			
+			ArrayList<D2VPeerDescriptor> findNodeResult = currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode);
+			
+			//Increment sent message and Kb amount for receiver of FindNode that answer with the list of founded nodes
 			currentNode.incrementSentMessages();
+			messageString = "FIND_NODE_RESULT#";
+			currentNode.addSentKbAmount((findNodeResult.size())*D2VPeerDescriptor.getStructureKbLenght());
 			
 			currentNode.insertPeer("D2VFindNodeEvent",reqNode);
-			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode));
+			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(findNodeResult);
+			//((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode));
 			
 			D2VPeer reqPeer = ((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey()));
 			
