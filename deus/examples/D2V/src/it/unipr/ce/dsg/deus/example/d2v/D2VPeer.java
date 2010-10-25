@@ -691,7 +691,8 @@ public class D2VPeer extends Peer {
 			*/
 			
 			//Evaluate speed according to a Parabola equation
-			double k1 = Math.pow(d_limit, 2.0)/(v_max - v_min);
+			//double k1 = Math.pow(d_limit, 2.0)/(v_max - v_min);
+			double k1 = Math.pow(d_limit, 2.0)/(speed - v_min);
 			double k2 = v_min;
 			
 			speed = Math.pow(distance, 2.0)/k1 + k2;
