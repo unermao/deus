@@ -699,6 +699,8 @@ public class D2VPeer extends Peer {
 			
 		}
 		
+		//System.out.println(this.key+" Speed: " + speed + " Distance: " + distance);
+		
 		this.actualSpeed = speed;
 		
 		return speed;
