@@ -48,6 +48,7 @@ public class DeusAutomatorCommandLine {
 			cmd.outFileName = args[1];
 			
 			try {
+				
 				cmd.readXML(args[2]);
 				
 				cmd.writeAutomatorXML(cmd.outFileName);
@@ -78,6 +79,7 @@ public class DeusAutomatorCommandLine {
 	}
 
 	private DeusSimulationPanelCommandLine deusSimulationPanel;
+	private String simulationName = "Command Line Title";
 
 	private void writeAutomatorXML(String fileName) throws IOException {
     	
@@ -90,7 +92,7 @@ public class DeusAutomatorCommandLine {
 				 	" xsi:schemaLocation=\"http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd\">" + "\n\n";
 		
 	
-		xmlString = xmlString + deusSimulationPanel.createSimulationXML("Command Line Title",0) + "\n";
+		xmlString = xmlString + deusSimulationPanel.createSimulationXML(simulationName,0) + "\n";
 	
 		xmlString = xmlString + "</deusAutomator>";
 		
@@ -179,7 +181,7 @@ public class DeusAutomatorCommandLine {
 //				String simulationNumberSeed = fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue();
 				
 				// name of the simulation
-				String simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
+				simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
 				
 				// Create new Panel and set it to be modified with new data read from the XML file
 				deusSimulationPanel = new DeusSimulationPanelCommandLine();
