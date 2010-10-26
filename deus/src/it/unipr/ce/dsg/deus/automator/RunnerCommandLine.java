@@ -187,7 +187,7 @@ public class RunnerCommandLine implements Runnable{
 			 
 			 // Write the gnuplot files 
 			 for(int z = 0; z < simulations.get(j).getGnuplot().size(); z++)
-				 {			
+			 	 {			
 				  writeGnuPlot( averageFileName, simulations.get(j).getGnuplot().get(z).getFileName()+"-"+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());
 				 }
 			}			
