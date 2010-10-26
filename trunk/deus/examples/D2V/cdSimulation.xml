@@ -2,7 +2,16 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="5" simulationName="Standard_Simulation">
+<simulation simulationNumberSeed="2" simulationName="CD_SIMULATION">
+
+<node id="D2VPeer">
+	<paramName name="isContentDistributionActive">
+		<initialValue>0.0</initialValue>
+		<finalValue>1.0</finalValue>
+		<stepValue>1.0</stepValue>
+	</paramName>
+	
+</node>
 
 <engine>
 	<seed>
