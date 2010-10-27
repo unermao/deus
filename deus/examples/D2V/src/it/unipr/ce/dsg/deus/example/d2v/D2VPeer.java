@@ -914,7 +914,7 @@ public class D2VPeer extends Peer {
 	 */
 	public void schedulePeriodicContentDistributionEvent(float triggeringTime) {
 		try {
-			D2VContentDistributionPeriodicEvent event = (D2VContentDistributionPeriodicEvent) new D2VContentDistributionPeriodicEvent("discovery", params, null).createInstance(triggeringTime+25);
+			D2VContentDistributionPeriodicEvent event = (D2VContentDistributionPeriodicEvent) new D2VContentDistributionPeriodicEvent("discovery", params, null).createInstance(triggeringTime+100);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
