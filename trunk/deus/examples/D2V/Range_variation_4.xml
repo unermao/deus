@@ -2,22 +2,11 @@
 
 <deusAutomator xmlns="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd">
 
-<simulation simulationNumberSeed="4" simulationName="Range_Variation">
-
-<node id="D2VPeer">
-	<paramName name="rangeValue">
-		<initialValue>1.0</initialValue>
-		<finalValue>7.0</finalValue>
-		<stepValue>1.0</stepValue>
-	</paramName>
-	
-</node>
+<simulation simulationNumberSeed="1" simulationName="Range_Variation_4">
 
 <engine>
 	<seed>
 		<seedValue>123456789</seedValue>
-		<seedValue>123456784</seedValue>
-		<seedValue>423456789</seedValue>
 		<seedValue>523456789</seedValue>
 	</seed>
 </engine>

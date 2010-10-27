@@ -52,7 +52,7 @@
             <aut:param value="200" name="discoveryMaxPeerNumber"/>
             <aut:param value="1.0" name="isContentDistributionActive"/>
             <aut:param value="1000.0" name="ttlValue"/>
-            <aut:param value="2.0" name="rangeValue"/>
+            <aut:param value="6.0" name="rangeValue"/>
         </aut:params>
     </aut:node>
     <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="PeriodicDiscovery">
