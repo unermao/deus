@@ -77,7 +77,8 @@ The handler must be a Java class in the classpath (this is a general rule, not o
 Other than nodes, you have to declare events, like:
 
 {{{
-<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
+<aut:event id="birth" handler="it.unipr.ce.dsg.deus.impl.event.BirthEvent" 
+schedulerListener="it.unipr.ce.dsg.deus.example.revol.RevolBirthSchedulerListener" >
   <aut:events>
     <!-- events to be scheduled on created node -->
     <aut:reference id="connection" />
