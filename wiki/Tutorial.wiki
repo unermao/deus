@@ -6,7 +6,7 @@
 In the home page of the project, you may find:
 
   * this tutorial in .pdf format (deus-0.4.x-tutorial.pdf)
-  * the full release of DEUS v0.4.0 (deus-0.4.x-full.zip)
+  * the full release of DEUS v0.4.x (deus-0.4.x-full.zip)
 
 To quickly start using DEUS, download the full release, unzip it, run Eclipse and create a new Java project (select "Create project from existing source" and set the path of the unzipped deus-0.4.x folder; call the project "deus-0.4.x").
 
