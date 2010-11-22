@@ -18,7 +18,7 @@ public class D2VDiscoveryEvent extends NodeEvent {
 
 	private static final float DISCOVERY_PERIOD = 25;
 
-	private int PEER_LIMIT = 20;
+	private int PEER_LIMIT = 10;
 	
 	public D2VDiscoveryEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
@@ -96,18 +96,34 @@ public class D2VDiscoveryEvent extends NodeEvent {
 				&& i < currNode.getAlpha(); i++) {
 			try {
 				//TODO Modifica al tempo da 300.0 a 25
-				float delay = expRandom((float) 25.0);
-				if (delay > discoveryMaxWait)
-					continue;
+				//float delay = expRandom((float) 25.0);
+				//if (delay > discoveryMaxWait)
+				//	continue;
 				
 				D2VPeerDescriptor p = (D2VPeerDescriptor) currNode.nlResults.get(currNode.getKey()).getFoundNodes().toArray()[i];
+				
+				D2VPeer destPeer = (D2VPeer)Engine.getDefault().getNodeByKey(p.getKey());
+				
+				String msgString = "FIND_NODE#"+currNode.getPeerDescriptor().getGeoLocation().getLatitude()+";"+currNode.getPeerDescriptor().getGeoLocation().getLongitude();
+				
+				//Message length in bit 
+				double msgLen = msgString.getBytes().length*8.0;
+				
+				//Evaluate actual speed between sender and receiver in Kbit/sec
+				double transSpeed = Math.min(currNode.getConnectedNetworkStation().getMaxUplink(), destPeer.getConnectedNetworkStation().getMaxDownlink());
+				
+				//Transmission time in seconds
+				double transTime = (msgLen/1000.0)/transSpeed; 
+				
+				float delay = (float)(transTime * 0.02777);
+				
 				fn = (D2VFindNodeEvent) new D2VFindNodeEvent(
 						"find_node", new Properties(), null, currNodeInfo)
 				.createInstance(triggeringTime + delay);
 
 				fn.setRequestingNode(currNodeInfo);
 				fn.setOneShot(true);
-				fn.setAssociatedNode((D2VPeer)Engine.getDefault().getNodeByKey(p.getKey()));
+				fn.setAssociatedNode(destPeer);
 				
 				//System.out.println("Node Key: " + currNode.getKey() +  " Setting Periodic Node List Size: " + currNode.getPeriodicPeerList().size() );
 				

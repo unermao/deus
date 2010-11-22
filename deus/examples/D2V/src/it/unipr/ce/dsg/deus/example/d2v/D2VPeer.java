@@ -15,6 +15,10 @@ import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.GeoLocation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStation;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.Mobile2GStation;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.Mobile3GStation;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.NetworkStation;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.WiFiStation;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 import java.util.ArrayList;
@@ -45,6 +49,7 @@ public class D2VPeer extends Peer {
 	private static final String DISCOVER_MAX_PEER_NUMBER = "discoveryMaxPeerNumber";
 	private static final String CAR_MIN_SPEED = "carMinSpeed";
 	private static final String IS_CONTENT_DISTRIBUTION_ACTIVE = "isContentDistributionActive";
+	private static final String IS_GB_LIMIT_ACTIVE = "isGBLimitActive";
 	
 	private static final String TTL_VALUE = "ttlValue";
 	private static final String RANGE_VALUE = "rangeValue";
@@ -59,7 +64,7 @@ public class D2VPeer extends Peer {
 	
 	private int alpha = 3;
 	private int k = 10;
-	private int bucketNodeLimit = 20;
+	public static int bucketNodeLimit = 20;
 	private double radiusKm = 1.5;
 	private double epsilon = 1.5;
 	private double avgSpeedMax = 30.0;
@@ -71,6 +76,7 @@ public class D2VPeer extends Peer {
 	private double actualSpeed = 10.0;
 	
 	private boolean isContentDistributionActive = true;
+	public static boolean isGBLimitActive = true;
 	private float discoveryPeriod = 25;
 	
 	private int sentFindNode = 0;
@@ -84,6 +90,9 @@ public class D2VPeer extends Peer {
 
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
 	public ArrayList<D2VPeerDescriptor> nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
+	
+	public static ArrayList<Mobile3GStation> mobile3GStationList = new ArrayList<Mobile3GStation>();
+	public static ArrayList<WiFiStation> wiFiStationList = new ArrayList<WiFiStation>();
 	
 	private int duplicateReceivedMessageCount = 0;
 	
@@ -109,6 +118,8 @@ public class D2VPeer extends Peer {
 	
 	private double totalKbSentForDissemination = 0.0;
 
+	private NetworkStation connectedNetworkStation = null;
+	
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
 	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
 	public static ArrayList<TrafficInformationMessage> globalMessageKnowledge = null;
@@ -133,7 +144,26 @@ public class D2VPeer extends Peer {
 			globalMessageKnowledge = new ArrayList<TrafficInformationMessage>();
 		}
 		*/
-
+		
+		//Read value of parameter carMinSpeed
+		if (params.getProperty(IS_GB_LIMIT_ACTIVE) == null)
+			throw new InvalidParamsException(IS_GB_LIMIT_ACTIVE
+					+ " param is expected");
+		try {
+			
+			double appValue = Double.parseDouble(params.getProperty(IS_GB_LIMIT_ACTIVE));
+			
+			if(appValue == 0.0)
+				isGBLimitActive= false;
+			else
+				isGBLimitActive = true;
+			
+		} catch (NumberFormatException ex) {
+			throw new InvalidParamsException(IS_GB_LIMIT_ACTIVE
+					+ " must be a valid double value.");
+		}
+		System.out.println("Is GB Limit Active ?: " +  isGBLimitActive);
+		
 		//Read value of parameter carMinSpeed
 		if (params.getProperty(IS_CONTENT_DISTRIBUTION_ACTIVE) == null)
 			throw new InvalidParamsException(IS_CONTENT_DISTRIBUTION_ACTIVE
@@ -208,6 +238,7 @@ public class D2VPeer extends Peer {
 			throw new InvalidParamsException(BUCKET_NODE_LIMIT
 					+ " must be a valid int value.");
 		}
+		System.out.println("GB Limit: " + D2VPeer.bucketNodeLimit);
 		
 		//Read value of parameter Alpha
 		if (params.getProperty(ALPHA) == null)
@@ -329,12 +360,14 @@ public class D2VPeer extends Peer {
 		
 		clone.sentInformationMessages = new TreeMap<String,ArrayList<Integer>>();
 		clone.trafficInformationKnowledge = new ArrayList<TrafficInformationMessage>();
+		clone.connectedNetworkStation = null;
 		
 		return clone;
 	}
 
 	public void init(float triggeringTime)
 	{
+		this.connectNode();
 		
 		//Select Randomly a starting Switch Station
 		int ssIndex = Engine.getDefault().getSimulationRandom().nextInt(ssc.getSwitchStationList().size());
@@ -342,7 +375,9 @@ public class D2VPeer extends Peer {
 		
 		//Create Peer Descriptor
 		this.peerDescriptor = new D2VPeerDescriptor(this.ss,this.key);
-		this.peerDescriptor.setTimeStamp(Engine.getDefault().getVirtualTime());
+		this.peerDescriptor.setTimeStamp(triggeringTime);
+		
+		//System.out.println(this.key+":"+this.peerDescriptor.getTimeStamp());
 		
 		//Select a path from its starting switch station
 		ArrayList<CityPath> availablePaths = ssc.getPathListFromSwithStation(this.ss);
@@ -352,9 +387,13 @@ public class D2VPeer extends Peer {
 		this.cp = availablePaths.get(pathIndex);
 		this.cp.incrementNumOfCars();
 		this.ci = new CityPathIndex(0, this.cp.getPathPoints().size());
+		
+		//Set peer position
 		this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
-		this.peerDescriptor.setTimeStamp(triggeringTime);
-			
+		
+		//Search Network station
+		this.searchNetworkStation();
+		
 		//Schedule the first movement
 		this.scheduleMove(triggeringTime);
 		
@@ -439,6 +478,9 @@ public class D2VPeer extends Peer {
 			this.checkTrafficJam(triggeringTime);
 		}
 		
+		//Search best network station for actual position
+		this.searchNetworkStation();
+		
 		if(isContentDistributionActive == true)
 		{
 			//Check road surface of actual point
@@ -448,22 +490,79 @@ public class D2VPeer extends Peer {
 			this.checkReceivedTrafficJamInformation();
 		}
 		
-		//According to new position, check peer position in GB and if necessary remove them from list
-		this.updateBucketInfo(peerDescriptor);
-		
 		//Send Position update to peer in the same area
-		this.broadcastUpdatePositionMessage(triggeringTime);
+		if(this.isConnected == true)
+		{
+			//According to new position, check peer position in GB and if necessary remove them from list
+			this.updateBucketInfo(peerDescriptor);
+			
+			//Broadcast position update to known nodes
+			this.broadcastUpdatePositionMessage(triggeringTime);
+		}
+		
 		
 		if(this.isTrafficJam == false)
 			this.scheduleMove(triggeringTime);
 	
 	}
 
+	/**
+	 * 
+	 */
+	private NetworkStation searchNetworkStation()
+	{
+		if(this.connectedNetworkStation != null)
+		{
+			double actualDistance = GeoDistance.distance(this.connectedNetworkStation,this.getPeerDescriptor().getGeoLocation());
+			if((this.connectedNetworkStation instanceof WiFiStation || this.connectedNetworkStation instanceof Mobile3GStation ) && actualDistance <= this.connectedNetworkStation.getRadius())
+				return this.connectedNetworkStation;
+		
+		}
+	
+		//System.out.println("Searching Network station for node: " + this.key);
+		
+		//Analyze WiFi available WiFi Station
+		for(int wifiIndex=0; wifiIndex<D2VPeer.wiFiStationList.size(); wifiIndex++)
+		{
+			WiFiStation ws = D2VPeer.wiFiStationList.get(wifiIndex);
+			double distance = GeoDistance.distance(ws,this.getPeerDescriptor().getGeoLocation());
+			
+			if(distance <= ws.getRadius())
+			{
+				this.connectedNetworkStation = ws;
+				//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
+				return ws;
+			}
+		}
+		
+		//Analyze 3G available WiFi Station
+		for(int mobile3gIndex=0; mobile3gIndex<D2VPeer.mobile3GStationList.size(); mobile3gIndex++)
+		{
+			Mobile3GStation ms = D2VPeer.mobile3GStationList.get(mobile3gIndex);
+			double distance = GeoDistance.distance(ms,this.getPeerDescriptor().getGeoLocation());
+			
+			if(distance <= ms.getRadius())
+			{
+				this.connectedNetworkStation = ms;
+				//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
+				return ms;
+			}
+		}
+		
+		Mobile2GStation ms = new Mobile2GStation(this.getPeerDescriptor().getGeoLocation().getLatitude(), this.getPeerDescriptor().getGeoLocation().getLongitude());
+		this.connectedNetworkStation = ms;
+		
+		//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
+		
+		return ms;
+		
+	}
+	
 	private void checkRoadSurfaceCondition(float triggeringTime) {
 		
 		//If path has BadSurface Condition store speed for each point
-		if(this.cp.isBadSurfaceCondition() == true)
-			this.cp.getPathPoints().get(this.ci.getIndex()).addMonitoredSpeed(this.actualSpeed);
+		//if(this.cp.isBadSurfaceCondition() == true)
+			//this.cp.getPathPoints().get(this.ci.getIndex()).addMonitoredSpeed(this.actualSpeed);
 		
 		CityPathPoint actualPoint = this.cp.getPathPoints().get(this.ci.getIndex());
 		
@@ -511,7 +610,6 @@ public class D2VPeer extends Peer {
 	{
 		final double peerLat = peer.getGeoLocation().getLatitude();
 		final double peerLon = peer.getGeoLocation().getLongitude();
-		
 		
 		ArrayList<D2VPeerDescriptor> peerList = new ArrayList<D2VPeerDescriptor>();
 		
@@ -669,6 +767,11 @@ public class D2VPeer extends Peer {
 		
 		double v_min = this.carMinSpeed;
 		double v_max = this.cp.getSpeedLimit();
+		
+		//If there is a known obstacle on the street
+		//if(distance != -1.0 && distance <= d_limit)
+			//v_max = this.actualSpeed;
+		
 		double k_jam = 0.25; //250 cars in 1 km
 		
 		double path_len = this.cp.getLenght();
@@ -690,16 +793,25 @@ public class D2VPeer extends Peer {
 			speed = k1 + (k2*distance)/(Math.exp(distance/k3));
 			*/
 			
+			double safe_max_speed = this.cp.getSpeedLimit();
+			
 			//Evaluate speed according to a Parabola equation
 			//double k1 = Math.pow(d_limit, 2.0)/(v_max - v_min);
-			double k1 = Math.pow(d_limit, 2.0)/(speed - v_min);
+			double k1 = Math.pow(d_limit, 2.0)/(safe_max_speed - v_min);
 			double k2 = v_min;
 			
-			speed = Math.pow(distance, 2.0)/k1 + k2;
+			double safe_speed = (Math.pow(distance, 2.0)/k1) + k2;
+	
+			//System.out.println("SAFE SPEED :" + safe_speed +" Speed: " + speed + " Distance: " + distance);
 			
+			speed = Math.min(safe_speed, speed);
+			//speed = safe_speed;
+			
+			//System.out.println("FINAL SPEED :"+ speed + " Distance: " + distance);
 		}
 		
-		//System.out.println(this.key+" Speed: " + speed + " Distance: " + distance);
+		//if(this.cp.isBadSurfaceCondition() == true && distance != -1)
+		this.cp.getPathPoints().get(this.ci.getIndex()).addMonitoredSpeed(speed);
 		
 		this.actualSpeed = speed;
 		
@@ -897,6 +1009,9 @@ public class D2VPeer extends Peer {
 			}
 			*/
 			
+			if(this.isConnected == false)
+				return;
+			
 			D2VDiscoveryEvent event = (D2VDiscoveryEvent) new D2VDiscoveryEvent("discovery", params, null).createInstance(triggeringTime+this.discoveryPeriod);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
@@ -914,7 +1029,26 @@ public class D2VPeer extends Peer {
 	 */
 	public void schedulePeriodicContentDistributionEvent(float triggeringTime) {
 		try {
-			D2VContentDistributionPeriodicEvent event = (D2VContentDistributionPeriodicEvent) new D2VContentDistributionPeriodicEvent("discovery", params, null).createInstance(triggeringTime+100);
+			D2VContentDistributionPeriodicEvent event = (D2VContentDistributionPeriodicEvent) new D2VContentDistributionPeriodicEvent("discovery", params, null).createInstance(triggeringTime+25);
+			event.setOneShot(true);
+			event.setAssociatedNode(this);
+			Engine.getDefault().insertIntoEventsList(event);
+		
+		} catch (InvalidParamsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param triggeringTime
+	 */
+	public void schedulePeerReConnectionEvent(float triggeringTime) {
+		try {
+			//Random delay between 0 and 30 secs
+			float delay = (float)((double)Engine.getDefault().getSimulationRandom().nextInt(30)*0.02777);
+			D2VReConnectNodeEvent event = (D2VReConnectNodeEvent) new D2VReConnectNodeEvent("reconnect", params, null).createInstance(triggeringTime+delay);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
@@ -1061,6 +1195,35 @@ public class D2VPeer extends Peer {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	public void disconnectNode()
+	{
+		this.isConnected = false;
+	}
+	
+	/**
+	 * 
+	 */
+	public void connectNode()
+	{
+		this.isConnected = true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void reconnectNode(float triggeringTime)
+	{
+		this.isConnected = true;
+	
+		this.updateBucketInfo(this.getPeerDescriptor());
+		
+		this.scheduleDiscovery(triggeringTime);
+	}
+	
+	
 	public static SwitchStationController getSsc() {
 		return ssc;
 	}
@@ -1083,14 +1246,6 @@ public class D2VPeer extends Peer {
 
 	public void setK(int k) {
 		this.k = k;
-	}
-
-	public int getBucketNodeLimit() {
-		return bucketNodeLimit;
-	}
-
-	public void setBucketNodeLimit(int bucketNodeLimit) {
-		this.bucketNodeLimit = bucketNodeLimit;
 	}
 
 	public double getRadiusKm() {
@@ -1396,5 +1551,13 @@ public class D2VPeer extends Peer {
 	public void addSentKbAmountForDissemination(double kbValue)
 	{
 		this.totalKbSentForDissemination += kbValue;
+	}
+
+	public NetworkStation getConnectedNetworkStation() {
+		return connectedNetworkStation;
+	}
+
+	public void setConnectedNetworkStation(NetworkStation connectedNetworkStation) {
+		this.connectedNetworkStation = connectedNetworkStation;
 	}
 }

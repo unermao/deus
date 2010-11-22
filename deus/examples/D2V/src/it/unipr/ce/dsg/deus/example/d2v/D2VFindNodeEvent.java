@@ -76,6 +76,38 @@ public class D2VFindNodeEvent extends NodeEvent {
 			{
 				//System.out.println("ReqPeer:" + reqPeer.getPeerDescriptor().getKey() + " Starting LookUp Recursive Procedure ! ");
 				
+				/////////////////////// FORMAL ANALYSIS TEST //////////////////////////////
+				/*
+				Object[] foundNodes = reqPeer.nlResults.get(reqPeer.getKey()).getFoundNodes().toArray();
+					
+				int newNodeCount =0;
+				//Add founded nodes to peerList
+				for (int j = 0; j < reqPeer.nlResults.get(reqPeer.getKey()).size(); j++) {
+					//System.out.println("Peer:"+((D2VPeerDescriptor) foundNodes[j]).getKey());
+					if(reqPeer.insertPeer("D2VNodeLookUpRecursiveEvent",(D2VPeerDescriptor) foundNodes[j],triggeringTime) == true)
+						newNodeCount  ++;
+				}
+					
+				float discoveryValue = reqPeer.getDiscoveryMaxPeriod();
+				if(newNodeCount != 0)
+				{
+				
+					double k1 = reqPeer.getDiscoveryMaxPeriod();
+					double k2 = (k1 - (double)reqPeer.getDiscoveryMinPeriod())/(double)(reqPeer.getDiscoveryPeriodPeerLimit()*reqPeer.getDiscoveryMinPeriod());
+						
+					discoveryValue = (float) (k1 / (double)((k2*(double)newNodeCount)+1));
+				}
+				reqPeer.setDiscoveryPeriod(discoveryValue);
+				
+				//At the beginning of a new discovery evaluate and save information about percentage of missing nodes
+				if(reqPeer.getDiscoveryStatistics().size() < 100)
+				{	
+					double perMissing = reqPeer.getGb().evaluatePerMissingNodes(reqPeer.createPeerInfo());
+					reqPeer.getDiscoveryStatistics().add(perMissing);
+				}
+				*/
+				/////////////////////// FORMAL ANALYSIS TEST //////////////////////////////
+				
 				D2VPeerDescriptor first = null;
 
 				if (reqPeer.nlResults.get(reqPeer.getKey()).size() != 0) {

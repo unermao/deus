@@ -36,6 +36,7 @@
    var nodeKey = 0;	
    var numOfGeoBucket = 5;
    var sizeOfGeoBucket = 0.93205679/3;
+   var pointInterval = 30;
    
    var markerList = new Array();
    
@@ -168,6 +169,8 @@ function initialize() {
 	nodeKey = dato1;       
 	
 	readSwitchStation();
+	read3GStation();
+	readWiFiStation();
 	
 	t=setTimeout("updateMap()",1000); 
 	}
@@ -274,6 +277,71 @@ function updateAllPeer() {
 
 }
 
+function drawCirclePoints(center,radius,color){
+	var circlePoints = Array();
+	var searchPoints = Array();
+
+	with (Math) {
+		var rLat = (radius/3963.189) * (180/PI); // miles
+		var rLng = rLat/cos(center.lat() * (PI/180));
+
+		for (var a = 0 ; a < 361 ; a++ ) {
+			var aRad = a*(PI/180);
+			var x = center.lng() + (rLng * cos(aRad));
+			var y = center.lat() + (rLat * sin(aRad));
+			var point = new GLatLng(parseFloat(y),parseFloat(x),true);
+			circlePoints.push(point);
+			if (a % pointInterval == 0) {
+				searchPoints.push(point);
+			}
+		}
+	}
+
+	//searchPolygon = new GPolygon(circlePoints, '#0000ff', 1, 1, '#0000ff', 0.2);
+	searchPolygon = new GPolygon(circlePoints, color, 1, 1, color, 0.2);	
+	map.addOverlay(searchPolygon);
+	map.setCenter(searchPolygon.getBounds().getCenter(),map.getBoundsZoomLevel(searchPolygon.getBounds()));
+
+	return searchPoints;
+
+}
+
+function read3GStation() {
+
+	GDownloadUrl("3g_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	
+
+	for (var i = 0; i < allMarkers.length; i++) {
+		
+		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
+		drawCirclePoints(punto,1.0,'#2C5700');
+	}
+	
+	});
+
+}
+
+function readWiFiStation() {
+
+	GDownloadUrl("wifi_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	
+
+	for (var i = 0; i < allMarkers.length; i++) {
+		
+		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
+		drawCirclePoints(punto,0.5,'#0000ff');
+	}
+	
+	});
+
+}
+
 function readSwitchStation() {
 
 	GDownloadUrl("switch_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
@@ -297,6 +365,7 @@ function readSwitchStation() {
 	});
 
 }
+
 
 function readTrafficElement() {
 

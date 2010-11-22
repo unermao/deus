@@ -19,7 +19,7 @@ public class DebugLog {
 	public void printEnd(Integer peerKey,String className, float time)
 	{
 		this.end = System.currentTimeMillis();
-		System.out.println("VT:"+time+" PeerKey: " + peerKey + " Event: "+className+" End At: " +  this.end + " PERIOD:"+(this.end-this.start)+"\n");
+		System.out.println("VT:"+time+" PeerKey: " + peerKey + " Event: "+className+" End At: " +  this.end + " PERIOD:"+(this.end-this.start)+" milli sec \n");
 	}
 	
 	
