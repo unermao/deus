@@ -12,6 +12,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.message.TrafficInformationMessage;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.SwitchStationController;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.NetworkStationController;
 import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 
 
@@ -35,10 +36,16 @@ public class D2VConfigurationEvent extends Event{
 		
 		D2VPeer.globalMessageKnowledge = new ArrayList<TrafficInformationMessage>();
 		
+		//Loading Switch Stations
 		D2VPeer.ssc = new SwitchStationController("examples/D2V/SwitchStation_Parma.csv","examples/D2V/paths_result_mid_Parma.txt");
 		D2VPeer.ssc.readSwitchStationFile();
 		D2VPeer.ssc.readPathFile();
 		D2VPeer.ssc.addMultipleBadSurfaceCondition(5);
+		
+		//Loading Mobile 3g and WiFi Stations
+		NetworkStationController nsc = new NetworkStationController("examples/D2V/3GStation_Parma.csv", "examples/D2V/WiFiStation_Parma.csv");
+		D2VPeer.mobile3GStationList = nsc.read3GStationFile();
+		D2VPeer.wiFiStationList = nsc.readWiFiStationFile();
 		
 		log.printEnd(0,this.getClass().getName(),triggeringTime);
 	}

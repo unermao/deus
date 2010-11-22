@@ -33,6 +33,7 @@ import it.unipr.ce.dsg.deus.example.d2v.message.TrafficJamMessage;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPath;
 import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
+import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
@@ -98,10 +99,12 @@ public class D2VLogNodesStatsEvent extends Event {
 	 */
 	public void evaluateNodeStatistics()
 	{
+		
+		//DebugLog log = new DebugLog();
+		//log.printStart(0, this.getClass().getCanonicalName(), triggeringTime);
+		
 		System.out.println("################################################################################################");
 		System.out.println("VT:" + triggeringTime + " EVALUATING NODE STATISTICS");
-		
-		
 		
 		ArrayList<Integer> d2vPeerIndexList = Engine.getDefault().getNodeKeysById("D2VPeer");
 		
@@ -119,7 +122,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		
 		a = new AutomatorLogger("./temp/logger");
 		fileValue = new ArrayList<LoggerObject>();
-		
+			
 		if(d2vPeerIndexList != null)
 		{
 			
@@ -149,6 +152,7 @@ public class D2VLogNodesStatsEvent extends Event {
 					for(int k=0;k<peer.getK();k++)
 						missingNodesPerGB.set(k,missingNodesPerGB.get(k)+results.get(k));
 				}
+					
 					
 				//sum discovery period of the peer
 				discoveryPeriodSum += peer.getDiscoveryPeriod();
@@ -326,11 +330,53 @@ public class D2VLogNodesStatsEvent extends Event {
 		fileValue.add(new LoggerObject("CoveragePercentage",globalAvgCoveragePercentage));
 		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		
-		
+		//PATH AVERAGE SPEED EVALUATION
+		/*
 		if(triggeringTime == Engine.getDefault().getMaxVirtualTime())
 		{
+
+			for(int index=0; index<D2VPeer.ssc.getPathList().size(); index++)
+			{
+				CityPath cp = D2VPeer.ssc.getPathList().get(index);
+				
+				if(cp.isBadSurfaceCondition() == true)
+				{
+					System.out.println("Path: " + index);
+					
+					for(int pointIndex=0; pointIndex < cp.getPathPoints().size(); pointIndex++)
+					{
+						CityPathPoint point = cp.getPathPoints().get(pointIndex);
+						CityPathPoint badSurfacePoint = cp.getPathPoints().get(cp.getBadSurfaceIndex());
+						double distance = GeoDistance.distance(point,badSurfacePoint);
+						
+						if(distance <= 0.3)
+						{
+							double sum = 0.0;
+							
+							for(int speedValueIndex=0; speedValueIndex<point.getLogMonitoredSpeed().size(); speedValueIndex++)
+								sum += point.getLogMonitoredSpeed().get(speedValueIndex);
+							
+							double speedAvg = sum / (double)point.getLogMonitoredSpeed().size();
+							double sign = 1.0;
+							
+							if(pointIndex < cp.getBadSurfaceIndex())
+								sign = -1.0;
+							
+							//System.out.println((distance*sign)+" "+speedAvg/cp.getSpeedLimit());
+							System.out.println((distance*sign)+" "+speedAvg);
+						}
+					}
+					
+				}
+				
+			}
+			
+		}
+		*/
+			/*
 			System.out.println("################################################################################################");
 			System.out.println("Avg Speed near Bad Surface Condition");
+			//ArrayList<ArrayList<Double>> speedAvgSum = new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> speedAvgSum = new ArrayList<ArrayList<Double>>();
 			
 			int numOfValue = 60;
@@ -353,8 +399,18 @@ public class D2VLogNodesStatsEvent extends Event {
 					for(int i=0; i< numOfValue; i++)
 					{
 						CityPathPoint point = cp.getPathPoints().get(basePosition+i);
-						for(int speedValueIndex=0; speedValueIndex< point.getLogMonitoredSpeed().size(); speedValueIndex++)
-							speedAvgSum.get(i).add(point.getLogMonitoredSpeed().get(speedValueIndex));
+						
+						speedAvgSum.get(i).addAll(point.getLogMonitoredSpeed());
+
+						if(point.getLogMonitoredSpeed().size() > 0)
+							System.out.println("Index:" + i + "Speed Value: " + point.getLogMonitoredSpeed().get(0));
+						
+						//Get monitored speed in the point
+						//for(int speedValueIndex=0; speedValueIndex< point.getLogMonitoredSpeed().size(); speedValueIndex++)
+						//{
+						//	System.out.println("Index:" + i + "Speed Value: " + point.getLogMonitoredSpeed().get(speedValueIndex));
+						//	speedAvgSum.get(i).add(point.getLogMonitoredSpeed().get(speedValueIndex));
+						//}
 					}
 				}
 			}
@@ -375,8 +431,11 @@ public class D2VLogNodesStatsEvent extends Event {
 			
 			System.out.println("################################################################################################");
 		}
-		
+		*/
 		a.write(Engine.getDefault().getVirtualTime(), fileValue);
+		
+
+		//log.printEnd(0, this.getClass().getCanonicalName(), triggeringTime);
 	}
 	
 	/*

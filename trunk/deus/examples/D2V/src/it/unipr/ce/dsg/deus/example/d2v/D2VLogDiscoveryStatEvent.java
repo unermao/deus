@@ -21,9 +21,6 @@ import it.unipr.ce.dsg.deus.core.RunException;
  */
 public class D2VLogDiscoveryStatEvent extends Event {
 
-	private AutomatorLogger a;
-	private ArrayList<LoggerObject> fileValue;
-
 	public D2VLogDiscoveryStatEvent(String id, Properties params,
 			Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
@@ -32,12 +29,14 @@ public class D2VLogDiscoveryStatEvent extends Event {
 
 	public void run() throws RunException {
 		
+		int SAMPLE_LIMIT = 100;
+		
 		System.out.println("VT:" + triggeringTime + " LOG_DISCOVERY_STAT_EVENT");
 
 		ArrayList<Double> discoveryList = new ArrayList<Double>();
 		ArrayList<Integer> discoveryCountList = new ArrayList<Integer>();
 		
-		for(int i=0;i<100;i++)
+		for(int i=0;i<SAMPLE_LIMIT;i++)
 		{
 			discoveryList.add(0.0);
 			discoveryCountList.add(0);
@@ -50,10 +49,8 @@ public class D2VLogDiscoveryStatEvent extends Event {
 				{
 					D2VPeer peer = (D2VPeer)node;
 					
-					//System.out.println("VT:" + triggeringTime + " LOG_DISCOVERY_STAT_EVENT Key:" + peer.getKey() + " Discovery Samples: " + peer.getDiscoveryStatistics().size());
-				
-					if(peer.getDiscoveryStatistics().size() == 100)
-					{
+					if(peer.getDiscoveryStatistics().size() == SAMPLE_LIMIT )
+					{							
 						discoveryCountList.set(i, discoveryCountList.get(i)+1);
 						discoveryList.set(i, discoveryList.get(i)+peer.getDiscoveryStatistics().get(i));
 					}
@@ -61,8 +58,11 @@ public class D2VLogDiscoveryStatEvent extends Event {
 			}
 		}
 		
-		for(int i=0;i<100;i++)
-			System.out.println(i+" "+(double)(discoveryList.get(i)/(double)discoveryCountList.get(i)));	
+		System.out.println(0+" "+100.0);	
+		for(int i=0;i<SAMPLE_LIMIT;i++)
+		{
+			System.out.println((i+1)+" "+(double)(discoveryList.get(i)/(double)discoveryCountList.get(i)));
+		}
 		
 	}
 	

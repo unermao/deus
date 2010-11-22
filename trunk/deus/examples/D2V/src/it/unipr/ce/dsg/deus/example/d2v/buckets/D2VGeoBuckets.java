@@ -10,6 +10,8 @@ import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
@@ -96,7 +98,7 @@ public class D2VGeoBuckets {
 				{
 					//System.out.println("D2VGeoBucket ---> Already Exist: Index: " + peerPositionIndex);
 					
-					//Is it was in the same bucket
+					//If it was in the same bucket
 					if(peerBucketPositionIndex == i)
 					{
 						int bucketIndex = this.bucket.get(i).indexOf(newPeer);
@@ -121,6 +123,13 @@ public class D2VGeoBuckets {
 					//Add new ref int the righ bucket
 					this.bucket.get(i).add(newPeer);
 					
+					//Update gb info if GBLimit is active
+					if(D2VPeer.isGBLimitActive == true)
+					{
+						System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+						this.updateGeoBucket(myDescr, i, D2VPeer.bucketNodeLimit);
+					}
+					
 					//Send Add Peer Info Message
 					this.sendAddPeerInfoMessage(params, myDescr, newPeer);
 				}		
@@ -137,6 +146,9 @@ public class D2VGeoBuckets {
 			//Send a remove message to newPeer to remove my reference
 			this.sendRemovePeerMessage(params,newPeer,myDescr);			
 		}
+		
+		//for(int i=0; i<this.kValue; i++)
+			//System.out.println("Peer Num In GB("+i+"):"+this.bucket.get(i).size());
 		
 		//System.out.println("Returning: " + isNodeNew);
 		return isNodeNew;
@@ -601,6 +613,52 @@ public class D2VGeoBuckets {
 		return resultList;
 	}
 	
+	/**
+	 * 
+	 */
+	public void updateGeoBucket(D2VPeerDescriptor peer, int gbIndex, int peerLimit )
+	{
+		
+		if(this.bucket.get(gbIndex).size() > peerLimit)
+		{
+			final double peerLat = peer.getGeoLocation().getLatitude();
+			final double peerLon = peer.getGeoLocation().getLongitude();
+			
+			//Retrieve Peer in the requested gbIndex
+			ArrayList<D2VPeerDescriptor> tempList = new ArrayList<D2VPeerDescriptor>();
+			
+			// Sort PeerInfo according to distance
+			Collections.sort(tempList, new Comparator<D2VPeerDescriptor>() {
+
+				public int compare(D2VPeerDescriptor o1, D2VPeerDescriptor o2) {
+			    
+					double dist1 = GeoDistance.distance(peerLon,peerLat, o1.getGeoLocation().getLongitude(), o1.getGeoLocation().getLatitude());
+					double dist2 = GeoDistance.distance(peerLon,peerLat, o2.getGeoLocation().getLongitude(), o2.getGeoLocation().getLatitude());
+						
+					if(dist1 == dist2)
+						return 0;
+					
+					if(dist1 < dist2)
+						return -1;
+				
+					if(dist1 > dist2)
+						return 1;
+					
+					return 0;
+			    }});
+			
+				/*
+				for(int index=0; index<peerLimit; index++)
+				{
+					D2VPeerDescriptor peerInfo = peerList.get(index);
+					tempList.add(peerInfo);
+				}	
+				*/
+			
+				this.bucket.set(gbIndex, tempList).subList(0, peerLimit -1);
+		}
+	}
+
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {
 		return bucket;
 	}
