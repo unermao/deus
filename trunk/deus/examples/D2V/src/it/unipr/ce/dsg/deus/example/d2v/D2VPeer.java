@@ -91,6 +91,7 @@ public class D2VPeer extends Peer {
 	public HashMap<Integer, SearchResultType> nlResults = new HashMap<Integer, SearchResultType>();
 	public ArrayList<D2VPeerDescriptor> nlContactedNodes = new ArrayList<D2VPeerDescriptor>();
 	
+	public static ArrayList<Mobile2GStation> mobile2GStationList = new ArrayList<Mobile2GStation>();
 	public static ArrayList<Mobile3GStation> mobile3GStationList = new ArrayList<Mobile3GStation>();
 	public static ArrayList<WiFiStation> wiFiStationList = new ArrayList<WiFiStation>();
 	
@@ -392,7 +393,7 @@ public class D2VPeer extends Peer {
 		this.peerDescriptor.setGeoLocation(this.cp.getStartPoint());
 		
 		//Search Network station
-		this.searchNetworkStation();
+		this.searchNetworkStation(triggeringTime);
 		
 		//Schedule the first movement
 		this.scheduleMove(triggeringTime);
@@ -479,7 +480,7 @@ public class D2VPeer extends Peer {
 		}
 		
 		//Search best network station for actual position
-		this.searchNetworkStation();
+		this.searchNetworkStation(triggeringTime);
 		
 		if(isContentDistributionActive == true)
 		{
@@ -509,8 +510,12 @@ public class D2VPeer extends Peer {
 	/**
 	 * 
 	 */
-	private NetworkStation searchNetworkStation()
+	private NetworkStation searchNetworkStation(float triggeringTime)
 	{
+		double WIFI_RECONNECTION_TIME = 10.0*0.02777;
+		double MOBILE_RECONNECTION_TIME = 5.0*0.02777;
+		
+		//Check if the peer is already in the covered area of the previous network station
 		if(this.connectedNetworkStation != null)
 		{
 			double actualDistance = GeoDistance.distance(this.connectedNetworkStation,this.getPeerDescriptor().getGeoLocation());
@@ -519,8 +524,6 @@ public class D2VPeer extends Peer {
 		
 		}
 	
-		//System.out.println("Searching Network station for node: " + this.key);
-		
 		//Analyze WiFi available WiFi Station
 		for(int wifiIndex=0; wifiIndex<D2VPeer.wiFiStationList.size(); wifiIndex++)
 		{
@@ -528,14 +531,21 @@ public class D2VPeer extends Peer {
 			double distance = GeoDistance.distance(ws,this.getPeerDescriptor().getGeoLocation());
 			
 			if(distance <= ws.getRadius())
-			{
+			{	
+				//If old network station is null or a mobile network
+				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof Mobile2GStation) || (this.connectedNetworkStation instanceof Mobile3GStation))
+				{
+					this.disconnectNode();
+					this.schedulePeerReConnectionEvent(triggeringTime,WIFI_RECONNECTION_TIME);
+				}
+			
 				this.connectedNetworkStation = ws;
-				//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
+				
 				return ws;
 			}
 		}
 		
-		//Analyze 3G available WiFi Station
+		//Analyze 3G station available 
 		for(int mobile3gIndex=0; mobile3gIndex<D2VPeer.mobile3GStationList.size(); mobile3gIndex++)
 		{
 			Mobile3GStation ms = D2VPeer.mobile3GStationList.get(mobile3gIndex);
@@ -543,18 +553,44 @@ public class D2VPeer extends Peer {
 			
 			if(distance <= ms.getRadius())
 			{
+				//If old network station is null or a Wifi network
+				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
+				{
+					this.disconnectNode();
+					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
+				}
+				
 				this.connectedNetworkStation = ms;
-				//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
 				return ms;
 			}
 		}
 		
-		Mobile2GStation ms = new Mobile2GStation(this.getPeerDescriptor().getGeoLocation().getLatitude(), this.getPeerDescriptor().getGeoLocation().getLongitude());
-		this.connectedNetworkStation = ms;
 		
-		//System.out.println("Network Station: " + this.connectedNetworkStation.getClass().getName() + ";" + this.connectedNetworkStation.getLatitude() + ";" + this.connectedNetworkStation.getLongitude() + " Peer Key:" + this.key);
+		//Analyze 2G Station available
+		for(int mobile2gIndex=0; mobile2gIndex<D2VPeer.mobile2GStationList.size(); mobile2gIndex++)
+		{
+			Mobile2GStation ms = D2VPeer.mobile2GStationList.get(mobile2gIndex);
+			double distance = GeoDistance.distance(ms,this.getPeerDescriptor().getGeoLocation());
+			
+			if(distance <= ms.getRadius())
+			{
+				//If old network station is null or a Wifi network
+				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
+				{
+					this.disconnectNode();
+					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
+				}
+				
+				this.connectedNetworkStation = ms;
+				return ms;
+			}
+		}
 		
-		return ms;
+		
+		this.connectedNetworkStation = null;
+		this.disconnectNode();
+		
+		return null;
 		
 	}
 	
@@ -1044,11 +1080,11 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param triggeringTime
 	 */
-	public void schedulePeerReConnectionEvent(float triggeringTime) {
+	public void schedulePeerReConnectionEvent(float triggeringTime, double reconnectionDelay) {
 		try {
 			//Random delay between 0 and 30 secs
-			float delay = (float)((double)Engine.getDefault().getSimulationRandom().nextInt(30)*0.02777);
-			D2VReConnectNodeEvent event = (D2VReConnectNodeEvent) new D2VReConnectNodeEvent("reconnect", params, null).createInstance(triggeringTime+delay);
+			//float delay = (float)((double)Engine.getDefault().getSimulationRandom().nextInt(30)*0.02777);
+			D2VReConnectNodeEvent event = (D2VReConnectNodeEvent) new D2VReConnectNodeEvent("reconnect", params, null).createInstance(triggeringTime+(float)reconnectionDelay);
 			event.setOneShot(true);
 			event.setAssociatedNode(this);
 			Engine.getDefault().insertIntoEventsList(event);
@@ -1063,10 +1099,15 @@ public class D2VPeer extends Peer {
 	 * 
 	 * @param peerDescriptor2
 	 */
-	public void updateBucketInfo(D2VPeerDescriptor peerDescriptor2) {
-		this.gb.updateBucketInfo(params,peerDescriptor2);	
+	public void updateBucketInfo(D2VPeerDescriptor peerDescriptor) {
+		this.gb.updateBucketInfo(params,peerDescriptor);	
 	}
 
+	public void broadcastPingMessage(D2VPeerDescriptor peerDescriptor)
+	{
+		this.gb.broadcastPingMessage(params,peerDescriptor);
+	}
+	
 	public void checkTrafficInformationKnowledge(float triggeringTime)
 	{
 		//Clean old Info
@@ -1199,7 +1240,8 @@ public class D2VPeer extends Peer {
 	 * 
 	 */
 	public void disconnectNode()
-	{
+	{ 
+		//System.out.println("Peer: " + this.key + " Disconnected !");
 		this.isConnected = false;
 	}
 	
@@ -1216,9 +1258,13 @@ public class D2VPeer extends Peer {
 	 */
 	public void reconnectNode(float triggeringTime)
 	{
+		//System.out.println("Peer: " + this.key + " Reconnected !");
+		
 		this.isConnected = true;
-	
+		
 		this.updateBucketInfo(this.getPeerDescriptor());
+		
+		this.broadcastPingMessage(this.getPeerDescriptor());
 		
 		this.scheduleDiscovery(triggeringTime);
 	}

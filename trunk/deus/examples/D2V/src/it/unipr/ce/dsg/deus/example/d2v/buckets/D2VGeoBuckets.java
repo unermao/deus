@@ -64,9 +64,13 @@ public class D2VGeoBuckets {
 	 * 
 	 */
 	public boolean insertPeer(Properties params,D2VPeerDescriptor myDescr,D2VPeerDescriptor newPeer){
-		
+	
+		//Check node connection status
+		if(this.checkConnectionStatus(newPeer.getKey()) == false)
+			return false;
+			
 		boolean isNodeNew = false;
-		
+	
 		int peerBucketPositionIndex = this.bucketIndexOfPeerDescriptor(newPeer);				
 		
 		//If peer already exist in bucket
@@ -126,7 +130,6 @@ public class D2VGeoBuckets {
 					//Update gb info if GBLimit is active
 					if(D2VPeer.isGBLimitActive == true)
 					{
-						System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 						this.updateGeoBucket(myDescr, i, D2VPeer.bucketNodeLimit);
 					}
 					
@@ -333,29 +336,33 @@ public class D2VGeoBuckets {
 			{
 				D2VPeerDescriptor peerInfo = this.bucket.get(i).get(j);
 		
-				double distance = GeoDistance.distance(myDesc, peerInfo);
-					
-				boolean bucketFounded = false;
-					
-				//For each KBucket without the last one that is for all peers out of previous circumferences 
-				for(int index=0;index<kValue; index++)
+				//If node is connected
+				if(this.checkConnectionStatus(peerInfo.getKey()) == true)
 				{
-					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-					if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
-					{
+					double distance = GeoDistance.distance(myDesc, peerInfo);
+					
+					boolean bucketFounded = false;
 						
-						//Add the peer in the right bucket
-						if(!localGeoBucketVector.get(index).contains(peerInfo))
-							localGeoBucketVector.get(index).add(peerInfo);
-					
-						bucketFounded = true;
-					
-						break;
+					//For each KBucket without the last one that is for all peers out of previous circumferences 
+					for(int index=0;index<kValue; index++)
+					{
+						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+						{
+							
+							//Add the peer in the right bucket
+							if(!localGeoBucketVector.get(index).contains(peerInfo))
+								localGeoBucketVector.get(index).add(peerInfo);
+						
+							bucketFounded = true;
+						
+							break;
+						}
 					}
+					
+					if(bucketFounded == false)
+						this.sendRemovePeerMessage(params, peerInfo, myDesc);
 				}
-				
-				if(bucketFounded == false)
-					this.sendRemovePeerMessage(params, peerInfo, myDesc);	
 			}
 		}
 		
@@ -450,24 +457,27 @@ public class D2VGeoBuckets {
 			{
 				D2VPeerDescriptor peerInfo = ((D2VPeer)node).createPeerInfo();
 				
-				double distance = GeoDistance.distance(myDesc, peerInfo);
-					
-				boolean bucketFounded = false;
-					
-				//For each KBucket without the last one that is for all peers out of previous circumferences 
-				for(int index=0;index<kValue; index++)
+				if(this.checkConnectionStatus(peerInfo.getKey()))
 				{
-					//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
-					if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+					double distance = GeoDistance.distance(myDesc, peerInfo);
+					
+					boolean bucketFounded = false;
+						
+					//For each KBucket without the last one that is for all peers out of previous circumferences 
+					for(int index=0;index<kValue; index++)
 					{
-						
-						//Add the peer in the right bucket
-						if(!localGeoBucketVector.get(index).contains(peerInfo))
-							localGeoBucketVector.get(index).add(peerInfo);
-						
-						bucketFounded = true;
-						
-						break;
+						//If the distance is in the circumference with a ray of (numOfKBuckets-1)*rayDistance
+						if((distance <= (double)(index)*rayDistance) && bucketFounded == false)
+						{
+							
+							//Add the peer in the right bucket
+							if(!localGeoBucketVector.get(index).contains(peerInfo))
+								localGeoBucketVector.get(index).add(peerInfo);
+							
+							bucketFounded = true;
+							
+							break;
+						}
 					}
 				}
 			}
@@ -657,6 +667,24 @@ public class D2VGeoBuckets {
 			
 				this.bucket.set(gbIndex, tempList).subList(0, peerLimit -1);
 		}
+	}
+	
+	public void broadcastPingMessage(Properties params,D2VPeerDescriptor peerDescriptor) {
+		
+		for(int i=0; i<kValue; i++)
+		{
+			for(int j=0; j<this.bucket.get(i).size();j++)
+			{
+				D2VPeerDescriptor peerInfo = this.bucket.get(i).get(j);
+				this.sendAddPeerInfoMessage(params, peerDescriptor, peerInfo);
+			}
+		}
+	}
+	
+	public boolean checkConnectionStatus(int peerKey)
+	{
+		D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(peerKey); 
+		return peer.isConnected();
 	}
 
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {

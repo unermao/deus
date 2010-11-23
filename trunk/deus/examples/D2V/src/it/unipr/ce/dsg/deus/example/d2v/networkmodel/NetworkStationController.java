@@ -15,9 +15,11 @@ public class NetworkStationController {
 
 	private String mobile3gStationFileName = null;
 	private String wifiStationFileName = null;
+	private String mobile2gStationFileName = null;
 
-	public NetworkStationController( String mobile3gStationFileName, String wifiStationFileName )
+	public NetworkStationController(String mobile2gStationFileName, String mobile3gStationFileName, String wifiStationFileName )
 	{
+		this.mobile2gStationFileName  = mobile2gStationFileName;
 		this.mobile3gStationFileName = mobile3gStationFileName;
 		this.wifiStationFileName = wifiStationFileName;
 	}
@@ -100,6 +102,47 @@ public class NetworkStationController {
 		}
 		
 		System.out.println("Network Stations from "+ mobile3gStationFileName + " : " + nsList.size());
+		
+		return nsList;
+	}
+	
+	public ArrayList<Mobile2GStation> read2GStationFile()
+	{
+		System.out.println("Reading " + mobile2gStationFileName + " ...");
+		
+		ArrayList<Mobile2GStation> nsList = new ArrayList<Mobile2GStation>();
+		
+		try
+		{
+			BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(new File(mobile2gStationFileName))));
+			
+			String line = null;
+			line = br.readLine();
+			
+			while(line!= null)
+			{	
+				String[] coordinates = line.split(",");
+				
+				double lat = Double.parseDouble(coordinates[0]);
+				double lon = Double.parseDouble(coordinates[1]);
+				double radius = Double.parseDouble(coordinates[2]);
+				double maxUplink = Double.parseDouble(coordinates[3]);
+				double maxDownlink = Double.parseDouble(coordinates[4]);
+					
+				Mobile2GStation ms = new Mobile2GStation(lat, lon,radius,maxUplink,maxDownlink);
+				
+				nsList.add(ms);
+	
+				line = br.readLine();
+			}
+			
+			br.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Network Stations from "+ mobile2gStationFileName + " : " + nsList.size());
 		
 		return nsList;
 	}

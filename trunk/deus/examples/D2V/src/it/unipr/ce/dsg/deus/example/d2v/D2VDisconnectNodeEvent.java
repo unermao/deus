@@ -23,7 +23,6 @@ public class D2VDisconnectNodeEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
 		currentNode.disconnectNode();
 	}

@@ -23,9 +23,8 @@ public class D2VReConnectNodeEvent extends NodeEvent {
 	}
 
 	public void run() throws RunException {
-		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
-		currentNode.connectNode();
+		currentNode.reconnectNode(triggeringTime);
 	}
 
 }
