@@ -170,6 +170,7 @@ function initialize() {
 	
 	readSwitchStation();
 	read3GStation();
+	read2GStation();
 	readWiFiStation();
 	
 	t=setTimeout("updateMap()",1000); 
@@ -303,6 +304,24 @@ function drawCirclePoints(center,radius,color){
 	map.setCenter(searchPolygon.getBounds().getCenter(),map.getBoundsZoomLevel(searchPolygon.getBounds()));
 
 	return searchPoints;
+
+}
+
+function read2GStation() {
+
+	GDownloadUrl("2g_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	var xml = GXml.parse(data);
+	var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	
+
+	for (var i = 0; i < allMarkers.length; i++) {
+		
+		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
+		drawCirclePoints(punto,2.0,'#800517');
+	}
+	
+	});
 
 }
 

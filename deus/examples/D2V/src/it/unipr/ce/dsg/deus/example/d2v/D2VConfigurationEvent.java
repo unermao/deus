@@ -43,7 +43,8 @@ public class D2VConfigurationEvent extends Event{
 		D2VPeer.ssc.addMultipleBadSurfaceCondition(5);
 		
 		//Loading Mobile 3g and WiFi Stations
-		NetworkStationController nsc = new NetworkStationController("examples/D2V/3GStation_Parma.csv", "examples/D2V/WiFiStation_Parma.csv");
+		NetworkStationController nsc = new NetworkStationController("examples/D2V/2GStation_Parma.csv", "examples/D2V/3GStation_Parma.csv", "examples/D2V/WiFiStation_Parma.csv");
+		D2VPeer.mobile2GStationList = nsc.read2GStationFile();
 		D2VPeer.mobile3GStationList = nsc.read3GStationFile();
 		D2VPeer.wiFiStationList = nsc.readWiFiStationFile();
 		
