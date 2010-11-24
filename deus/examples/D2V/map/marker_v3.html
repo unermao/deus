@@ -318,7 +318,7 @@ function read2GStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,2.0,'#800517');
+		drawCirclePoints(punto,2.5,'#800517');
 	}
 	
 	});
@@ -336,7 +336,7 @@ function read3GStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,1.0,'#2C5700');
+		drawCirclePoints(punto,2.2,'#2C5700');
 	}
 	
 	});
@@ -354,7 +354,7 @@ function readWiFiStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,0.5,'#0000ff');
+		drawCirclePoints(punto,1.0,'#0000ff');
 	}
 	
 	});

@@ -134,46 +134,49 @@ public class D2VLogNodesStatsEvent extends Event {
 			{
 				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
 				
-				//Initialize array only the first time
-				if(missingNodesPerGB.size() == 0)	
-					for(int k=0;k<peer.getK();k++)
-						missingNodesPerGB.add(0.0);
-				
-				//Evaluate global missing node and missing per GB 
-				ArrayList<Double> results = peer.getGb().evaluateCompletePerMissingNodes(peer.createPeerInfo());
-				
-				//sum percentage of globla missing node
-				totalPercentageMissing += results.get(results.size()-1);
-				
-				//Store and sum percentage of missing node per GB
-				if(results.get(results.size()-1) > 0.0)
+				if(peer.isConnected() == true)
 				{
-					missingPerGBCounter ++;
-					for(int k=0;k<peer.getK();k++)
-						missingNodesPerGB.set(k,missingNodesPerGB.get(k)+results.get(k));
-				}
+					//Initialize array only the first time
+					if(missingNodesPerGB.size() == 0)	
+						for(int k=0;k<peer.getK();k++)
+							missingNodesPerGB.add(0.0);
 					
+					//Evaluate global missing node and missing per GB 
+					ArrayList<Double> results = peer.getGb().evaluateCompletePerMissingNodes(peer.createPeerInfo());
 					
-				//sum discovery period of the peer
-				discoveryPeriodSum += peer.getDiscoveryPeriod();
-				
-				//sum sent messages
-				sentMessagesSum += peer.getSentMessages();
-				
-				//sum sent Kb for DGT maintainance
-				sentKbSumDGT += peer.getTotalKbSentForDGT();
-				
-				//sum sent Kb for dissemination
-				sentKbSumDissemination += peer.getTotalKbSentForDissemination();
-				
-				//sum of received duplicated messages
-				duplicateMessageSum += peer.getDuplicateReceivedMessageCount();
-				
-				//sum discovery's step 
-				if(peer.getDiscoveryCounter() != 0)
-				{	
-					nodeWithDiscoveryCounter++;
-					sumOfAverageOfDiscoveryStep += (double)peer.getAvDiscoveryStepCounter()/(double)peer.getDiscoveryCounter();
+					//sum percentage of globla missing node
+					totalPercentageMissing += results.get(results.size()-1);
+					
+					//Store and sum percentage of missing node per GB
+					if(results.get(results.size()-1) > 0.0)
+					{
+						missingPerGBCounter ++;
+						for(int k=0;k<peer.getK();k++)
+							missingNodesPerGB.set(k,missingNodesPerGB.get(k)+results.get(k));
+					}
+						
+						
+					//sum discovery period of the peer
+					discoveryPeriodSum += peer.getDiscoveryPeriod();
+					
+					//sum sent messages
+					sentMessagesSum += peer.getSentMessages();
+					
+					//sum sent Kb for DGT maintainance
+					sentKbSumDGT += peer.getTotalKbSentForDGT();
+					
+					//sum sent Kb for dissemination
+					sentKbSumDissemination += peer.getTotalKbSentForDissemination();
+					
+					//sum of received duplicated messages
+					duplicateMessageSum += peer.getDuplicateReceivedMessageCount();
+					
+					//sum discovery's step 
+					if(peer.getDiscoveryCounter() != 0)
+					{	
+						nodeWithDiscoveryCounter++;
+						sumOfAverageOfDiscoveryStep += (double)peer.getAvDiscoveryStepCounter()/(double)peer.getDiscoveryCounter();
+					}
 				}
 			}
 			
