@@ -49,6 +49,8 @@ public class NetworkStationController {
 					
 				WiFiStation ms = new WiFiStation(lat, lon,radius,maxUplink,maxDownlink);
 				
+				System.out.println(ms.getNSString());
+				
 				nsList.add(ms);
 	
 				line = br.readLine();
@@ -90,6 +92,8 @@ public class NetworkStationController {
 					
 				Mobile3GStation ms = new Mobile3GStation(lat, lon,radius,maxUplink,maxDownlink);
 				
+				System.out.println(ms.getNSString());
+				
 				nsList.add(ms);
 	
 				line = br.readLine();
@@ -130,6 +134,8 @@ public class NetworkStationController {
 				double maxDownlink = Double.parseDouble(coordinates[4]);
 					
 				Mobile2GStation ms = new Mobile2GStation(lat, lon,radius,maxUplink,maxDownlink);
+				
+				System.out.println(ms.getNSString());
 				
 				nsList.add(ms);
 	

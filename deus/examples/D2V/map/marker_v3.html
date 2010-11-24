@@ -52,6 +52,11 @@
    blueIcon.shadow = null,
    blueIcon.printShadow = null
    blueIcon.image = "car_marker.png";
+
+   var discIcon = new GIcon(G_DEFAULT_ICON);
+   discIcon.shadow = null,
+   discIcon.printShadow = null
+   discIcon.image = "disconnected_car.png";
    
    var redCarIcon = new GIcon(G_DEFAULT_ICON);
    redCarIcon.shadow = null,
@@ -198,13 +203,20 @@ function updateAllPeer() {
 		var backward = allMarkers[i].getAttribute("backward");
 		
 		var isPathChanged = allMarkers[i].getAttribute("isPathChanged");
+
+		var isConnected = allMarkers[i].getAttribute("isConnected");
 		
 		//console.log(isPathChanged);
 		
 		if(trafficJam == "false")			
 		{
 			if(backward == "false" && isPathChanged == "false")
-				markerBlueOptions = { icon:blueIcon, title: titolo };
+			{
+				if(isConnected == "false")
+					markerBlueOptions = { icon:discIcon, title: titolo };
+				else
+					markerBlueOptions = { icon:blueIcon, title: titolo };
+			}	
 			else
 				markerBlueOptions = { icon:greenCarIcon, title: titolo };
 		}
@@ -282,8 +294,10 @@ function drawCirclePoints(center,radius,color){
 	var circlePoints = Array();
 	var searchPoints = Array();
 
-	with (Math) {
-		var rLat = (radius/3963.189) * (180/PI); // miles
+	with (Math) {	
+		//Km 6378.134438016
+		//var rLat = (radius/3963.189) * (180/PI); // miles
+		var rLat = (radius/6378.134438016) * (180/PI); // miles		
 		var rLng = rLat/cos(center.lat() * (PI/180));
 
 		for (var a = 0 ; a < 361 ; a++ ) {
@@ -318,7 +332,7 @@ function read2GStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,2.5,'#800517');
+		drawCirclePoints(punto,3.5,'#800517');
 	}
 	
 	});
@@ -336,7 +350,7 @@ function read3GStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,2.2,'#2C5700');
+		drawCirclePoints(punto,3,'#2C5700');
 	}
 	
 	});
@@ -354,7 +368,7 @@ function readWiFiStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,1.0,'#0000ff');
+		drawCirclePoints(punto,1.5,'#0000ff');
 	}
 	
 	});
