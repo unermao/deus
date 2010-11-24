@@ -65,6 +65,7 @@ public class D2VLogNodeMapEvent extends Event {
 							//+"\" backward=\""+peer.getCi().isBackward()
 							+"\" backward=\""+"false"
 							+"\" isPathChanged=\""+"false"
+							+"\" isConnected=\""+peer.isConnected()
 							+"\"/>");
 				}
 				
@@ -80,7 +81,7 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			printTrafficElements(trafficElements);
 			
-			//Thread.sleep(100);
+			Thread.sleep(100);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

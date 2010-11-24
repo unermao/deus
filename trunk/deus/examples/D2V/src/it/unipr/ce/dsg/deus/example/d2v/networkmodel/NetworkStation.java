@@ -22,6 +22,11 @@ public class NetworkStation extends GeoLocation {
 		connectedUsers = new ArrayList<Integer>();
 	}
 
+	public String getNSString()
+	{
+		return this.getClass().getName()+";"+this.getLatitude()+";"+this.getLongitude()+";"+this.radius+";"+this.maxUplink+";"+this.maxDownlink;
+	}
+	
 	public double getRadius() {
 		return radius;
 	}
