@@ -35,8 +35,11 @@ public class D2VNodeRemoveEvent extends NodeEvent {
 		
 		currPeer.getGb().removePeer(peerInfo, triggeringTime);
 		
-		//Remove the peer from original neighbor list
-		currPeer.removeNeighbor( (Peer) Engine.getDefault().getNodeByKey(peerInfo.getKey()));
+		D2VPeer destPeer = (D2VPeer) Engine.getDefault().getNodeByKey(peerInfo.getKey());
+		
+		if(destPeer != null)	
+			//Remove the peer from original neighbor list
+			currPeer.removeNeighbor( (Peer) Engine.getDefault().getNodeByKey(peerInfo.getKey()));
 		
 	}
 	

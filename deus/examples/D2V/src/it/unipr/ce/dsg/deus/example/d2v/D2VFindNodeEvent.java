@@ -38,6 +38,9 @@ public class D2VFindNodeEvent extends NodeEvent {
 
 	public void run() throws RunException {
 
+		//If sender node is disconnected
+		if(((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())) == null)
+			return;
 		
 		D2VPeer currentNode = (D2VPeer) getAssociatedNode();
 		
@@ -48,18 +51,22 @@ public class D2VFindNodeEvent extends NodeEvent {
 		
 			//Add a new sent message of sender 
 			D2VPeer senderPeer = ((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey()));
-			senderPeer.incrementSentMessages();
-			double kbValue = 0.0;
-			String messageString = "FIND_NODE#48.0000000#76.0000000";
-			kbValue = (double)messageString.getBytes().length / 1000.0;
-			senderPeer.addSentKbAmountForDGT(kbValue+D2VPeerDescriptor.getStructureKbLenght());
+			if(senderPeer != null)
+			{
+				senderPeer.incrementSentMessages();
+				double kbValue = 0.0;
+				String messageString = "FIND_NODE#48.0000000#76.0000000";
+				kbValue = (double)messageString.getBytes().length / 1000.0;
+				senderPeer.addSentKbAmountForDGT(kbValue+D2VPeerDescriptor.getStructureKbLenght());
+			}
 			
 			ArrayList<D2VPeerDescriptor> findNodeResult = currentNode.getGb().find_node(currentNode.createPeerInfo(),reqNode);
 			
 			//Increment sent message and Kb amount for receiver of FindNode that answer with the list of founded nodes
 			currentNode.incrementSentMessages();
-			messageString = "FIND_NODE_RESULT#";
-			currentNode.addSentKbAmountForDGT((findNodeResult.size())*D2VPeerDescriptor.getStructureKbLenght());
+			String messageString = "FIND_NODE_RESULT#";
+			double kbValue = (double)messageString.getBytes().length / 1000.0;
+			currentNode.addSentKbAmountForDGT(kbValue+(findNodeResult.size())*D2VPeerDescriptor.getStructureKbLenght());
 			
 			currentNode.insertPeer("D2VFindNodeEvent",reqNode,triggeringTime);
 			((D2VPeer)Engine.getDefault().getNodeByKey(reqNode.getKey())).nlResults.get(reqNode.getKey()).addAll(findNodeResult);

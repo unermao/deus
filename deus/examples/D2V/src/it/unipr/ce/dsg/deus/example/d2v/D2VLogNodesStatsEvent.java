@@ -119,6 +119,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		int missingPerGBCounter = 0;
 		int peerNumber = 0;
 		int numOfTrafficElements = 0;
+		int d2vActivePeerCount = 0;
 		
 		a = new AutomatorLogger("./temp/logger");
 		fileValue = new ArrayList<LoggerObject>();
@@ -136,6 +137,8 @@ public class D2VLogNodesStatsEvent extends Event {
 				
 				if(peer.isConnected() == true)
 				{
+					d2vActivePeerCount ++;
+					
 					//Initialize array only the first time
 					if(missingNodesPerGB.size() == 0)	
 						for(int k=0;k<peer.getK();k++)
@@ -181,11 +184,11 @@ public class D2VLogNodesStatsEvent extends Event {
 			}
 			
 			
-			System.out.println("VT:" + triggeringTime + "  Active Nodes: " +  peerNumber);
+			System.out.println("VT:" + triggeringTime + "#Nodes: " + peerNumber + "  Active Nodes: " +  d2vActivePeerCount);
 			fileValue.add(new LoggerObject("Peers",peerNumber));
 			
-			System.out.println("VT:" + triggeringTime + "  % TOTAL Missing Nodes: " +  totalPercentageMissing/(double)peerNumber);
-			fileValue.add(new LoggerObject("TotalMissingPercentage",totalPercentageMissing/(double)peerNumber));
+			System.out.println("VT:" + triggeringTime + "  % TOTAL Missing Nodes: " +  totalPercentageMissing/(double)d2vActivePeerCount);
+			fileValue.add(new LoggerObject("TotalMissingPercentage",totalPercentageMissing/(double)d2vActivePeerCount));
 			
 			if(missingPerGBCounter > 0)
 			{	
@@ -213,23 +216,23 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + "  Average Of Discovery Step: " +  avDiscoveryStep);
 			fileValue.add(new LoggerObject("Av_DiscStep",avDiscoveryStep));
 			
-			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vPeerIndexList.size());
-			fileValue.add(new LoggerObject("Av_DiscPeriod",(double)discoveryPeriodSum/(double)d2vPeerIndexList.size()));
+			System.out.println("VT:" + triggeringTime + "  Average Discovery Period: " +  (double)discoveryPeriodSum/(double)d2vActivePeerCount);
+			fileValue.add(new LoggerObject("Av_DiscPeriod",(double)discoveryPeriodSum/(double)d2vActivePeerCount));
 			
-			double avSentMessageInVT = (sentMessagesSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			double avSentMessageInVT = (sentMessagesSum/(double)d2vActivePeerCount)/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Average Sent Messages (min): " +  avSentMessageInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_SentMess",avSentMessageInVT/16.6666666666));
 			
-			double avSentKbForDGTInVT = (sentKbSumDGT/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			double avSentKbForDGTInVT = (sentKbSumDGT/(double)d2vActivePeerCount)/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Average Sent DGT Messages Kb/min: " +  avSentKbForDGTInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_Sent_Kb_DGT_min",avSentKbForDGTInVT/16.6666666666));
 			
-			double avSentKbForDisseminationInVT = (sentKbSumDissemination/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			double avSentKbForDisseminationInVT = (sentKbSumDissemination/(double)d2vActivePeerCount)/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Average Sent Dissemination Messages Kb/min: " +  avSentKbForDisseminationInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_Sent_Kb_Dissemination_min",avSentKbForDisseminationInVT/16.6666666666));
 			
 			
-			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vPeerIndexList.size())/((double)triggeringTime);
+			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vActivePeerCount)/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (min): " +  avDuplicateMessageInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_DuplicateMess",avDuplicateMessageInVT/16.6666666666));
 			

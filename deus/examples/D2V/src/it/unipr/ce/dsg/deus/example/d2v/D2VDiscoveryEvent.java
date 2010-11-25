@@ -100,34 +100,38 @@ public class D2VDiscoveryEvent extends NodeEvent {
 				
 				D2VPeer destPeer = (D2VPeer)Engine.getDefault().getNodeByKey(p.getKey());
 				
-				if(currNode.getConnectedNetworkStation() != null && destPeer.getConnectedNetworkStation() != null)
+				if(destPeer != null)
 				{
-					String msgString = "FIND_NODE#"+currNode.getPeerDescriptor().getGeoLocation().getLatitude()+";"+currNode.getPeerDescriptor().getGeoLocation().getLongitude();
-					
-					//Message length in bit 
-					double msgLen = msgString.getBytes().length*8.0;
-					
-					//Evaluate actual speed between sender and receiver in Kbit/sec
-					double transSpeed = Math.min(currNode.getConnectedNetworkStation().getMaxUplink(), destPeer.getConnectedNetworkStation().getMaxDownlink());
-					
-					//Transmission time in seconds
-					double transTime = (msgLen/1000.0)/transSpeed; 
-					
-					float delay = (float)(transTime * 0.02777);
-					
-					fn = (D2VFindNodeEvent) new D2VFindNodeEvent(
-							"find_node", new Properties(), null, currNodeInfo)
-					.createInstance(triggeringTime + delay);
+					if(currNode.getConnectedNetworkStation() != null && destPeer.getConnectedNetworkStation() != null)
+					{
+						String msgString = "FIND_NODE#"+currNode.getPeerDescriptor().getGeoLocation().getLatitude()+";"+currNode.getPeerDescriptor().getGeoLocation().getLongitude();
+						
+						//Message length in bit 
+						double msgLen = msgString.getBytes().length*8.0;
+						
+						//Evaluate actual speed between sender and receiver in Kbit/sec
+						double transSpeed = Math.min(currNode.getConnectedNetworkStation().getMaxUplink(), destPeer.getConnectedNetworkStation().getMaxDownlink());
+						
+						//Transmission time in seconds
+						double transTime = (msgLen/1000.0)/transSpeed; 
+						
+						float delay = (float)(transTime * 0.02777);
+						
+						fn = (D2VFindNodeEvent) new D2VFindNodeEvent(
+								"find_node", new Properties(), null, currNodeInfo)
+						.createInstance(triggeringTime + delay);
 
-					fn.setRequestingNode(currNodeInfo);
-					fn.setOneShot(true);
-					fn.setAssociatedNode(destPeer);
-					
-					//System.out.println("Node Key: " + currNode.getKey() +  " Setting Periodic Node List Size: " + currNode.getPeriodicPeerList().size() );
-					
-					Engine.getDefault().insertIntoEventsList(fn);
-					currNode.nlContactedNodes.add(p);
+						fn.setRequestingNode(currNodeInfo);
+						fn.setOneShot(true);
+						fn.setAssociatedNode(destPeer);
+						
+						//System.out.println("Node Key: " + currNode.getKey() +  " Setting Periodic Node List Size: " + currNode.getPeriodicPeerList().size() );
+						
+						Engine.getDefault().insertIntoEventsList(fn);
+						currNode.nlContactedNodes.add(p);
+					}
 				}
+				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
