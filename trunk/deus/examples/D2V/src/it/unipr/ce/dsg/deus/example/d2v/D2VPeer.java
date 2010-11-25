@@ -70,7 +70,7 @@ public class D2VPeer extends Peer {
 	private double avgSpeedMax = 30.0;
 	private float discoveryMinPeriod = 25;
 	private float discoveryMaxPeriod = 100;
-	private int discoveryMaxPeerNumber = 100;
+	public static int discoveryMaxPeerNumber = 100;
 	private double carMinSpeed = 10.0;
 	
 	private double actualSpeed = 10.0;
@@ -535,7 +535,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a mobile network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof Mobile2GStation) || (this.connectedNetworkStation instanceof Mobile3GStation))
 				{
-					this.disconnectNode();
+					this.tempNodeDisconnection();
 					this.schedulePeerReConnectionEvent(triggeringTime,WIFI_RECONNECTION_TIME);
 				}
 			
@@ -556,7 +556,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a Wifi network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
 				{
-					this.disconnectNode();
+					this.tempNodeDisconnection();
 					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
 				}
 				
@@ -577,7 +577,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a Wifi network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
 				{
-					this.disconnectNode();
+					this.tempNodeDisconnection();
 					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
 				}
 				
@@ -588,7 +588,7 @@ public class D2VPeer extends Peer {
 		
 		
 		this.connectedNetworkStation = null;
-		this.disconnectNode();
+		this.tempNodeDisconnection();
 		
 		return null;
 		
@@ -654,6 +654,7 @@ public class D2VPeer extends Peer {
 		for(int i=0; i<keyList.size(); i++)
 		{
 			D2VPeer p = (D2VPeer)Engine.getDefault().getNodeByKey(keyList.get(i));
+			
 			peerList.add(p.getPeerDescriptor());
 		}
 		
@@ -1014,7 +1015,9 @@ public class D2VPeer extends Peer {
 		
 		if(this.getKey() != newPeer.getKey())
 		{
-			if(!this.neighbors.contains((Peer) Engine.getDefault().getNodeByKey(newPeer.getKey())))
+			Peer p = (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey());
+			
+			if(p!= null && !this.neighbors.contains(p))
 				this.addNeighbor( (Peer) Engine.getDefault().getNodeByKey(newPeer.getKey()));
 			
 			//Add new Peer
@@ -1239,11 +1242,21 @@ public class D2VPeer extends Peer {
 	/**
 	 * 
 	 */
-	public void disconnectNode()
+	public void tempNodeDisconnection()
 	{ 
 		//System.out.println("Peer: " + this.key + " Disconnected !");
 		this.isConnected = false;
 	}
+	
+	/**
+	 * 
+	 */
+	public void disconnectNode()
+	{ 
+		this.isConnected = false;
+		Engine.getDefault().removeNode(this);
+	}
+	
 	
 	/**
 	 * 

@@ -147,7 +147,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 					
 					D2VPeer destPeer = (D2VPeer)Engine.getDefault().getNodeByKey(((D2VPeerDescriptor) node[i]).getKey());
 					
-					if(currNode.getConnectedNetworkStation() != null && destPeer.getConnectedNetworkStation() != null)
+					if( ( destPeer != null ) && (currNode.getConnectedNetworkStation() != null && destPeer.getConnectedNetworkStation() != null))
 					{
 						String msgString = "FIND_NODE#"+currNode.getPeerDescriptor().getGeoLocation().getLatitude()+";"+currNode.getPeerDescriptor().getGeoLocation().getLongitude();
 						

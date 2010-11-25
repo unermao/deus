@@ -264,9 +264,8 @@ public class D2VGeoBuckets {
 		while (it.hasNext())
 			tempResults.add(it.next());
 
-		D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(myDesc.getKey());
 		
-		int maxSize = peer.getDiscoveryMaxPeerNumber();
+		int maxSize = D2VPeer.discoveryMaxPeerNumber;
 		
 		boolean flag = false;
 		int a = 0;
@@ -684,7 +683,11 @@ public class D2VGeoBuckets {
 	public boolean checkConnectionStatus(int peerKey)
 	{
 		D2VPeer peer = (D2VPeer) Engine.getDefault().getNodeByKey(peerKey); 
-		return peer.isConnected();
+		
+		if(peer == null)
+			return false;
+		else
+			return peer.isConnected();
 	}
 
 	public Vector<ArrayList<D2VPeerDescriptor>> getBucket() {

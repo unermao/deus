@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.example.d2v;
 
 import java.util.Properties;
 
+import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.NodeEvent;
 import it.unipr.ce.dsg.deus.core.RunException;
@@ -30,8 +31,10 @@ public class D2VUpdatePositionEvent extends NodeEvent {
 		kbValue = (double)messageString.getBytes().length / 1000.0;
 		currPeer.addSentKbAmountForDGT(kbValue+D2VPeerDescriptor.getStructureKbLenght());
 		
+		D2VPeer newPeer = (D2VPeer) Engine.getDefault().getNodeByKey(peerInfo.getKey());
 		
-		currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo,triggeringTime);
+		if(newPeer != null)	
+			currPeer.insertPeer("D2VUpdatePositionEvent",peerInfo,triggeringTime);
 	}
 	
 	public Object clone() {
