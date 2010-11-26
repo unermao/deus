@@ -97,6 +97,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				
 				
 				//If the peer is reconnecting after a temporary disconnection associated to network station
+				/*
 				if(currNode.isReconnectingPhase() == true)
 				{
 					//Evaluate global missing node and missing per GB 
@@ -114,7 +115,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 						currNode.setReconnectingPhase(false);
 					}
 				}
-				
+				*/
 				
 				//Schedule a new Discovery Event
 				currNode.scheduleDiscovery(triggeringTime);
