@@ -368,7 +368,7 @@ function readWiFiStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,1.5,'#0000ff');
+		drawCirclePoints(punto,1.0,'#0000ff');
 	}
 	
 	});
