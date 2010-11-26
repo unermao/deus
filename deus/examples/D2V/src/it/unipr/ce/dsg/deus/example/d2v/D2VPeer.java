@@ -21,6 +21,8 @@ import it.unipr.ce.dsg.deus.example.d2v.networkmodel.NetworkStation;
 import it.unipr.ce.dsg.deus.example.d2v.networkmodel.WiFiStation;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
+import it.unipr.ce.dsg.deus.example.d2v.util.ReconnectionStat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +43,14 @@ public class D2VPeer extends Peer {
 	private static final String K_VALUE = "k";
 	private static final String BUCKET_NODE_LIMIT = "bucketNodeLimit";
 	private static final String RADIUS_KM = "radiusKm";
+	public float getTempDisconnectionPeriod() {
+		return tempDisconnectionPeriod;
+	}
+
+	public void setTempDisconnectionPeriod(float tempDisconnectionPeriod) {
+		this.tempDisconnectionPeriod = tempDisconnectionPeriod;
+	}
+
 	private static final String EPSILON = "epsilon";
 	private static final String AVG_SPEED_MAX = "avgSpeedMax";
 	private static final String DISCOVERY_MAX_PERIOD = "discoveryMaxPeriod";
@@ -97,6 +107,8 @@ public class D2VPeer extends Peer {
 	
 	private int duplicateReceivedMessageCount = 0;
 	
+	private ArrayList<ReconnectionStat> reconnectionStatList = new ArrayList<ReconnectionStat>();
+	
 	//Number of sent messages
 	private int sentMessages = 0;
 	
@@ -123,6 +135,15 @@ public class D2VPeer extends Peer {
 	
 	private TreeMap<String,ArrayList<Integer>> sentInformationMessages = null;
 	private ArrayList<TrafficInformationMessage> trafficInformationKnowledge = null;
+
+	private boolean isReconnectingPhase = false;
+
+	private float tempDisconnectionTime = 0;
+
+	private float tempDisconnectionPeriod = 0;
+
+	private float reconnectingTime = 0;
+	
 	public static ArrayList<TrafficInformationMessage> globalMessageKnowledge = null;
 	
 	public D2VPeer(String id, Properties params,
@@ -362,6 +383,7 @@ public class D2VPeer extends Peer {
 		clone.sentInformationMessages = new TreeMap<String,ArrayList<Integer>>();
 		clone.trafficInformationKnowledge = new ArrayList<TrafficInformationMessage>();
 		clone.connectedNetworkStation = null;
+		clone.reconnectionStatList =  new ArrayList<ReconnectionStat>();
 		
 		return clone;
 	}
@@ -512,10 +534,11 @@ public class D2VPeer extends Peer {
 	 */
 	private NetworkStation searchNetworkStation(float triggeringTime)
 	{
-		double WIFI_RECONNECTION_TIME = 10.0*0.02777;
-		double MOBILE_RECONNECTION_TIME = 5.0*0.02777;
+		double WIFI_RECONNECTION_TIME = (double)(Engine.getDefault().getSimulationRandom().nextInt(10) + 1) *0.02777;
+		double MOBILE_RECONNECTION_TIME = 1.0*0.02777;
 		
 		//Check if the peer is already in the covered area of the previous network station
+		/*
 		if(this.connectedNetworkStation != null)
 		{
 			double actualDistance = GeoDistance.distance(this.connectedNetworkStation,this.getPeerDescriptor().getGeoLocation());
@@ -523,6 +546,7 @@ public class D2VPeer extends Peer {
 				return this.connectedNetworkStation;
 		
 		}
+		*/
 	
 		//Analyze WiFi available WiFi Station
 		for(int wifiIndex=0; wifiIndex<D2VPeer.wiFiStationList.size(); wifiIndex++)
@@ -535,7 +559,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a mobile network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof Mobile2GStation) || (this.connectedNetworkStation instanceof Mobile3GStation))
 				{
-					this.tempNodeDisconnection();
+					this.tempNodeDisconnection(triggeringTime);
 					this.schedulePeerReConnectionEvent(triggeringTime,WIFI_RECONNECTION_TIME);
 				}
 			
@@ -556,7 +580,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a Wifi network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
 				{
-					this.tempNodeDisconnection();
+					this.tempNodeDisconnection(triggeringTime);
 					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
 				}
 				
@@ -577,7 +601,7 @@ public class D2VPeer extends Peer {
 				//If old network station is null or a Wifi network
 				if(this.connectedNetworkStation == null || (this.connectedNetworkStation instanceof WiFiStation))
 				{
-					this.tempNodeDisconnection();
+					this.tempNodeDisconnection(triggeringTime);
 					this.schedulePeerReConnectionEvent(triggeringTime,MOBILE_RECONNECTION_TIME);
 				}
 				
@@ -588,7 +612,7 @@ public class D2VPeer extends Peer {
 		
 		
 		this.connectedNetworkStation = null;
-		this.tempNodeDisconnection();
+		this.tempNodeDisconnection(triggeringTime);
 		
 		return null;
 		
@@ -1242,10 +1266,12 @@ public class D2VPeer extends Peer {
 	/**
 	 * 
 	 */
-	public void tempNodeDisconnection()
+	public void tempNodeDisconnection(float triggeringTime)
 	{ 
 		//System.out.println("Peer: " + this.key + " Disconnected !");
 		this.isConnected = false;
+		
+		this.tempDisconnectionTime = triggeringTime;
 	}
 	
 	/**
@@ -1266,14 +1292,30 @@ public class D2VPeer extends Peer {
 		this.isConnected = true;
 	}
 	
+
+	public float getReconnectingTime() {
+		return reconnectingTime;
+	}
+
+	public void setReconnectingTime(float reconnectingTime) {
+		this.reconnectingTime = reconnectingTime;
+	}
+
 	/**
 	 * 
 	 */
 	public void reconnectNode(float triggeringTime)
 	{
-		//System.out.println("Peer: " + this.key + " Reconnected !");
 		
 		this.isConnected = true;
+		
+		this.isReconnectingPhase  = true;
+		
+		//Save Temp Disconnection Period
+		this.tempDisconnectionPeriod = triggeringTime - this.tempDisconnectionTime;
+		
+		//Save reconnecting time
+		this.reconnectingTime = triggeringTime;
 		
 		this.updateBucketInfo(this.getPeerDescriptor());
 		
@@ -1618,5 +1660,30 @@ public class D2VPeer extends Peer {
 
 	public void setConnectedNetworkStation(NetworkStation connectedNetworkStation) {
 		this.connectedNetworkStation = connectedNetworkStation;
+	}
+
+	public boolean isReconnectingPhase() {
+		return isReconnectingPhase;
+	}
+
+	public void setReconnectingPhase(boolean isReconnectingPhase) {
+		this.isReconnectingPhase = isReconnectingPhase;
+	}
+
+	public ArrayList<ReconnectionStat> getReconnectionStatList() {
+		return reconnectionStatList;
+	}
+
+	public void setReconnectionStatList(
+			ArrayList<ReconnectionStat> reconnectionStatList) {
+		this.reconnectionStatList = reconnectionStatList;
+	}
+
+	public float getTempDisconnectionTime() {
+		return tempDisconnectionTime;
+	}
+
+	public void setTempDisconnectionTime(float tempDisconnectionTime) {
+		this.tempDisconnectionTime = tempDisconnectionTime;
 	}
 }

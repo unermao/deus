@@ -16,7 +16,11 @@
     <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogNodesStatsEvent" id="LogStatEvent"/>
     <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VLogDiscoveryStatEvent" id="LogDiscoveryStatEvent"/>
     
-     <aut:event handler="it.unipr.ce.dsg.deus.example.d2v.D2VRandomDisconnection" id="RandomDisconnectionEvent"/>
+     <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.d2v.D2VRandomDisconnection" id="RandomDisconnectionEvent">
+     	 <aut:params>
+        	    <aut:param value="10.0" name="discPercentage"/>
+         </aut:params>
+     </aut:event>
     
     <aut:event schedulerListener="it.unipr.ce.dsg.deus.example.d2v.D2VBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.d2v.D2VBirthEvent" id="Birth">
         <aut:events>
@@ -106,7 +110,7 @@
     </aut:process>
     <aut:process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <aut:params>
-            <aut:param value="25" name="period"/>
+            <aut:param value="50" name="period"/>
             <aut:param value="0" name="startVtThreshold"/>
             <aut:param value="5000" name="stopVtThreshold"/>
         </aut:params>
@@ -150,9 +154,9 @@
         </aut:events>
     </aut:process>
     
-        <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PoissonProcess" id="RandomDisconnectionPoissonProcess">
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="RandomDisconnectionProcess">
         <aut:params>
-            <aut:param value="1000" name="meanArrival"/>
+            <aut:param value="6000" name="period"/>
         </aut:params>
         <aut:events>
             <aut:reference id="RandomDisconnectionEvent"/>
@@ -176,10 +180,10 @@
  	        <aut:reference id="ConfigurationProcess"/>
             <aut:reference id="LogStatPeriodicProcess"/>
             <!-- <aut:reference id="LogDiscoveryStatProcess"/> -->
-			<!-- <aut:reference id="LogMaPeriodicProcess"/>-->
+			<!-- <aut:reference id="LogMaPeriodicProcess"/>  -->
           	<!-- <aut:reference id="TrafficEventBirthPoissonProcess"/>  -->
             <aut:reference id="RectangularBirth"/>
-            <aut:reference id="RandomDisconnectionPoissonProcess"/>
+            <aut:reference id="RandomDisconnectionProcess"/>
             <!-- <aut:reference id="RectangularBirth2"/> -->
         </aut:processes>
     </aut:engine>
