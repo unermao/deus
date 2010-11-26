@@ -159,12 +159,16 @@ public class D2VLogNodeMapEvent extends Event {
 							D2VPeerDescriptor peerDescr = peer.getGb().getBucket().get(i).get(k);
 							D2VPeer realPeer = (D2VPeer) Engine.getDefault().getNodeByKey(peerDescr.getKey());
 							
-							out.println("<marker lat=\""+peerDescr.getGeoLocation().getLatitude()+"\" long=\""+peerDescr.getGeoLocation().getLongitude()
-									+"\" descriz=\""+peerDescr.getKey()
-									+"\" real_lat=\""+realPeer.getPeerDescriptor().getGeoLocation().getLatitude()
-									+"\" real_lon=\""+realPeer.getPeerDescriptor().getGeoLocation().getLongitude()
-									+"\" distance=\""+GeoDistance.distance(peerDescr, realPeer.getPeerDescriptor())
-									+"\"/>");
+							if(realPeer != null)
+							{
+								out.println("<marker lat=\""+peerDescr.getGeoLocation().getLatitude()+"\" long=\""+peerDescr.getGeoLocation().getLongitude()
+										+"\" descriz=\""+peerDescr.getKey()
+										+"\" real_lat=\""+realPeer.getPeerDescriptor().getGeoLocation().getLatitude()
+										+"\" real_lon=\""+realPeer.getPeerDescriptor().getGeoLocation().getLongitude()
+										+"\" distance=\""+GeoDistance.distance(peerDescr, realPeer.getPeerDescriptor())
+										+"\"/>");
+							}
+							
 						}
 					}
 

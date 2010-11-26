@@ -1,5 +1,6 @@
 package it.unipr.ce.dsg.deus.example.d2v;
 
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
+import it.unipr.ce.dsg.deus.example.d2v.util.ReconnectionStat;
 
 public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 
@@ -92,6 +94,26 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				//currNode.nlResults.get(currNode.getKey()).getFoundNodes().clear();
 				currNode.nlResults.get(currNode.getKey()).clearAll();
 				currNode.nlContactedNodes.clear();
+				
+				
+				//If the peer is reconnecting after a temporary disconnection associated to network station
+				if(currNode.isReconnectingPhase() == true)
+				{
+					//Evaluate global missing node and missing per GB 
+					ArrayList<Double> results = currNode.getGb().evaluateCompletePerMissingNodes(currNode.createPeerInfo());
+					
+					//sum percentage of globla missing node
+					Double totalPercentageMissing = results.get(results.size()-1);
+					
+					//If global PNM is under 10%, save the time necessary to get this result
+					if(totalPercentageMissing < 10.0)
+					{
+						double reconnectionTime = triggeringTime - currNode.getReconnectingTime();
+						System.out.println("Disconnected Period: "+ currNode.getTempDisconnectionPeriod() +" Saving Reconnecting Time: " + reconnectionTime);
+						currNode.getReconnectionStatList().add(new ReconnectionStat(currNode.getTempDisconnectionPeriod(), reconnectionTime, totalPercentageMissing));
+						currNode.setReconnectingPhase(false);
+					}
+				}
 				
 				
 				//Schedule a new Discovery Event

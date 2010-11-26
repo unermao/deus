@@ -335,6 +335,22 @@ public class D2VLogNodesStatsEvent extends Event {
 		System.out.println("GLOBAL COVERAGE PERCENTAGE: " + globalAvgCoveragePercentage);
 		fileValue.add(new LoggerObject("CoveragePercentage",globalAvgCoveragePercentage));
 		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+	
+		/*
+		//Reconnection Time 
+		if(triggeringTime == Engine.getDefault().getMaxVirtualTime())
+		{
+			for(int index=0; index<d2vPeerIndexList.size();index++)
+			{
+				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
+				
+				if(peer.isConnected() == true)
+				{
+					
+				}
+			}
+		}
+		*/
 		
 		//PATH AVERAGE SPEED EVALUATION
 		/*
