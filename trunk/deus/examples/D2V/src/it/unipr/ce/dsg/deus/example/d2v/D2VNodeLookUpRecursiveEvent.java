@@ -97,7 +97,7 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 				
 				
 				//If the peer is reconnecting after a temporary disconnection associated to network station
-				/*
+				
 				if(currNode.isReconnectingPhase() == true)
 				{
 					//Evaluate global missing node and missing per GB 
@@ -109,13 +109,13 @@ public class D2VNodeLookUpRecursiveEvent extends D2VDiscoveryEvent {
 					//If global PNM is under 10%, save the time necessary to get this result
 					if(totalPercentageMissing < 10.0)
 					{
-						double reconnectionTime = triggeringTime - currNode.getReconnectingTime();
-						System.out.println("Disconnected Period: "+ currNode.getTempDisconnectionPeriod() +" Saving Reconnecting Time: " + reconnectionTime);
-						currNode.getReconnectionStatList().add(new ReconnectionStat(currNode.getTempDisconnectionPeriod(), reconnectionTime, totalPercentageMissing));
+						double pnmReconnectionTime = triggeringTime - currNode.getReconnectingTime();
+						//System.out.println("Disconnected Period: "+ currNode.getTempDisconnectionPeriod() +" Saving Reconnecting Time: " + reconnectionTime);
+						currNode.getReconnectionStatList().add(new ReconnectionStat(currNode.getTempDisconnectionPeriod(), pnmReconnectionTime, totalPercentageMissing));
 						currNode.setReconnectingPhase(false);
 					}
 				}
-				*/
+				
 				
 				//Schedule a new Discovery Event
 				currNode.scheduleDiscovery(triggeringTime);
