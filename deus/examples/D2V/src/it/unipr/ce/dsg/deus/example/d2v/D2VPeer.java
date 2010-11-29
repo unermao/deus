@@ -1268,10 +1268,11 @@ public class D2VPeer extends Peer {
 	 */
 	public void tempNodeDisconnection(float triggeringTime)
 	{ 
-		//System.out.println("Peer: " + this.key + " Disconnected !");
-		this.isConnected = false;
-		
-		this.tempDisconnectionTime = triggeringTime;
+		if(this.isConnected == true)
+		{
+			this.isConnected = false;
+			this.tempDisconnectionTime = triggeringTime;
+		}
 	}
 	
 	/**

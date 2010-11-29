@@ -3,13 +3,13 @@ package it.unipr.ce.dsg.deus.example.d2v.util;
 public class ReconnectionStat {
 	
 	private double disconnectionPeriod = 0.0;
-	private double reconnectionPeriod = 0;
+	private double pnmReconnectionPeriod = 0;
 	private double pnm;
 	
 	public ReconnectionStat(double disconnectionPeriod, double reconnectionPeriod, double pnm) {
 		super();
 		this.disconnectionPeriod = disconnectionPeriod;
-		this.reconnectionPeriod = reconnectionPeriod;
+		this.pnmReconnectionPeriod = reconnectionPeriod;
 		this.pnm = pnm;
 	}
 
@@ -21,12 +21,12 @@ public class ReconnectionStat {
 		this.disconnectionPeriod = disconnectionPeriod;
 	}
 
-	public double getReconnectionPeriod() {
-		return reconnectionPeriod;
+	public double getPNMReconnectionPeriod() {
+		return pnmReconnectionPeriod;
 	}
 
-	public void setReconnectionPeriod(double reconnectionPeriod) {
-		this.reconnectionPeriod = reconnectionPeriod;
+	public void setPNMReconnectionPeriod(double reconnectionPeriod) {
+		this.pnmReconnectionPeriod = reconnectionPeriod;
 	}
 
 	public double getPnm() {

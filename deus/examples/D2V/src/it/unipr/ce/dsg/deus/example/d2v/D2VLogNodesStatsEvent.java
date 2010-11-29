@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.w3c.dom.NodeList;
@@ -35,6 +36,7 @@ import it.unipr.ce.dsg.deus.example.d2v.mobilitymodel.CityPathPoint;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.DebugLog;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
+import it.unipr.ce.dsg.deus.example.d2v.util.ReconnectionStat;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 /**
@@ -335,22 +337,48 @@ public class D2VLogNodesStatsEvent extends Event {
 		System.out.println("GLOBAL COVERAGE PERCENTAGE: " + globalAvgCoveragePercentage);
 		fileValue.add(new LoggerObject("CoveragePercentage",globalAvgCoveragePercentage));
 		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	
-		/*
+		
 		//Reconnection Time 
 		if(triggeringTime == Engine.getDefault().getMaxVirtualTime())
 		{
+			TreeMap<Integer,ArrayList<Double>> reconnectionTimeMatrix = new TreeMap<Integer,ArrayList<Double>>();
+			
 			for(int index=0; index<d2vPeerIndexList.size();index++)
 			{
 				D2VPeer peer = (D2VPeer)Engine.getDefault().getNodeByKey(d2vPeerIndexList.get(index));
 				
 				if(peer.isConnected() == true)
 				{
-					
+					for(int rIdx=0; rIdx < peer.getReconnectionStatList().size(); rIdx++)
+					{
+						ReconnectionStat rStat = peer.getReconnectionStatList().get(rIdx);
+						int timeIndex = (int)(((double)rStat.getDisconnectionPeriod()*3.6)/10);
+						
+						if(!reconnectionTimeMatrix.containsKey(timeIndex))
+							reconnectionTimeMatrix.put(timeIndex, new ArrayList<Double>());
+						
+						reconnectionTimeMatrix.get(timeIndex).add(rStat.getPNMReconnectionPeriod());
+					}
 				}
 			}
+			
+			Set set = reconnectionTimeMatrix.entrySet(); 
+			
+			// Get an iterator 
+			Iterator i = set.iterator(); 
+			
+			// Display elements 
+			while(i.hasNext()) { 
+				Map.Entry me = (Map.Entry)i.next(); 
+				ArrayList<Double> reconnectionValues = (ArrayList<Double>)me.getValue();
+				double sum = 0;
+				for(int index=0;index<reconnectionValues.size(); index++)
+					sum += reconnectionValues.get(index);
+				System.out.println(me.getKey() + ": " + (double)(sum/(double)reconnectionValues.size())); 
+			} 
+			
 		}
-		*/
+		
 		
 		//PATH AVERAGE SPEED EVALUATION
 		/*

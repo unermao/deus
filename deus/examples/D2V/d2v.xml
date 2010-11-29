@@ -183,7 +183,7 @@
 			<!-- <aut:reference id="LogMaPeriodicProcess"/>  -->
           	<!-- <aut:reference id="TrafficEventBirthPoissonProcess"/>  -->
             <aut:reference id="RectangularBirth"/>
-            <aut:reference id="RandomDisconnectionProcess"/>
+            <!-- <aut:reference id="RandomDisconnectionProcess"/> -->
             <!-- <aut:reference id="RectangularBirth2"/> -->
         </aut:processes>
     </aut:engine>
