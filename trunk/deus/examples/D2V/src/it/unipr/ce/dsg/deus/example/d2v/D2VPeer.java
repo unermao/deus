@@ -534,7 +534,7 @@ public class D2VPeer extends Peer {
 	 */
 	private NetworkStation searchNetworkStation(float triggeringTime)
 	{
-		double WIFI_RECONNECTION_TIME = (double)(Engine.getDefault().getSimulationRandom().nextInt(10) + 1) *0.02777;
+		double WIFI_RECONNECTION_TIME = (double)(Engine.getDefault().getSimulationRandom().nextInt(10) + 1)*0.02777;
 		double MOBILE_RECONNECTION_TIME = 1.0*0.02777;
 		
 		//Check if the peer is already in the covered area of the previous network station
