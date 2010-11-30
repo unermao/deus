@@ -13,6 +13,9 @@ import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.Mobile2GStation;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.Mobile3GStation;
+import it.unipr.ce.dsg.deus.example.d2v.networkmodel.WiFiStation;
 import it.unipr.ce.dsg.deus.example.d2v.peer.D2VPeerDescriptor;
 import it.unipr.ce.dsg.deus.example.d2v.util.GeoDistance;
 
@@ -81,6 +84,8 @@ public class D2VLogNodeMapEvent extends Event {
 			
 			printTrafficElements(trafficElements);
 			
+			printNetworkRegionElements();
+			
 			Thread.sleep(100);
 		}
 		catch (Exception e) {
@@ -112,6 +117,103 @@ public class D2VLogNodeMapEvent extends Event {
 							+"\" long=\""+peer.getLocation().getLongitude()
 							+"\" id=\""+peer.getKey()
 							+"\" type=\""+peer.getType()
+							+"\"/>");
+				
+			}
+			
+			out.println("</markers>");
+
+			out.close();
+			file.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void printNetworkRegionElements()
+	{
+		//<marker lat="44.79950000019547" long="10.320350000291171" descriz="2g_ss_1"/>
+
+		FileOutputStream file = null;
+		PrintStream out = null;
+		
+		try {
+
+			file = new FileOutputStream("examples/D2V/map/2g_station.xml");
+			out = new PrintStream(file);
+
+			out.println("<markers>");
+			
+			for(int i=0; i<D2VPeer.mobile2GStationList.size(); i++)
+			{
+				Mobile2GStation ns = D2VPeer.mobile2GStationList.get(i);
+				
+				//System.out.println("Traffic Element: " + peer.getKey() + " Cars in Jam: " + peer.getNodeKeysInTrafficJam().size());
+				
+				out.println("<marker lat=\""+ns.getLatitude()
+							+"\" long=\""+ns.getLongitude()
+							+"\" descriz=\""+ns.getMaxUplink()
+							+"\"/>");
+				
+			}
+			
+			out.println("</markers>");
+
+			out.close();
+			file.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		try {
+
+			file = new FileOutputStream("examples/D2V/map/3g_station.xml");
+			out = new PrintStream(file);
+
+			out.println("<markers>");
+			
+			for(int i=0; i<D2VPeer.mobile3GStationList.size(); i++)
+			{
+				Mobile3GStation ns = D2VPeer.mobile3GStationList.get(i);
+				
+				//System.out.println("Traffic Element: " + peer.getKey() + " Cars in Jam: " + peer.getNodeKeysInTrafficJam().size());
+				
+				out.println("<marker lat=\""+ns.getLatitude()
+							+"\" long=\""+ns.getLongitude()
+							+"\" descriz=\""+ns.getMaxUplink()
+							+"\"/>");
+				
+			}
+			
+			out.println("</markers>");
+
+			out.close();
+			file.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+
+			file = new FileOutputStream("examples/D2V/map/wifi_station.xml");
+			out = new PrintStream(file);
+
+			out.println("<markers>");
+			
+			for(int i=0; i<D2VPeer.wiFiStationList.size(); i++)
+			{
+				WiFiStation ns = D2VPeer.wiFiStationList.get(i);
+				
+				//System.out.println("Traffic Element: " + peer.getKey() + " Cars in Jam: " + peer.getNodeKeysInTrafficJam().size());
+				
+				out.println("<marker lat=\""+ns.getLatitude()
+							+"\" long=\""+ns.getLongitude()
+							+"\" descriz=\""+ns.getMaxUplink()
 							+"\"/>");
 				
 			}

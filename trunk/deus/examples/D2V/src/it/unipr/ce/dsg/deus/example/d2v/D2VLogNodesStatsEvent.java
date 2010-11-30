@@ -123,6 +123,10 @@ public class D2VLogNodesStatsEvent extends Event {
 		int numOfTrafficElements = 0;
 		int d2vActivePeerCount = 0;
 		
+		//Reconnection time stats
+		double totalSumReconnectionTime = 0.0;
+		double countReconnectionTime = 0.0;
+		
 		a = new AutomatorLogger("./temp/logger");
 		fileValue = new ArrayList<LoggerObject>();
 			
@@ -182,6 +186,13 @@ public class D2VLogNodesStatsEvent extends Event {
 						nodeWithDiscoveryCounter++;
 						sumOfAverageOfDiscoveryStep += (double)peer.getAvDiscoveryStepCounter()/(double)peer.getDiscoveryCounter();
 					}
+					
+					//Evaluate Reconnection Time
+					for(int rIdx=0; rIdx < peer.getReconnectionStatList().size(); rIdx++)
+					{
+						totalSumReconnectionTime += peer.getReconnectionStatList().get(rIdx).getPNMReconnectionPeriod()*3.6;
+						countReconnectionTime ++;
+					}
 				}
 			}
 			
@@ -233,10 +244,16 @@ public class D2VLogNodesStatsEvent extends Event {
 			System.out.println("VT:" + triggeringTime + "  Average Sent Dissemination Messages Kb/min: " +  avSentKbForDisseminationInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_Sent_Kb_Dissemination_min",avSentKbForDisseminationInVT/16.6666666666));
 			
-			
 			double avDuplicateMessageInVT = (duplicateMessageSum/(double)d2vActivePeerCount)/((double)triggeringTime);
 			System.out.println("VT:" + triggeringTime + "  Duplicate Received Messages (min): " +  avDuplicateMessageInVT/16.6666666666);
 			fileValue.add(new LoggerObject("Av_DuplicateMess",avDuplicateMessageInVT/16.6666666666));
+			
+			//Evaluate reconnection time average
+			double reconnectionTimeAVG = 0.0;
+			if(countReconnectionTime > 0)
+				reconnectionTimeAVG = (double)totalSumReconnectionTime/(double)countReconnectionTime;
+			System.out.println("VT:" + triggeringTime + "  Reconnection Time AVG (sec): " +  reconnectionTimeAVG);
+			fileValue.add(new LoggerObject("Rec_Time_AVG",reconnectionTimeAVG));
 			
 			ArrayList<Integer> trafficElementIndexList = Engine.getDefault().getNodeKeysById("TrafficElement");
 			
