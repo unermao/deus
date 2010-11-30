@@ -39,19 +39,25 @@ public class NetworkStationController {
 			
 			while(line!= null)
 			{	
-				String[] coordinates = line.split(",");
-				
-				double lat = Double.parseDouble(coordinates[0]);
-				double lon = Double.parseDouble(coordinates[1]);
-				double radius = Double.parseDouble(coordinates[2]);
-				double maxUplink = Double.parseDouble(coordinates[3]);
-				double maxDownlink = Double.parseDouble(coordinates[4]);
+				if(!line.contains("#"))
+				{
+					String[] nsLine = line.split(",");
 					
-				WiFiStation ms = new WiFiStation(lat, lon,radius,maxUplink,maxDownlink);
-				
-				System.out.println(ms.getNSString());
-				
-				nsList.add(ms);
+					if(nsLine.length == 5)
+					{
+						double lat = Double.parseDouble(nsLine[0]);
+						double lon = Double.parseDouble(nsLine[1]);
+						double radius = Double.parseDouble(nsLine[2]);
+						double maxUplink = Double.parseDouble(nsLine[3]);
+						double maxDownlink = Double.parseDouble(nsLine[4]);
+							
+						WiFiStation ms = new WiFiStation(lat, lon,radius,maxUplink,maxDownlink);
+						
+						System.out.println(ms.getNSString());
+						
+						nsList.add(ms);
+					}
+				}
 	
 				line = br.readLine();
 			}
@@ -62,7 +68,7 @@ public class NetworkStationController {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Network Stations from "+ wifiStationFileName + " : " + nsList.size());
+		System.out.println("\nNetwork Stations from "+ wifiStationFileName + " : " + nsList.size());
 		
 		return nsList;
 	}
@@ -82,19 +88,25 @@ public class NetworkStationController {
 			
 			while(line!= null)
 			{	
-				String[] coordinates = line.split(",");
-				
-				double lat = Double.parseDouble(coordinates[0]);
-				double lon = Double.parseDouble(coordinates[1]);
-				double radius = Double.parseDouble(coordinates[2]);
-				double maxUplink = Double.parseDouble(coordinates[3]);
-				double maxDownlink = Double.parseDouble(coordinates[4]);
+				if(!line.contains("#"))
+				{
+					String[] nsLine = line.split(",");
 					
-				Mobile3GStation ms = new Mobile3GStation(lat, lon,radius,maxUplink,maxDownlink);
-				
-				System.out.println(ms.getNSString());
-				
-				nsList.add(ms);
+					if(nsLine.length == 5)
+					{
+						double lat = Double.parseDouble(nsLine[0]);
+						double lon = Double.parseDouble(nsLine[1]);
+						double radius = Double.parseDouble(nsLine[2]);
+						double maxUplink = Double.parseDouble(nsLine[3]);
+						double maxDownlink = Double.parseDouble(nsLine[4]);
+							
+						Mobile3GStation ms = new Mobile3GStation(lat, lon,radius,maxUplink,maxDownlink);
+						
+						System.out.println(ms.getNSString());
+						
+						nsList.add(ms);
+					}
+				}
 	
 				line = br.readLine();
 			}
@@ -105,7 +117,7 @@ public class NetworkStationController {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Network Stations from "+ mobile3gStationFileName + " : " + nsList.size());
+		System.out.println("\nNetwork Stations from "+ mobile3gStationFileName + " : " + nsList.size());
 		
 		return nsList;
 	}
@@ -125,21 +137,27 @@ public class NetworkStationController {
 			
 			while(line!= null)
 			{	
-				String[] coordinates = line.split(",");
-				
-				double lat = Double.parseDouble(coordinates[0]);
-				double lon = Double.parseDouble(coordinates[1]);
-				double radius = Double.parseDouble(coordinates[2]);
-				double maxUplink = Double.parseDouble(coordinates[3]);
-				double maxDownlink = Double.parseDouble(coordinates[4]);
+				if(!line.contains("#"))
+				{
+					String[] nsLine = line.split(",");
 					
-				Mobile2GStation ms = new Mobile2GStation(lat, lon,radius,maxUplink,maxDownlink);
-				
-				System.out.println(ms.getNSString());
-				
-				nsList.add(ms);
-	
-				line = br.readLine();
+					if(nsLine.length == 5)
+					{
+						double lat = Double.parseDouble(nsLine[0]);
+						double lon = Double.parseDouble(nsLine[1]);
+						double radius = Double.parseDouble(nsLine[2]);
+						double maxUplink = Double.parseDouble(nsLine[3]);
+						double maxDownlink = Double.parseDouble(nsLine[4]);
+							
+						Mobile2GStation ms = new Mobile2GStation(lat, lon,radius,maxUplink,maxDownlink);
+						
+						System.out.println(ms.getNSString());
+						
+						nsList.add(ms);
+			
+						line = br.readLine();
+					}
+				}
 			}
 			
 			br.close();
@@ -148,7 +166,7 @@ public class NetworkStationController {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Network Stations from "+ mobile2gStationFileName + " : " + nsList.size());
+		System.out.println("\nNetwork Stations from "+ mobile2gStationFileName + " : " + nsList.size());
 		
 		return nsList;
 	}

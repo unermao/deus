@@ -350,7 +350,7 @@ function read3GStation() {
 	for (var i = 0; i < allMarkers.length; i++) {
 		
 		var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
-		drawCirclePoints(punto,3,'#2C5700');
+		drawCirclePoints(punto,2,'#2C5700');
 	}
 	
 	});
