@@ -180,7 +180,7 @@
  	        <aut:reference id="ConfigurationProcess"/>
             <aut:reference id="LogStatPeriodicProcess"/>
             <!-- <aut:reference id="LogDiscoveryStatProcess"/> -->
-			<!-- <aut:reference id="LogMaPeriodicProcess"/>  -->
+			<!-- <aut:reference id="LogMaPeriodicProcess"/> -->
           	<!-- <aut:reference id="TrafficEventBirthPoissonProcess"/>  -->
             <aut:reference id="RectangularBirth"/>
             <!-- <aut:reference id="RandomDisconnectionProcess"/> -->
