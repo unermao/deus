@@ -110,7 +110,7 @@
     </aut:process>
     <aut:process handler="it.unipr.ce.dsg.deus.impl.process.RectangularPulsePeriodicProcess" id="RectangularBirth">
         <aut:params>
-            <aut:param value="50" name="period"/>
+            <aut:param value="25" name="period"/>
             <aut:param value="0" name="startVtThreshold"/>
             <aut:param value="5000" name="stopVtThreshold"/>
         </aut:params>
