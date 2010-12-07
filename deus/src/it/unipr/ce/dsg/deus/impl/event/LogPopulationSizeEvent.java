@@ -28,7 +28,8 @@ public class LogPopulationSizeEvent extends Event {
 
 	public void run() throws RunException {
 		
-		AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		//AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		AutomatorLogger a = new AutomatorLogger();
 		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		
 		fileValue.add(new LoggerObject("N", (double) Engine.getDefault().getNodes().size()));

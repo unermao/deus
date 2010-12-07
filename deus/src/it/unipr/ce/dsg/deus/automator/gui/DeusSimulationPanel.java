@@ -7,6 +7,7 @@
 
 package it.unipr.ce.dsg.deus.automator.gui;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 /**
@@ -734,7 +735,19 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		 * </simulation>
 		 */
 	
-		xmlString = xmlString + "<resultVT outputLogFile=\"./temp/logger\"/>" + "\n\n";
+		String computerName = "";
+	    try{
+	    	computerName=InetAddress.getLocalHost().getHostName();
+	       // System.out.println(computerName);
+	      }catch (Exception e){
+	        System.out.println("Exception caught ="+e.getMessage());
+	    }
+		String simulationName = this.simulationNameField.getText();
+		xmlString = xmlString + "<resultVT outputLogFile=\"./temp/" 
+		+ computerName + "-" + simulationName + "-" +"logger\"/>" + "\n\n";
+		//xmlString = xmlString + "<resultVT outputLogFile=\"./temp/logger\"/>" + "\n\n";    originale
+		
+		//System.out.println("Simulation name = " + this.simulationNameField.getText());
 		
 		//Inserimento File Grafici GnuPlot
 		for(int index = 0 ; index < this.gnuPlotFileList.size(); index++)

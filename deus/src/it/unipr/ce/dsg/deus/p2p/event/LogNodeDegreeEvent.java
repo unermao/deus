@@ -40,7 +40,8 @@ public class LogNodeDegreeEvent extends Event {
 		//int nodeIndex = 0;
 		int kMax = 50;
 		
-		AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		//AutomatorLogger a = new AutomatorLogger("./temp/logger");
+		AutomatorLogger a = new AutomatorLogger();
 		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
 		
 		int kValues[] = new int[kMax+1];

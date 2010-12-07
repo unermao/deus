@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 
 /**
@@ -434,11 +435,16 @@ public class Marshalling {
 		automRoot= automObj.createAutomator(automatorIst);
 		
 		try {
+			
+			NamespacePrefixMapper m = new PreferredMapper();
+			
 			Marshaller marshallerAutomator= jaxbContext.createMarshaller();
 			
-			marshallerAutomator.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-					new Boolean(true));
+			marshallerAutomator.setProperty("com.sun.xml.bind.namespacePrefixMapper", m);
 			
+			marshallerAutomator.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://dsg.ce.unipr.it/software/deus/schema/automator automator.xsd"); 
+			
+			marshallerAutomator.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, new Boolean(true));
 			
 			//******** validation before marshalling
 			if(this.doValidation){
@@ -540,5 +546,21 @@ public class Marshalling {
 		}	
 		return paramsIst;
 	}
+	
+    public static class PreferredMapper extends NamespacePrefixMapper {
+        @Override
+        public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+            
+        	 if (requirePrefix) {
+        		 if ("http://www.w3.org/2001/XMLSchema-instance".equals(namespaceUri)) {
+        		        return "xsi";
+        		      }
+        		 return suggestion;
+        	 }
+        	 else
+        		 return "aut";
+        }
+    }
 
+    
 }
