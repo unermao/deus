@@ -8,8 +8,11 @@ import org.xml.sax.SAXException;
 
 public class Deus {
 	
-	public Deus(String fileName) {
+	public static String simulationLogName = null;
+	
+	public Deus(String fileName, String logFileName) {
 		super();
+		simulationLogName = logFileName;
 		AutomatorParser automator;
 		try {
 			automator = new AutomatorParser(fileName);

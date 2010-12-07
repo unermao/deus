@@ -128,8 +128,17 @@ public class RunnerCommandLine implements Runnable{
 		br.read(cbuf);
 		String summary = new String(cbuf);
 		
-	    DelDir2(new File("./temp"));	    	   
+	    //DelDir2(new File("./temp"));	    	   
 		
+	    String computerName = "";
+	    try{
+	    	computerName=InetAddress.getLocalHost().getHostName();
+	       // System.out.println(computerName);
+	      }catch (Exception e){
+	        System.out.println("Exception caught ="+e.getMessage());
+	    }
+		
+	    
 		// Run the n simulations with respective n files
 		for(int j = 0; j < simulations.size(); j++)
 		{		
@@ -137,15 +146,15 @@ public class RunnerCommandLine implements Runnable{
 			{
 				for(int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++)
 				{																								
-					new Deus(files.get(numFile));
+					new Deus(files.get(numFile),simulations.get(j).getFileLog());
 						
 					File log = new File(simulations.get(j).getFileLog());																		
 					
-					log.renameTo(new File("./temp/" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));																			
+					log.renameTo(new File("./temp/" + computerName + "-" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));																			
 					
 					log.delete();
 					
-					logFile.add("./temp/" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
+					logFile.add("./temp/" + computerName + "-" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
 					
 					numFile++;
 				
@@ -157,15 +166,6 @@ public class RunnerCommandLine implements Runnable{
 			String averageFileName = "";
 			String varFileName = "";
 			String sqrtvarFileName = "";
-			
-			//Add HostName in Destination File
-			String computerName = "";
-		    try{
-		    	computerName=InetAddress.getLocalHost().getHostName();
-		       // System.out.println(computerName);
-		      }catch (Exception e){
-		        System.out.println("Exception caught ="+e.getMessage());
-		    }
 			
 			// Compute the mean and the variance (with several seeds) of the data in the log files
 			 try {
@@ -197,7 +197,7 @@ public class RunnerCommandLine implements Runnable{
 		
 		if(files.size() == 0) 
 		{
-			new Deus(originalXml);		
+			new Deus(originalXml,"deus_log");		
 		}
 		// Remove all unused XML files
 		for(int i = 0; i < files.size(); i++)
