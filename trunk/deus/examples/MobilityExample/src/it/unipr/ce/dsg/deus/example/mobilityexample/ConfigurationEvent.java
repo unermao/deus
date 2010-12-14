@@ -1,11 +1,11 @@
-package it.unipr.ce.dsg.example.mobilityexample;
+package it.unipr.ce.dsg.deus.example.mobilityexample;
 
 import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.mobility.SwitchStationController;
+import it.unipr.ce.dsg.deus.mobility.SwitchStationController;
 
 /**
  * 

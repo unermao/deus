@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.example.mobilityexample;
+package it.unipr.ce.dsg.deus.example.mobilityexample;
 
 import java.util.Properties;
 
@@ -31,7 +31,7 @@ public class CarPeerBirthEvent extends NodeEvent {
 				Engine.getDefault().getSimulationRandom().nextInt(
 						getParentProcess().getReferencedNodes().size()))
 				.createInstance(Engine.getDefault().generateKey());
-
+		
 		CarPeer carPeer = (CarPeer) n;
 		
 		Engine.getDefault().addNode(carPeer);
