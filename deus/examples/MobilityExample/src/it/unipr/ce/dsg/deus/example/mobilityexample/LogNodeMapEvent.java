@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.unipr.ce.dsg.example.mobilityexample;
+package it.unipr.ce.dsg.deus.example.mobilityexample;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.example.mobilityexample;
+package it.unipr.ce.dsg.deus.example.mobilityexample;
 
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.SchedulerListener;
