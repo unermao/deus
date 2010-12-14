@@ -23,12 +23,12 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class LogNodeDegreeParamEvent extends Event {
+public class LogNodeDegreeEvent extends Event {
 
 	private static final String K_MAX = "kMax";
     	int kMax = 100;
     
-	public LogNodeDegreeParamEvent(String id, Properties params, Process parentProcess) throws InvalidParamsException {
+	public LogNodeDegreeEvent(String id, Properties params, Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
 		if (params.containsKey(K_MAX))
