@@ -5,20 +5,23 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://dsg.ce.unipr.it/software/deus/schema/automator ../../schema/automator.xsd ">
 	  
-    <aut:event handler="it.unipr.ce.dsg.example.mobilityexample.LogNodeMapEvent" id="LogMapEvent"/>
+	<!-- Events Definition -->  
+    <aut:event handler="it.unipr.ce.dsg.deus.example.mobilityexample.LogNodeMapEvent" id="LogMapEvent"/>
   
-    <aut:event schedulerListener="it.unipr.ce.dsg.example.mobilityexample.CarPeerBirthSchedulerListener" handler="it.unipr.ce.dsg.example.mobilityexample.CarPeerBirthEvent" id="Birth">
+    <aut:event schedulerListener="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeerBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeerBirthEvent" id="Birth">
     </aut:event>
   
-    <aut:event oneShot="true" handler="it.unipr.ce.dsg.example.mobilityexample.ConfigurationEvent" id="Configuration">
+    <aut:event oneShot="true" handler="it.unipr.ce.dsg.deus.example.mobilityexample.ConfigurationEvent" id="Configuration">
     </aut:event>
 
-    <aut:node handler="it.unipr.ce.dsg.example.mobilityexample.CarPeer" id="CarPeer">
+	<!-- Node Definition -->
+    <aut:node handler="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeer" id="CarPeer">
         <aut:params>
             <aut:param value="30.0" name="avgSpeedMax"/>
         </aut:params>
     </aut:node>
     
+    <!-- Process Definition -->
     <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogMaPeriodicProcess">
         <aut:params>
             <aut:param value="5" name="period"/>
