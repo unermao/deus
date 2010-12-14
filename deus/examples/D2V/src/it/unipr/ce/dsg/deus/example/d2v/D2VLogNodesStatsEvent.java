@@ -127,7 +127,7 @@ public class D2VLogNodesStatsEvent extends Event {
 		double totalSumReconnectionTime = 0.0;
 		double countReconnectionTime = 0.0;
 		
-		a = new AutomatorLogger("./temp/logger");
+		a = new AutomatorLogger();
 		fileValue = new ArrayList<LoggerObject>();
 			
 		if(d2vPeerIndexList != null)
