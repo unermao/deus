@@ -1,0 +1,482 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+<title>Visualizzazione markers da file XML</title>
+
+<script type="text/javascript" src="flot/jquery.js"></script>
+<script type="text/javascript" src="flot/jquery.flot.js"></script>
+
+<script src="http://maps.google.com/maps?file=api&amp;v=2 &amp;key=ABQIAAAAlwN03-hocNiAHk5e51eXbxT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRCsqUN1LseFVbL4a0Sh9HdggVVyg" type="text/javascript">
+</script>
+
+<script type="text/javascript">
+
+   var poly = [] ; 	
+   var line ; 
+   var map;
+   var circles = new Array();
+
+   var targetMarker;
+   var startMarker;
+   var endMarker;
+   var targetMarkers = new Array();
+
+   var newMarker;
+   
+   var path; 
+   
+   var oldLat = 0.0;
+   var oldLong = 0.0;
+   var zoomValue = 10;
+   var bootKey = 0;
+   var nodeKey = 0;	
+   var numOfGeoBucket = 5;
+   var sizeOfGeoBucket = 0.93205679/3;
+   var pointInterval = 30;
+   
+   var markerList = new Array();
+   
+   var trafficElementList = new Array();
+   
+   var app = new Array();
+   
+   var mapCentered = 0;
+   
+   var directions = null;
+   
+   var blueIcon = new GIcon(G_DEFAULT_ICON);
+   blueIcon.shadow = null,
+   blueIcon.printShadow = null
+   blueIcon.image = "car_marker.png";
+
+   var discIcon = new GIcon(G_DEFAULT_ICON);
+   discIcon.shadow = null,
+   discIcon.printShadow = null
+   discIcon.image = "disconnected_car.png";
+   
+   var redCarIcon = new GIcon(G_DEFAULT_ICON);
+   redCarIcon.shadow = null,
+   redCarIcon.printShadow = null
+   redCarIcon.image = "car_marker_red.png";
+   
+   var greenCarIcon = new GIcon(G_DEFAULT_ICON);
+   greenCarIcon.shadow = null,
+   greenCarIcon.printShadow = null
+   greenCarIcon.image = "car_marker_green.png";
+
+   var blueCarIcon = new GIcon(G_DEFAULT_ICON);
+   blueCarIcon.shadow = null,
+   blueCarIcon.printShadow = null
+   blueCarIcon.image = "car_marker_blue.png";   
+   
+   var circleCarIcon = new GIcon(G_DEFAULT_ICON);
+   circleCarIcon.shadow = null,
+   circleCarIcon.printShadow = null
+   circleCarIcon.image = "marker_blue.png";
+   
+   var ssIcon = new GIcon(G_DEFAULT_ICON);
+   ssIcon.shadow = null,
+   ssIcon.printShadow = null
+   ssIcon.image = "switch_station.png";
+   
+   var signIcon = new GIcon(G_DEFAULT_ICON);
+   signIcon.shadow = null,
+   signIcon.printShadow = null
+   signIcon.image = "sign_marker.png";
+
+ 
+   var greenIcon = new GIcon(G_DEFAULT_ICON);
+   greenIcon.image = "http://gmaps-samples.googlecode.com/svn/trunk/markers/green/blank.png";
+   
+
+   var greenIconStart = new GIcon(G_DEFAULT_ICON);
+   greenIconStart.image = "http://gmaps-samples.googlecode.com/svn/trunk/markers/green/marker1.png";
+
+   var greenIconEnd = new GIcon(G_DEFAULT_ICON);
+   greenIconEnd.image = "http://gmaps-samples.googlecode.com/svn/trunk/markers/green/marker2.png";
+   
+   
+   function drawAllCircles(map,puntoNodo)
+   {
+     //Clean map from old circles
+     for(var k = 0; k < circles.length; k++)
+     {
+	map.removeOverlay(circles[k]);
+     }
+
+     //Clean circles array
+     circles = new Array();
+
+     //draw new circles
+     for(var k = 0; k < numOfGeoBucket; k++)
+	drawCircle(map, puntoNodo, k*sizeOfGeoBucket, 40);
+   }
+
+    function drawCirclePoints(center,radius,color){
+	    var circlePoints = Array();
+	    var searchPoints = Array();
+
+	    with (Math) {	
+		    //Km 6378.134438016
+		    //var rLat = (radius/3963.189) * (180/PI); // miles
+		    var rLat = (radius/6378.134438016) * (180/PI); // miles		
+		    var rLng = rLat/cos(center.lat() * (PI/180));
+
+		    for (var a = 0 ; a < 361 ; a++ ) {
+			    var aRad = a*(PI/180);
+			    var x = center.lng() + (rLng * cos(aRad));
+			    var y = center.lat() + (rLat * sin(aRad));
+			    var point = new GLatLng(parseFloat(y),parseFloat(x),true);
+			    circlePoints.push(point);
+			    if (a % pointInterval == 0) {
+				    searchPoints.push(point);
+			    }
+		    }
+	    }
+
+	    //searchPolygon = new GPolygon(circlePoints, '#0000ff', 1, 1, '#0000ff', 0.2);
+	    searchPolygon = new GPolygon(circlePoints, color, 1, 1, color, 0.2);	
+	    map.addOverlay(searchPolygon);
+	    map.setCenter(searchPolygon.getBounds().getCenter(),map.getBoundsZoomLevel(searchPolygon.getBounds()));
+
+	    return searchPoints;
+
+    }
+
+   // Draw a circle on map around center (radius in miles)
+   // Modified by Jeremy Schneider based on http://maps.huge.info/dragcircle2.htm
+   function drawCircle(map, center, radius, numPoints)
+   {
+            poly = [] ; 
+            var lat = center.lat() ;
+            var lng = center.lng() ;
+            var d2r = Math.PI/180 ;                
+            var r2d = 180/Math.PI ;                
+            var Clat = (radius/3963) * r2d ;      
+            var Clng = Clat/Math.cos(lat*d2r);
+            
+            for (var i = 0 ; i < numPoints ; i++)
+            {
+                var theta = Math.PI * (i / (numPoints / 2)) ;
+                Cx = lng + (Clng * Math.cos(theta)) ;
+                Cy = lat + (Clat * Math.sin(theta)) ;
+                poly.push(new GLatLng(Cy,Cx)) ;
+            }
+
+            poly.push(poly[0]) ;
+
+            line = new GPolyline(poly,'#FF0000', 3, 0.8) ;
+            
+	    circles.push(line);
+
+            map.addOverlay(line) ;
+   }
+   
+
+    function initialize() {	
+
+	    // Set up our GMarkerOptions object
+	    markerOptions = { icon:greenIcon };
+	    markerBlueOptions = { icon:blueIcon };
+
+
+	    if (GBrowserIsCompatible()) {
+
+	    map = new GMap2(document.getElementById("map_canvas"));
+	    map.addControl(new GSmallMapControl());
+	    map.addControl(new GMapTypeControl());
+
+	    directions = new GDirections(map);
+
+	    //Aggiunge la scala
+	    map.addControl(new GScaleControl());
+
+	    //Centra la mappa in un punto particolare
+	    map.setCenter(new GLatLng(44.112909 , 9.835415), 13);
+
+	    var qst=location.search.substr(1);
+	    var dati = new Array()
+	    dati=qst.split("&");
+	    var dato1 = dati[0].substr(dati[0].indexOf("=")+1);
+	    nodeKey = dato1;       
+	    
+	    readSwitchStation();
+    
+	    t=setTimeout("updateMap()",1000); 
+
+	    }
+    }
+
+    function updateAllPeer() {
+	 
+
+	    GDownloadUrl("marker_ALL.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	    var xml = GXml.parse(data);
+	    var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	    
+
+	    for (var i = 0; i < allMarkers.length; i++) {
+		    
+		    var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
+		    var startSS = new GLatLng(parseFloat(allMarkers[i].getAttribute("startlat")), parseFloat(allMarkers[i].getAttribute("startlon")));	
+		    var endSS = new GLatLng(parseFloat(allMarkers[i].getAttribute("endlat")), parseFloat(allMarkers[i].getAttribute("endlon")));	
+	    
+		    var titolo = (allMarkers[i].getAttribute("descriz"));
+	    
+		    var trafficJam = allMarkers[i].getAttribute("trafficJam");
+		    
+		    var backward = allMarkers[i].getAttribute("backward");
+		    
+		    var isPathChanged = allMarkers[i].getAttribute("isPathChanged");
+
+		    var isConnected = allMarkers[i].getAttribute("isConnected");
+		    
+		    if(trafficJam == "false")			
+		    {
+			    if(backward == "false" && isPathChanged == "false")
+			    {
+				    if(isConnected == "false")
+					    markerBlueOptions = { icon:discIcon, title: titolo };
+				    else
+					    markerBlueOptions = { icon:blueIcon, title: titolo };
+			    }	
+			    else
+				    markerBlueOptions = { icon:greenCarIcon, title: titolo };
+		    }
+		    else
+			    markerBlueOptions = { icon:redCarIcon, title: titolo };
+			    
+			    
+		    
+		    newMarker = createMarker(punto,startSS,endSS,titolo,markerBlueOptions);
+		    
+		    var markerIndex = -1;
+		    
+		    for(var k=0; k<markerList.length;k++)
+		    {	
+			    if(markerList[k].id == allMarkers[i].getAttribute("descriz") )
+			    {
+				    
+				    markerIndex = k;
+				    
+				    if( ! markerList[k].point.equals(punto) )
+				    {
+					    //console.log("REMOVE OLD MARKER:"+markerList[k].id+" Point:"+markerList[k].point);
+										    
+					    map.removeOverlay(markerList[k].marker);
+					    
+					    //console.log("ADD NEW POSITION MARKER:"+titolo+" Point:"+punto);
+					    markerList[k].marker = newMarker;
+					    map.addOverlay(newMarker);
+				    }
+			    }
+		    }
+		    
+		    if(markerIndex==-1)
+		    {
+			    //console.log("ADD NEW MARKER:"+titolo);
+			    
+			    map.addOverlay(newMarker);
+	    
+			    var marker = {
+				    point: punto,
+				    id: allMarkers[i].getAttribute("descriz"),
+				    marker:newMarker
+			    }
+	    
+			    markerList.push(marker);
+			    app.push(newMarker);
+		    }
+		    
+	    }
+	    
+	    if(mapCentered == 0 && allMarkers != null)
+	    {
+		    //Centra la mappa in un punto particolare
+		    map.setCenter(new GLatLng(parseFloat(allMarkers[0].getAttribute("lat")) , parseFloat(allMarkers[0].getAttribute("long"))), 13);
+		    
+		    mapCentered = 1;
+	    }
+	    
+	    });
+
+    }
+
+
+    function readSwitchStation() {
+
+	    GDownloadUrl("switch_station.xml?"+ new Date().valueOf() , function(data, responseCode) {
+
+	    var xml = GXml.parse(data);
+	    var allMarkers = xml.documentElement.getElementsByTagName("marker");
+	    
+
+	    for (var i = 0; i < allMarkers.length; i++) {
+		    
+		    var punto = new GLatLng(parseFloat(allMarkers[i].getAttribute("lat")), parseFloat(allMarkers[i].getAttribute("long")));	
+
+		    if(oldLat != parseFloat(allMarkers[i].getAttribute("lat")) || oldLong != parseFloat(allMarkers[i].getAttribute("long")))	
+		    {
+			    var titolo = (allMarkers[i].getAttribute("descriz"));
+			    markerBlueOptions = { icon:ssIcon, title: titolo };
+			    map.addOverlay(new GMarker(punto, markerBlueOptions));
+		    }
+	    }
+	    
+	    });
+
+    }
+
+    function drawNodeTarget()
+    {
+	    var qst=location.search.substr(1);
+	    var dati = new Array()
+	    dati=qst.split("&");
+	    var dato1 = dati[0].substr(dati[0].indexOf("=")+1);
+	  
+	    nodeKey = dato1;
+	    
+	    if(targetMarker)
+		    map.removeOverlay(targetMarker);
+		    
+	    if(startMarker)
+		    map.removeOverlay(startMarker);
+		      
+	    if(endMarker)
+		    map.removeOverlay(endMarker);    
+	    
+	    if(nodeKey.length > 0 && nodeKey != "ALL")
+	    {
+		    //console.log("Node Key: " + nodeKey);
+		    
+		    //GDownloadUrl("marker.xml?"+ new Date().valueOf() , function(data, responseCode) {
+		    GDownloadUrl("node_markers/markers_"+dato1+".xml?"+ new Date().valueOf() , function(data, responseCode) {
+	    
+		    var xml = GXml.parse(data);
+		    var markers = xml.documentElement.getElementsByTagName("marker");
+		    
+		    //Clear old information
+		    for(var index=0; index<targetMarkers.length;index++)
+		      if(targetMarkers[index])
+			map.removeOverlay(targetMarkers[index]);
+		    
+		    targetMarkers = new Array();
+
+		    var puntoNodo = new GLatLng(parseFloat(markers[0].getAttribute("lat")), parseFloat(markers[0].getAttribute("long")));
+		    targetMarker = new GMarker(puntoNodo, markerOptions);
+
+		    map.addOverlay(targetMarker);
+	    
+		    //Draw start and end point
+		    var startPoint = new GLatLng(parseFloat(markers[1].getAttribute("lat")), parseFloat(markers[1].getAttribute("long")));		
+		    var endPoint = new GLatLng(parseFloat(markers[2].getAttribute("lat")), parseFloat(markers[2].getAttribute("long")));	
+	    
+		    startMarker = new GMarker(startPoint, { icon:greenIconStart })
+		    endMarker = new GMarker(endPoint, { icon:greenIconEnd });
+	    
+		    map.addOverlay(startMarker);
+		    map.addOverlay(endMarker);
+	    
+		    /*
+		    for (var i = 3; i < markers.length; i++) {
+				    
+			    var punto = new GLatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("long")));
+			    var real_punto = new GLatLng(parseFloat(markers[i].getAttribute("real_lat")), parseFloat(markers[i].getAttribute("real_lon")));
+			    var titolo = (markers[i].getAttribute("descriz"));	
+			    var distance = markers[i].getAttribute("distance");
+			      
+			    var localMarker = createMarkerWithPath(punto,real_punto,titolo,distance)
+				    
+			    targetMarkers.push(localMarker);
+
+			    map.addOverlay(localMarker);
+		    }
+		    */
+	    
+		    });
+	    }	
+		    
+    }
+
+    function updateMap() {
+
+		    updateAllPeer();		
+		    drawNodeTarget();    
+
+		    t=setTimeout("updateMap()",1000);
+    } 
+
+    function createMarker(position,startSS,endSS,peerId,markerOption) {
+	    var marker = new GMarker(position,markerOption);
+	    GEvent.addListener(marker,"click", function() {
+	    var myHtml = "<b>Peer Id: " + peerId + "</b><br/>"+"<b>Position: " + position + "</b><br/>";		
+	    map.openInfoWindowHtml(position, myHtml);
+	});
+	return marker;
+    }
+
+    function createMarkerWithPath(latlng, realLatLon, title,distance) {
+      
+	var options = { icon:blueCarIcon, title: distance };
+
+	    //Check distance to change marker's icon
+	if( distance < 0.01 )
+		options = { icon:circleCarIcon, title: distance };
+
+	var marker = new GMarker(latlng, options);
+	// var marker = new GMarker(latlng);
+	marker.value = distance;
+	GEvent.addListener(marker,"click", function() {
+	  var myHtml = "<b>ID: "+ title +" Distance: " + distance + "</b><br/>";
+	  var pol=[];
+	  
+	  if(path != null)
+	    map.removeOverlay(path);
+
+	  pol.push(latlng) ;
+	  pol.push(realLatLon) ;
+	  
+	      path = new GPolyline(pol) ;
+	      map.addOverlay(path) ;
+		    
+	  map.openInfoWindowHtml(latlng, myHtml);
+	});
+	return marker;
+    }
+
+    function route(from,to,position) {
+	  //console.log("Load Route Called ! from:" + from + " to:" + to);
+	  directions.clear();
+	  //directions.load("from:" + from + " to:" + to, {getPolyline:true,getSteps:true,travelMode:mode}));
+	      directions.loadFromWaypoints([position,to],{getSteps:true,avoidHighways:false, travelmode: G_TRAVEL_MODE_DRIVING});
+	      map.setCenter(position, 13);
+    }
+
+
+</script>
+
+</head>
+
+<body onload="initialize()" onunload="GUnload()">
+<table width="200" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <th scope="row"> <div align="center" id="map_canvas" style="width: 1200px; height: 800px"></div>
+    </th>
+  </tr>
+</table>
+
+<table width="200" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <th scope="row"> <div align="center" id="placeholder" style="width:400px;height:200px"></div>
+    </th>
+    <th scope="row"> <div align="center" id="placeholder2" style="width:400px;height:200px"></div>
+    </th>
+  </tr>
+</table>
+</body>
+</html>

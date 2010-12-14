@@ -1,0 +1,139 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" /> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> 
+<title>Google Maps JavaScript API v3 Example: Event Closure</title> 
+<link rel="stylesheet" type="text/css" href="style.css">
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+<script type="text/javascript"> 
+var map;
+var geocoder;
+var markerList;
+
+function initialize() {
+  var myLatlng = new google.maps.LatLng(44.800557896543964,10.326801217968752);
+  var myOptions = {
+    zoom: 12,
+    center: myLatlng,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  }
+  map = new google.maps.Map(document.getElementById("main-map"), myOptions);
+  geocoder = new google.maps.Geocoder();
+  
+  markerList = new Array();
+
+  google.maps.event.addListener(map, 'click', function(event) {
+    placeMarker(event.latLng);
+  });
+}
+  
+function placeMarker(location) {
+  var clickedLocation = new google.maps.LatLng(location);
+  var marker = new google.maps.Marker({
+      position: location, 
+      map: map
+  });
+
+ google.maps.event.addListener(marker,"click", function() {
+     if (marker.getAnimation() != null) {
+    marker.setAnimation(null);
+  } else {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+  });
+
+ google.maps.event.addListener(marker,"dblclick", function() {
+    marker.setMap(null);
+	
+    //console.log("Marker List Size: " + markerList.length);
+    //Remove element from marker array
+    var index = -1;
+    
+    for(var i = 0; i < markerList.length; i++)
+    {
+	if(markerList[i] == marker )
+	{
+	   index = i;
+	   break;
+	}
+    }
+    
+    if(index != -1 )
+    {
+	//console.log("Index: " + index);
+
+	var firstArray = markerList.slice(0,index);
+	var secondArray = markerList.slice(index+1);
+	
+	//console.log("First Array List Size: " + firstArray.length);	
+	//console.log("Second Array List Size: " + secondArray.length);	
+
+        markerList = new Array();
+	markerList = markerList.concat(firstArray);
+	markerList = markerList.concat(secondArray);
+    }
+  
+    //console.log("Marker List Size: " + markerList.length);
+    loadSSList();
+ });
+
+  markerList.push(marker);
+  loadSSList();
+}
+
+function geocode() {
+   var address = document.getElementById("address").value;
+   geocoder.geocode({'address': address,'partialmatch': true}, geocodeResult);
+ }
+
+function geocodeResult(results, status) {
+  if (status == 'OK' && results.length > 0) {
+    map.fitBounds(results[0].geometry.viewport);
+   } else {
+     alert("Geocode was not successful for the following reason: " + status);
+   }
+}
+
+function loadSSList()
+{
+  var ssString = "";
+  
+  for(var i = 0; i < markerList.length; i++) {
+    ssString = ssString + "<br>" + markerList[i].getPosition().lat()+"#"+markerList[i].getPosition().lng();
+  }
+
+  document.getElementById("dataPanel").innerHTML = ssString;
+}
+
+function reset()
+{
+ 
+  for(var i = 0; i < markerList.length; i++) {
+    markerList[i].setMap(null);
+  }
+  
+  markerList = new Array();	  
+	 
+  document.getElementById("dataPanel").innerHTML = "";
+}
+
+</script> 
+</head> 
+<body onload="initialize()"> 
+	<div id="header">
+		<ul>
+			<li class="title">Switch Station Editor V0.1 (11/12/2010)</li>
+         </ul>
+	</div>
+	<div id="main-map">
+	</div>
+	<div id="side">
+	  Find Place: 
+		<input type="text" id="address"/>
+		<input type="button" value="Go" onclick="geocode()">
+		<input type="button" value="Reset" onclick="reset()">
+        <div id="dataPanel" align="left"></div>
+	</div>
+</body>
+</html> 
