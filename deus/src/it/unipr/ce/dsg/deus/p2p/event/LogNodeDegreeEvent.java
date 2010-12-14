@@ -20,63 +20,42 @@ import java.util.Properties;
  * list of degree starting from 1 up to the maximum degree inside the netowkr.
  * For each degree is computed the number of nodes that has it.
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public class LogNodeDegreeEvent extends Event {
+public class LogNodeDegreeParamEvent extends Event {
 
-	public LogNodeDegreeEvent(String id, Properties params,
-			Process parentProcess) throws InvalidParamsException {
+	private static final String K_MAX = "kMax";
+    	int kMax = 100;
+    
+	public LogNodeDegreeParamEvent(String id, Properties params, Process parentProcess) throws InvalidParamsException {
 		super(id, params, parentProcess);
 		initialize();
+		if (params.containsKey(K_MAX))
+			kMax = Integer.parseInt(params.getProperty(K_MAX));
 	}
 
 	public void initialize() throws InvalidParamsException {
 	}
 
 	public void run() throws RunException {
-		//int nodeDegree[] = new int[Engine.getDefault().getNodes().size()];
-		//int nodeIndex = 0;
-		int kMax = 50;
-		
-		//AutomatorLogger a = new AutomatorLogger("./temp/logger");
-		AutomatorLogger a = new AutomatorLogger();
-		ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
-		
-		int kValues[] = new int[kMax+1];
-		for (int i = 0; i < kMax+1; i++)
-			kValues[i] = 0;
-		
-		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext();) {
-			Node n = it.next();
-			if (!(n instanceof Peer))
-				continue;
-			kValues[((Peer) n).getNeighbors().size()]++;
-		}
-			
-		/*
-		for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it
-				.hasNext();) {
-			Node n = it.next();
-			if (!(n instanceof Peer))
-				continue;
-			int k = ((Peer) n).getNeighbors().size();
-			if (k > kMax)
-				kMax = k;
-			nodeDegree[nodeIndex++] = k;
-		}
-
-		int kValues[] = new int[kMax+1];
-		
-		for (int i = 0; i < nodeDegree.length; i++)
-			kValues[nodeDegree[i]]++;
-		*/
-
-		for (int i = 0; i < kValues.length; i++)
-			fileValue.add(new LoggerObject("k("+i+")", kValues[i]));
-		
-		a.write(Engine.getDefault().getVirtualTime(), fileValue);
+	    AutomatorLogger a = new AutomatorLogger();
+	    ArrayList<LoggerObject> fileValue = new ArrayList<LoggerObject>();
+	    
+	    int kValues[] = new int[kMax+1];
+	    for (int i = 0; i < kMax+1; i++)
+	            kValues[i] = 0;
+	    
+	    for (Iterator<Node> it = Engine.getDefault().getNodes().iterator(); it.hasNext();) {
+	            Node n = it.next();
+	            if (!(n instanceof Peer))
+	                    continue;
+	            kValues[((Peer) n).getNeighbors().size()]++;
+	    }
+	
+	    for (int i = 0; i < kValues.length; i++)
+	            fileValue.add(new LoggerObject(""+i+"", kValues[i]));
+	    
+	    a.write(Engine.getDefault().getVirtualTime(), fileValue);
 	}
-
 }
