@@ -1,4 +1,6 @@
-package it.unipr.ce.dsg.deus.mobility;
+package it.unipr.ce.dsg.deus.mobility.util;
+
+import it.unipr.ce.dsg.deus.mobility.GeoLocation;
 
 /**
  * @author Marco Picone picone@ce.unipr.it

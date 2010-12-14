@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.mobility;
+package it.unipr.ce.dsg.deus.mobility.model;
 
 /**
  * 

@@ -5,7 +5,7 @@ import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
-import it.unipr.ce.dsg.deus.mobility.SwitchStationController;
+import it.unipr.ce.dsg.deus.mobility.util.SwitchStationController;
 
 /**
  * 

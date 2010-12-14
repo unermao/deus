@@ -1,4 +1,9 @@
-package it.unipr.ce.dsg.deus.mobility;
+package it.unipr.ce.dsg.deus.mobility.util;
+
+import it.unipr.ce.dsg.deus.mobility.GeoLocation;
+import it.unipr.ce.dsg.deus.mobility.MobilityPath;
+import it.unipr.ce.dsg.deus.mobility.MobilityPathPoint;
+import it.unipr.ce.dsg.deus.mobility.SwitchStation;
 
 import java.io.BufferedReader;
 import java.io.File;

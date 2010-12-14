@@ -1,4 +1,8 @@
-package it.unipr.ce.dsg.deus.mobility;
+package it.unipr.ce.dsg.deus.mobility.node;
+
+import it.unipr.ce.dsg.deus.mobility.MobilityPath;
+import it.unipr.ce.dsg.deus.mobility.SwitchStation;
+import it.unipr.ce.dsg.deus.mobility.model.ISpeedModel;
 
 /**
  * @author Marco Picone picone@ce.unipr.it
@@ -13,6 +17,21 @@ public interface IMobilePeer {
 	 * @param mobilityModel
 	 */
 	public void mobilityInit(float triggeringTime, ISpeedModel mobilityModel);
+	
+	/**
+	 * 
+	 */
+	public void startMoving(float triggeringTime);
+	
+	/**
+	 * 
+	 */
+	public void stopMoving(float triggeringTime);
+	
+	/**
+	 * 
+	 */
+	public void moved(float triggeringTime);
 	
 	/**
 	 * 
