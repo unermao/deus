@@ -38,6 +38,7 @@ public class CarPeerBirthEvent extends NodeEvent {
 		
 		carPeer.setConnected(true);
 		carPeer.mobilityInit(triggeringTime,carPeer.getFtmModel());
+		carPeer.startMoving(triggeringTime);
 		associatedNode = carPeer;
 		
 	}

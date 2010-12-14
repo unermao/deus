@@ -1,4 +1,4 @@
-package it.unipr.ce.dsg.deus.mobility;
+package it.unipr.ce.dsg.deus.mobility.node;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -6,6 +6,14 @@ import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
+import it.unipr.ce.dsg.deus.mobility.GeoLocation;
+import it.unipr.ce.dsg.deus.mobility.MobilityPath;
+import it.unipr.ce.dsg.deus.mobility.MobilityPathIndex;
+import it.unipr.ce.dsg.deus.mobility.SwitchStation;
+import it.unipr.ce.dsg.deus.mobility.event.MovePeerEvent;
+import it.unipr.ce.dsg.deus.mobility.model.ISpeedModel;
+import it.unipr.ce.dsg.deus.mobility.util.GeoDistance;
+import it.unipr.ce.dsg.deus.mobility.util.SwitchStationController;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
 
 /**
@@ -21,6 +29,16 @@ public abstract class MobilePeer extends Peer implements IMobilePeer{
 	private MobilityPath mobilityPath = null;
 	private ISpeedModel mobilityModel = null;
 	
+	private boolean isMovingActive = false;
+	
+	public boolean isMovingActive() {
+		return isMovingActive;
+	}
+
+	public void setMovingActive(boolean isMovingActive) {
+		this.isMovingActive = isMovingActive;
+	}
+
 	public MobilityPathIndex getMobilityPathIndex() {
 		return mobilityPathIndex;
 	}
@@ -89,9 +107,7 @@ public abstract class MobilePeer extends Peer implements IMobilePeer{
 		
 		//Set peer position
 		this.geoLocation=this.mobilityPath.getStartPoint();
-		
-		//Schedule the first movement
-		this.scheduleMove(triggeringTime);
+
 	}
 	
 	/**
@@ -100,35 +116,38 @@ public abstract class MobilePeer extends Peer implements IMobilePeer{
 	 */
 	public void scheduleMove(float triggeringTime) {
 		
-		try 
+		if(this.isMovingActive == true)
 		{
-			float delay = 0;
-			double distance = 0.0;
-		
-    		GeoLocation nextStep = this.mobilityPath.getPathPoints().get(this.mobilityPathIndex.getIndex()+1);
+			try 
+			{
+				float delay = 0;
+				double distance = 0.0;
 			
-			distance = GeoDistance.distance(this.geoLocation,nextStep);
+	    		GeoLocation nextStep = this.mobilityPath.getPathPoints().get(this.mobilityPathIndex.getIndex()+1);
+				
+				distance = GeoDistance.distance(this.geoLocation,nextStep);
+				
+				//Update mobility model parameters
+				this.configureMobilityModelParameter();
+				
+				double speed = this.mobilityModel.evaluateSpeedValue();
+				
+				//delay = (float)( ( (double)distance / (double)speed ) *60.0*16.6);
+				delay = (float)(this.sec2VT(60.0*60.0*((double)distance/(double)speed)));
+				
+				//System.out.println("Delay: " + delay);
+				
+				if(!(delay>0) && !(delay==0) && !(delay<0))
+					delay = 0;
+				
+				MovePeerEvent moveEvent = (MovePeerEvent) new MovePeerEvent("node_move_event", params, null).createInstance(triggeringTime + delay);
+				moveEvent.setOneShot(true);
+				moveEvent.setAssociatedNode(this);
+				Engine.getDefault().insertIntoEventsList(moveEvent);
 			
-			//Update mobility model parameters
-			this.configureMobilityModelParameter();
-			
-			double speed = this.mobilityModel.evaluateSpeedValue();
-			
-			//delay = (float)( ( (double)distance / (double)speed ) *60.0*16.6);
-			delay = (float)(this.sec2VT(60.0*60.0*((double)distance/(double)speed)));
-			
-			//System.out.println("Delay: " + delay);
-			
-			if(!(delay>0) && !(delay==0) && !(delay<0))
-				delay = 0;
-			
-			MovePeerEvent moveEvent = (MovePeerEvent) new MovePeerEvent("node_move_event", params, null).createInstance(triggeringTime + delay);
-			moveEvent.setOneShot(true);
-			moveEvent.setAssociatedNode(this);
-			Engine.getDefault().insertIntoEventsList(moveEvent);
-		
-		} catch (Exception e1) {
-			e1.printStackTrace();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -169,6 +188,7 @@ public abstract class MobilePeer extends Peer implements IMobilePeer{
 			this.geoLocation = this.mobilityPath.getPathPoints().get(this.mobilityPathIndex.getIndex());
 		}
 		
+		this.moved(triggeringTime);
 		this.scheduleMove(triggeringTime);
 	}
 	
@@ -185,6 +205,22 @@ public abstract class MobilePeer extends Peer implements IMobilePeer{
 		
 		return availablePaths.get(pathIndex);
 	}
+
+	@Override
+	public void startMoving(float triggeringTime) {
+		
+		this.isMovingActive = true;
+		
+		//Schedule the first movement
+		this.scheduleMove(triggeringTime);
+	
+	}
+
+	@Override
+	public void stopMoving(float triggeringTime) {
+		this.isMovingActive = false;
+	}
+	
 	
 
 }

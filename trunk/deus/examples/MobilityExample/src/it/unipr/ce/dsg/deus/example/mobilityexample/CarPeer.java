@@ -6,8 +6,8 @@ import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
-import it.unipr.ce.dsg.deus.mobility.FTMSpeedModel;
-import it.unipr.ce.dsg.deus.mobility.MobilePeer;
+import it.unipr.ce.dsg.deus.mobility.model.FTMSpeedModel;
+import it.unipr.ce.dsg.deus.mobility.node.MobilePeer;
 
 /**
  * 
@@ -41,15 +41,6 @@ public class CarPeer extends MobilePeer{
 
 	@Override
 	public void configureMobilityModelParameter() {
-		
-		String messageText = "PING_MESSAGE#"+this.key;
-		MyMessage msg = new MyMessage(this.key,messageText.getBytes(),0,Engine.getDefault().getVirtualTime());
-	
-		ArrayList<Integer> carPeerList = Engine.getDefault().getNodeKeysById("CarPeer");
-		int destKeyIndex = Engine.getDefault().getSimulationRandom().nextInt(carPeerList.size());
-		CarPeer destPeer = (CarPeer)Engine.getDefault().getNodeByKey(carPeerList.get(destKeyIndex));
-		this.sendMessage(destPeer, msg, Engine.getDefault().getVirtualTime());
-		
 		this.ftmModel.setCarMaxSpeed(this.getMobilityPath().getSpeedLimit());
 		this.ftmModel.setCarMinSpeed(10.0);
 		this.ftmModel.setNumCarsInPath(this.getMobilityPath().getNumOfCars());
@@ -87,6 +78,24 @@ public class CarPeer extends MobilePeer{
                     e.printStackTrace();
             }
     }
+
+	@Override
+	public void moved(float triggeringTime) {
+		
+		if(Engine.getDefault().getSimulationRandom().nextBoolean() == true)
+		{
+			System.out.println("VT: "+triggeringTime+" Peer: " + this.key + " Position Changed, sending PING to random active node !");
+			
+			String messageText = "PING_MESSAGE#"+this.key;
+			MyMessage msg = new MyMessage(this.key,messageText.getBytes(),0,Engine.getDefault().getVirtualTime());
+		
+			ArrayList<Integer> carPeerList = Engine.getDefault().getNodeKeysById("CarPeer");
+			int destKeyIndex = Engine.getDefault().getSimulationRandom().nextInt(carPeerList.size());
+			CarPeer destPeer = (CarPeer)Engine.getDefault().getNodeByKey(carPeerList.get(destKeyIndex));
+			this.sendMessage(destPeer, msg, Engine.getDefault().getVirtualTime());
+		}
+		
+	}
 
 
 }
