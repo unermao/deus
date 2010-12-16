@@ -51,6 +51,10 @@ public class Runner implements Runnable{
 	//private int count = 0;
 	private String originalXml = "";
 	private String automatorXml = "";
+	private ArrayList<String> logFile = null;
+	private ArrayList<String> files = null;
+	private int numFile;
+	private ArrayList<MyObjectSimulation> simulations = null;
 	
 	public Runner(String originalXml,String automatorXml){
 		this.originalXml = originalXml;
@@ -106,18 +110,16 @@ public class Runner implements Runnable{
 		DelDir2(new File("./xml"));
 		
 		// Create n XML files for the n simulations with DEUS
-		ArrayList<String> files = new ArrayList<String>();								
+		files = new ArrayList<String>();								
 				
 		// Read the XML automator file and retrieve the simulations to perform
-		ArrayList<MyObjectSimulation> simulations = readXML(automatorXml);			
+		simulations = readXML(automatorXml);			
 			
 		// Insert in the ArrayList the names of the XML files to run 
 		files = writeXML(simulations,originalXml);
 				
-		int numFile = 0;					
-		ArrayList<String> logFile = new ArrayList<String>();									
-		
-		boolean condition = false;
+		numFile = 0;					
+		logFile = new ArrayList<String>();									
 		
 		// Read the file that contains the information on the simulation to execute
 		File simfile = new File("simulations");
@@ -130,30 +132,19 @@ public class Runner implements Runnable{
 		String summary = new String(cbuf);
 		
 		// Execute the GUI showing the summary of the simulation 
-		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame();
+		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame(this);
 		simulationsummary.getSimulationSummaryTextArea().setText(summary);
 		simulationsummary.setVisible(true);
 		
-		while(!condition){
-			
-			if(simulationsummary.isClose() || !simulationsummary.isShowing() )
-			{
-				// Close the summary GUI
-				simulationsummary.dispose();
-				
-				return -1;
-			}
-			
-			if(simulationsummary.isStart() || !simulationsummary.isShowing())
-			{
-				// Close the summary GUI
-				simulationsummary.dispose();
-				condition = true;
-			}
-		}
 		
-		
-		
+		return 0;
+	}
+	
+	/**
+	 * 
+	 */
+	public void runSimulations()
+	{
 		if( simulationProgressBar != null)
 		{
 			simulationProgressBar.setMaximum(files.size());
@@ -248,11 +239,8 @@ public class Runner implements Runnable{
 		
 		// Remove all unused XML files
 		for(int i = 0; i < files.size(); i++)
-			new File(files.get(i)).delete();				
-		
-		return 0;
+			new File(files.get(i)).delete();
 	}
-	
 	
 	
 	/**
