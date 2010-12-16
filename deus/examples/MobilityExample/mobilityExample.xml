@@ -7,6 +7,8 @@
 	  
 	<!-- Events Definition -->  
     <aut:event handler="it.unipr.ce.dsg.deus.example.mobilityexample.LogNodeMapEvent" id="LogMapEvent"/>
+    
+    <aut:event handler="it.unipr.ce.dsg.deus.example.mobilityexample.LogSystemParametersEvent" id="LogSystemParametersPeriodicProcess"/>
   
     <aut:event schedulerListener="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeerBirthSchedulerListener" handler="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeerBirthEvent" id="Birth">
     </aut:event>
@@ -17,7 +19,8 @@
 	<!-- Node Definition -->
     <aut:node handler="it.unipr.ce.dsg.deus.example.mobilityexample.CarPeer" id="CarPeer">
         <aut:params>
-            <aut:param value="30.0" name="avgSpeedMax"/>
+            <aut:param value="2000.0" name="avgDownlink"/> <!-- Kbit/sec -->
+            <aut:param value="200.0" name="avgUplink"/> <!-- Kbit/sec -->
         </aut:params>
     </aut:node>
     
@@ -28,6 +31,15 @@
         </aut:params>
         <aut:events>
             <aut:reference id="LogMapEvent"/>
+        </aut:events>
+    </aut:process>
+    
+    <aut:process handler="it.unipr.ce.dsg.deus.impl.process.PeriodicProcess" id="LogSystemParametersPeriodicProcess">
+        <aut:params>
+            <aut:param value="100" name="period"/>
+        </aut:params>
+        <aut:events>
+            <aut:reference id="LogSystemParametersPeriodicProcess"/>
         </aut:events>
     </aut:process>
     
@@ -59,7 +71,8 @@
     <aut:engine keyspacesize="10000" seed="123456789" maxvt="10000.0">
         <aut:processes>
  	        <aut:reference id="ConfigurationProcess"/>
-            <aut:reference id="LogMaPeriodicProcess"/>
+            <aut:reference id="LogSystemParametersPeriodicProcess"/>
+            <!-- <aut:reference id="LogMaPeriodicProcess"/>  -->
           	<aut:reference id="RectangularBirth"/>
         </aut:processes>
     </aut:engine>
