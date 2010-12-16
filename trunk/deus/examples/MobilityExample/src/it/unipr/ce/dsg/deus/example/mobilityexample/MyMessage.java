@@ -52,6 +52,17 @@ public class MyMessage {
 		this.sentTime = sentTime;
 	}
 	
-	
+	/**
+	 * Return messages size in byte
+	 * @return
+	 */
+	public double getMessageSize()
+	{
+		double size = 0.0;
+		
+		size += (double)this.payload.length + ((double)Integer.SIZE + 2.0*(double)Float.SIZE)/8.0; 
+		
+		return size;
+	}
 	
 }

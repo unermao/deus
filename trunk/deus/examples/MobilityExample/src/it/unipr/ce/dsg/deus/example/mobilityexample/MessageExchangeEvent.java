@@ -18,7 +18,7 @@ public class MessageExchangeEvent extends NodeEvent{
 
 	@Override
 	public void run() throws RunException {
-		System.out.println("Peer: " + this.associatedNode.getKey() + " Received Payload:" + new String(this.msg.getPayload()));
+		//System.out.println("Peer: " + this.associatedNode.getKey() + " Received Payload:" + new String(this.msg.getPayload()));
 	}
 
 	public MyMessage getMsg() {
