@@ -11,6 +11,8 @@
 
 package it.unipr.ce.dsg.deus.automator.gui;
 
+import it.unipr.ce.dsg.deus.automator.Runner;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.UIManager;
@@ -25,10 +27,13 @@ public class SimulationSummaryFrame extends javax.swing.JFrame {
 
 	private boolean isStart = false;
 	private boolean isClose = false;
+	private Runner runner = null;
 	
-    /** Creates new form SimulationSummaryFrame */
-    public SimulationSummaryFrame() {
+    /** Creates new form SimulationSummaryFrame 
+     * @param runner */
+    public SimulationSummaryFrame(Runner runner) {
         initComponents();
+        this.runner  = runner;
     }
 
     /** This method is called from within the constructor to
@@ -155,24 +160,20 @@ public class SimulationSummaryFrame extends javax.swing.JFrame {
 
     protected void closeButtonActionPerformed(ActionEvent evt) {
 		this.isClose = true;
+		this.dispose();
 	}
 
 	protected void startButtonActionPerformed(ActionEvent evt) {
 		this.isStart = true;
+		
+		new Thread(new Runnable() {
+		    public void run() {
+		        runner.runSimulations();
+		    }
+		}).start();
+		
+		this.dispose();
 	}
-
-	/**
-    * @param args the command line arguments
-    */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new SimulationSummaryFrame().setVisible(true);
-            }
-        });
-    }
-
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
