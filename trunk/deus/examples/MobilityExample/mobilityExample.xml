@@ -72,7 +72,7 @@
         <aut:processes>
  	        <aut:reference id="ConfigurationProcess"/>
             <aut:reference id="LogSystemParametersPeriodicProcess"/>
-            <!-- <aut:reference id="LogMaPeriodicProcess"/>  -->
+            <aut:reference id="LogMaPeriodicProcess"/>
           	<aut:reference id="RectangularBirth"/>
         </aut:processes>
     </aut:engine>
