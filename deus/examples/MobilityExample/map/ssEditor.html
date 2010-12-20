@@ -100,7 +100,7 @@ function loadSSList()
   var ssString = "";
   
   for(var i = 0; i < markerList.length; i++) {
-    ssString = ssString + "<br>" + markerList[i].getPosition().lat()+"#"+markerList[i].getPosition().lng();
+    ssString = ssString + "<br>" + markerList[i].getPosition().lat()+","+markerList[i].getPosition().lng();
   }
 
   document.getElementById("dataPanel").innerHTML = ssString;
