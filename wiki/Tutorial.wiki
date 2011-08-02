@@ -221,6 +221,9 @@ Random rng = Engine.getDefault().getSimulationRandom();
 in the Java code of your events, nodes, etc., *but do not use it in their constructor!*
 
 
+= The {{{clone()}}} method =
+
+
 = Writing logs =
 
 In DEUS, there are two logging strategies. One allows to have different logging granularity (*but slows down your simulations!*), by using Java instructions like
