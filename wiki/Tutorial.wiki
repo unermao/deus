@@ -222,6 +222,43 @@ in the Java code of your events, nodes, etc., *but do not use it in their constr
 
 
 = The {{{clone()}}} method =
+User-implemented subclasses of {{{Node}}} and {{{Event}}} are used by the DEUS parser to create objects for the simulation. For each node and event defined in the XML configuration file, the parser creates an object, then calls its {{{clone()}}} method to create other copies of such nodes and events (when necessary). 
+In the {{{clone()}}} method you can put the code you want.
+Example: suppose you have a class called {{{Customer}}} of which you want N different instances, each one characterized by a different budget. Through the XML you can define the max budget:
+
+{{{
+<aut:node id="customer" handler="it.unipr.ce.dsg.deus.example.socialmarket.Customer">
+		<aut:params>
+		    <aut:param name="maxBudget" value="100" />
+		</aut:params>
+	</aut:node>
+}}}
+
+In the constructor of the {{{Customer}}} class you place the code for getting such a value:
+
+{{{
+        public Customer(String id, Properties params, ArrayList<Resource> resources)
+			throws InvalidParamsException {
+		super(id, params, resources);
+		initialize();
+	}
+	
+	public void initialize() throws InvalidParamsException {
+		if (params.containsKey(MAX_BUDGET))
+			maxBudget = Integer.parseInt(params.getProperty(MAX_BUDGET));
+	}
+}}}
+
+Finally, in the {{{clone()}}} method you generate a random value for the actual {{{budget}}} of each instance:
+
+{{{
+        public Object clone() {
+		Customer clone = (Customer) super.clone();
+                Random random = Engine.getDefault().getSimulationRandom();
+                clone.setBudget(random.nextInt(maxBudget)+1);
+		return clone;
+	}
+}}}
 
 
 = Writing logs =
