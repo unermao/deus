@@ -227,7 +227,7 @@ In the {{{clone()}}} method you can put the code you want.
 Example: suppose you have a class called {{{Customer}}} of which you want N different instances, each one characterized by a different budget. Through the XML you can define the max budget:
 
 {{{
-<aut:node id="customer" handler="it.unipr.ce.dsg.deus.example.socialmarket.Customer">
+        <aut:node id="customer" handler="it.unipr.ce.dsg.deus.example.socialmarket.Customer">
 		<aut:params>
 		    <aut:param name="maxBudget" value="100" />
 		</aut:params>
@@ -274,7 +274,7 @@ and deciding which log messages to write by setting the logging level (info, fin
 
 {{{
 <aut:engine maxvt="2000000" seed="123456789"> 
-  <aut:logger level="INFO" />
+     <aut:logger level="INFO" />
 ...
 }}}
 
