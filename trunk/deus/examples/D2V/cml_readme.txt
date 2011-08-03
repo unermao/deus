@@ -1,1 +1,0 @@
-ant DEUS_CML -Ddeus.cml.program.opts="examples/D2V/disconnection_10.xml automator.xml examples/D2V/automator_disc_10.xml"
