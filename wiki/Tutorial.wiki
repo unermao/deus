@@ -157,7 +157,7 @@ Note 2: If you define in the XML an event and the associated process, you can ob
 
 {{{
         PurchaseEvent purchaseEvent = (PurchaseEvent) pevModel.createInstance(pevModel.getParentProcess()
-						.getNextTriggeringTime(pevModel, triggeringTime));
+						.getNextTriggeringTime(pevModel, currentVirtualTime));
 	purchaseEvent.setTargetCustomer(selectedNeighbor);
 	purchaseEvent.setTargetStore(targetStore);
 	purchaseEvent.setProductId(targetProductList.get(0));
