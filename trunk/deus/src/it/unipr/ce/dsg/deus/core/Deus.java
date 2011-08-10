@@ -6,6 +6,15 @@ import javax.xml.bind.JAXBException;
 
 import org.xml.sax.SAXException;
 
+
+/**
+ * 
+ * This is the main class of the simulation environment.
+ * 
+ * @author Matteo Agosti 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class Deus {
 	
 	public static String simulationLogName = null;
@@ -19,35 +28,25 @@ public class Deus {
 			try {
 				automator.getEngine().run();
 			} catch (SimulationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 	}

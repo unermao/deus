@@ -1,5 +1,10 @@
 package it.unipr.ce.dsg.deus.automator.gui;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * 
+ */
 public class NodeResource {
 
 	private String handlerName;
@@ -8,8 +13,8 @@ public class NodeResource {
 	private Double finalValue;
 	private Double stepValue;
 	private String nodeId;
-	
-	public NodeResource(){
+
+	public NodeResource() {
 		this.nodeId = "";
 		this.resParamValue = "ResParamValue";
 		this.handlerName = "HandlerName";
@@ -17,7 +22,7 @@ public class NodeResource {
 		this.finalValue = 0.0;
 		this.stepValue = 0.0;
 	}
-	
+
 	public NodeResource(Double finalValue, String handlerName,
 			Double initialValue, String nodeId, String resParamValue,
 			Double stepValue) {
@@ -77,7 +82,5 @@ public class NodeResource {
 	public void setNodeId(String nodeId) {
 		this.nodeId = nodeId;
 	}
-	
-	
-	
+
 }

@@ -1,5 +1,10 @@
 package it.unipr.ce.dsg.deus.automator.gui;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * 
+ */
 public class NodeParameter {
 
 	private String nodeId;
@@ -7,8 +12,8 @@ public class NodeParameter {
 	private Double initialValue;
 	private Double finalValue;
 	private Double stepValue;
-	
-	public NodeParameter(){
+
+	public NodeParameter() {
 		this.nodeId = "pcNode";
 		this.paramName = "uploadSpeed";
 		this.initialValue = 0.1;
@@ -65,7 +70,5 @@ public class NodeParameter {
 	public void setStepValue(Double stepValue) {
 		this.stepValue = stepValue;
 	}
-	
-	
-	
+
 }

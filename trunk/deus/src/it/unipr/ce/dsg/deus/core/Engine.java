@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * calculated according to the parent process strategy.
  * </p>
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

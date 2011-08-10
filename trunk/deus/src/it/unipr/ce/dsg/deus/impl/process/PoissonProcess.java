@@ -10,12 +10,11 @@ import java.util.Properties;
 import java.util.Random;
 
 /**
- * This class represents a generic Poisson process. It accept one parameter
- * called "meanArrival" (float) that is used to generate the triggering time.
- * Each time the process receives a request for generating a new triggering
- * time, it will compute it by adding the current simulation virtual the value
- * of an Homogeneous Poisson Process with the rate parameter calculated as
- * 1/meanArrival time.
+ * This class represents a Homogeneous Poisson Process, that is a process that schedules
+ * events with interarrival time being an exponentially distributed random variable. 
+ * The process accepts one parameter called "meanArrival" (float), representing the
+ * mean interarrival time between two consecutive events, that is used 
+ * to generate the triggering time of next event.
  * 
  * @author Matteo Agosti (agosti@ce.unipr.it)
  * @author Michele Amoretti (michele.amoretti@unipr.it)

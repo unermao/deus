@@ -5,7 +5,7 @@ package it.unipr.ce.dsg.deus.core;
  * be notified when one of their referenced event is scheduled for the
  * execution.
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

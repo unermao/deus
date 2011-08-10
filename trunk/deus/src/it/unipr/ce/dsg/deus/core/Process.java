@@ -13,7 +13,7 @@ import java.util.Properties;
  * set of referenced nodes and a set of referenced events.
  * </p>
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

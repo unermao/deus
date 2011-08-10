@@ -1,32 +1,28 @@
 package it.unipr.ce.dsg.deus.automator;
-import it.unipr.ce.dsg.deus.core.Deus;
 
+import it.unipr.ce.dsg.deus.core.Deus;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
+/**
+ * <p>
+ * This class manages logs for the Automator.
+ * </p>
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ * 
+ */
 public class AutomatorLogger {
 	
 	private FileOutputStream file;
 	
 	/**
 	 * constructor of the AutomatorLogger
-	 * @param fileName, name of the file on which the results must be written
+	 * @param 
 	 */
-	/*
-	public AutomatorLogger(String fileName) {
-		super();			
-		 
-		try {				
-			this.file = new FileOutputStream(fileName,true);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	*/
-	
 	public AutomatorLogger() {
 		super();			
 		 
@@ -56,10 +52,8 @@ public class AutomatorLogger {
 		write = vt + toWrite;
 		
 		try {
-			
 			this.file.write(write.getBytes());
 			this.file.close();
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

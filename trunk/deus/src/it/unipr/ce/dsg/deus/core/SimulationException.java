@@ -4,7 +4,7 @@ package it.unipr.ce.dsg.deus.core;
  * This class represents the exceptions thrown in case one of the components
  * into the simulation fails its execution.
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

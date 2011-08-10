@@ -7,7 +7,7 @@ import java.util.logging.Logger;
  * Class used to abstract each simulation object, adding the member and methods
  * to support the logging process.
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

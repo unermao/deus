@@ -5,7 +5,7 @@ import java.util.Properties;
 /**
  * This class represent the generic resource associated to a node.
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

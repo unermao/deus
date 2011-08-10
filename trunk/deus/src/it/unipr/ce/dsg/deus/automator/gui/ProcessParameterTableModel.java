@@ -3,11 +3,17 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * 
+ */
 @SuppressWarnings("serial")
 public class ProcessParameterTableModel extends AbstractTableModel {
 
 	// String array that contains the names of the columns
-	protected String columnNames[] = { "Process Id","Param Name","Initial Value", "Final Value" ,"Step Value"};
+	protected String columnNames[] = { "Process Id", "Param Name",
+			"Initial Value", "Final Value", "Step Value" };
 
 	// Array that contains the values for the rows in the table model
 	protected Object dataValues[][];
@@ -24,10 +30,11 @@ public class ProcessParameterTableModel extends AbstractTableModel {
 	 * 
 	 * @param mail_list
 	 */
-	public void set_FileTableModel(ArrayList<ProcessParameter> processParametersList) {
+	public void set_FileTableModel(
+			ArrayList<ProcessParameter> processParametersList) {
 
 		this.processParametersList = processParametersList;
-		
+
 		// Create some data
 		Object dataValues_app[][] = new Object[processParametersList.size()][columncount];
 
@@ -43,7 +50,7 @@ public class ProcessParameterTableModel extends AbstractTableModel {
 			dataValues[i][4] = processParametersList.get(i).getStepValue();
 		}
 	}
-	
+
 	/**
 	 * Returns the number of rows
 	 */
@@ -77,31 +84,35 @@ public class ProcessParameterTableModel extends AbstractTableModel {
 	 * Returns the object in the table, given its row and column numbers
 	 */
 	public Object getValueAt(int row, int col) {
-		
+
 		return dataValues[row][col];
 	}
-	
+
 	/**
 	 * Returns the object in the first column, given the row number
 	 */
-	public Object getRowObject(int row ) {
-		
-		return (String)dataValues[row][0];
-	}
+	public Object getRowObject(int row) {
 
+		return (String) dataValues[row][0];
+	}
 
 	/**
 	 * Allows to set a value in the table, given the row and column numbers
 	 */
 	public void setValueAt(Object value, int row, int col) {
 		dataValues[row][col] = value;
-		
-		processParametersList.get(row).setProcessId((String)dataValues[row][0]);
-		processParametersList.get(row).setParamName((String)dataValues[row][1]);
-		processParametersList.get(row).setInitialValue((Double)dataValues[row][2]);
-		processParametersList.get(row).setFinalValue((Double)dataValues[row][3]);
-		processParametersList.get(row).setStepValue((Double)dataValues[row][4]);
-		
+
+		processParametersList.get(row)
+				.setProcessId((String) dataValues[row][0]);
+		processParametersList.get(row)
+				.setParamName((String) dataValues[row][1]);
+		processParametersList.get(row).setInitialValue(
+				(Double) dataValues[row][2]);
+		processParametersList.get(row).setFinalValue(
+				(Double) dataValues[row][3]);
+		processParametersList.get(row)
+				.setStepValue((Double) dataValues[row][4]);
+
 		fireTableCellUpdated(row, col);
 	}
 
@@ -110,7 +121,7 @@ public class ProcessParameterTableModel extends AbstractTableModel {
 	 */
 	public boolean isCellEditable(int row, int col) {
 
-			return true;
+		return true;
 	}
 
 }

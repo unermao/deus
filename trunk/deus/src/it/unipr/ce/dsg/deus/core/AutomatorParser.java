@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
  * initialize an Engine object enabling the simulation execution.
  * </p>
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  * @see it.unipr.ce.dsg.deus.core.Engine

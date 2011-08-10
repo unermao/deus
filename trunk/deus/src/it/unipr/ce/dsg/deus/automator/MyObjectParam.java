@@ -1,5 +1,11 @@
 package it.unipr.ce.dsg.deus.automator;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class MyObjectParam {
 		
 	private String objectParam;	
@@ -39,8 +45,5 @@ public class MyObjectParam {
 	public void setObjectValue(Float double1) {
 		this.objectValue = double1;
 	}
-	
-	
-	
 
 }

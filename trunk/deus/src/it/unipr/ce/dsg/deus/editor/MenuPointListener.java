@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.editor;
 
 import java.awt.geom.Point2D;
 
+
 /**
  * Used to set the point at which the mouse was clicked for those menu items
  * interested in this information.  Useful, for example, if you want to bring up
@@ -15,5 +16,5 @@ public interface MenuPointListener {
      * @param point 
      */
  void   setPoint(Point2D point);
-    
+  
 }

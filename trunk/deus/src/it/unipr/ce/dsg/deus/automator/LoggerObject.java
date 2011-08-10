@@ -1,5 +1,12 @@
 package it.unipr.ce.dsg.deus.automator;
 
+/**
+ * Class that describes the generic logger object
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class LoggerObject {
 	
 	private String dataName;

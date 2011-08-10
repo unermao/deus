@@ -15,7 +15,7 @@ import java.util.Properties;
  * 
  * @see it.unipr.ce.dsg.deus.core.NodeEvent
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

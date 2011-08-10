@@ -3,7 +3,9 @@ package it.unipr.ce.dsg.deus.automator;
 
 /**
  * Exception that is thrown when the points that are necessary to draw a figure are not sufficient
- *  * @author marcopk
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
  *
  */
 @SuppressWarnings("serial")

@@ -12,14 +12,11 @@ import it.unipr.ce.dsg.deus.core.Process;
 
 
 /**
- * This class represents a generic Poisson process defined within a time interval 
+ * This class represents a Homogeneous Poisson Process defined within a time interval 
  * between vt = 0 and vt = VTmax. It accepts parameters called "meanArrival" (float) 
  * that is used to compute next event's triggering time, "startVtThreshold" (float) 
  * and "stopVtThreshold" (float) which are the limits of the time interval in 
- * which the Poisson process is defined. Each time the process receives a request for
- * generating a new triggering time, it will compute it by adding the current
- * simulation virtual the value of a Homogeneous Poisson Process with rate =
- * 1/meanArrival.
+ * which the Poisson process is defined.
  * 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
