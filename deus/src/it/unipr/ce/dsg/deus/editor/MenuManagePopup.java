@@ -10,35 +10,28 @@ import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 
+
 /**
  * This class manage the menu of all vertices and all edge on Graph
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  * 
  */
-
-
 public class MenuManagePopup<V,E> extends AbstractPopupGraphMousePlugin{
 	private JPopupMenu vertexPopup, edgePopup;
 	
 	public MenuManagePopup(){
-
 		 this(MouseEvent.BUTTON3_MASK);
-		
 	}
-
 
 	public MenuManagePopup(int button3Mask) {
-		
 		super(button3Mask);
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void handlePopup(MouseEvent e) {
 		
-    
     final VisualizationViewer<V,E> vv =
         (VisualizationViewer<V,E>)e.getSource();
 		Point2D p = e.getPoint();
@@ -54,15 +47,13 @@ public class MenuManagePopup<V,E> extends AbstractPopupGraphMousePlugin{
 		        if(edge != null) {
 		            updateEdgeMenu(edge, vv, p);
 		            edgePopup.show(vv, e.getX(), e.getY());
-		          
 		        }
 		    }
 		}
     
 		
 	}
-	
-	
+
     private void updateVertexMenu(V v, VisualizationViewer vv, Point2D point) {
         if (vertexPopup == null) return;
         Component[] menuComps = vertexPopup.getComponents();
@@ -77,7 +68,6 @@ public class MenuManagePopup<V,E> extends AbstractPopupGraphMousePlugin{
         
     }
     
-    
     private void updateEdgeMenu(E edge, VisualizationViewer vv, Point2D point) {
         if (edgePopup == null) return;
         Component[] menuComps = edgePopup.getComponents();
@@ -91,16 +81,12 @@ public class MenuManagePopup<V,E> extends AbstractPopupGraphMousePlugin{
         }
     }
     
-    
     public void setVertexPopup(JPopupMenu vertexPopup) {
         this.vertexPopup = vertexPopup;
     }
-    
     
     public void setEdgePopup(JPopupMenu edgePopup) {
         this.edgePopup = edgePopup;
     }
     
-    
-
 }

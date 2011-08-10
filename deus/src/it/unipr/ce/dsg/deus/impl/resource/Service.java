@@ -5,6 +5,13 @@ import java.util.Properties;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Resource;
 
+
+/**
+ * This class represents a generic service
+ * 
+ * @author Michele Amoretti (michele.amoretti@unipr.it)
+ * 
+ */
 public class Service extends Resource {
 	private static final String NUM_NAMES_PARAM = "numNames";
 
@@ -18,7 +25,7 @@ public class Service extends Resource {
 	public boolean equals(Object o) {
 		if (!(o instanceof Service))
 			return false;
-		return true;  // TODO codice per confrontare due servizi e decidere se sono uguali
+		return true;  // TODO code to compare services
 	}
 	
 	public void initialize() throws InvalidParamsException {

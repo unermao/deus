@@ -10,16 +10,13 @@ import java.util.Properties;
 import java.util.Random;
 
 /**
- * This class represents a generic Poisson process with two speed. The process
+ * This class represents a Homogeneous Poisson Process with two speeds. The process
  * starts with the first speed and after the current simulation virtual time
  * reached a defined threshold the process will change to the second speed. It
  * accepts parameters called "firstMeanArrival" (float) that is used to generate
  * the first speed, "secondMeanArrival" (float) that is used to generate the
  * second speed, "vtThreshold" (float) that is used to determine when change
- * from first to second speed. Each time the process receives a request for
- * generating a new triggering time, it will compute it by adding the current
- * simulation virtual the value of an Homogeneous Poisson Process with the rate
- * parameter calculated as 1/[first|second]meanArrival time.
+ * from first to second speed. 
  * 
  * @author Matteo Agosti (agosti@ce.unipr.it)
  * @author Michele Amoretti (michele.amoretti@unipr.it)

@@ -11,6 +11,12 @@ import it.unipr.ce.dsg.deus.core.RunException;
 
 import javazoom.jl.player.Player;
 
+
+/**
+ * This class implements an event that play a MP3 file
+ * 
+ * @author  Michele Amoretti (michele.amoretti@unipr.it)
+ */
 public class MP3Event extends Event {
 	private static final String FILE_NAME = "fileName";
 	private static final String MODALITY = "modality";

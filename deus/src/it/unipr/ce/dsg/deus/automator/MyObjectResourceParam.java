@@ -1,5 +1,11 @@
 package it.unipr.ce.dsg.deus.automator;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class MyObjectResourceParam {
 		
 	private String objectParam;	

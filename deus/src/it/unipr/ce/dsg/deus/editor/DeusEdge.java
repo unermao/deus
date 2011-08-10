@@ -3,33 +3,29 @@ package it.unipr.ce.dsg.deus.editor;
 import java.io.Serializable;
 
 /**
- * Define an edge
+ * Defines an edge
+ * 
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  */
-public class DeusEdge implements Serializable{
-	
-	/**
-	 * 
-	 */
+public class DeusEdge implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 	private int number;
-	
-	public DeusEdge(){
+
+	public DeusEdge() {
 		setNumber(0);
 	}
-	public void setNumber(int num){
-		this.number=num;
-		
+
+	public void setNumber(int num) {
+		this.number = num;
 	}
-	
-	public int getNumber(){
-		
+
+	public int getNumber() {
 		return this.number;
 	}
-	
-	public String toString(){
-		  
-		  return null;
-	  }
+
+	public String toString() {
+		return null;
+	}
 }

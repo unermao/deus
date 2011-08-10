@@ -1,6 +1,14 @@
 package it.unipr.ce.dsg.deus.automator;
+
 import java.util.ArrayList;
 
+
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class VTResults {
 
 	private Double VT = null;
@@ -35,15 +43,17 @@ public class VTResults {
 	public Double getVT() {
 		return VT;
 	}
+	
 	public void setVT(Double vt) {
 		VT = vt;
 	}
+	
 	public ArrayList<Result> getVtResultsList() {
 		return vtResults;
 	}
+	
 	public void setVtResults(ArrayList<Result> vtResults) {
 		this.vtResults = vtResults;
 	}
-	
 	
 }

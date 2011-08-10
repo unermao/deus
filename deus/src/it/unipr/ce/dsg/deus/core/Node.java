@@ -14,7 +14,7 @@ import java.util.Properties;
  * set of resources.
  * </p>
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti 
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

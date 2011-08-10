@@ -1,6 +1,5 @@
 package it.unipr.ce.dsg.deus.automator;
 
-
 import it.unipr.ce.dsg.deus.automator.gui.SimulationSummaryFrame;
 import it.unipr.ce.dsg.deus.core.Deus;
 
@@ -41,66 +40,70 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
-public class Runner implements Runnable{
-	
-	private Document document; 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ * 
+ */
+public class Runner implements Runnable {
+
+	private Document document;
 	private Document doc;
 	private JProgressBar simulationProgressBar = null;
 	private String originalXML = "";
 	private int numSim = 0;
-	//private int count = 0;
 	private String originalXml = "";
 	private String automatorXml = "";
 	private ArrayList<String> logFile = null;
 	private ArrayList<String> files = null;
 	private int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
-	
-	public Runner(String originalXml,String automatorXml){
+
+	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
 		this.automatorXml = automatorXml;
 	}
-	
 
-	private static boolean DelDir2(File dir)
-	  {
-	    if (dir.isDirectory())
-	    {
-	      String[] contenuto = dir.list();
-	      for (int i=0; i<contenuto.length; i++)
-	      {	    	    		    	  
-	        if(new File(dir + "/" + contenuto[i]).exists())	        		        
-	        	new File(dir + "/" + contenuto[i]).delete();	        		       
-	      }
-	    }
-	    return true;
-	  }
+	private static boolean DelDir2(File dir) {
+		if (dir.isDirectory()) {
+			String[] contenuto = dir.list();
+			for (int i = 0; i < contenuto.length; i++) {
+				if (new File(dir + "/" + contenuto[i]).exists())
+					new File(dir + "/" + contenuto[i]).delete();
+			}
+		}
+		return true;
+	}
 
-	
 	/**
 	 * This method starts Deus
-	 * @param originalXml, name of the base configuration file 
-	 * @param automatorXml, name of the file that automates the simulations
-	 * @throws ParserConfigurationException 
+	 * 
+	 * @param originalXml
+	 *            , name of the base configuration file
+	 * @param automatorXml
+	 *            , name of the file that automates the simulations
+	 * @throws ParserConfigurationException
 	 */
-	public int start(String originalXml , String automatorXml) throws DeusAutomatorException, JAXBException, SAXException, IOException, ParserConfigurationException{
-				
-		DocumentBuilderFactory factory =
-		      DocumentBuilderFactory.newInstance();
-		
-		 File f = new File(originalXml);
-		 
-	     DocumentBuilder builder = factory.newDocumentBuilder();
-	      
-	     doc = builder.parse(f);		      
+	public int start(String originalXml, String automatorXml)
+			throws DeusAutomatorException, JAXBException, SAXException,
+			IOException, ParserConfigurationException {
+
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+		File f = new File(originalXml);
+
+		DocumentBuilder builder = factory.newDocumentBuilder();
+
+		doc = builder.parse(f);
 
 		originalXML = originalXml;
-		
-		FileInputStream fis = new FileInputStream(originalXML);
-		FileOutputStream fos = new FileOutputStream(originalXML+".temp");
 
-		byte [] dati = new byte[fis.available()];						
-					
+		FileInputStream fis = new FileInputStream(originalXML);
+		FileOutputStream fos = new FileOutputStream(originalXML + ".temp");
+
+		byte[] dati = new byte[fis.available()];
+
 		fis.read(dati);
 		fos.write(dati);
 
@@ -108,900 +111,1125 @@ public class Runner implements Runnable{
 		fos.close();
 
 		DelDir2(new File("./xml"));
-		
+
 		// Create n XML files for the n simulations with DEUS
-		files = new ArrayList<String>();								
-				
+		files = new ArrayList<String>();
+
 		// Read the XML automator file and retrieve the simulations to perform
-		simulations = readXML(automatorXml);			
-			
-		// Insert in the ArrayList the names of the XML files to run 
-		files = writeXML(simulations,originalXml);
-				
-		numFile = 0;					
-		logFile = new ArrayList<String>();									
-		
-		// Read the file that contains the information on the simulation to execute
+		simulations = readXML(automatorXml);
+
+		// Insert in the ArrayList the names of the XML files to run
+		files = writeXML(simulations, originalXml);
+
+		numFile = 0;
+		logFile = new ArrayList<String>();
+
+		// Read the file that contains the information on the simulation to
+		// execute
 		File simfile = new File("simulations");
 		FileInputStream simfileInputStream = new FileInputStream(simfile);
 		InputStreamReader isr = new InputStreamReader(simfileInputStream);
 		BufferedReader br = new BufferedReader(isr);
-		
+
 		char[] cbuf = new char[simfileInputStream.available()];
 		br.read(cbuf);
 		String summary = new String(cbuf);
-		
-		// Execute the GUI showing the summary of the simulation 
-		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame(this);
+
+		// Execute the GUI showing the summary of the simulation
+		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame(
+				this);
 		simulationsummary.getSimulationSummaryTextArea().setText(summary);
 		simulationsummary.setVisible(true);
-		
-		
+
 		return 0;
 	}
-	
+
 	/**
 	 * 
 	 */
-	public void runSimulations()
-	{
-		if( simulationProgressBar != null)
-		{
+	public void runSimulations() {
+		if (simulationProgressBar != null) {
 			simulationProgressBar.setMaximum(files.size());
 			simulationProgressBar.setMinimum(0);
 		}
-					    
-		simulationProgressBar.setValue(0);
-		
-	    //DelDir2(new File("./temp"));	    	   
-		
-		String computerName = "";
-	    try{
-	    	computerName=InetAddress.getLocalHost().getHostName();
-	       // System.out.println(computerName);
-	      }catch (Exception e){
-	        System.out.println("Exception caught ="+e.getMessage());
-	    }
-	    
-		// Run the n simulations with respective n files
-		for(int j = 0; j < simulations.size(); j++)
-		{		
-			for(int k = 0; k < simulations.get(j).getSimulationNumber(); k++ )
-			{
-				for(int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++)
-				{																								
-					new Deus(files.get(numFile),simulations.get(j).getFileLog());
-						
-					File log = new File(simulations.get(j).getFileLog());
-					
-					//System.out.println();
-					
-					log.renameTo(new File("./temp/"+ computerName + "-" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i)));																			
-					
-					log.delete();
-					
-					logFile.add("./temp/" + computerName + "-" + simulations.get(j).getSimulationName() + "-" + k +"-" + simulations.get(j).getEngine().get(j).getSeed().get(i));
-					
-					numFile++;
-				
-					simulationProgressBar.setValue(numFile);
-				}															 						 			 			
-				
-				
-			ResultAutomator resultAutomator = new ResultAutomator(logFile);
-				 
-			String averageFileName = "";
-			String varFileName = "";
-			String sqrtvarFileName = "";
 
-			//Add HostName in Destination File
-				
-			// Compute the mean and the variance (with several seeds) of the data in the log files
-			 try {
+		simulationProgressBar.setValue(0);
+
+		// DelDir2(new File("./temp"));
+
+		String computerName = "";
+		try {
+			computerName = InetAddress.getLocalHost().getHostName();
+			// System.out.println(computerName);
+		} catch (Exception e) {
+			System.out.println("Exception caught =" + e.getMessage());
+		}
+
+		// Run the n simulations with respective n files
+		for (int j = 0; j < simulations.size(); j++) {
+			for (int k = 0; k < simulations.get(j).getSimulationNumber(); k++) {
+				for (int i = 0; i < new Integer(simulations.get(j)
+						.getSimulationNumberSeed()); i++) {
+					new Deus(files.get(numFile), simulations.get(j)
+							.getFileLog());
+
+					File log = new File(simulations.get(j).getFileLog());
+
+					// System.out.println();
+
+					log.renameTo(new File("./temp/"
+							+ computerName
+							+ "-"
+							+ simulations.get(j).getSimulationName()
+							+ "-"
+							+ k
+							+ "-"
+							+ simulations.get(j).getEngine().get(j).getSeed()
+									.get(i)));
+
+					log.delete();
+
+					logFile.add("./temp/"
+							+ computerName
+							+ "-"
+							+ simulations.get(j).getSimulationName()
+							+ "-"
+							+ k
+							+ "-"
+							+ simulations.get(j).getEngine().get(j).getSeed()
+									.get(i));
+
+					numFile++;
+
+					simulationProgressBar.setValue(numFile);
+				}
+
+				ResultAutomator resultAutomator = new ResultAutomator(logFile);
+
+				String averageFileName = "";
+				String varFileName = "";
+				String sqrtvarFileName = "";
+
+				// Add HostName in Destination File
+
+				// Compute the mean and the variance (with several seeds) of the
+				// data in the log files
+				try {
 					resultAutomator.readTotalResults();
-					
-					/*
-					averageFileName = "./results//_Average_" + simulations.get(j).getSimulationName()+"-"+k;
-					varFileName = "./results//_Var_" + simulations.get(j).getSimulationName()+"-"+k;
-					sqrtvarFileName = "./results//_SqrtVar_" + simulations.get(j).getSimulationName()+"-"+k;
-					*/
-					
-					averageFileName = "./results//"+computerName+"_Average_" + simulations.get(j).getSimulationName()+"-"+k;
-					varFileName = "./results//"+computerName+"_Var_" + simulations.get(j).getSimulationName()+"-"+k;
-					sqrtvarFileName = "./results//"+computerName+"_SqrtVar_" + simulations.get(j).getSimulationName()+"-"+k;
-					
-					
+
+					averageFileName = "./results//" + computerName
+							+ "_Average_"
+							+ simulations.get(j).getSimulationName() + "-" + k;
+					varFileName = "./results//" + computerName + "_Var_"
+							+ simulations.get(j).getSimulationName() + "-" + k;
+					sqrtvarFileName = "./results//" + computerName
+							+ "_SqrtVar_"
+							+ simulations.get(j).getSimulationName() + "-" + k;
+
 					resultAutomator.resultsAverage(averageFileName);
-					resultAutomator.resultsVar(varFileName,sqrtvarFileName,averageFileName);
-				} 
-			 catch (IOException e) {
+					resultAutomator.resultsVar(varFileName, sqrtvarFileName,
+							averageFileName);
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			 
-			// for(int i = 0; i < logFile.size(); i++)
-				//	new File(logFile.get(i)).delete();	
-			 
-			 logFile.clear();			 
-			 
-			 // Write the gnuplot files 
-			 for(int z = 0; z < simulations.get(j).getGnuplot().size(); z++)
-				 {	
-				  writeGnuPlot( averageFileName, simulations.get(j).getSimulationName()+"-"+simulations.get(j).getGnuplot().get(z).getFileName()+"-"+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());	
-				  //writeGnuPlot( averageFileName, simulations.get(j).getGnuplot().get(z).getFileName()+"-"+k, simulations.get(j).getGnuplot().get(z).getAxisX(), simulations.get(j).getGnuplot().get(z).getAxisY());
-				 }
-			}			
+
+				logFile.clear();
+
+				// Write the gnuplot files
+				for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
+					writeGnuPlot(averageFileName, simulations.get(j)
+							.getSimulationName()
+							+ "-"
+							+ simulations.get(j).getGnuplot().get(z)
+									.getFileName() + "-" + k, simulations
+							.get(j).getGnuplot().get(z).getAxisX(), simulations
+							.get(j).getGnuplot().get(z).getAxisY());
+				}
+			}
 		}
-		
-		if(files.size() == 0) 
-		{
-			new Deus(originalXml,"deus_log");		
+
+		if (files.size() == 0) {
+			new Deus(originalXml, "deus_log");
 		}
-		
+
 		// Remove all unused XML files
-		for(int i = 0; i < files.size(); i++)
+		for (int i = 0; i < files.size(); i++)
 			new File(files.get(i)).delete();
 	}
-	
-	
+
 	/**
 	 * Method for writing gnuplot files
-	 * @param sourceFile, name of the file from which data must be read 
-	 * @param destinationFile, name of the file to which results must be written
+	 * 
+	 * @param sourceFile
+	 *            , name of the file from which data must be read
+	 * @param destinationFile
+	 *            , name of the file to which results must be written
 	 * @param axisX
 	 * @param axisY
 	 */
-	private void writeGnuPlot(String sourceFile, String destinationFile,String axisX, String axisY) {
-		
+	private void writeGnuPlot(String sourceFile, String destinationFile,
+			String axisX, String axisY) {
+
 		try {
 			File f = new File(sourceFile);
 			FileInputStream fis = new FileInputStream(f);
 			InputStreamReader isr = new InputStreamReader(fis);
 			BufferedReader br = new BufferedReader(isr);
-			
-			//Add HostName in Destination File
+
+			// Add HostName in Destination File
 			String computerName = "";
-		    try{
-		    	computerName=InetAddress.getLocalHost().getHostName();
-		        //System.out.println(computerName);
-		      }catch (Exception e){
-		        System.out.println("Exception caught ="+e.getMessage());
-		    }
-			
-			
-			FileOutputStream fos = new FileOutputStream("./results/gnuplot/" + computerName + "_" + destinationFile);
-			//FileOutputStream fos = new FileOutputStream("./results/gnuplot/" + destinationFile);
-			
-			String linea=br.readLine();
-			
-			
+			try {
+				computerName = InetAddress.getLocalHost().getHostName();
+				// System.out.println(computerName);
+			} catch (Exception e) {
+				System.out.println("Exception caught =" + e.getMessage());
+			}
+
+			FileOutputStream fos = new FileOutputStream("./results/gnuplot/"
+					+ computerName + "_" + destinationFile);
+
+			String linea = br.readLine();
+
 			linea = linea.trim();
 			axisX = axisX.trim();
 			axisY = axisY.trim();
-	
-			
-			
-			String app="";
+
+			String app = "";
 			boolean assex = false;
 			boolean assey = false;
-			
-			while(linea!=null) {
-				
+
+			while (linea != null) {
+
 				String firstString = linea.split("=")[0];
-				
-				
-			       if(firstString.equals(axisX) && assey==false) 
-			       {
-			    	   
-			    	   assex = true;
-			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   val = val + " ";			    	  
-			    	   fos.write(val.getBytes());			    	   
-			       }
-			      
-			       else if(firstString.equals(axisY) && assex==true) 
-			       {
-			    	   assey = true;
-			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   val = val + " ";			    	   
-			    	   fos.write(val.getBytes());
-			    	   fos.write("\n".getBytes());			    	   
-			    	   assex=false;
-			    	   assey=false;
-			       }
-			       
-			       else if(firstString.equals(axisY) && assex==false)
-			       {			    	 
-			    	   assey = true;
-			    	   app = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   app = app + " ";						    	   
-			       }
-			       
-			       else if(firstString.equals(axisX) && assey==true){
-			       			    	  
-			    	   String val = linea.substring(linea.indexOf('=') + 1, linea.length());
-			    	   val = val + " ";
-			    	   fos.write(val.getBytes());
-			    	   fos.write(app.getBytes());
-			    	   fos.write("\n".getBytes());			    	   
-			    	   assex=false;
-			    	   assey=false;   
-			       }
-			       
-			       linea=br.readLine();
-			}	
-			
+
+				if (firstString.equals(axisX) && assey == false) {
+
+					assex = true;
+					String val = linea.substring(linea.indexOf('=') + 1,
+							linea.length());
+					val = val + " ";
+					fos.write(val.getBytes());
+				}
+
+				else if (firstString.equals(axisY) && assex == true) {
+					assey = true;
+					String val = linea.substring(linea.indexOf('=') + 1,
+							linea.length());
+					val = val + " ";
+					fos.write(val.getBytes());
+					fos.write("\n".getBytes());
+					assex = false;
+					assey = false;
+				}
+
+				else if (firstString.equals(axisY) && assex == false) {
+					assey = true;
+					app = linea.substring(linea.indexOf('=') + 1,
+							linea.length());
+					app = app + " ";
+				}
+
+				else if (firstString.equals(axisX) && assey == true) {
+
+					String val = linea.substring(linea.indexOf('=') + 1,
+							linea.length());
+					val = val + " ";
+					fos.write(val.getBytes());
+					fos.write(app.getBytes());
+					fos.write("\n".getBytes());
+					assex = false;
+					assey = false;
+				}
+
+				linea = br.readLine();
+			}
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-		
+		}
+
 	}
 
-/**
- * Method that computes the paramaters of the simulations
- * @param initialValue, initila value
- * @param finalValue, final value
- * @param stepValue, step
- * @return ArrayList<> contains all the values between initialValue and finalValue
- */
-	private  ArrayList<Float> calculateParameters(String initialValue, String finalValue, String stepValue) {						
-		
-		ArrayList<Float> parameters = new ArrayList<Float>();								
-				
-		if( Float.parseFloat(stepValue)!=0 && (Float.parseFloat(initialValue) < Float.parseFloat(finalValue)))			
-			for(float i = Float.parseFloat(initialValue); i <= Float.parseFloat(finalValue) + 0.01; i = i + Float.parseFloat(stepValue) )
-				{						
+	/**
+	 * Method that computes the paramaters of the simulations
+	 * 
+	 * @param initialValue
+	 *            , initila value
+	 * @param finalValue
+	 *            , final value
+	 * @param stepValue
+	 *            , step
+	 * @return ArrayList<> contains all the values between initialValue and
+	 *         finalValue
+	 */
+	private ArrayList<Float> calculateParameters(String initialValue,
+			String finalValue, String stepValue) {
+
+		ArrayList<Float> parameters = new ArrayList<Float>();
+
+		if (Float.parseFloat(stepValue) != 0
+				&& (Float.parseFloat(initialValue) < Float
+						.parseFloat(finalValue)))
+			for (float i = Float.parseFloat(initialValue); i <= Float
+					.parseFloat(finalValue) + 0.01; i = i
+					+ Float.parseFloat(stepValue)) {
 				parameters.add(i);
-				}
-		
-		else if( Float.parseFloat(stepValue)!=0 && (Float.parseFloat(initialValue) > Float.parseFloat(finalValue)))			
-			for(float i = Float.parseFloat(initialValue); i >= Float.parseFloat(finalValue); i = i - Float.parseFloat(stepValue) )
-				{				
+			}
+
+		else if (Float.parseFloat(stepValue) != 0
+				&& (Float.parseFloat(initialValue) > Float
+						.parseFloat(finalValue)))
+			for (float i = Float.parseFloat(initialValue); i >= Float
+					.parseFloat(finalValue); i = i
+					- Float.parseFloat(stepValue)) {
 				parameters.add(i);
-				}		
-				
+			}
+
 		return parameters;
 	}
-	
+
 	/**
 	 * Method that reads the XML file for the atuomation of simulations
-	 * @param path, path of the file to read
+	 * 
+	 * @param path
+	 *            , path of the file to read
 	 * @return an ArrayList<> containing the simulations to perform
 	 * @throws DeusAutomatorException
 	 * @throws JAXBException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	private  ArrayList<MyObjectSimulation> readXML(String path) throws DeusAutomatorException, JAXBException, SAXException, IOException{	
-		JAXBContext jc = JAXBContext.newInstance("it.unipr.ce.dsg.deus.schema.automator");
+	private ArrayList<MyObjectSimulation> readXML(String path)
+			throws DeusAutomatorException, JAXBException, SAXException,
+			IOException {
+		JAXBContext jc = JAXBContext
+				.newInstance("it.unipr.ce.dsg.deus.schema.automator");
 		SchemaFactory schemaFactory = SchemaFactory
 				.newInstance("http://www.w3.org/2001/XMLSchema");
-		Schema schema = schemaFactory
-				.newSchema(new File("schema/automator/deusAutomator.xsd"));
-		
+		Schema schema = schemaFactory.newSchema(new File(
+				"schema/automator/deusAutomator.xsd"));
+
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		unmarshaller.setSchema(schema);
 		unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-		public boolean handleEvent(ValidationEvent ve) {
-			if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
-					|| ve.getSeverity() == ValidationEvent.ERROR
-					|| ve.getSeverity() == ValidationEvent.WARNING) {
-						ValidationEventLocator locator = ve.getLocator();
-						System.out.println("Invalid configuration file: "
+			public boolean handleEvent(ValidationEvent ve) {
+				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
+						|| ve.getSeverity() == ValidationEvent.ERROR
+						|| ve.getSeverity() == ValidationEvent.WARNING) {
+					ValidationEventLocator locator = ve.getLocator();
+					System.out.println("Invalid configuration file: "
 							+ locator.getURL());
-						System.out.println("Error at column "
+					System.out.println("Error at column "
 							+ locator.getColumnNumber() + ", line "
 							+ locator.getLineNumber());
-						System.out.println("Error: " + ve.getMessage());
-						return false;
-					}
-					return true;
+					System.out.println("Error: " + ve.getMessage());
+					return false;
 				}
+				return true;
+			}
 		});
-				
+
 		unmarshaller.unmarshal(new File(path));
-						
+
 		try {
 
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
+
 			File f = new File(path);
-			 
-		    DocumentBuilder builder = factory.newDocumentBuilder();
-		      
-		    document = builder.parse(f);		      
-			
+
+			DocumentBuilder builder = factory.newDocumentBuilder();
+
+			document = builder.parse(f);
+
 			document.getDocumentElement().normalize();
-			
+
 			// root element
-			NodeList simulationLst = document.getElementsByTagName("simulation");
-			
-			ArrayList<MyObjectSimulation> simulation = new ArrayList<MyObjectSimulation>(); 
-			
-			for (int w = 0; w < simulationLst.getLength(); w++) {						
-				
-				MyObjectSimulation sim = new MyObjectSimulation();				
-				
+			NodeList simulationLst = document
+					.getElementsByTagName("simulation");
+
+			ArrayList<MyObjectSimulation> simulation = new ArrayList<MyObjectSimulation>();
+
+			for (int w = 0; w < simulationLst.getLength(); w++) {
+
+				MyObjectSimulation sim = new MyObjectSimulation();
+
 				Node fstSimulation = simulationLst.item(w);
 
-				if(fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue() == null || fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue() == null)
-					throw new DeusAutomatorException("Errore manca simulationNumberSeed e/o simulationName nel tag simulation");
+				if (fstSimulation.getAttributes()
+						.getNamedItem("simulationName").getNodeValue() == null
+						|| fstSimulation.getAttributes()
+								.getNamedItem("simulationNumberSeed")
+								.getNodeValue() == null)
+					throw new DeusAutomatorException(
+							"Errore manca simulationNumberSeed e/o simulationName nel tag simulation");
 
 				String resultFolder = null;
 				String inputFolder = null;
-				
-				String simulationNumberSeed = fstSimulation.getAttributes().getNamedItem("simulationNumberSeed").getNodeValue();
-				
-				String simulationName = fstSimulation.getAttributes().getNamedItem("simulationName").getNodeValue();
-				
-				if(fstSimulation.getAttributes().getNamedItem("resultFolder") != null)
-					resultFolder = fstSimulation.getAttributes().getNamedItem("resultFolder").getNodeValue();
-				
-				if(fstSimulation.getAttributes().getNamedItem("inputFolder") != null)
-					inputFolder = fstSimulation.getAttributes().getNamedItem("inputFolder").getNodeValue();
-				
-								
+
+				String simulationNumberSeed = fstSimulation.getAttributes()
+						.getNamedItem("simulationNumberSeed").getNodeValue();
+
+				String simulationName = fstSimulation.getAttributes()
+						.getNamedItem("simulationName").getNodeValue();
+
+				if (fstSimulation.getAttributes().getNamedItem("resultFolder") != null)
+					resultFolder = fstSimulation.getAttributes()
+							.getNamedItem("resultFolder").getNodeValue();
+
+				if (fstSimulation.getAttributes().getNamedItem("inputFolder") != null)
+					inputFolder = fstSimulation.getAttributes()
+							.getNamedItem("inputFolder").getNodeValue();
+
 				sim.setResultFolder(resultFolder);
 				sim.setInputFolder(inputFolder);
 				sim.setSimulationName(simulationName);
-				sim.setSimulationNumberSeed(simulationNumberSeed);								
-				
-			NodeList nodeLst = document.getElementsByTagName("node");
-									
-			ArrayList<ArrayList<MyObjectNode>> nodes2 = new ArrayList<ArrayList<MyObjectNode>>();
-			ArrayList<ArrayList<MyObjectProcess>> processes2 = new ArrayList<ArrayList<MyObjectProcess>>();
-			
-			// Search all tag nodes 
-			for (int s = 0; s < nodeLst.getLength(); s++) {				
-				
-				Node fstNode = nodeLst.item(s);
-				
-				if(fstNode.getParentNode().equals(simulationLst.item(w))){
-				
-				ArrayList<MyObjectNode> nodes = new ArrayList<MyObjectNode>();	
-					
-				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();							
+				sim.setSimulationNumberSeed(simulationNumberSeed);
 
-				Element fstElmnt = (Element) fstNode;
-				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");							
-				
-				// Retrieve params in node's ParamNode
-				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++) {										
+				NodeList nodeLst = document.getElementsByTagName("node");
 
-					Element paramElement = (Element)fstNmElmntLst.item(j);
+				ArrayList<ArrayList<MyObjectNode>> nodes2 = new ArrayList<ArrayList<MyObjectNode>>();
+				ArrayList<ArrayList<MyObjectProcess>> processes2 = new ArrayList<ArrayList<MyObjectProcess>>();
 
-					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();															
+				// Search all tag nodes
+				for (int s = 0; s < nodeLst.getLength(); s++) {
 
-					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
+					Node fstNode = nodeLst.item(s);
 
-					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
-	
-					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
+					if (fstNode.getParentNode().equals(simulationLst.item(w))) {
 
-					if(initialValue == null || finalValue == null || stepValue == null)
-					{
-					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node " + messageType + " in " + paramName);	
+						ArrayList<MyObjectNode> nodes = new ArrayList<MyObjectNode>();
+
+						String messageType = fstNode.getAttributes()
+								.getNamedItem("id").getNodeValue();
+
+						Element fstElmnt = (Element) fstNode;
+						NodeList fstNmElmntLst = fstElmnt
+								.getElementsByTagName("paramName");
+
+						// Retrieve params in node's ParamNode
+						for (int j = 0; j < fstNmElmntLst.getLength(); j++) {
+
+							Element paramElement = (Element) fstNmElmntLst
+									.item(j);
+
+							String paramName = ((Node) fstNmElmntLst.item(j))
+									.getAttributes().getNamedItem("name")
+									.getNodeValue();
+
+							NodeList initialValue = paramElement
+									.getElementsByTagName("initialValue");
+
+							NodeList finalValue = paramElement
+									.getElementsByTagName("finalValue");
+
+							NodeList stepValue = paramElement
+									.getElementsByTagName("stepValue");
+
+							if (initialValue == null || finalValue == null
+									|| stepValue == null) {
+								throw new DeusAutomatorException(
+										"Errore in initalValue , finalValue e stepValue in "
+												+ simulationName + " di Node "
+												+ messageType + " in "
+												+ paramName);
+							}
+
+							ArrayList<Float> value = calculateParameters(
+									initialValue.item(0).getTextContent(),
+									finalValue.item(0).getTextContent(),
+									stepValue.item(0).getTextContent());
+
+							if (value.size() > 0)
+								sim.setStep(value.size());
+
+							if (Float.parseFloat(stepValue.item(0)
+									.getTextContent()) == 0.0) {
+								MyObjectParam paramToWrite = new MyObjectParam();
+								paramToWrite.setObjectParam("paramName");
+								paramToWrite.setObjectName(paramName);
+								paramToWrite.setObjectValue(Float
+										.parseFloat(initialValue.item(0)
+												.getTextContent()));
+
+								MyObjectNode nodeToWrite = new MyObjectNode();
+								nodeToWrite.setObjectName(messageType);
+								nodeToWrite.getObjectParam().add(paramToWrite);
+								writeXmlNodeParam(nodeToWrite);
+
+							}
+
+							if (numSim == 0)
+								numSim = value.size();
+
+							if (numSim != value.size()) {
+								throw new DeusAutomatorException(
+										"Errore nel numero di step in "
+												+ simulationName + " di Node "
+												+ messageType + " in "
+												+ paramName);
+							}
+
+							for (int k = 0; k < value.size(); k++) {
+								MyObjectParam param = new MyObjectParam();
+
+								param.setObjectParam("paramName");
+								param.setObjectName(paramName);
+								param.setObjectValue(value.get(k));
+								if (nodes.size() > k)
+									nodes.get(k).getObjectParam().add(param);
+
+								else {
+									MyObjectNode node = new MyObjectNode();
+									node.setObjectName(messageType);
+									node.getObjectParam().add(param);
+									nodes.add(node);
+								}
+							}
+						}
+
+						NodeList paramName = fstElmnt
+								.getElementsByTagName("resourceParamName");
+
+						// Retrieva all params in node's resourceParamName
+						for (int j = 0; j < paramName.getLength(); j++) {
+							Element paramElement = (Element) paramName.item(j);
+
+							String handlerName = ((Node) paramName.item(j))
+									.getAttributes()
+									.getNamedItem("handlerName").getNodeValue();
+
+							String resParamValueName = ((Node) paramName
+									.item(j)).getAttributes()
+									.getNamedItem("resParamValue")
+									.getNodeValue();
+
+							NodeList initialValue = paramElement
+									.getElementsByTagName("initialValue");
+
+							NodeList finalValue = paramElement
+									.getElementsByTagName("finalValue");
+
+							NodeList stepValue = paramElement
+									.getElementsByTagName("stepValue");
+
+							if (initialValue == null || finalValue == null
+									|| stepValue == null) {
+								throw new DeusAutomatorException(
+										"Errore in initalValue , finalValue e stepValue in "
+												+ simulationName + " di Node"
+												+ messageType + " in "
+												+ paramName);
+							}
+
+							ArrayList<Float> value = calculateParameters(
+									initialValue.item(0).getTextContent(),
+									finalValue.item(0).getTextContent(),
+									stepValue.item(0).getTextContent());
+
+							if (value.size() > 0)
+								sim.setStep(value.size());
+
+							if (Float.parseFloat(stepValue.item(0)
+									.getTextContent()) == 0.0) {
+								MyObjectResourceParam resourceParam = new MyObjectResourceParam();
+
+								resourceParam
+										.setObjectParam("resourceParamName");
+
+								resourceParam.setObjectHandlerName(handlerName);
+								resourceParam
+										.setResParamValue(resParamValueName);
+
+								resourceParam.setObjectValue(Float
+										.parseFloat(initialValue.item(0)
+												.getTextContent()));
+
+								MyObjectNode nodeToWrite = new MyObjectNode();
+								nodeToWrite.setObjectName(messageType);
+								nodeToWrite.getObjectResourceParam().add(
+										resourceParam);
+
+								writeXmlNodeResource(nodeToWrite);
+
+							}
+
+							if (numSim == 0)
+								numSim = value.size();
+
+							if (numSim != value.size()) {
+								throw new DeusAutomatorException(
+										"Errore nel numero di step in "
+												+ simulationName + " di Node "
+												+ messageType + " in "
+												+ paramName);
+							}
+
+							for (int k = 0; k < value.size(); k++) {
+								MyObjectResourceParam resourceParam = new MyObjectResourceParam();
+
+								resourceParam
+										.setObjectParam("resourceParamName");
+
+								resourceParam.setObjectHandlerName(handlerName);
+								resourceParam
+										.setResParamValue(resParamValueName);
+
+								resourceParam.setObjectValue(value.get(k));
+								if (nodes.size() > k)
+									nodes.get(k).getObjectResourceParam()
+											.add(resourceParam);
+
+								else {
+									MyObjectNode node = new MyObjectNode();
+									node.setObjectName(messageType);
+									node.getObjectResourceParam().add(
+											resourceParam);
+									nodes.add(node);
+								}
+
+							}
+						}
+
+						nodes2.add(nodes);
 					}
-					
-					ArrayList<Float> value = calculateParameters(initialValue.item(0).getTextContent(),finalValue.item(0).getTextContent(),stepValue.item(0).getTextContent());
-					
-					if(value.size() > 0 ) sim.setStep(value.size());
-					
-					if(Float.parseFloat(stepValue.item(0).getTextContent()) == 0.0)
-					{
-						MyObjectParam paramToWrite = new MyObjectParam();														
-						paramToWrite.setObjectParam("paramName");
-						paramToWrite.setObjectName(paramName);
-						paramToWrite.setObjectValue(Float.parseFloat(initialValue.item(0).getTextContent()));						 						 
-						 						 
-						MyObjectNode nodeToWrite = new MyObjectNode(); 
-						nodeToWrite.setObjectName(messageType);
-						nodeToWrite.getObjectParam().add(paramToWrite);						 
-						writeXmlNodeParam(nodeToWrite);						
-						
-					}
-					
-					if(numSim == 0)
-						numSim = value.size();
-					
-					if(numSim != value.size())
-					{
-					throw new DeusAutomatorException("Errore nel numero di step in "  + simulationName + " di Node " + messageType + " in " + paramName);	
-					}
-					
-					for(int k = 0; k < value.size(); k++ )
-						{					
-						MyObjectParam param = new MyObjectParam();								
-						
-						param.setObjectParam("paramName");
-						param.setObjectName(paramName);
-						param.setObjectValue(value.get(k));						 
-						 if(nodes.size()>k)						 					
-							 nodes.get(k).getObjectParam().add(param);
-						 						 
-						 else 
-						 {
-							 MyObjectNode node = new MyObjectNode(); 
-							 node.setObjectName(messageType);
-							 node.getObjectParam().add(param);						 
-							 nodes.add(node);
-    					 }
-						}							
+
 				}
-				
-				
-				NodeList paramName = fstElmnt.getElementsByTagName("resourceParamName");							
 
-				// Retrieva all params in node's resourceParamName 
-				for( int j = 0 ; j < paramName.getLength() ; j++) {						
-					Element paramElement = (Element)paramName.item(j);
+				if (nodes2.size() > 0)
+					sim.setNode(nodes2);
 
-					String handlerName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("handlerName").getNodeValue();
-					
-					String resParamValueName  = ((Node) paramName.item(j)).getAttributes().getNamedItem("resParamValue").getNodeValue();
+				if (new Integer(sim.getNode().size()) > 0)
+					sim.setSimulationNumber(new Integer(sim.getNode().get(0)
+							.size()));
 
-					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
+				NodeList processLst = document.getElementsByTagName("process");
 
-					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
-					
-					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
-					
-					if(initialValue == null || finalValue == null || stepValue == null)
-					{
-					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName + " di Node" + messageType + " in " + paramName );	
-					}
-					
-					ArrayList<Float> value = calculateParameters(initialValue.item(0).getTextContent(),finalValue.item(0).getTextContent(),stepValue.item(0).getTextContent());										
-					
-					if(value.size() > 0 ) sim.setStep(value.size());
- 					
-					if(Float.parseFloat(stepValue.item(0).getTextContent()) == 0.0)
-					{
-						MyObjectResourceParam resourceParam = new MyObjectResourceParam();								
-						
-						resourceParam.setObjectParam("resourceParamName");		 
+				// Search all process tags
+				for (int s = 0; s < processLst.getLength(); s++) {
 
-						resourceParam.setObjectHandlerName(handlerName);
-						resourceParam.setResParamValue(resParamValueName);
-						
-						resourceParam.setObjectValue(Float.parseFloat(initialValue.item(0).getTextContent()));
-						
-						MyObjectNode nodeToWrite = new MyObjectNode(); 
-						nodeToWrite.setObjectName(messageType);							 
-						nodeToWrite.getObjectResourceParam().add(resourceParam);						 							 					
-    											 
-						writeXmlNodeResource(nodeToWrite);
-						
-					}
-					
-					if(numSim == 0)
-						numSim = value.size();
-					
-					if(numSim != value.size())
-					{
-					throw new DeusAutomatorException("Errore nel numero di step in " + simulationName + " di Node " + messageType + " in " + paramName);	
-					}
-					
-					for(int k = 0; k < value.size(); k++ )
-						{						
-						MyObjectResourceParam resourceParam = new MyObjectResourceParam();								
-						
-						resourceParam.setObjectParam("resourceParamName");		 
+					Node fstNode = processLst.item(s);
 
-						resourceParam.setObjectHandlerName(handlerName);
-						resourceParam.setResParamValue(resParamValueName);
-						
-						 resourceParam.setObjectValue(value.get(k));
-						 if(nodes.size()>k)						 						
-							 nodes.get(k).getObjectResourceParam().add(resourceParam);
-						 
-						 else 
-						 {
-							 MyObjectNode node = new MyObjectNode(); 
-							 node.setObjectName(messageType);							 
-							 node.getObjectResourceParam().add(resourceParam);						 
-							 nodes.add(node);
-    					 }
+					if (fstNode.getParentNode().equals(simulationLst.item(w))) {
+
+						ArrayList<MyObjectProcess> processes = new ArrayList<MyObjectProcess>();
+
+						String messageType = fstNode.getAttributes()
+								.getNamedItem("id").getNodeValue();
+
+						Element fstElmnt = (Element) fstNode;
+						NodeList fstNmElmntLst = fstElmnt
+								.getElementsByTagName("paramName");
+
+						// Retrieve all params in process' ParamName
+						for (int j = 0; j < fstNmElmntLst.getLength(); j++) {
+
+							Element paramElement = (Element) fstNmElmntLst
+									.item(j);
+
+							String paramName = ((Node) fstNmElmntLst.item(j))
+									.getAttributes().getNamedItem("name")
+									.getNodeValue();
+
+							NodeList initialValue = paramElement
+									.getElementsByTagName("initialValue");
+
+							NodeList finalValue = paramElement
+									.getElementsByTagName("finalValue");
+
+							NodeList stepValue = paramElement
+									.getElementsByTagName("stepValue");
+
+							if (initialValue == null || finalValue == null
+									|| stepValue == null) {
+								throw new DeusAutomatorException(
+										"Errore in initalValue , finalValue e stepValue in "
+												+ simulationName
+												+ " di Process " + messageType
+												+ " in " + paramName);
+							}
+
+							ArrayList<Float> value = calculateParameters(
+									initialValue.item(0).getTextContent(),
+									finalValue.item(0).getTextContent(),
+									stepValue.item(0).getTextContent());
+
+							if (value.size() > 0)
+								sim.setStep(value.size());
+
+							if (Float.parseFloat(stepValue.item(0)
+									.getTextContent()) == 0.0) {
+								MyObjectParam param = new MyObjectParam();
+
+								param.setObjectParam("paramName");
+
+								param.setObjectName(paramName);
+
+								param.setObjectValue(Float
+										.parseFloat(initialValue.item(0)
+												.getTextContent()));
+
+								MyObjectProcess processToWrite = new MyObjectProcess();
+								processToWrite.setObjectName(messageType);
+								processToWrite.getObjectParam().add(param);
+
+								writeXmlProcess(processToWrite);
+
+							}
+
+							if (numSim == 0)
+								numSim = value.size();
+
+							if (numSim != value.size()) {
+								throw new DeusAutomatorException(
+										"Errore nel numero di step in "
+												+ simulationName
+												+ " di Process " + messageType
+												+ " in " + paramName);
+							}
+
+							for (int k = 0; k < value.size(); k++) {
+								MyObjectParam param = new MyObjectParam();
+
+								param.setObjectParam("paramName");
+
+								param.setObjectName(paramName);
+
+								param.setObjectValue(value.get(k));
+
+								if (processes.size() > k)
+									processes.get(k).getObjectParam()
+											.add(param);
+
+								else {
+									MyObjectProcess process = new MyObjectProcess();
+									process.setObjectName(messageType);
+									process.getObjectParam().add(param);
+									processes.add(process);
+								}
+
+							}
 
 						}
+						if (processes.size() > 0)
+							processes2.add(processes);
+					}
 				}
+				if (processes2.size() > 0)
+					sim.setProcess(processes2);
 
-					nodes2.add(nodes);
-				}
-						
-			}	
-			
-			if(nodes2.size()>0)
-			sim.setNode(nodes2);
-			
-			
-			if(new Integer(sim.getNode().size())>0)
-				sim.setSimulationNumber(new Integer(sim.getNode().get(0).size()));
-			
-			NodeList processLst = document.getElementsByTagName("process");						
+				numSim = 0;
 
-			// Search all process tags 
-			for (int s = 0; s < processLst.getLength(); s++) {
-			
-				Node fstNode = processLst.item(s);								
-			
-				if(fstNode.getParentNode().equals(simulationLst.item(w))){								
-				
-				ArrayList<MyObjectProcess> processes = new ArrayList<MyObjectProcess>();	
-					
-				String messageType = fstNode.getAttributes().getNamedItem("id").getNodeValue();
+				if (sim.getSimulationNumber() == 0)
+					if (sim.getProcess().size() > 0)
 
-				Element fstElmnt = (Element) fstNode;
-				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("paramName");
-								
-				// Retrieva all params in process' ParamName 
-				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
-				{				
-					
-					Element paramElement = (Element)fstNmElmntLst.item(j);
+						sim.setSimulationNumber(new Integer(sim.getProcess()
+								.get(0).size()));
 
-					String paramName  = ((Node) fstNmElmntLst.item(j)).getAttributes().getNamedItem("name").getNodeValue();
-					
-					NodeList initialValue = paramElement.getElementsByTagName("initialValue");
-					
-					NodeList finalValue = paramElement.getElementsByTagName("finalValue");
-					
-					NodeList stepValue = paramElement.getElementsByTagName("stepValue");
-					
-					if(initialValue == null || finalValue == null || stepValue == null)
-					{
-					throw new DeusAutomatorException("Errore in initalValue , finalValue e stepValue in " + simulationName +  " di Process " + messageType + " in " + paramName);		
-					}
-					
-					ArrayList<Float> value = calculateParameters(initialValue.item(0).getTextContent(),finalValue.item(0).getTextContent(),stepValue.item(0).getTextContent());
-								
-					if(value.size() > 0 ) sim.setStep(value.size());
-					
-					if(Float.parseFloat(stepValue.item(0).getTextContent()) == 0.0)
-					{
-						MyObjectParam param = new MyObjectParam();								
-						
-						param.setObjectParam("paramName");
+				NodeList engineLst = document.getElementsByTagName("engine");
 
-						param.setObjectName(paramName);
-						
-						param.setObjectValue(Float.parseFloat(initialValue.item(0).getTextContent()));
-											
-						MyObjectProcess processToWrite = new MyObjectProcess(); 
-						processToWrite.setObjectName(messageType);
-						processToWrite.getObjectParam().add(param);						 												
-			
-						writeXmlProcess(processToWrite);
-						
-					}
-					
-					if(numSim == 0)
-						numSim = value.size();
-					
-					if(numSim != value.size())
-					{
-					throw new DeusAutomatorException("Errore nel numero di step in " + simulationName + " di Process " + messageType + " in " + paramName);		
-					}
-					
-					for(int k = 0; k < value.size(); k++ )
-						{						
-						MyObjectParam param = new MyObjectParam();								
-						
-						param.setObjectParam("paramName");
+				// Search engine tags
+				for (int s = 0; s < engineLst.getLength(); s++) {
 
-						param.setObjectName(paramName);
-						
-						param.setObjectValue(value.get(k));
-						
-						if(processes.size()>k)						 						
-							 processes.get(k).getObjectParam().add(param);
-					
-						else 
-						 {
-							 MyObjectProcess process = new MyObjectProcess(); 
-							 process.setObjectName(messageType);
-							 process.getObjectParam().add(param);						 
-							 processes.add(process);
-						 }
-						
+					MyObjectEngine engine = new MyObjectEngine();
+
+					Node fstNode = engineLst.item(s);
+
+					if (fstNode.getParentNode().equals(simulationLst.item(w))) {
+
+						String startVt = "";
+						String endVt = "";
+						String stepVt = "";
+
+						ArrayList<Float> value = new ArrayList<Float>();
+						boolean vt = true;
+
+						if (fstNode.getAttributes().getNamedItem("startVT") != null)
+							startVt = fstNode.getAttributes()
+									.getNamedItem("startVT").getNodeValue();
+
+						else
+							vt = false;
+
+						if (fstNode.getAttributes().getNamedItem("endVT") != null)
+							endVt = fstNode.getAttributes()
+									.getNamedItem("endVT").getNodeValue();
+
+						else
+							vt = false;
+
+						if (fstNode.getAttributes().getNamedItem("stepVT") != null)
+							stepVt = fstNode.getAttributes()
+									.getNamedItem("stepVT").getNodeValue();
+
+						else
+							vt = false;
+
+						if (vt)
+							value = calculateParameters(startVt, endVt, stepVt);
+
+						for (int k = 0; k < value.size(); k++) {
+							engine.getVt().add(value.get(k));
 						}
-				
-				}		
-				if(processes.size()>0)
-					processes2.add(processes);
-				}			
-			}
-			if(processes2.size()>0)
-			sim.setProcess(processes2);
-			
-			numSim = 0;
-			
-			if(sim.getSimulationNumber() == 0)
-				if(sim.getProcess().size()>0)
-					
-			sim.setSimulationNumber(new Integer(sim.getProcess().get(0).size()));
-			
-			NodeList engineLst = document.getElementsByTagName("engine");						
 
-			// Search engine tags 
-			for (int s = 0; s < engineLst.getLength(); s++) {
+						Element fstElmnt = (Element) fstNode;
+						NodeList fstNmElmntLst = fstElmnt
+								.getElementsByTagName("seed");
 
-				MyObjectEngine engine = new MyObjectEngine();
-				
-				Node fstNode = engineLst.item(s);
-				
-				if(fstNode.getParentNode().equals(simulationLst.item(w))){
+						// Retrieva all seedValues in seed
+						for (int j = 0; j < fstNmElmntLst.getLength(); j++) {
 
-				String startVt = "";
-				String endVt = "";
-				String stepVt = "";
-				
-				ArrayList<Float> value = new ArrayList<Float>();
-				boolean vt = true;
-				
-				if(fstNode.getAttributes().getNamedItem("startVT") != null )	
-					startVt = fstNode.getAttributes().getNamedItem("startVT").getNodeValue();
-				
-				else vt = false;
-				
-				if(fstNode.getAttributes().getNamedItem("endVT") != null )	
-					endVt = fstNode.getAttributes().getNamedItem("endVT").getNodeValue();
-				 
-				else vt = false;
-				
-				if(fstNode.getAttributes().getNamedItem("stepVT") != null )
-					stepVt = fstNode.getAttributes().getNamedItem("stepVT").getNodeValue();
-				
-				else vt = false;
-				
-				if(vt)
-					value = calculateParameters(startVt,endVt,stepVt);
-				
-				for(int k = 0; k < value.size(); k++ )
-				{										 
-				 engine.getVt().add(value.get(k));
-				}
-				
-				Element fstElmnt = (Element) fstNode;
-				NodeList fstNmElmntLst = fstElmnt.getElementsByTagName("seed");
+							Element paramElement = (Element) fstNmElmntLst
+									.item(j);
 
-				// Retrieva all seedValues in seed
-				for( int j = 0 ; j < fstNmElmntLst.getLength() ; j++)
-				{					
-					
-					Element paramElement = (Element)fstNmElmntLst.item(j);
-								
-					NodeList seedValue = paramElement.getElementsByTagName("seedValue");
-					
-					if(seedValue.getLength() > Integer.parseInt(sim.getSimulationNumberSeed()))
-					{
-					throw new DeusAutomatorException("Errore nel numero di seed inseriti, TROPPI rispetto a quelli indicati nel tag simulation in " + simulationName);	
+							NodeList seedValue = paramElement
+									.getElementsByTagName("seedValue");
+
+							if (seedValue.getLength() > Integer.parseInt(sim
+									.getSimulationNumberSeed())) {
+								throw new DeusAutomatorException(
+										"Errore nel numero di seed inseriti, TROPPI rispetto a quelli indicati nel tag simulation in "
+												+ simulationName);
+							}
+
+							if (seedValue.getLength() < Integer.parseInt(sim
+									.getSimulationNumberSeed())) {
+								throw new DeusAutomatorException(
+										"Errore nel numero di seed inseriti, POCHI rispetto a quelli indicati nel tag simulation in "
+												+ simulationName);
+							}
+
+							for (int o = 0; o < seedValue.getLength(); o++) {
+								Node seedvalue = seedValue.item(o);
+								engine.getSeed()
+										.add(seedvalue.getTextContent());
+							}
+
+						}
+
 					}
-										
-					if(seedValue.getLength() < Integer.parseInt(sim.getSimulationNumberSeed()))
-					{
-					throw new DeusAutomatorException("Errore nel numero di seed inseriti, POCHI rispetto a quelli indicati nel tag simulation in " + simulationName);
+					// Add engine to simulation
+					sim.getEngine().add(engine);
+				}
+
+				if (sim.getSimulationNumber() == 0)
+					sim.setSimulationNumber(1);
+
+				NodeList resultLogLst = document
+						.getElementsByTagName("resultVT");
+
+				for (int i = 0; i < resultLogLst.getLength(); i++) {
+
+					Node fileLog = resultLogLst.item(i);
+
+					if (fileLog.getParentNode().equals(simulationLst.item(w))) {
+
+						sim.setFileLog(fileLog.getAttributes()
+								.getNamedItem("outputLogFile").getNodeValue());
 					}
-					
-					for( int o = 0 ; o < seedValue.getLength() ; o++)
-					{						
-						Node seedvalue = seedValue.item(o);						
-						engine.getSeed().add(seedvalue.getTextContent());
-					}									
 
 				}
-				
+
+				NodeList GnuPlotLst = document
+						.getElementsByTagName("resultXYFile");
+
+				for (int i = 0; i < GnuPlotLst.getLength(); i++) {
+
+					Node GnuPlotNode = GnuPlotLst.item(i);
+
+					if (GnuPlotNode.getParentNode().equals(
+							simulationLst.item(w))) {
+
+						MyObjectGnuplot gnuplot = new MyObjectGnuplot();
+
+						gnuplot.setFileName(GnuPlotNode.getAttributes()
+								.getNamedItem("fileName").getNodeValue());
+
+						gnuplot.setAxisX(GnuPlotNode.getAttributes()
+								.getNamedItem("axisX").getNodeValue());
+
+						gnuplot.setAxisY(GnuPlotNode.getAttributes()
+								.getNamedItem("axisY").getNodeValue());
+
+						sim.getGnuplot().add(gnuplot);
+					}
+
 				}
-				// Add engine to simulation
-				sim.getEngine().add(engine);				
-			}			
-			
-			if(sim.getSimulationNumber()==0)
-				sim.setSimulationNumber(1);			
-			
-			NodeList resultLogLst = document.getElementsByTagName("resultVT");						
-			
-			for (int i = 0; i < resultLogLst.getLength(); i++) {			
-				
-				Node fileLog = resultLogLst.item(i);
-				
-				if(fileLog.getParentNode().equals(simulationLst.item(w))){									
-					
-					sim.setFileLog(fileLog.getAttributes().getNamedItem("outputLogFile").getNodeValue());
-				}			
-		
+
+				simulation.add(sim);
+
 			}
-			
-			
-			NodeList GnuPlotLst = document.getElementsByTagName("resultXYFile");						
 
-			for (int i = 0; i < GnuPlotLst.getLength(); i++) {			
-				
-				Node GnuPlotNode = GnuPlotLst.item(i);
-				
-				if(GnuPlotNode.getParentNode().equals(simulationLst.item(w))){
-				
-					MyObjectGnuplot gnuplot = new MyObjectGnuplot();									
-					
-					gnuplot.setFileName(GnuPlotNode.getAttributes().getNamedItem("fileName").getNodeValue());
-					
-					gnuplot.setAxisX(GnuPlotNode.getAttributes().getNamedItem("axisX").getNodeValue());
-					
-					gnuplot.setAxisY(GnuPlotNode.getAttributes().getNamedItem("axisY").getNodeValue());
-					
-					sim.getGnuplot().add(gnuplot);
-				}			
-		
-			}									
-						
-			simulation.add(sim);
-			
-			}						
-			
-			
-		return simulation;
-	}
-	 catch (SAXException e) {
+			return simulation;
+		} catch (SAXException e) {
 
-		e.printStackTrace();
-	} catch (IOException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 
-		e.printStackTrace();
-	} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
 
-		e.printStackTrace();
-	}
+			e.printStackTrace();
+		}
 		return null;
 
-}
-
-	private  void writeXmlNodeParam(MyObjectNode nodeToWrite) throws IOException, ParserConfigurationException, SAXException {									
-
-		FileOutputStream fos = new FileOutputStream(originalXML+".temp");
-		
-		NodeList node = doc.getElementsByTagName("aut:node");
-		 for(int i = 0 ; i < node.getLength(); i++ ){		  
-		    if(node.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(nodeToWrite.getObjectName()))
-			{				    			    	
-		    	for(int l=0; l<nodeToWrite.getObjectParam().size(); l++){			 		
-		    		for(int m = 0 ; m < node.item(i).getChildNodes().getLength(); m++ )				    			
-		    			for(int b = 0; b < node.item(i).getChildNodes().item(m).getChildNodes().getLength(); b++)
-		    			  if(node.item(i).getChildNodes().item(m).getChildNodes().item(b).getNodeName().equals("aut:param"))				    			  				    				 				    				
-		    				  if(node.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("name").getNodeValue().equals(nodeToWrite.getObjectParam().get(l).getObjectName()))				    			   				    					
-		    				  {		    					  
-		    					  node.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("value").setNodeValue(((Double)nodeToWrite.getObjectParam().get(l).getObjectValue()).toString());
-		    				  }		    
-		    	 }
-			}
-		 }
-	
-		 DOMSource domSource = new DOMSource(doc);
-	       StringWriter writer = new StringWriter();
-	       StreamResult result = new StreamResult(writer);
-	       TransformerFactory tf = TransformerFactory.newInstance();
-	       Transformer transformer;
-		try {
-			transformer = tf.newTransformer();
-		
-	      
-			transformer.transform(domSource, result);
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		}
-		 catch (TransformerException e) {
-			e.printStackTrace();
-		}
-	  
-		 fos.write(writer.toString().getBytes());
 	}
 
+	private void writeXmlNodeParam(MyObjectNode nodeToWrite)
+			throws IOException, ParserConfigurationException, SAXException {
 
-private  void writeXmlProcess(MyObjectProcess processToWrite) throws IOException, ParserConfigurationException, SAXException {		
-	
-		FileOutputStream fos = new FileOutputStream(originalXML+".temp");				
-	
-		NodeList process = doc.getElementsByTagName("aut:process");
-		for(int i = 0 ; i < process.getLength(); i++ )
-		{				
-			 if(process.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(processToWrite.getObjectName()))
-				{				
-				 for(int l=0; l<processToWrite.getObjectParam().size(); l++)
-					 for(int m = 0 ; m < process.item(i).getChildNodes().getLength(); m++ )
-					 {
-						 if(process.item(i).getChildNodes().item(m).getNodeName().equals("aut:params"))
-							 for(int b = 0; b < process.item(i).getChildNodes().item(m).getChildNodes().getLength(); b++)
-								 if(process.item(i).getChildNodes().item(m).getChildNodes().item(b).getNodeName().equals("aut:param"))
-								 {
-									// System.out.println(process.item(i).getAttributes().getNamedItem("id").getNodeValue());
-									 if(process.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("name").getNodeValue().equals(processToWrite.getObjectParam().get(l).getObjectName()))
-										 {										 
-										  process.item(i).getChildNodes().item(m).getChildNodes().item(b).getAttributes().getNamedItem("value").setNodeValue(((Double)processToWrite.getObjectParam().get(l).getObjectValue()).toString());
-										 }
-								 }
-					 }
-		
+		FileOutputStream fos = new FileOutputStream(originalXML + ".temp");
+
+		NodeList node = doc.getElementsByTagName("aut:node");
+		for (int i = 0; i < node.getLength(); i++) {
+			if (node.item(i).getAttributes().getNamedItem("id").getNodeValue()
+					.equals(nodeToWrite.getObjectName())) {
+				for (int l = 0; l < nodeToWrite.getObjectParam().size(); l++) {
+					for (int m = 0; m < node.item(i).getChildNodes()
+							.getLength(); m++)
+						for (int b = 0; b < node.item(i).getChildNodes()
+								.item(m).getChildNodes().getLength(); b++)
+							if (node.item(i).getChildNodes().item(m)
+									.getChildNodes().item(b).getNodeName()
+									.equals("aut:param"))
+								if (node.item(i)
+										.getChildNodes()
+										.item(m)
+										.getChildNodes()
+										.item(b)
+										.getAttributes()
+										.getNamedItem("name")
+										.getNodeValue()
+										.equals(nodeToWrite.getObjectParam()
+												.get(l).getObjectName())) {
+									node.item(i)
+											.getChildNodes()
+											.item(m)
+											.getChildNodes()
+											.item(b)
+											.getAttributes()
+											.getNamedItem("value")
+											.setNodeValue(
+													((Double) nodeToWrite
+															.getObjectParam()
+															.get(l)
+															.getObjectValue())
+															.toString());
+								}
 				}
+			}
 		}
 
 		DOMSource domSource = new DOMSource(doc);
-	       StringWriter writer = new StringWriter();
-	       StreamResult result = new StreamResult(writer);
-	       TransformerFactory tf = TransformerFactory.newInstance();
-	       Transformer transformer;
+		StringWriter writer = new StringWriter();
+		StreamResult result = new StreamResult(writer);
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer;
 		try {
-			transformer = tf.newTransformer();      
-			transformer.transform(domSource, result);
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		}
-		 catch (TransformerException e) {
-			e.printStackTrace();
-		}
-	
-		 fos.write(writer.toString().getBytes());
+			transformer = tf.newTransformer();
 
-	}	
-	
-	
-private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException, ParserConfigurationException, SAXException {
-	
-	FileOutputStream fos = new FileOutputStream(originalXML+".temp");
-	
-		NodeList node = doc.getElementsByTagName("aut:node");
-		 for(int i = 0 ; i < node.getLength(); i++ ){		  
-		    if(node.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(nodeToWrite.getObjectName()))
-			{				    			    			    					    
-		    	for(int l=0; l<nodeToWrite.getObjectResourceParam().size(); l++){
-		    		for(int m = 0 ; m < node.item(i).getChildNodes().getLength(); m++ ){				    		
-		    			if(node.item(i).getChildNodes().item(m).getNodeName().equals("aut:resources"));
-		    				for(int v = 0 ; v < node.item(i).getChildNodes().item(m).getChildNodes().getLength(); v++ )
-		    					if( node.item(i).getChildNodes().item(m).getChildNodes().item(v).getNodeName().equals("aut:resource") 
-		    							&& node.item(i).getChildNodes().item(m).getChildNodes().item(v).getAttributes().getNamedItem("handler").getNodeValue().equals(nodeToWrite.getObjectResourceParam().get(l).getObjectHandlerName())) 
-				    				for(int z = 0 ; z < node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().getLength(); z++ )						    				
-				    					if( node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().item(z).getNodeName().equals("aut:params"))
-					    				for(int x = 0 ; x < node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().item(z).getChildNodes().getLength(); x++ )							    								    				
-					    					if(node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().item(z).getChildNodes().item(x).getNodeName().equals("aut:param"))
-					    					if(node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().item(z).getChildNodes().item(x).getAttributes().getNamedItem("name").getNodeValue().equals("amount"))							    													    					
-					    						{					    						 
-					    						 node.item(i).getChildNodes().item(m).getChildNodes().item(v).getChildNodes().item(z).getChildNodes().item(x).getAttributes().getNamedItem("value").setNodeValue(((Double)nodeToWrite.getObjectResourceParam().get(l).getObjectValue()).toString());
-					    						}
-					    						
-					    				
-		    		}
-		    	}
-			}
-		 }
-		   			  		
-		 DOMSource domSource = new DOMSource(doc);
-	       StringWriter writer = new StringWriter();
-	       StreamResult result = new StreamResult(writer);
-	       TransformerFactory tf = TransformerFactory.newInstance();
-	       Transformer transformer;
-		try {
-			transformer = tf.newTransformer();  
 			transformer.transform(domSource, result);
 		} catch (TransformerConfigurationException e) {
 			e.printStackTrace();
-		}
-		 catch (TransformerException e) {
+		} catch (TransformerException e) {
 			e.printStackTrace();
-		}	
-	
+		}
+
+		fos.write(writer.toString().getBytes());
+	}
+
+	private void writeXmlProcess(MyObjectProcess processToWrite)
+			throws IOException, ParserConfigurationException, SAXException {
+
+		FileOutputStream fos = new FileOutputStream(originalXML + ".temp");
+
+		NodeList process = doc.getElementsByTagName("aut:process");
+		for (int i = 0; i < process.getLength(); i++) {
+			if (process.item(i).getAttributes().getNamedItem("id")
+					.getNodeValue().equals(processToWrite.getObjectName())) {
+				for (int l = 0; l < processToWrite.getObjectParam().size(); l++)
+					for (int m = 0; m < process.item(i).getChildNodes()
+							.getLength(); m++) {
+						if (process.item(i).getChildNodes().item(m)
+								.getNodeName().equals("aut:params"))
+							for (int b = 0; b < process.item(i).getChildNodes()
+									.item(m).getChildNodes().getLength(); b++)
+								if (process.item(i).getChildNodes().item(m)
+										.getChildNodes().item(b).getNodeName()
+										.equals("aut:param")) {
+									// System.out.println(process.item(i).getAttributes().getNamedItem("id").getNodeValue());
+									if (process
+											.item(i)
+											.getChildNodes()
+											.item(m)
+											.getChildNodes()
+											.item(b)
+											.getAttributes()
+											.getNamedItem("name")
+											.getNodeValue()
+											.equals(processToWrite
+													.getObjectParam().get(l)
+													.getObjectName())) {
+										process.item(i)
+												.getChildNodes()
+												.item(m)
+												.getChildNodes()
+												.item(b)
+												.getAttributes()
+												.getNamedItem("value")
+												.setNodeValue(
+														((Double) processToWrite
+																.getObjectParam()
+																.get(l)
+																.getObjectValue())
+																.toString());
+									}
+								}
+					}
+
+			}
+		}
+
+		DOMSource domSource = new DOMSource(doc);
+		StringWriter writer = new StringWriter();
+		StreamResult result = new StreamResult(writer);
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer;
+		try {
+			transformer = tf.newTransformer();
+			transformer.transform(domSource, result);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+
+		fos.write(writer.toString().getBytes());
+
+	}
+
+	private void writeXmlNodeResource(MyObjectNode nodeToWrite)
+			throws IOException, ParserConfigurationException, SAXException {
+
+		FileOutputStream fos = new FileOutputStream(originalXML + ".temp");
+
+		NodeList node = doc.getElementsByTagName("aut:node");
+		for (int i = 0; i < node.getLength(); i++) {
+			if (node.item(i).getAttributes().getNamedItem("id").getNodeValue()
+					.equals(nodeToWrite.getObjectName())) {
+				for (int l = 0; l < nodeToWrite.getObjectResourceParam().size(); l++) {
+					for (int m = 0; m < node.item(i).getChildNodes()
+							.getLength(); m++) {
+						if (node.item(i).getChildNodes().item(m).getNodeName()
+								.equals("aut:resources"))
+							;
+						for (int v = 0; v < node.item(i).getChildNodes()
+								.item(m).getChildNodes().getLength(); v++)
+							if (node.item(i).getChildNodes().item(m)
+									.getChildNodes().item(v).getNodeName()
+									.equals("aut:resource")
+									&& node.item(i)
+											.getChildNodes()
+											.item(m)
+											.getChildNodes()
+											.item(v)
+											.getAttributes()
+											.getNamedItem("handler")
+											.getNodeValue()
+											.equals(nodeToWrite
+													.getObjectResourceParam()
+													.get(l)
+													.getObjectHandlerName()))
+								for (int z = 0; z < node.item(i)
+										.getChildNodes().item(m)
+										.getChildNodes().item(v)
+										.getChildNodes().getLength(); z++)
+									if (node.item(i).getChildNodes().item(m)
+											.getChildNodes().item(v)
+											.getChildNodes().item(z)
+											.getNodeName().equals("aut:params"))
+										for (int x = 0; x < node.item(i)
+												.getChildNodes().item(m)
+												.getChildNodes().item(v)
+												.getChildNodes().item(z)
+												.getChildNodes().getLength(); x++)
+											if (node.item(i).getChildNodes()
+													.item(m).getChildNodes()
+													.item(v).getChildNodes()
+													.item(z).getChildNodes()
+													.item(x).getNodeName()
+													.equals("aut:param"))
+												if (node.item(i)
+														.getChildNodes()
+														.item(m)
+														.getChildNodes()
+														.item(v)
+														.getChildNodes()
+														.item(z)
+														.getChildNodes()
+														.item(x)
+														.getAttributes()
+														.getNamedItem("name")
+														.getNodeValue()
+														.equals("amount")) {
+													node.item(i)
+															.getChildNodes()
+															.item(m)
+															.getChildNodes()
+															.item(v)
+															.getChildNodes()
+															.item(z)
+															.getChildNodes()
+															.item(x)
+															.getAttributes()
+															.getNamedItem(
+																	"value")
+															.setNodeValue(
+																	((Double) nodeToWrite
+																			.getObjectResourceParam()
+																			.get(l)
+																			.getObjectValue())
+																			.toString());
+												}
+
+					}
+				}
+			}
+		}
+
+		DOMSource domSource = new DOMSource(doc);
+		StringWriter writer = new StringWriter();
+		StreamResult result = new StreamResult(writer);
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer;
+		try {
+			transformer = tf.newTransformer();
+			transformer.transform(domSource, result);
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+
 		fos.write(writer.toString().getBytes());
 
 	}
 
 	/**
 	 * Method that writes the XML files to be used when Deus is launched
-	 * @param simulation, the list of simulations to perform
-	 * @param path, path of the base XML file to modify 
+	 * 
+	 * @param simulation
+	 *            , the list of simulations to perform
+	 * @param path
+	 *            , path of the base XML file to modify
 	 * @return the names of the files to run
 	 * @throws JAXBException
 	 * @throws SAXException
 	 * @throws IOException
-	 * @throws ParserConfigurationException 
+	 * @throws ParserConfigurationException
 	 */
 	private ArrayList<String> writeXML(
 			ArrayList<MyObjectSimulation> simulation, String path)
@@ -1035,12 +1263,13 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 									.getElementsByTagName("aut:node");
 							for (int i = 0; i < node.getLength(); i++) {
 								if (simulation.get(j).getNode().get(u).size() > 0)
-									if (node.item(i).getAttributes()
-											.getNamedItem("id").getNodeValue()
-											.equals(
-													simulation.get(j).getNode()
-															.get(u).get(k)
-															.getObjectName())) {
+									if (node.item(i)
+											.getAttributes()
+											.getNamedItem("id")
+											.getNodeValue()
+											.equals(simulation.get(j).getNode()
+													.get(u).get(k)
+													.getObjectName())) {
 										simul.write(("Node : "
 												+ node.item(i).getAttributes()
 														.getNamedItem("id")
@@ -1058,16 +1287,14 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 														.item(m)
 														.getChildNodes()
 														.getLength(); b++)
-													if (node
-															.item(i)
+													if (node.item(i)
 															.getChildNodes()
 															.item(m)
 															.getChildNodes()
 															.item(b)
 															.getNodeName()
 															.equals("aut:param"))
-														if (node
-																.item(i)
+														if (node.item(i)
 																.getChildNodes()
 																.item(m)
 																.getChildNodes()
@@ -1076,52 +1303,37 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																.getNamedItem(
 																		"name")
 																.getNodeValue()
-																.equals(
-																		simulation
-																				.get(
-																						j)
-																				.getNode()
-																				.get(
-																						u)
-																				.get(
-																						k)
-																				.getObjectParam()
-																				.get(
-																						l)
-																				.getObjectName())) {
-															simul
-																	.write(("Parameter : "
-																			+ node
-																					.item(
-																							i)
-																					.getChildNodes()
-																					.item(
-																							m)
-																					.getChildNodes()
-																					.item(
-																							b)
-																					.getAttributes()
-																					.getNamedItem(
-																							"name")
-																					.getNodeValue() + " ")
-																			.getBytes());
-															simul
-																	.write((((Double) simulation
-																			.get(
-																					j)
-																			.getNode()
-																			.get(
-																					u)
-																			.get(
-																					k)
-																			.getObjectParam()
-																			.get(
-																					l)
-																			.getObjectValue())
-																			.toString() + "\n")
-																			.getBytes());
-															node
-																	.item(i)
+																.equals(simulation
+																		.get(j)
+																		.getNode()
+																		.get(u)
+																		.get(k)
+																		.getObjectParam()
+																		.get(l)
+																		.getObjectName())) {
+															simul.write(("Parameter : "
+																	+ node.item(
+																			i)
+																			.getChildNodes()
+																			.item(m)
+																			.getChildNodes()
+																			.item(b)
+																			.getAttributes()
+																			.getNamedItem(
+																					"name")
+																			.getNodeValue() + " ")
+																	.getBytes());
+															simul.write((((Double) simulation
+																	.get(j)
+																	.getNode()
+																	.get(u)
+																	.get(k)
+																	.getObjectParam()
+																	.get(l)
+																	.getObjectValue())
+																	.toString() + "\n")
+																	.getBytes());
+															node.item(i)
 																	.getChildNodes()
 																	.item(m)
 																	.getChildNodes()
@@ -1131,16 +1343,12 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																			"value")
 																	.setNodeValue(
 																			((Double) simulation
-																					.get(
-																							j)
+																					.get(j)
 																					.getNode()
-																					.get(
-																							u)
-																					.get(
-																							k)
+																					.get(u)
+																					.get(k)
 																					.getObjectParam()
-																					.get(
-																							l)
+																					.get(l)
 																					.getObjectValue())
 																					.toString());
 														}
@@ -1153,8 +1361,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 											for (int m = 0; m < node.item(i)
 													.getChildNodes()
 													.getLength(); m++) {
-												if (node
-														.item(i)
+												if (node.item(i)
 														.getChildNodes()
 														.item(m)
 														.getNodeName()
@@ -1166,17 +1373,14 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 														.item(m)
 														.getChildNodes()
 														.getLength(); v++)
-													if (node
-															.item(i)
+													if (node.item(i)
 															.getChildNodes()
 															.item(m)
 															.getChildNodes()
 															.item(v)
 															.getNodeName()
-															.equals(
-																	"aut:resource")
-															&& node
-																	.item(i)
+															.equals("aut:resource")
+															&& node.item(i)
 																	.getChildNodes()
 																	.item(m)
 																	.getChildNodes()
@@ -1185,19 +1389,14 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																	.getNamedItem(
 																			"handler")
 																	.getNodeValue()
-																	.equals(
-																			simulation
-																					.get(
-																							j)
-																					.getNode()
-																					.get(
-																							u)
-																					.get(
-																							k)
-																					.getObjectResourceParam()
-																					.get(
-																							l)
-																					.getObjectHandlerName()))
+																	.equals(simulation
+																			.get(j)
+																			.getNode()
+																			.get(u)
+																			.get(k)
+																			.getObjectResourceParam()
+																			.get(l)
+																			.getObjectHandlerName()))
 														for (int z = 0; z < node
 																.item(i)
 																.getChildNodes()
@@ -1206,8 +1405,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																.item(v)
 																.getChildNodes()
 																.getLength(); z++)
-															if (node
-																	.item(i)
+															if (node.item(i)
 																	.getChildNodes()
 																	.item(m)
 																	.getChildNodes()
@@ -1215,8 +1413,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																	.getChildNodes()
 																	.item(z)
 																	.getNodeName()
-																	.equals(
-																			"aut:params"))
+																	.equals("aut:params"))
 																for (int x = 0; x < node
 																		.item(i)
 																		.getChildNodes()
@@ -1227,112 +1424,80 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																		.item(z)
 																		.getChildNodes()
 																		.getLength(); x++)
-																	if (node
-																			.item(
-																					i)
+																	if (node.item(
+																			i)
 																			.getChildNodes()
-																			.item(
-																					m)
+																			.item(m)
 																			.getChildNodes()
-																			.item(
-																					v)
+																			.item(v)
 																			.getChildNodes()
-																			.item(
-																					z)
+																			.item(z)
 																			.getChildNodes()
-																			.item(
-																					x)
+																			.item(x)
 																			.getNodeName()
-																			.equals(
-																					"aut:param"))
-																		if (node
-																				.item(
-																						i)
+																			.equals("aut:param"))
+																		if (node.item(
+																				i)
 																				.getChildNodes()
-																				.item(
-																						m)
+																				.item(m)
 																				.getChildNodes()
-																				.item(
-																						v)
+																				.item(v)
 																				.getChildNodes()
-																				.item(
-																						z)
+																				.item(z)
 																				.getChildNodes()
-																				.item(
-																						x)
+																				.item(x)
 																				.getAttributes()
 																				.getNamedItem(
 																						"name")
 																				.getNodeValue()
-																				.equals(
-																						"amount")) {
-																			simul
-																					.write(("Resource Parameter : "
-																							+ node
-																									.item(
-																											i)
-																									.getChildNodes()
-																									.item(
-																											m)
-																									.getChildNodes()
-																									.item(
-																											v)
-																									.getChildNodes()
-																									.item(
-																											z)
-																									.getChildNodes()
-																									.item(
-																											x)
-																									.getAttributes()
-																									.getNamedItem(
-																											"name")
-																									.getNodeValue() + " ")
-																							.getBytes());
-																			simul
-																					.write((((Double) simulation
-																							.get(
-																									j)
-																							.getNode()
-																							.get(
-																									u)
-																							.get(
-																									k)
-																							.getObjectResourceParam()
-																							.get(
-																									l)
-																							.getObjectValue())
-																							.toString() + "\n")
-																							.getBytes());
-																			node
-																					.item(
+																				.equals("amount")) {
+																			simul.write(("Resource Parameter : "
+																					+ node.item(
 																							i)
+																							.getChildNodes()
+																							.item(m)
+																							.getChildNodes()
+																							.item(v)
+																							.getChildNodes()
+																							.item(z)
+																							.getChildNodes()
+																							.item(x)
+																							.getAttributes()
+																							.getNamedItem(
+																									"name")
+																							.getNodeValue() + " ")
+																					.getBytes());
+																			simul.write((((Double) simulation
+																					.get(j)
+																					.getNode()
+																					.get(u)
+																					.get(k)
+																					.getObjectResourceParam()
+																					.get(l)
+																					.getObjectValue())
+																					.toString() + "\n")
+																					.getBytes());
+																			node.item(
+																					i)
 																					.getChildNodes()
-																					.item(
-																							m)
+																					.item(m)
 																					.getChildNodes()
-																					.item(
-																							v)
+																					.item(v)
 																					.getChildNodes()
-																					.item(
-																							z)
+																					.item(z)
 																					.getChildNodes()
-																					.item(
-																							x)
+																					.item(x)
 																					.getAttributes()
 																					.getNamedItem(
 																							"value")
 																					.setNodeValue(
 																							((Double) simulation
-																									.get(
-																											j)
+																									.get(j)
 																									.getNode()
-																									.get(
-																											u)
-																									.get(
-																											k)
+																									.get(u)
+																									.get(k)
 																									.getObjectResourceParam()
-																									.get(
-																											l)
+																									.get(l)
 																									.getObjectValue())
 																									.toString());
 																		}
@@ -1358,25 +1523,19 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 												.getAttributes()
 												.getNamedItem("id")
 												.getNodeValue()
-												.equals(
-														simulation
-																.get(j)
-																.getProcess()
-																.get(g)
-																.get(k)
-																.getObjectName())) {
-											simul
-													.write(("Process : "
-															+ process
-																	.item(i)
-																	.getAttributes()
-																	.getNamedItem(
-																			"id")
-																	.getNodeValue() + "\n")
-															.getBytes());
-											for (int l = 0; l < simulation.get(
-													j).getProcess().get(g).get(
-													k).getObjectParam().size(); l++)
+												.equals(simulation.get(j)
+														.getProcess().get(g)
+														.get(k).getObjectName())) {
+											simul.write(("Process : "
+													+ process.item(i)
+															.getAttributes()
+															.getNamedItem("id")
+															.getNodeValue() + "\n")
+													.getBytes());
+											for (int l = 0; l < simulation
+													.get(j).getProcess().get(g)
+													.get(k).getObjectParam()
+													.size(); l++)
 												for (int m = 0; m < process
 														.item(i)
 														.getChildNodes()
@@ -1386,8 +1545,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 															.getChildNodes()
 															.item(m)
 															.getNodeName()
-															.equals(
-																	"aut:params"))
+															.equals("aut:params"))
 														for (int b = 0; b < process
 																.item(i)
 																.getChildNodes()
@@ -1401,8 +1559,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																	.getChildNodes()
 																	.item(b)
 																	.getNodeName()
-																	.equals(
-																			"aut:param")) {
+																	.equals("aut:param")) {
 																// System.out.
 																// println
 																// (process
@@ -1423,74 +1580,53 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 																		.getNamedItem(
 																				"name")
 																		.getNodeValue()
-																		.equals(
-																				simulation
-																						.get(
-																								j)
-																						.getProcess()
-																						.get(
-																								g)
-																						.get(
-																								k)
-																						.getObjectParam()
-																						.get(
-																								l)
-																						.getObjectName())) {
-																	simul
-																			.write(("Parameter : "
-																					+ process
-																							.item(
-																									i)
-																							.getChildNodes()
-																							.item(
-																									m)
-																							.getChildNodes()
-																							.item(
-																									b)
-																							.getAttributes()
-																							.getNamedItem(
-																									"name")
-																							.getNodeValue() + " ")
-																					.getBytes());
-																	simul
-																			.write((((Double) simulation
-																					.get(
-																							j)
-																					.getProcess()
-																					.get(
-																							g)
-																					.get(
-																							k)
-																					.getObjectParam()
-																					.get(
-																							l)
-																					.getObjectValue())
-																					.toString() + "\n")
-																					.getBytes());
-																	process
-																			.item(
-																					i)
+																		.equals(simulation
+																				.get(j)
+																				.getProcess()
+																				.get(g)
+																				.get(k)
+																				.getObjectParam()
+																				.get(l)
+																				.getObjectName())) {
+																	simul.write(("Parameter : "
+																			+ process
+																					.item(i)
+																					.getChildNodes()
+																					.item(m)
+																					.getChildNodes()
+																					.item(b)
+																					.getAttributes()
+																					.getNamedItem(
+																							"name")
+																					.getNodeValue() + " ")
+																			.getBytes());
+																	simul.write((((Double) simulation
+																			.get(j)
+																			.getProcess()
+																			.get(g)
+																			.get(k)
+																			.getObjectParam()
+																			.get(l)
+																			.getObjectValue())
+																			.toString() + "\n")
+																			.getBytes());
+																	process.item(
+																			i)
 																			.getChildNodes()
-																			.item(
-																					m)
+																			.item(m)
 																			.getChildNodes()
-																			.item(
-																					b)
+																			.item(b)
 																			.getAttributes()
 																			.getNamedItem(
 																					"value")
 																			.setNodeValue(
 																					((Double) simulation
-																							.get(
-																									j)
+																							.get(j)
 																							.getProcess()
-																							.get(
-																									g)
-																							.get(
-																									k)
+																							.get(g)
+																							.get(k)
 																							.getObjectParam()
-																							.get(
-																									l)
+																							.get(l)
 																							.getObjectValue())
 																							.toString());
 																}
@@ -1510,10 +1646,13 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 							NodeList engine = doc
 									.getElementsByTagName("aut:engine");
 							for (int i = 0; i < engine.getLength(); i++) {
-								engine.item(i).getAttributes().getNamedItem(
-										"seed").setNodeValue(
-										simulation.get(j).getEngine().get(j)
-												.getSeed().get(seed));
+								engine.item(i)
+										.getAttributes()
+										.getNamedItem("seed")
+										.setNodeValue(
+												simulation.get(j).getEngine()
+														.get(j).getSeed()
+														.get(seed));
 							}
 
 							DOMSource domSource = new DOMSource(doc);
@@ -1533,13 +1672,15 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 							}
 
 							String computerName = "";
-						    try{
-						    	computerName=InetAddress.getLocalHost().getHostName();
-						       // System.out.println(computerName);
-						      }catch (Exception e){
-						        System.out.println("Exception caught ="+e.getMessage());
-						    }
-							
+							try {
+								computerName = InetAddress.getLocalHost()
+										.getHostName();
+								// System.out.println(computerName);
+							} catch (Exception e) {
+								System.out.println("Exception caught ="
+										+ e.getMessage());
+							}
+
 							String filename = "./xml/"
 									+ computerName
 									+ "-"
@@ -1566,8 +1707,7 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 						NodeList engine = doc
 								.getElementsByTagName("aut:engine");
 						for (int i = 0; i < engine.getLength(); i++) {
-							engine
-									.item(i)
+							engine.item(i)
 									.getAttributes()
 									.getNamedItem("seed")
 									.setNodeValue(
@@ -1592,19 +1732,22 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 						}
 
 						String computerName = "";
-					    try{
-					    	computerName=InetAddress.getLocalHost().getHostName();
-					       // System.out.println(computerName);
-					      }catch (Exception e){
-					        System.out.println("Exception caught ="+e.getMessage());
-					    }
-						
+						try {
+							computerName = InetAddress.getLocalHost()
+									.getHostName();
+							// System.out.println(computerName);
+						} catch (Exception e) {
+							System.out.println("Exception caught ="
+									+ e.getMessage());
+						}
+
 						String filename = "./xml/"
-							+ computerName
-							+ "-"
-							+ simulation.get(j).getSimulationName()
-							+ "_0_"
-							+ simulation.get(j).getEngine().get(j).getSeed().get(seed);
+								+ computerName
+								+ "-"
+								+ simulation.get(j).getSimulationName()
+								+ "_0_"
+								+ simulation.get(j).getEngine().get(j)
+										.getSeed().get(seed);
 						FileOutputStream file = new FileOutputStream(filename);
 
 						file.write(writer.toString().getBytes());
@@ -1631,16 +1774,13 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 		return null;
 	}
 
-
-	public  JProgressBar getSimulationProgressBar() {
+	public JProgressBar getSimulationProgressBar() {
 		return simulationProgressBar;
 	}
 
-
-	public  void setSimulationProgressBar(JProgressBar simulationProgressBar) {
+	public void setSimulationProgressBar(JProgressBar simulationProgressBar) {
 		this.simulationProgressBar = simulationProgressBar;
 	}
-
 
 	public void run() {
 		try {
@@ -1657,5 +1797,5 @@ private  void writeXmlNodeResource(MyObjectNode nodeToWrite) throws IOException,
 			e.printStackTrace();
 		}
 	}
-	
+
 }

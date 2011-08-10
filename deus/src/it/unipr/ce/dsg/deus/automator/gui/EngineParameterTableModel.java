@@ -3,10 +3,15 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * 
+ */
 @SuppressWarnings("serial")
 public class EngineParameterTableModel extends AbstractTableModel {
 
-	// String array that contains the names of the columns 
+	// String array that contains the names of the columns
 	protected String columnNames[] = { "Seed Value" };
 
 	// Array that contains the values for the rows in the table model
@@ -18,11 +23,11 @@ public class EngineParameterTableModel extends AbstractTableModel {
 
 	private ArrayList<EngineParameter> engineParameterList;
 
-
-	public void set_FileTableModel(ArrayList<EngineParameter> engineParameterList) {
+	public void set_FileTableModel(
+			ArrayList<EngineParameter> engineParameterList) {
 
 		this.engineParameterList = engineParameterList;
-		
+
 		// Create some data
 		Object dataValues_app[][] = new Object[engineParameterList.size()][columncount];
 
@@ -34,7 +39,7 @@ public class EngineParameterTableModel extends AbstractTableModel {
 			dataValues[i][0] = engineParameterList.get(i).getSeedValue();
 		}
 	}
-	
+
 	/**
 	 * Returns the number of rows
 	 */
@@ -58,7 +63,7 @@ public class EngineParameterTableModel extends AbstractTableModel {
 	}
 
 	/**
-	 * Returns the number of columns 
+	 * Returns the number of columns
 	 */
 	public int getColumnCount() {
 		return columncount;
@@ -68,27 +73,26 @@ public class EngineParameterTableModel extends AbstractTableModel {
 	 * Returns the object in the table, given its row and column numbers
 	 */
 	public Object getValueAt(int row, int col) {
-		
+
 		return dataValues[row][col];
 	}
-	
+
 	/**
-	 * Returns the object in the first column, given the row number 
+	 * Returns the object in the first column, given the row number
 	 */
-	public Object getRowObject(int row ) {
-		
-		return (String)dataValues[row][0];
+	public Object getRowObject(int row) {
+
+		return (String) dataValues[row][0];
 	}
 
-
 	/**
-	 * Allows to set a value in the table, given the row and column numbers 
+	 * Allows to set a value in the table, given the row and column numbers
 	 */
 	public void setValueAt(Object value, int row, int col) {
 		dataValues[row][col] = value;
-		
-		engineParameterList.get(row).setSeedValue((String)dataValues[row][0]);
-		
+
+		engineParameterList.get(row).setSeedValue((String) dataValues[row][0]);
+
 		fireTableCellUpdated(row, col);
 	}
 
@@ -97,7 +101,7 @@ public class EngineParameterTableModel extends AbstractTableModel {
 	 */
 	public boolean isCellEditable(int row, int col) {
 
-			return true;
+		return true;
 	}
 
 }

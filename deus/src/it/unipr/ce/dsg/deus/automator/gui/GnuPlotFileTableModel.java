@@ -3,11 +3,16 @@ package it.unipr.ce.dsg.deus.automator.gui;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * 
+ */
 @SuppressWarnings("serial")
 public class GnuPlotFileTableModel extends AbstractTableModel {
 
 	// String array that contains column names
-	protected String columnNames[] = { "File Name","X Label","Y Label"};
+	protected String columnNames[] = { "File Name", "X Label", "Y Label" };
 
 	// Array that contains the values for the different rows in the model of the table
 	protected Object dataValues[][];
@@ -21,10 +26,11 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	/**
 	 *
 	 */
-	public void set_FileTableModel(ArrayList<GnuPlotFileElement> nodeResourceList) {
+	public void set_FileTableModel(
+			ArrayList<GnuPlotFileElement> nodeResourceList) {
 
 		this.gnuPlotFileList = nodeResourceList;
-		
+
 		// Create some data
 		Object dataValues_app[][] = new Object[nodeResourceList.size()][columncount];
 
@@ -38,7 +44,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 			dataValues[i][2] = nodeResourceList.get(i).getYLabel();
 		}
 	}
-	
+
 	/**
 	 * Returns the number of rows of the model
 	 */
@@ -72,30 +78,29 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	 * Returns the value, given its position in the table
 	 */
 	public Object getValueAt(int row, int col) {
-		
+
 		return dataValues[row][col];
 	}
-	
+
 	/**
 	 * Returns the first element of a row
 	 */
-	public Object getRowObject(int row ) {
-		
-		return (String)dataValues[row][0];
-	}
+	public Object getRowObject(int row) {
 
+		return (String) dataValues[row][0];
+	}
 
 	/**
 	 * Set a value, given its position in the table
 	 */
 	public void setValueAt(Object value, int row, int col) {
-	
+
 		dataValues[row][col] = value;
-		
-		gnuPlotFileList.get(row).setFileName((String)dataValues[row][0]);
-		gnuPlotFileList.get(row).setXLabel((String)dataValues[row][1]);
-		gnuPlotFileList.get(row).setYLabel((String)dataValues[row][2]);
-		
+
+		gnuPlotFileList.get(row).setFileName((String) dataValues[row][0]);
+		gnuPlotFileList.get(row).setXLabel((String) dataValues[row][1]);
+		gnuPlotFileList.get(row).setYLabel((String) dataValues[row][2]);
+
 		fireTableCellUpdated(row, col);
 	}
 
@@ -104,7 +109,7 @@ public class GnuPlotFileTableModel extends AbstractTableModel {
 	 */
 	public boolean isCellEditable(int row, int col) {
 
-			return true;
+		return true;
 	}
 
 }

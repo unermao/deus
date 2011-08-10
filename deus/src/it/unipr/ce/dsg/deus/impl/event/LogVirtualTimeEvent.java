@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * This class is used to print the current virtual time in the simulation
  * 
- * @author  Michele Amoretti
+ * @author  Michele Amoretti (michele.amoretti@unipr.it)
  */
 
 public class LogVirtualTimeEvent extends Event {

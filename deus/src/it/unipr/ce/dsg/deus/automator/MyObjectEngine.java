@@ -2,10 +2,15 @@ package it.unipr.ce.dsg.deus.automator;
 
 import java.util.ArrayList;
 
-
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class MyObjectEngine {
 	
-	private ArrayList<String> seed = new ArrayList<String>();;	
+	private ArrayList<String> seed = new ArrayList<String>();
 	private ArrayList<Float> vt = new ArrayList<Float>();		
 	
 	public MyObjectEngine() {

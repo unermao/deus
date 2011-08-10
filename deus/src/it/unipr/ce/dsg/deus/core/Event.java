@@ -25,7 +25,7 @@ import java.util.Random;
  * to re-initialize the event members that you do not want to be cloned.
  * </p>
  * 
- * @author Matteo Agosti (agosti@ce.unipr.it)
+ * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */

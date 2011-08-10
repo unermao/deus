@@ -1,4 +1,12 @@
 package it.unipr.ce.dsg.deus.automator;
+
+
+/**
+ * 
+ * @author Marco Picone (picone.m@gmail.com)
+ * @author Marco Pigoni
+ *
+ */
 public class Result {
 
 	private String name = null;
@@ -28,6 +36,5 @@ public class Result {
 	public void addToValue(Double value) {
 		this.value += value;
 	}
-	
 	
 }

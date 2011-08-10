@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.editor;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
+
 /**
  * An interface for menu items that are interested in knowning the currently selected edge and
  * its visualization component context.  Used with MenuManagePopup.
@@ -14,6 +15,5 @@ public interface EdgeMenuListener<MyEdge> {
      * @param e 
      * @param visComp 
      */
-     void setEdgeAndView(MyEdge e, VisualizationViewer<DeusVertex, MyEdge> visView); 
-    
+     void setEdgeAndView(MyEdge e, VisualizationViewer<DeusVertex, MyEdge> visView);   
 }
