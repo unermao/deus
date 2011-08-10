@@ -140,7 +140,30 @@ Finally, you have to declare which processes to run:
 </aut:engine>
 }}}
 
-Note: the engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
+Note 1: The engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
+
+Note 2: If you define in the XML an event and the associated process, you can obtain in the Java code a reference to the process, given a reference to the event. Look at the following example:
+
+{{{
+        PurchaseEvent pevModel = null;
+		for (Iterator<Event> it = Engine.getDefault().getConfigEvents().iterator(); it.hasNext();) {
+			Event ev = it.next();
+			if (ev instanceof PurchaseEvent) {
+				pevModel = (PurchaseEvent) ev;
+				break;
+			}
+		}
+}}}
+
+{{{
+        PurchaseEvent purchaseEvent = (PurchaseEvent) pevModel.createInstance(pevModel.getParentProcess()
+						.getNextTriggeringTime(pevModel, triggeringTime));
+				purchaseEvent.setTargetCustomer(selectedNeighbor);
+				purchaseEvent.setTargetStore(targetStore);
+				purchaseEvent.setProductId(targetProductList.get(0));
+				purchaseEvent.setBonus(bonus);
+				Engine.getDefault().insertIntoEventsList(purchaseEvent);
+}}}
 
 
 = DEUS Visual Editor =
