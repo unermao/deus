@@ -146,24 +146,26 @@ Note 2: If you define in the XML an event and the associated process, you can ob
 
 {{{
         PurchaseEvent pevModel = null;
-		for (Iterator<Event> it = Engine.getDefault().getConfigEvents().iterator(); it.hasNext();) {
-			Event ev = it.next();
-			if (ev instanceof PurchaseEvent) {
-				pevModel = (PurchaseEvent) ev;
-				break;
-			}
+	for (Iterator<Event> it = Engine.getDefault().getConfigEvents().iterator(); it.hasNext();) {
+		Event ev = it.next();
+		if (ev instanceof PurchaseEvent) {
+			pevModel = (PurchaseEvent) ev;
+			break;
 		}
+	}
 }}}
 
 {{{
         PurchaseEvent purchaseEvent = (PurchaseEvent) pevModel.createInstance(pevModel.getParentProcess()
 						.getNextTriggeringTime(pevModel, triggeringTime));
-				purchaseEvent.setTargetCustomer(selectedNeighbor);
-				purchaseEvent.setTargetStore(targetStore);
-				purchaseEvent.setProductId(targetProductList.get(0));
-				purchaseEvent.setBonus(bonus);
-				Engine.getDefault().insertIntoEventsList(purchaseEvent);
+	purchaseEvent.setTargetCustomer(selectedNeighbor);
+	purchaseEvent.setTargetStore(targetStore);
+	purchaseEvent.setProductId(targetProductList.get(0));
+	purchaseEvent.setBonus(bonus);
+	Engine.getDefault().insertIntoEventsList(purchaseEvent);
 }}}
+
+We first get a reference to the "model" of {{{PurchaseEvent}}} (the one used by the engine to create clones). The we create an instance of {{{PurchaseEvent}}} to be scheduled. The triggering time of such an instance is computed using the process associated to {{{PurchaseEvent}}}.
 
 
 = DEUS Visual Editor =
