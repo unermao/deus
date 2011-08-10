@@ -2,13 +2,14 @@ package it.unipr.ce.dsg.deus.impl.process;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Random;
+//import java.util.Random;
 
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
+import it.unipr.ce.dsg.deus.util.Distributions;
 
 
 /**
@@ -92,14 +93,17 @@ public class RectangularPulsePoissonProcess extends Process {
 		if (virtualTime < startVtThreshold)
 			return virtualTime + startVtThreshold;
 		else if ((virtualTime >= startVtThreshold) && (virtualTime < stopVtThreshold))
-			return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
+			//return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
+			return virtualTime + (float) Distributions.exp(event.getEventRandom(), (float) 1 / meanArrival);
 		else
 			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
 	}
 	
+	/*
 	// returns exponentially distributed random variable
 	private float expRandom(Random random, float lambda) {
 		float randomFloat = (float) (-Math.log(1-random.nextFloat()) / lambda);
 		return randomFloat;
 	}
+	*/
 }

@@ -4,10 +4,11 @@ import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
 import it.unipr.ce.dsg.deus.core.Process;
+import it.unipr.ce.dsg.deus.util.Distributions;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.Random;
+//import java.util.Random;
 
 /**
  * This class represents a Homogeneous Poisson Process, that is a process that schedules
@@ -37,7 +38,8 @@ public class PoissonProcess extends Process {
 	}
 
 	public float getNextTriggeringTime(Event event, float virtualTime) {
-		return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
+		//return virtualTime + expRandom(event.getEventRandom(), (float) 1 / meanArrival);
+		return virtualTime + (float) Distributions.exp(event.getEventRandom(), (float) 1 / meanArrival);
 	}
 
 	public void initialize() throws InvalidParamsException {
@@ -54,8 +56,10 @@ public class PoissonProcess extends Process {
 	}
 
 	// returns exponentially distributed random variable
+	/*
 	private float expRandom(Random random, float lambda) {
 		float randomFloat = (float) (-Math.log(1-random.nextFloat()) / lambda);
 		return randomFloat;
 	}
+	*/
 }
