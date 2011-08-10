@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="examples/noc/src"/>
-	<classpathentry kind="src" path="examples/streaming/coolStreaming/src"/>
-	<classpathentry kind="src" path="examples/streaming/hierarchical.streaming/src"/>
-	<classpathentry kind="src" path="examples/ontochord/src"/>
-	<classpathentry kind="src" path="examples/nsam/src"/>
-	<classpathentry kind="src" path="examples/kademlia/src"/>
-	<classpathentry kind="src" path="examples/jxta/src"/>
-	<classpathentry kind="src" path="examples/life/src"/>
-	<classpathentry kind="src" path="examples/streaming/chordStreaming/src"/>
-	<classpathentry kind="src" path="examples/streaming/simpleDataDriven/src"/>
-	<classpathentry kind="src" path="examples/chord/src"/>
-	<classpathentry kind="src" path="examples/energy/src"/>
-	<classpathentry kind="src" path="examples/basic/src"/>
-	<classpathentry kind="src" path="examples/revol/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
 	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
