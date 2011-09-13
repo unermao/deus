@@ -218,7 +218,7 @@ Remember to implement all necessary scheduler listeners!!!
 
 = {{{Event}}} and {{{NodeEvent}}} =
 
-The it.unipr.ce.dsg.deus.core package of the DEUS API provides two abstract classes representing events: {{{Event}}} and {{{NodeEvent}}}. The first one is supposed to be for events that affect the system as a whole, without being associated to a specific node. Also log events should be implemented by subclassing Event{{{Event}}}. The {{{NodeEvent}}} abstract class, on the contrary, must be associated to a specific node. 
+The it.unipr.ce.dsg.deus.core package of the DEUS API provides two abstract classes representing events: {{{Event}}} and {{{NodeEvent}}}. The first one is supposed to be for events that affect the system as a whole, without being associated to a specific node. Also log events should be implemented by subclassing {{{Event}}}. The {{{NodeEvent}}} abstract class, on the contrary, must be associated to a specific node. 
 
 {{{NodeEvent}}} has a boolean parameter "hasSameAssociatedNode": if you set it to true, all subsequent instances of your subclass will be associated to the node that was associated with the first instance of the subclass. The following example illustrate one possibile use case.
 
