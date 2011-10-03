@@ -25,6 +25,11 @@ import java.util.Random;
  * to re-initialize the event members that you do not want to be cloned.
  * </p>
  * 
+ * <p>
+ * The "hasSameAssociatedNode" param must be set to true if we want that each
+ * clone has the same associated node of the cloned NodeEvent.
+ * </p>
+ * 
  * @author Matteo Agosti
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
@@ -40,6 +45,10 @@ public abstract class Event extends SimulationObject implements
 	protected float triggeringTime = 0;
 	protected Process parentProcess = null;
 	private SchedulerListener schedulerListener = null;
+	
+	protected static final String HAS_SAME_ASSOCIATED_NODE = "hasSameAssociatedNode";
+	protected boolean hasSameAssociatedNode = false;
+	protected Node associatedNode = null;
 
 	/**
 	 * Class constructor that builds the event with its minimal set of
@@ -63,6 +72,10 @@ public abstract class Event extends SimulationObject implements
 		this.params = params;
 		this.parentProcess = parentProcess;
 		this.referencedEvents = new ArrayList<Event>();
+		
+		if (params.containsKey(HAS_SAME_ASSOCIATED_NODE))
+			hasSameAssociatedNode = Boolean.parseBoolean(params
+					.getProperty(HAS_SAME_ASSOCIATED_NODE));
 	}
 
 	public int getEventSeed() {
@@ -92,7 +105,10 @@ public abstract class Event extends SimulationObject implements
 	 */
 	public Object clone() {
 		try {
-			return super.clone();
+			Event clone = (Event) super.clone();
+			if (!hasSameAssociatedNode)
+				clone.associatedNode = null;
+			return clone;
 		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e.toString());
 		}
@@ -250,5 +266,47 @@ public abstract class Event extends SimulationObject implements
 	 */
 	public boolean isOneShot() {
 		return isOneShot;
+	}
+	
+	/**
+	 * Returns the node associated to the event.
+	 * 
+	 * @return the node associated to the event.
+	 */
+	public Node getAssociatedNode() {
+		return associatedNode;
+	}
+
+	/**
+	 * Sets the node associated to the event.
+	 * 
+	 * @param associatedNode
+	 *            the node to be associated to the event.
+	 */
+	public void setAssociatedNode(Node associatedNode) {
+		this.associatedNode = associatedNode;
+	}
+	
+	/**
+	 * Returns <code>true</code> if the associated node will be cloned with the
+	 * event, <code>false</code> otherwise.
+	 * 
+	 * @return <code>true</code> if the associated node will be cloned with the
+	 *         event, <code>false</code> otherwise.
+	 */
+	public boolean hasSameAssociatedNode() {
+		return hasSameAssociatedNode;
+	}
+	
+	/**
+	 * Sets whether the node associated to the event will be cloned with the
+	 * event.
+	 * 
+	 * @param hasSameAssociatedNode
+	 *            <code>true</code> if the node associated to the event will be
+	 *            cloned with the event as well, <code>false</code> otherwise.
+	 */
+	public void setHasSameAssociatedNode(boolean hasSameAssociatedNode) {
+		this.hasSameAssociatedNode = hasSameAssociatedNode;
 	}
 }

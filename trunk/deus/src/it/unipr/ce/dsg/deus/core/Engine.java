@@ -5,10 +5,8 @@ import it.unipr.ce.dsg.deus.util.LogEntryFormatter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
-//import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-//import java.util.LinkedList;
 import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -64,7 +62,6 @@ public final class Engine extends SimulationObject {
 
 	private int keySpaceSize;
 
-	//private LinkedList<Event> eventsList = null;
 	private PriorityQueue<Event> eventsList = null;
 
 	private Random simulationRandom = null;
@@ -117,7 +114,6 @@ public final class Engine extends SimulationObject {
 		this.configEvents = configEvents;
 		this.configProcesses = configProcesses;
 		this.referencedProcesses = referencedProcesses;
-		//eventsList = new LinkedList<Event>();
 		eventsList = new PriorityQueue<Event>();
 		nodes = new ArrayList<Node>();
 		nodeHashMap = new HashMap<String, ArrayList<Integer>>();
@@ -138,7 +134,7 @@ public final class Engine extends SimulationObject {
 			for (Iterator<Event> it2 = p.getReferencedEvents().iterator(); it2
 					.hasNext();) {
 				Event e = it2.next();
-				insertIntoEventsList(e.createInstance(p.getNextTriggeringTime(e, virtualTime))); //TODO check e..
+				insertIntoEventsList(e.createInstance(p.getNextTriggeringTime(e, virtualTime)));
 			}
 		}
 	}
@@ -154,7 +150,6 @@ public final class Engine extends SimulationObject {
 	 */
 	public void insertIntoEventsList(Event e) {
 		eventsList.add(e);
-		//Collections.sort(eventsList);
 	}
 
 	/**
@@ -350,8 +345,8 @@ public final class Engine extends SimulationObject {
 	}
 	
     public void removeNode(Node n) {
-		if(nodes.remove((Node)n)){
-			if(nodeHashMap.containsKey(n.getId()))
+		if (nodes.remove((Node)n)) {
+			if (nodeHashMap.containsKey(n.getId()))
 				nodeHashMap.get(n.getId()).remove((Object)n.getKey());
 		}
 	}
