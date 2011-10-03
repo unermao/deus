@@ -40,14 +40,23 @@ public class DeathEvent extends Event {
 	@Override
 	public void run() throws RunException {
 		if (nodeToKill == null) {
-			if (Engine.getDefault().getNodes().size() > 0)
+			if (Engine.getDefault().getNodes().size() > 0) {
+				int nodeIndex = Engine.getDefault().getSimulationRandom().nextInt(Engine.getDefault().getNodes().size());
+				Engine.getDefault().removeNode(Engine.getDefault().getNodes().get(nodeIndex));
+			}
+				/*
 				Engine.getDefault().getNodes().remove(
 						Engine.getDefault().getSimulationRandom().nextInt(
 								Engine.getDefault().getNodes().size()));
+								*/
 		} else {
+			//System.out.println("death: nodeToKill = " + nodeToKill.getKey());
+			Engine.getDefault().removeNode(nodeToKill);
+			/*
 			int n = Engine.getDefault().getNodes().indexOf(nodeToKill);
 			if (n > -1)
 				Engine.getDefault().getNodes().remove(n);
+				*/
 		}
 
 	}
