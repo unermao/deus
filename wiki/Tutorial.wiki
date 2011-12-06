@@ -5,7 +5,7 @@
 
 In the home page of the project, you may find the release of DEUS v0.4.x (deus-0.4.x.zip).
 
-To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column (PackageExplorer or Navigator), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.4.x folder; the project will be automatically called "deus".
+To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.4.x folder; the project will be automatically called "deus".
 
 
 Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.4.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
