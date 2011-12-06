@@ -236,7 +236,7 @@ A different case is that in which you associate the process that manages {{{Disc
 
 But since "false" is the default value for "hasSameAssociatedNode", you can also avoid to declare the parameter.
 
-*NOTE: starting from release 0.4.9, {{{Event}}} has all the methods of {{{NodeEvent}}}, which is now useless (it will be removed in next 0.5.0 release).* 
+*NOTE: starting from release 0.4.9, {{{Event}}} exposes all the methods of {{{NodeEvent}}}, which is now useless (it will be removed in next 0.5.0 release).* 
 
 
 = Seeds =
