@@ -62,6 +62,8 @@ public final class Engine extends SimulationObject {
 
 	private int keySpaceSize;
 
+	private RandomComparator rc = null;
+	
 	private PriorityQueue<Event> eventsList = null;
 
 	private Random simulationRandom = null;
@@ -108,17 +110,18 @@ public final class Engine extends SimulationObject {
 			this.keySpaceSize = Integer.MAX_VALUE;
 		else
 			this.keySpaceSize = keySpaceSize;
-		simulationRandom = new Random(seed);
-		keyRandom = new Random(seed);
+		this.simulationRandom = new Random(seed);
+		this.keyRandom = new Random(seed);
 		this.configNodes = configNodes;
 		this.configEvents = configEvents;
 		this.configProcesses = configProcesses;
 		this.referencedProcesses = referencedProcesses;
-		eventsList = new PriorityQueue<Event>();
-		nodes = new ArrayList<Node>();
-		nodeHashMap = new HashMap<String, ArrayList<Integer>>();
-		generatedKeys = new ArrayList<Integer>();
-		generatedResourcesKeys = new ArrayList<Integer>();
+		this.rc = new RandomComparator(this.simulationRandom);
+		this.eventsList = new PriorityQueue<Event>(1,rc);
+		this.nodes = new ArrayList<Node>();
+		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();
+		this.generatedKeys = new ArrayList<Integer>();
+		this.generatedResourcesKeys = new ArrayList<Integer>();
 		parseReferencedProcesses();
 	}
 
@@ -219,33 +222,45 @@ public final class Engine extends SimulationObject {
 	 *             if the event fails during its execution.
 	 */
 	public void run() throws SimulationException {
-		//getLogger().info("Starting simulation with maxVirtualTime = " + maxVirtualTime);
-
 		while (virtualTime <= maxVirtualTime && eventsList.size() > 0) {
-			//getLogger().fine("virtualTime=" + virtualTime + " numOfQueueEvents="+ eventsList.size());
 			Event e = eventsList.remove();
-			//getLogger().fine("extracted event: " + e.getId());
 			virtualTime = e.getTriggeringTime();
 			if (virtualTime <= maxVirtualTime) {
 				try {
-					//getLogger().fine("Running event " + e);
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot()) {
 						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
 					}
 				} catch (RunException ex) {
-					//getLogger().severe(ex.getMessage());
 					throw new SimulationException(ex.getMessage());
 				}
 			}
 		}
-
-		/*
-		getLogger().info("Simulation ended at virtualTime = " + virtualTime
-						+ " (maxVirtualTime=" + maxVirtualTime
-						+ ") with numOfQueueEvents=" + eventsList.size());
-		*/
+	}
+	
+	/**
+	 * Runs one simulation step.
+	 * 
+	 * @throws SimulationException
+	 *             if the event fails during its execution.
+	 */
+	public void runStep() throws SimulationException {
+		if (virtualTime <= maxVirtualTime && eventsList.size() > 0) {
+			Event e = eventsList.remove();
+			virtualTime = e.getTriggeringTime();
+			if (virtualTime <= maxVirtualTime) {
+				try {
+					e.run();
+					e.scheduleReferencedEvents();
+					if (e.getParentProcess() != null && !e.isOneShot()) {
+						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
+					}
+				} catch (RunException ex) {
+					throw new SimulationException(ex.getMessage());
+				}
+			}
+		}
 	}
 
 	/**

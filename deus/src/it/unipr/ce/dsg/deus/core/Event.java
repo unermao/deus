@@ -34,8 +34,7 @@ import java.util.Random;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  * 
  */
-public abstract class Event extends SimulationObject implements
-		Comparable<Event>, Cloneable {
+public abstract class Event extends SimulationObject implements Cloneable {
 	protected String id = null;
 	protected int eventSeed = 0;
 	protected Random eventRandom = null;
@@ -204,6 +203,7 @@ public abstract class Event extends SimulationObject implements
 	 * Standard implementation of the compareTo method that uses the triggering
 	 * time as sorting criteria.
 	 */
+	/*
 	public int compareTo(Event e) {
 		int result = 0;
 		if (this.triggeringTime < e.triggeringTime)
@@ -214,7 +214,8 @@ public abstract class Event extends SimulationObject implements
 			result = 1;
 		return result;
 	}
-
+	*/
+   
 	/**
 	 * Set the parent process of the event.
 	 * 
