@@ -141,7 +141,14 @@ public final class Engine extends SimulationObject {
 			}
 		}
 	}
-
+	
+	/**
+	 * Return the list of events
+	 */
+	public PriorityQueue<Event> getEventsList() {
+		return eventsList;
+	}
+	
 	/**
 	 * Insert an event into the simulation events queue. This method must be
 	 * called all the time an event should be inserted into a queue, since it
@@ -281,6 +288,10 @@ public final class Engine extends SimulationObject {
 		return simulationRandom;
 	}
 
+	public void setSimulationRandom() {
+		
+	}
+	
 	/**
 	 * Generate a random key, in the given key space
 	 * 
