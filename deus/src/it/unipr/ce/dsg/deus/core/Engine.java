@@ -55,6 +55,8 @@ public final class Engine extends SimulationObject {
 	private ArrayList<Process> configProcesses = null;
 
 	private ArrayList<Process> referencedProcesses = null;
+	
+	private int seed = 0;
 
 	private float maxVirtualTime = 0;
 
@@ -110,6 +112,7 @@ public final class Engine extends SimulationObject {
 			this.keySpaceSize = Integer.MAX_VALUE;
 		else
 			this.keySpaceSize = keySpaceSize;
+		this.seed = seed;
 		this.simulationRandom = new Random(seed);
 		this.keyRandom = new Random(seed);
 		this.configNodes = configNodes;
@@ -125,6 +128,18 @@ public final class Engine extends SimulationObject {
 		parseReferencedProcesses();
 	}
 
+	public void setNewSeed(int seed) {
+		this.seed = seed;
+		this.simulationRandom = new Random(seed);
+		this.rc = new RandomComparator(this.simulationRandom);
+		this.eventsList = new PriorityQueue<Event>(1, rc);
+		this.keyRandom = new Random(seed);
+	}
+	
+	public int getCurrentSeed() {
+		return this.seed;
+	}
+	
 	/**
 	 * Insert into the events queue all the events in each process associated to
 	 * the simulation's main cycle.
@@ -286,10 +301,6 @@ public final class Engine extends SimulationObject {
 	 */
 	public Random getSimulationRandom() {
 		return simulationRandom;
-	}
-
-	public void setSimulationRandom() {
-		
 	}
 	
 	/**
