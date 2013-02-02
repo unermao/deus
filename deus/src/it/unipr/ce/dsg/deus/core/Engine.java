@@ -134,6 +134,7 @@ public final class Engine extends SimulationObject {
 		this.rc = new RandomComparator(this.simulationRandom);
 		this.eventsList = new PriorityQueue<Event>(1, rc);
 		this.keyRandom = new Random(seed);
+		parseReferencedProcesses();
 	}
 	
 	public int getCurrentSeed() {
