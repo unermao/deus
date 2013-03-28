@@ -19,14 +19,16 @@ public class Deus {
 	
 	public static String simulationLogName = null;
 	
+	private AutomatorParser automator;
+	
 	public Deus(String fileName, String logFileName) {
 		super();
 		simulationLogName = logFileName;
-		AutomatorParser automator;
+		//AutomatorParser automator;
 		try {
-			automator = new AutomatorParser(fileName);
+			this.automator = new AutomatorParser(fileName);
 			try {
-				automator.getEngine().run();
+				this.automator.getEngine().run();
 			} catch (SimulationException e) {
 				e.printStackTrace();
 			}
@@ -61,6 +63,7 @@ public class Deus {
 		try {
 			AutomatorParser automator = new AutomatorParser(args[0]);
 			automator.getEngine().run();
+			
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -84,4 +87,9 @@ public class Deus {
 		}
 
 	}
+
+	public AutomatorParser getAutomator() {
+		return automator;
+	}
+	
 }
