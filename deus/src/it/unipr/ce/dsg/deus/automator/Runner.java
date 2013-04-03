@@ -10,9 +10,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.swing.JProgressBar;
 import javax.xml.bind.JAXBContext;
@@ -165,6 +167,8 @@ public class Runner implements Runnable {
 			System.out.println("Exception caught =" + e.getMessage());
 		}
 
+		ArrayList<String> averageFileList = new ArrayList<String>();
+		
 		// Run the n simulations with respective n files
 		for (int j = 0; j < simulations.size(); j++) {
 			for (int k = 0; k < simulations.get(j).getSimulationNumber(); k++) {
@@ -229,6 +233,8 @@ public class Runner implements Runnable {
 					resultAutomator.resultsAverage(averageFileName);
 					resultAutomator.resultsVar(varFileName, sqrtvarFileName,
 							averageFileName);
+					
+					averageFileList.add(averageFileName);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -236,17 +242,39 @@ public class Runner implements Runnable {
 				logFile.clear();
 
 				// Write the gnuplot files
-				for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
-					writeGnuPlot(averageFileName, simulations.get(j)
+				/*for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
+					
+					
+					System.out.println("GNUPLOT section...");
+					
+					averageFileList.add(averageFileName);
+					/**writeGnuPlot(averageFileName, simulations.get(j)
 							.getSimulationName()
 							+ "-"
 							+ simulations.get(j).getGnuplot().get(z)
 									.getFileName() + "-" + k, simulations
 							.get(j).getGnuplot().get(z).getAxisX(), simulations
 							.get(j).getGnuplot().get(z).getAxisY());
-				}
+					**/
+					/*gnuPlotXY(averageFileName, 
+							simulations.get(j).getSimulationName() + "-" + simulations.get(j).getGnuplot().get(z).getFileName() + "-" + k,
+							simulations.get(j).getGnuplot().get(z).getAxisX(),
+							simulations.get(j).getGnuplot().get(z).getAxisY());
+							*/
+				//}*/
 			}
+			// -> @author Stefano Sebastio: new gnuplot generator 
+			for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
+				gnuPlotXY(averageFileList, 
+						simulations.get(j).getSimulationName() + "-" + simulations.get(j).getGnuplot().get(z).getFileName() + "-" + z,
+						simulations.get(j).getGnuplot().get(z).getAxisX(),
+						simulations.get(j).getGnuplot().get(z).getAxisY(),
+						simulations.get(j));
+			}
+			//System.out.println("AverageFileList size " + averageFileList.size());
 		}
+		//test function
+		//this.printSimulations(simulations);
 
 		if (files.size() == 0) {
 			new Deus(originalXml, "deus_log");
@@ -256,6 +284,378 @@ public class Runner implements Runnable {
 		for (int i = 0; i < files.size(); i++)
 			new File(files.get(i)).delete();
 	}
+
+	
+	/**
+	 * 
+	 * Generate the supporting files for gnuPlot script
+	 * 
+	 * @author Stefano Sebastio 
+	 * 
+	 * @param sourceFile
+	 * @param destinationFile
+	 * @param xLabel
+	 * @param yLabel
+	 * @param sim
+	 */
+	private void gnuPlotXY(ArrayList<String> sourceFiles, String destinationFile, String xLabel, String yLabel, MyObjectSimulation sim){
+		//test function
+		//printSimulations(simulations);
+		//ArrayList<Double> xValues = new ArrayList<Double>();
+		//ArrayList<Double> yValues = new ArrayList<Double>();
+		
+		// Add HostName in Destination File
+		String computerName = "";
+		try {
+			computerName = InetAddress.getLocalHost().getHostName();
+			// System.out.println(computerName);
+		} catch (Exception e) {
+			System.out.println("Exception caught =" + e.getMessage());
+		}
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream("./results/gnuplot/"
+					+ computerName + "_" + destinationFile);
+			
+			PrintStream Output = new PrintStream(fos);
+		
+		
+			for (int i=0; i< sourceFiles.size(); i++){
+				String sourceFile = sourceFiles.get(i);
+				//System.out.println("reading from " + sourceFile);
+				//read the file with average values
+				File file = new File(sourceFile);
+				FileInputStream fileInput;
+				try {
+					
+					double x = 0;
+					double y =0;
+					boolean xFound = false;
+					boolean yFound = false;
+					
+					fileInput = new FileInputStream(file);
+					Properties properties = new Properties();
+					try {
+						properties.load(fileInput);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					try {
+						fileInput.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+					//System.out.println("try to find " + xLabel + " and " + yLabel);
+					//read the average value for the x and y value (if both are on the average file)
+					if (properties.containsKey(xLabel)) {
+						x = Double.parseDouble((String) properties.get(xLabel));
+						//System.out.println("X found " + x);
+						xFound = true;
+					}
+					if (properties.containsKey(yLabel)) {
+						y = Double.parseDouble((String) properties.get(yLabel));
+						//System.out.println("Y found " + y);
+						yFound = true;
+					}
+					
+					
+					//if both (x and y) don't belong to log variable set the gnuplot construction is prevented
+					if (!xFound && !yFound){
+						System.err.println("GnuPlot supporting files not created. At least one of the coordinate must be a log variable");
+						Output.close();
+						return;
+					}
+					
+					if (!xFound){
+						//System.out.println("try to use extended research");
+						Double x_Resp = findElsewhere(sim, xLabel, i);
+						if (x_Resp != null) {
+							x = x_Resp;
+							xFound = true;
+							//System.out.println("then x is " + x);
+						}
+					}
+					if (!yFound){
+						//System.out.println("try to use extended research");
+						Double y_Resp = findElsewhere(sim, yLabel, i);
+						if (y_Resp != null){
+							y = y_Resp;
+							yFound = true;
+							//System.out.println("then y is " + y);
+						}
+					}
+
+					if (xFound && yFound) {
+						Output.println(x + " " + y);
+					} else {
+						System.err.println("Unable to create the GnuPlot supporting files");
+						System.err.println("Impossible to find the gnuplot parameter");
+						Output.close();
+					}
+						
+					
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+	
+			}
+			
+			Output.close();
+			
+			//Write the script
+			String script = "./results/gnuplot/"+ computerName + "_" + destinationFile;
+			this.writeGnuPlotScript(script, xLabel, yLabel, destinationFile);
+			
+			
+			
+		} catch (FileNotFoundException e1) {
+				
+				e1.printStackTrace();
+			}
+	}
+	
+	/**
+	 * Write a basic gnuplot script for the required parameter
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @param dataFile
+	 * @param x
+	 * @param y
+	 * @param output
+	 */
+	private void writeGnuPlotScript(String dataFile, String x, String y, String output){
+		
+		String gnuplot = new String(gnuplotScriptTemplate);
+		
+		gnuplot = gnuplot.replace(OUTPUT_GNUPLOT, output +".eps");
+		gnuplot = gnuplot.replace(XLABEL_GNUPLOT, x);
+		gnuplot = gnuplot.replace(YLABEL_GNUPLOT, y);
+		gnuplot = gnuplot.replace(SOURCE_GNUPLOT, dataFile);
+		gnuplot = gnuplot.replace(LINELABEL_GNUPLOT, output);
+		
+		FileOutputStream fos;
+			
+		try {
+			fos = new FileOutputStream(dataFile+".plt");
+			PrintStream Output = new PrintStream(fos);
+			Output.println(gnuplot);
+			Output.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*//Test functions for explore the gui paramters
+	public void printSimulations(ArrayList<MyObjectSimulation> simulations){
+		for (int i = 0;  i< simulations.size(); i++){
+			System.out.println("Sim " + i);
+			MyObjectSimulation sim = simulations.get(i);
+			ArrayList<ArrayList<MyObjectNode>> node = sim.getNode();
+			this.printNodes(node);
+		}
+	}
+	
+	public void printNodes(ArrayList<ArrayList<MyObjectNode>> node){
+		for(int i=0; i< node.size(); i++){
+			ArrayList<MyObjectNode> innerNode = node.get(i);
+			for (int j=0; j< innerNode.size(); j++){
+				MyObjectNode objNode = innerNode.get(j);
+				System.out.println(objNode.getObjectName() + " " + objNode.getObjectParam());
+				for (int k =0; k< objNode.getObjectParam().size(); k++){//list the different parameters of the same node
+					MyObjectParam params = objNode.getObjectParam().get(k);
+					System.out.print(j + " is j"+ k + " is k " + params.getObjectName() + " " + params.getObjectParam() + " " + params.getObjectValue());
+				}
+				System.out.println("...");
+			}
+		}
+	}
+	*/
+	
+	/**
+	 * Starting the search for gnuplot parameter not presents on the log file
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @param sim
+	 * @param label
+	 * @param elemPos
+	 * @return
+	 */
+	private Double findElsewhere(MyObjectSimulation sim, String label, int elemPos){
+		Double foundOnNode = findOnNode(sim.getNode(), label, elemPos);
+		//System.out.println("Looking for... " + label);
+		if (foundOnNode != null){
+			return foundOnNode;
+		} else {
+			//System.out.println("Nothing found on node");
+			//search on other elements -> Node Resources
+			Double foundOnResource = findOnNodeResource(sim.getNode(), label, elemPos);
+			if (foundOnResource != null){
+				return foundOnResource;
+			} else {
+				//System.out.println("Nothing found on node resource");
+				//search on other  elements -> Process
+				Double foundOnProcess = findOnProcess(sim.getProcess(), label, elemPos);
+				if (foundOnProcess != null){
+					return foundOnProcess;
+				} /*else {
+					System.out.println("Nothing found elsewhere");
+				}*/
+			}
+			
+		}
+		//System.err.println("Impossible to find the gnuplot parameter");
+		return null;
+	}
+	
+	/**
+	 * Search for the requested gnuplot value on parameterized node values 
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @param node
+	 * @param label
+	 * @param pos
+	 * @return
+	 */
+	private Double findOnNode(ArrayList<ArrayList<MyObjectNode>> node, String label, int pos){
+		//ArrayList<Double> values = new ArrayList<Double>();
+		Double value = null;
+		for(int i=0; i< node.size(); i++){
+			ArrayList<MyObjectNode> innerNode = node.get(i);
+			//for (int j=0; j< innerNode.size(); j++){
+				MyObjectNode objNode = innerNode.get(pos);
+				if (objNode.getObjectParam().size() != 0) {
+					for (int k =0; k< objNode.getObjectParam().size(); k++){ 
+						MyObjectParam params = objNode.getObjectParam().get(k);
+						//MyObjectParam params = objNode.getObjectParam().get(0);
+						if(params.getObjectName().contains(label)){
+							//values.add(params.getObjectValue());
+							//System.out.println("Found the label " + params.getObjectName());
+							value = new Double(params.getObjectValue());
+							return value;
+						}
+					}
+				}
+			//}
+		}
+		return null;
+	}
+	
+	/**
+	 * Search for the requested gnuplot value on parameterized node resource values 
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @param node
+	 * @param label
+	 * @param pos
+	 * @return
+	 */
+	private Double findOnNodeResource(ArrayList<ArrayList<MyObjectNode>> node, String label, int pos){
+		Double value = null;
+		for(int i=0; i< node.size(); i++){
+			ArrayList<MyObjectNode> innerNode = node.get(i);
+			//for (int j=0; j< innerNode.size(); j++){
+				MyObjectNode objNode = innerNode.get(pos);
+				if (objNode.getObjectResourceParam().size() != 0) {
+					for (int k =0; k< objNode.getObjectParam().size(); k++){	
+						MyObjectResourceParam params = objNode.getObjectResourceParam().get(k);
+						if(params.getObjectHandlerName().contains(label)){
+							value = new Double(params.getObjectValue());
+							return value;
+						}
+					}
+				}
+			//}
+		}
+		return null;
+	}
+	
+	/**
+	 * Search for the requested gnuplot value on parameterized process values 
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @param process
+	 * @param label
+	 * @param pos
+	 * @return
+	 */
+	private Double findOnProcess(ArrayList<ArrayList<MyObjectProcess>> process, String label, int pos){
+		Double value = null;
+		for(int i=0; i< process.size(); i++){
+			ArrayList<MyObjectProcess> innerProcess = process.get(i);
+			//for (int j=0; j< innerProcess.size(); j++){
+				MyObjectProcess objProcess = innerProcess.get(pos);
+				if (objProcess.getObjectParam().size() != 0) {
+					for (int k =0; k< objProcess.getObjectParam().size(); k++){	
+						MyObjectParam params = objProcess.getObjectParam().get(k);
+						if(params.getObjectName().contains(label)){
+							value = new Double(params.getObjectValue());
+							return value;
+						}
+					}
+				}
+			//}
+		}
+		return null;	
+	}
+	
+	/**
+	 * Check if the gnuPlot configuration form DEUS GUI is admissible.
+	 * To be acceptable at least one of the two parameters must be a log variable.  
+	 * 
+	 * @author Stefano Sebastio
+	 * 
+	 * @return
+	 */
+	public boolean checkGnuPlotIncompatibility(){
+		try {
+			simulations = readXML(automatorXml);
+		} catch (DeusAutomatorException e) {
+			e.printStackTrace();
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (int j = 0; j < simulations.size(); j++) {
+			for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
+				String xLabel = simulations.get(j).getGnuplot().get(z).getAxisX();
+				String yLabel = simulations.get(j).getGnuplot().get(z).getAxisY();
+				
+				
+				Double xFindResult = findElsewhere(simulations.get(j), xLabel, j);
+				Double yFindResult = findElsewhere(simulations.get(j), yLabel, j);
+				
+				if ( (xFindResult != null) && (yFindResult != null) )
+					return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Template for the gnuplot script
+	 */
+	private static final String gnuplotScriptTemplate = "set term postscript eps enhanced color\nset output \"OUTPUT.EPS\"\n"+
+									"set xlabel \"XLABEL\"\nset ylabel \"YLABEL\"\n" +
+									"set xtics border in scale 1,0.5 mirror norotate offset character 0, 0, 0\nset xtics autofreq  norangelimit\n"+
+									"set ytics border in scale 1,0.5 mirror norotate offset character 0, 0, 0\nset ytics autofreq  norangelimit\n" +
+									"plot 'SOURCE.TXT' title \"LINELABEL\" with linespoints";
+	private static final String OUTPUT_GNUPLOT = "OUTPUT.EPS";
+	private static final String XLABEL_GNUPLOT = "XLABEL";
+	private static final String YLABEL_GNUPLOT = "YLABEL";
+	private static final String SOURCE_GNUPLOT = "SOURCE.TXT";
+	private static final String LINELABEL_GNUPLOT = "LINELABEL";
+	
+	
 
 	/**
 	 * Method for writing gnuplot files

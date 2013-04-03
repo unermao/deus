@@ -15,6 +15,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -485,6 +486,16 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 
 		// Run saved file
 		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
+		
+		//check for gnuplot incompatibility
+		boolean gnuPlotCheck = runner.checkGnuPlotIncompatibility();
+		if (!gnuPlotCheck){
+			System.err.println("GnuPlot config error");
+			JOptionPane.showMessageDialog(null, "DEUS-GnuPlot configuration error.\nAt least one among X and Y must be a valid log variable.", "DEUS-GnuPlot configuration error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		
 		runner.setSimulationProgressBar(simulationProgressBar);
 
 		Thread automatorRunner = new Thread(runner, "Automator Thread Runner");
