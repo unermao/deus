@@ -1,14 +1,14 @@
-#summary This is a brief tutorial on DEUS (v0.4.x).
+#summary This is a brief tutorial on DEUS (v0.5.x).
 
 
-= DEUS v0.4.x =
+= DEUS v0.5.x =
 
-In the home page of the project, you may find the release of DEUS v0.4.x (deus-0.4.x.zip).
+In the home page of the project, you may find the release of DEUS v0.5.x (deus-0.5.x.zip).
 
-To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.4.x folder; the project will be automatically called "deus".
+To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.5.x folder; the project will be automatically called "deus".
 
 
-Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.4.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
+Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.5.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
 
 
 = DEUS API =
@@ -125,6 +125,8 @@ In the XML file, you may define processes which regulate the timeliness of event
 </aut:process>
 }}}
 
+In DEUS v.0.5.0 we have added three new processes, which allow to schedule events with inter-arrival time having respectively Weibull, Shifted Pareto and Multimodal distribution.
+
 Each process may refer to one or more node type, and to one or more events. Important note: the node associated to an event (if the event is a {{{NodeEvent}}}, thus having the associatedEvent variable) must be decided by the event itself! If a process referes to N node types, the events scheduled according to that process can be associated to one of the node types, according to a specific behavior implemented in the event's code. See for example {{{BirthEvent.java}}} - such event selects (with uniformly random probability) one of the node types. 
 
 A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g. "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
@@ -140,9 +142,13 @@ Finally, you have to declare which processes to run:
 </aut:engine>
 }}}
 
-Note 1: The engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
+NOTE 1: 
 
-Note 2: If you define in the XML an event and the associated process, you can obtain in the Java code a reference to the process, given a reference to the event. Look at the following example:
+The engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
+
+NOTE 2: 
+
+If you define in the XML an event and the associated process, you can obtain in the Java code a reference to the process, given a reference to the event. Look at the following example:
 
 {{{
         PurchaseEvent pevModel = null;
@@ -215,6 +221,12 @@ for which C always comes after B, which always come after A.
 
 Remember to implement all necessary scheduler listeners!!!
 
+NOTE: 
+
+Starting from DEUS v.0.5.0, events with the same timestamp are randomly ordered into the event queue (in previous versions, they were ordered according to the time of creation).
+
+Moreover, from DEUS v.0.5.0, the {{{Engine}}} class has the {{{runStep()}}} method which advances the simulation by one event. The event queue is now returned by a method of the {{{Engine}}} class.
+
 
 = {{{Event}}} and {{{NodeEvent}}} =
 
@@ -236,7 +248,7 @@ A different case is that in which you associate the process that manages {{{Disc
 
 But since "false" is the default value for "hasSameAssociatedNode", you can also avoid to declare the parameter.
 
-*NOTE: starting from release 0.4.9, {{{Event}}} exposes all the methods of {{{NodeEvent}}}, which is now useless (it will be removed in next 0.5.0 release).* 
+*NOTE: starting from release 0.4.9, {{{Event}}} exposes all the methods of {{{NodeEvent}}}, which is now useless (it has been removed in the 0.5.0 release).* 
 
 
 = Seeds =
@@ -329,6 +341,11 @@ then, if you want to log the value of a variable called "var", use:
 fileValue.add(new LoggerObject("var", value));
 a.write(Engine.getDefault().getVirtualTime(), fileValue);
 }}}
+
+
+= Utility Classes =
+
+In the {{{it.unipr.ce.dsg.deus.util}}} package, starting from DEUS v.0.5.0, there is a class for computing confidence intervals about the variables which have been logged into the files which are stored in the temp/ folder.
 
 
 = Running simulations =
