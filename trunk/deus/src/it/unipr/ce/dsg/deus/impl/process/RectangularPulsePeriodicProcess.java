@@ -90,12 +90,22 @@ public class RectangularPulsePeriodicProcess extends Process {
 	}
 	
 	public float getNextTriggeringTime(Event event, float virtualTime) {
+		
+		if ((virtualTime < startVtThreshold) && ((startVtThreshold + period) < stopVtThreshold))
+			return startVtThreshold + period;
+		else if ((virtualTime >= startVtThreshold) && ((virtualTime + period) < stopVtThreshold))
+			return virtualTime + period;
+		else
+			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
+		
+		/*
 		if (virtualTime < startVtThreshold)
 			return virtualTime + startVtThreshold;
 		else if ((virtualTime >= startVtThreshold) && (virtualTime < stopVtThreshold))
 			return virtualTime + period;
 		else
 			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
+		*/
 	}
 
 }
