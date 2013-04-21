@@ -90,6 +90,16 @@ public class RectangularPulsePoissonProcess extends Process {
 	}
 	
 	public float getNextTriggeringTime(Event event, float virtualTime) {
+		
+		float delta = (float) Distributions.exp(event.getEventRandom(), (float) 1 / meanArrival);
+		if ((virtualTime < startVtThreshold) && ((startVtThreshold + delta) < stopVtThreshold))
+			return startVtThreshold + delta;
+		else if ((virtualTime >= startVtThreshold) && ((virtualTime + delta) < stopVtThreshold))
+			return virtualTime + delta;
+		else
+			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
+		
+		/*
 		if (virtualTime < startVtThreshold)
 			return virtualTime + startVtThreshold;
 		else if ((virtualTime >= startVtThreshold) && (virtualTime < stopVtThreshold))
@@ -97,6 +107,7 @@ public class RectangularPulsePoissonProcess extends Process {
 			return virtualTime + (float) Distributions.exp(event.getEventRandom(), (float) 1 / meanArrival);
 		else
 			return virtualTime + Engine.getDefault().getMaxVirtualTime(); // thus the event will not be executed
+		*/
 	}
 	
 	/*
