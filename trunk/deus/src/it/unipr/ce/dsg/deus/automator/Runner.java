@@ -61,6 +61,7 @@ public class Runner implements Runnable {
 	private ArrayList<String> files = null;
 	private int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
+	private Deus deus = null;
 
 	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
@@ -172,14 +173,10 @@ public class Runner implements Runnable {
 		// Run the n simulations with respective n files
 		for (int j = 0; j < simulations.size(); j++) {
 			for (int k = 0; k < simulations.get(j).getSimulationNumber(); k++) {
-				for (int i = 0; i < new Integer(simulations.get(j)
-						.getSimulationNumberSeed()); i++) {
-					new Deus(files.get(numFile), simulations.get(j)
-							.getFileLog());
+				for (int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++) {
+					deus = new Deus(files.get(numFile), simulations.get(j).getFileLog());
 
 					File log = new File(simulations.get(j).getFileLog());
-
-					// System.out.println();
 
 					log.renameTo(new File("./temp/"
 							+ computerName
@@ -756,7 +753,7 @@ public class Runner implements Runnable {
 	 * Method that computes the paramaters of the simulations
 	 * 
 	 * @param initialValue
-	 *            , initila value
+	 *            , initial value
 	 * @param finalValue
 	 *            , final value
 	 * @param stepValue
