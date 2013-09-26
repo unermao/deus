@@ -135,6 +135,10 @@ public final class Engine extends SimulationObject {
 		this.eventsList = new PriorityQueue<Event>(1, rc);
 		this.keyRandom = new Random(seed);
 		this.virtualTime = 0;
+		this.nodes = new ArrayList<Node>();
+		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();
+		this.generatedKeys = new ArrayList<Integer>();
+		this.generatedResourcesKeys = new ArrayList<Integer>();
 		parseReferencedProcesses();
 	}
 	
