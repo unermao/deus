@@ -128,7 +128,7 @@ public final class Engine extends SimulationObject {
 		parseReferencedProcesses();
 	}
 
-	public void setNewSeed(int seed) {
+	public void startNewSimulator(int seed) {
 		this.seed = seed;
 		this.simulationRandom = new Random(seed);
 		this.rc = new RandomComparator(this.simulationRandom);
