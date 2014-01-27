@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JProgressBar;
@@ -35,6 +36,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -262,7 +266,13 @@ public class Runner implements Runnable {
 			}
 			// -> @author Stefano Sebastio: new gnuplot generator 
 			for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
-				gnuPlotXY(averageFileList, 
+			/*	gnuPlotXY(averageFileList, 
+						simulations.get(j).getSimulationName() + "-" + simulations.get(j).getGnuplot().get(z).getFileName() + "-" + z,
+						simulations.get(j).getGnuplot().get(z).getAxisX(),
+						simulations.get(j).getGnuplot().get(z).getAxisY(),
+						simulations.get(j));
+				*/
+				gnuPlotArray(averageFileList, 
 						simulations.get(j).getSimulationName() + "-" + simulations.get(j).getGnuplot().get(z).getFileName() + "-" + z,
 						simulations.get(j).getGnuplot().get(z).getAxisX(),
 						simulations.get(j).getGnuplot().get(z).getAxisY(),
@@ -295,12 +305,13 @@ public class Runner implements Runnable {
 	 * @param yLabel
 	 * @param sim
 	 */
+	@Deprecated
 	private void gnuPlotXY(ArrayList<String> sourceFiles, String destinationFile, String xLabel, String yLabel, MyObjectSimulation sim){
 		//test function
 		//printSimulations(simulations);
 		//ArrayList<Double> xValues = new ArrayList<Double>();
 		//ArrayList<Double> yValues = new ArrayList<Double>();
-		
+		//Configuration config = new PropertiesConfiguration("usergui.properties");
 		// Add HostName in Destination File
 		String computerName = "";
 		try {
@@ -410,6 +421,183 @@ public class Runner implements Runnable {
 				
 				e1.printStackTrace();
 			}
+	}
+	
+	
+	private void gnuPlotArray(ArrayList<String> sourceFiles, String destinationFile, String xLabel, String yLabel, MyObjectSimulation sim){
+	
+		//Configuration config = new PropertiesConfiguration("usergui.properties");
+
+		String computerName = "";
+		try {
+			computerName = InetAddress.getLocalHost().getHostName();
+			// System.out.println(computerName);
+		} catch (Exception e) {
+			System.out.println("Exception caught =" + e.getMessage());
+		}
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream("./results/gnuplot/"
+					+ computerName + "_" + destinationFile);
+			
+			PrintStream Output = new PrintStream(fos);
+		
+			boolean xArrayFound = false;
+			boolean yArrayFound = false;
+	
+			ArrayList<Double> xArrayList = new ArrayList<Double>();
+			ArrayList<Double> yArrayList = new ArrayList<Double>();
+			
+			for (int i=0; i< sourceFiles.size(); i++){
+				String sourceFile = sourceFiles.get(i);
+				//System.out.println("reading from " + sourceFile);
+				//read the file with average values
+
+				Configuration config = null;
+				try {
+					config = new PropertiesConfiguration(sourceFile);
+
+					double x = 0;
+					double y = 0;
+					boolean xFound = false;
+					boolean yFound = false;
+					
+					//fileInput = new FileInputStream(file);
+					//Properties properties = new Properties();
+					List<Object> xList = config.getList(xLabel);
+					List<Object> yList = config.getList(yLabel);
+					
+					if ( !xFound && ( (xList != null) && ( xList.size() != 0)) ){
+						
+						if (xList.size() == 1){
+							x = Double.parseDouble((String)xList.get(0));
+						}
+						else {
+							//xArrayList = new ArrayList<Double>();
+							//yArrayList = new ArrayList<Double>();
+							for (Object o : xList){
+								xArrayList.add(Double.parseDouble( (String) o) );
+							}
+							xArrayFound = true;
+						}
+						
+						xFound = true;
+					}
+					
+					if ( !yFound && ( (yList != null) && ( yList.size() != 0)) ){
+						
+						if (yList.size() == 1){
+							y = Double.parseDouble((String)yList.get(0));
+						}
+						else {
+							//xArrayList = new ArrayList<Double>();
+							//yArrayList = new ArrayList<Double>();
+							for (Object o : yList){
+								yArrayList.add(Double.parseDouble( (String) o) );
+							}
+							yArrayFound = true;
+						}
+						
+						yFound = true;
+					}
+					
+					//if both (x and y) don't belong to log variable set the gnuplot construction is prevented
+					if (!xFound && !yFound){
+						System.err.println("GnuPlot supporting files not created. At least one of the coordinate must be a log variable");
+						Output.close();
+						return;
+					}
+					
+					if (!xFound){
+						
+						Double x_Resp = findElsewhere(sim, xLabel, i);
+						if (x_Resp != null){
+							
+							if (yArrayFound){
+								xArrayList.add(x_Resp);
+							}
+							else{
+								x = x_Resp;
+							}
+							xFound = true;
+						}
+						
+					}
+					if (!yFound){
+						
+						//System.out.println("try to use extended research");
+						Double y_Resp = findElsewhere(sim, yLabel, i);
+						if (y_Resp != null){
+							
+							if (xArrayFound){
+								yArrayList.add(y_Resp);
+							}
+							else {
+								y = y_Resp;
+							}
+							yFound = true;
+							//System.out.println("then y is " + y);
+						}
+					}
+
+					if (!xArrayFound && !yArrayFound){
+						if (xFound && yFound) {
+							Output.println(x + " " + y);
+						} else {
+							System.err.println("Unable to create the GnuPlot supporting files");
+							System.err.println("Impossible to find the gnuplot parameter");
+							Output.close();
+						}
+					}
+					if ( (xArrayFound || yArrayFound) && (xArrayList.size() == yArrayList.size()) ){
+						
+						for (int k = 0; k<xArrayList.size(); k++){
+							Output.println(xArrayList.get(k) + " " + yArrayList.get(k));
+						}
+						xArrayFound = true;
+						yArrayFound = true;
+						break;
+					}
+				} catch (ConfigurationException e1) {
+					e1.printStackTrace();
+				}
+	
+			}
+			
+			/*if (xArrayFound || yArrayFound){
+				
+				if (xArrayList.size() == yArrayList.size()){
+					for (int i = 0; i<xArrayList.size(); i++){
+						Output.println(xArrayList.get(i) + " " + yArrayList.get(i));
+					}
+				} else{
+					System.err.println("Unable to create the GnuPlot supporting files");
+					System.err.println("Impossible to find the gnuplot parameter, parameters length missmatch");
+					Output.close();
+				}
+					
+				
+			}*/
+			if ( (xArrayFound && !yArrayFound) || (yArrayFound && !xArrayFound) ){
+				System.err.println("Unable to create the GnuPlot supporting files");
+				System.err.println("Impossible to find the gnuplot parameter, parameters length mismatch");
+				Output.close();
+			}
+			
+			Output.close();
+			
+			//Write the script
+			String script = "./results/gnuplot/"+ computerName + "_" + destinationFile;
+			this.writeGnuPlotScript(script, xLabel, yLabel, destinationFile);
+			
+			
+			
+		} catch (FileNotFoundException e1) {
+				
+				e1.printStackTrace();
+			}
+		
+		
 	}
 	
 	/**
