@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.FileHandler;
@@ -78,9 +79,11 @@ public final class Engine extends SimulationObject {
 
 	private HashMap<String, ArrayList<Integer>> nodeHashMap = null;
 	
-	private ArrayList<Integer> generatedKeys = null;
+	//private ArrayList<Integer> generatedKeys = null;
+	private HashSet<Integer> generatedKeys = null;
 	
-	private ArrayList<Integer> generatedResourcesKeys = null;
+	//private ArrayList<Integer> generatedResourcesKeys = null;
+	private HashSet<Integer> generatedResourcesKeys = null;
 	
 	/**
 	 * Class constructor that initializes the simulation engine according to the
@@ -123,8 +126,10 @@ public final class Engine extends SimulationObject {
 		this.eventsList = new PriorityQueue<Event>(1,rc);
 		this.nodes = new ArrayList<Node>();
 		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();
-		this.generatedKeys = new ArrayList<Integer>();
-		this.generatedResourcesKeys = new ArrayList<Integer>();
+		//this.generatedKeys = new ArrayList<Integer>();
+		this.generatedKeys = new HashSet<Integer>();
+		//this.generatedResourcesKeys = new ArrayList<Integer>();
+		this.generatedResourcesKeys = new HashSet<Integer>();
 		parseReferencedProcesses();
 	}
 
@@ -137,8 +142,10 @@ public final class Engine extends SimulationObject {
 		this.virtualTime = 0;
 		this.nodes = new ArrayList<Node>();
 		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();
-		this.generatedKeys = new ArrayList<Integer>();
-		this.generatedResourcesKeys = new ArrayList<Integer>();
+		//this.generatedKeys = new ArrayList<Integer>();
+		this.generatedKeys = new HashSet<Integer>();
+		//this.generatedResourcesKeys = new ArrayList<Integer>();
+		this.generatedResourcesKeys = new HashSet<Integer>();
 		parseReferencedProcesses();
 	}
 	
@@ -258,7 +265,9 @@ public final class Engine extends SimulationObject {
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot()) {
-						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
+						float nextNextTriggeringTime = e.getParentProcess().getNextTriggeringTime(e, virtualTime);
+						if (nextNextTriggeringTime <= maxVirtualTime)
+							insertIntoEventsList(e.createInstance(nextNextTriggeringTime)); 
 					}
 				} catch (RunException ex) {
 					throw new SimulationException(ex.getMessage());
@@ -282,7 +291,9 @@ public final class Engine extends SimulationObject {
 					e.run();
 					e.scheduleReferencedEvents();
 					if (e.getParentProcess() != null && !e.isOneShot()) {
-						insertIntoEventsList(e.createInstance(e.getParentProcess().getNextTriggeringTime(e, virtualTime))); 
+						float nextNextTriggeringTime = e.getParentProcess().getNextTriggeringTime(e, virtualTime);
+						if (nextNextTriggeringTime <= maxVirtualTime)
+							insertIntoEventsList(e.createInstance(nextNextTriggeringTime)); 
 					}
 				} catch (RunException ex) {
 					throw new SimulationException(ex.getMessage());

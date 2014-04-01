@@ -193,9 +193,11 @@ public abstract class Event extends SimulationObject implements Cloneable {
 			if (event.getParentProcess() == null)
 				continue;
 			referencedEventTriggeringTime = event.getParentProcess().getNextTriggeringTime(event, triggeringTime);
-			Event eventToSchedule = event.createInstance(referencedEventTriggeringTime);
-			schedulerListener.newEventScheduled(this, eventToSchedule);
-			Engine.getDefault().insertIntoEventsList(eventToSchedule);
+			if (referencedEventTriggeringTime <= Engine.getDefault().getMaxVirtualTime()) {
+				Event eventToSchedule = event.createInstance(referencedEventTriggeringTime);
+				schedulerListener.newEventScheduled(this, eventToSchedule);
+				Engine.getDefault().insertIntoEventsList(eventToSchedule);
+			}
 		}
 	}
 
