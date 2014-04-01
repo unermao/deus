@@ -3,7 +3,7 @@ package it.unipr.ce.dsg.deus.p2p.event;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
-import it.unipr.ce.dsg.deus.core.NodeEvent;
+import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -21,7 +21,7 @@ import java.util.Properties;
  * @author Michele Amoretti (michele.amoretti@unipr.it)
  *
  */
-public class SingleConnectionEvent extends NodeEvent {
+public class SingleConnectionEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	
 	private boolean isBidirectional = false;

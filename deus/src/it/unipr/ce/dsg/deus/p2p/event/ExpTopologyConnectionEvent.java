@@ -3,7 +3,7 @@ package it.unipr.ce.dsg.deus.p2p.event;
 import it.unipr.ce.dsg.deus.core.Engine;
 import it.unipr.ce.dsg.deus.core.InvalidParamsException;
 import it.unipr.ce.dsg.deus.core.Node;
-import it.unipr.ce.dsg.deus.core.NodeEvent;
+import it.unipr.ce.dsg.deus.core.Event;
 import it.unipr.ce.dsg.deus.core.Process;
 import it.unipr.ce.dsg.deus.core.RunException;
 import it.unipr.ce.dsg.deus.p2p.node.Peer;
@@ -23,7 +23,7 @@ import java.util.Properties;
  *
  */
 
-public class ExpTopologyConnectionEvent extends NodeEvent {
+public class ExpTopologyConnectionEvent extends Event {
 	private static final String IS_BIDIRECTIONAL = "isBidirectional";
 	private static final String N0 = "n0";
 	private static final String M = "m";
