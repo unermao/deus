@@ -50,6 +50,8 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  * 
+ * @author Stefano Sebastio (stefano.sebastio@imtlucca.it)
+ * 
  */
 public class Marshalling {
 
@@ -160,6 +162,9 @@ public class Marshalling {
 
 				if (vert.getSelectKSS())
 					engineIst.setKeyspacesize(vert.getKeySS());
+				
+				if (vert.getSelectPrng())
+					engineIst.setPrng(vert.getPrng());
 
 				if (vert.getSelectLog()) {
 

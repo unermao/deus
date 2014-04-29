@@ -40,6 +40,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  * 
+ * @author Stefano Sebastio (stefano.sebastio@imtlucca.it)
  */
 public class Unmarshalling implements SetVisualizationView {
 
@@ -272,6 +273,7 @@ public class Unmarshalling implements SetVisualizationView {
 			engine = new DeusVertex("Engine");
 			engine.setMaxVT(engineXml.getMaxvt());
 			engine.setSeed(engineXml.getSeed());
+			engine.setPrng(engineXml.getPrng(), true);
 			if (engineXml.getKeyspacesize() != null)
 				engine.setKeySS(engineXml.getKeyspacesize(), true);
 

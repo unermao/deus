@@ -37,7 +37,8 @@ import java.util.Random;
 public abstract class Event extends SimulationObject implements Cloneable {
 	protected String id = null;
 	protected int eventSeed = 0;
-	protected Random eventRandom = null;
+	//protected Random eventRandom = null;
+	protected DeusRandom eventRandom = null;
 	protected Properties params = null;
 	protected boolean isOneShot = false;
 	protected ArrayList<Event> referencedEvents = null;
@@ -81,9 +82,16 @@ public abstract class Event extends SimulationObject implements Cloneable {
 		return eventSeed;
 	}
 
-	public void setEventSeed(int eventSeed) {
+//	public void setEventSeed(int eventSeed) {
+//		this.eventSeed = eventSeed;
+//		eventRandom = new Random(eventSeed);
+//	}
+	
+	public void setEventSeed(int eventSeed, String randomGenerator) {
 		this.eventSeed = eventSeed;
-		eventRandom = new Random(eventSeed);
+		//eventRandom = new Random(eventSeed);
+		//System.out.println("RandomGenerator for Event " + randomGenerator);
+		eventRandom = new DeusRandom(randomGenerator, eventSeed);
 	}
 
 	public Random getEventRandom() {

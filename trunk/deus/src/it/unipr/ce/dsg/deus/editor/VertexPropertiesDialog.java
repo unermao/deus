@@ -44,6 +44,8 @@ import java.util.Iterator;
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  * 
+ * @author Stefano Sebastio (stefano.sebastio@imtlucca.it)
+ * 
  */
 public class VertexPropertiesDialog extends JDialog implements ActionListener,
 		ItemListener, ListSelectionListener {
@@ -63,6 +65,7 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 	private JFormattedTextField textFieldMaxVt;
 	private JFormattedTextField textFieldSeed;
 	private JFormattedTextField textFieldKeySS;
+	private JFormattedTextField textFieldPrng;
 
 	private JFormattedTextField textFieldPathPrefix;
 	private JFormattedTextField textFieldParamName;
@@ -70,11 +73,13 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 
 	private JComboBox comboLevel;
 	private JComboBox comboOneShot;
+	private JComboBox comboPrng;
 
 	private JCheckBox checkBoxDisLevel;
 	private JCheckBox checkBoxOneShot;
 	private JCheckBox checkBoxSListener;
 	private JCheckBox checkBoxKeySS;
+	private JCheckBox checkBoxPrng;
 	private JCheckBox checkBoxLog;
 	private JCheckBox checkBoxParam;
 
@@ -94,6 +99,8 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 
 	private String choiceLevel[] = { "Select...", "OFF", "SEVERE", "WARNING",
 			"INFO", "CONFIG", "FINE", "FINER", "FINEST", "ALL" };
+	
+	private String choicePrng[] = {"std Java", "MersenneTwister", "ISAAC", "WELL1024a", "WELL19937a", "WELL19937c", "WELL44497a", "WELL44497b", "WELL512a"};
 
 	private JFormattedTextField textFieldResParamName;
 	private JFormattedTextField textFieldResParamValue;
@@ -121,7 +128,8 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 		// setSize(new Dimension(580,435));
 
 		if (this.vert.getElementType() == "Engine")
-			setSize(new Dimension(580, 315));
+			//setSize(new Dimension(580, 315));
+			setSize(new Dimension(580, 345));
 		else if (this.vert.getElementType() == "Process")
 			setSize(new Dimension(580, 410));
 		else if (this.vert.getElementType() == "Node")
@@ -326,12 +334,45 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 			checkBoxKeySS = new JCheckBox();
 			checkBoxKeySS.setSelected(vert.getSelectKSS());
 			checkBoxKeySS.addItemListener(this);
+			
+			
+			// Stefano to add PRNG
+			JLabel labelPrng = new JLabel("PRNG:");
+			//TODO: change in combobox
+//			textFieldPrng = new JFormattedTextField();
+//			textFieldPrng.setText(Integer.toString(vert.getKeySS())); //
+//			textFieldPrng.setEditable(vert.getSelectKSS()); //
+			
+			/**
+			 * 			comboLevel = new JComboBox(choiceLevel);
+			comboLevel.setEnabled(vert.getSelectLog());
+
+			comboLevel.setSelectedIndex(getIndexLevel(vert.getLogLevel()));
+			 * 
+			 */
+			comboPrng = new JComboBox(choicePrng);
+			comboPrng.setEnabled(vert.getSelectPrng());
+			//comboPrng.setEnabled(true);
+			comboPrng.setSelectedIndex(getIndexPrng(vert.getPrng()));
+
+			checkBoxPrng = new JCheckBox();
+			checkBoxPrng.setSelected(vert.getSelectPrng());
+			checkBoxPrng.addItemListener(this);
+			
+			
+			
 
 			optAttributePanel.add(labelKeySS);
 			optAttributePanel.add(textFieldKeySS);
 			optAttributePanel.add(checkBoxKeySS);
+			
+			optAttributePanel.add(labelPrng);
+			optAttributePanel.add(comboPrng);
+			optAttributePanel.add(checkBoxPrng);
+			
 
-			SpringForm.makeCompactGrid(optAttributePanel, 1, 3, 5, 5, 5, 8);
+			//SpringForm.makeCompactGrid(optAttributePanel, 1, 3, 5, 5, 5, 8);
+			SpringForm.makeCompactGrid(optAttributePanel, 2, 3, 5, 5, 5, 8);
 
 		} else {
 
@@ -710,11 +751,12 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 
 			} else {
 				// ********* Engine
-
+				//System.out.println("chnagedsomething and pressed ok");
 				vert.setMaxVT(Float.valueOf(this.textFieldMaxVt.getText())
 						.floatValue());
 				vert.setSeed(Integer.valueOf(this.textFieldSeed.getText())
 						.intValue());
+				//vert.setPrng(String.valueOf(this.comboPrng.getSelectedItem()), true);
 
 				// check select item
 				if (this.checkBoxKeySS.isSelected()
@@ -722,6 +764,12 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 					vert.setKeySS(Integer
 							.valueOf(this.textFieldKeySS.getText()).intValue(),
 							true);
+				}
+				
+				if (this.checkBoxPrng.isSelected() ) {
+						//&& this.comboPrng.getSelectedIndex() != 0) {
+					//System.out.println("prng box modified on OK");
+					vert.setPrng(String.valueOf(this.comboPrng.getSelectedItem()),true);
 				}
 
 			}
@@ -882,7 +930,7 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 	public void itemStateChanged(ItemEvent e) {
 
 		Object source = e.getItemSelectable();
-
+		//System.out.println("selection changed from " + source.toString() + " where checkBoxPrng is " + checkBoxPrng.toString());
 		// se il checkbox è spuntato vengono abilitati i campi
 		if (source == checkBoxSListener) {
 
@@ -895,6 +943,11 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 		} else if (source == checkBoxKeySS) {
 
 			textFieldKeySS.setEditable(true);
+
+		} else if (source == checkBoxPrng) {
+			
+			//System.out.println("state change itemStateChanged");
+			comboPrng.setEnabled(true);
 
 		} else if (source == checkBoxDisLevel) {
 
@@ -924,7 +977,7 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 		}
 
 		if (e.getStateChange() == ItemEvent.DESELECTED) {
-
+			//System.out.println("something disabled...");
 			if (e.getSource().equals(checkBoxSListener)) {
 
 				textFieldSchedList.setText(null);
@@ -952,7 +1005,19 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 				textFieldPathPrefix.setEditable(false);
 				comboLevel.setEnabled(false);
 				vert.setLogger(null, null, false);
-			} else if (e.getSource().equals(checkBoxParam)) {
+				
+				
+				
+			} else if (e.getSource().equals(checkBoxPrng)) {
+				
+				//System.out.println("disablingCheckBoxPrng");
+				comboPrng.setSelectedIndex(0);
+				comboPrng.setEnabled(false);
+				vert.setPrng(null, false);
+				
+				//System.out.println("comboPrng " + comboPrng.isEditable());
+			}
+			else if (e.getSource().equals(checkBoxParam)) {
 
 				vert.setParam(null, null, false);
 				textFieldParamName.setEditable(false);
@@ -1022,6 +1087,27 @@ public class VertexPropertiesDialog extends JDialog implements ActionListener,
 			for (int i = 0; i < choiceLevel.length; i++) {
 
 				if (choiceLevel[i].compareTo(word) == 0) {
+
+					break;
+				}
+				j++;
+			}
+
+		}
+
+		return j;
+	}
+	
+	private int getIndexPrng(String prng) {
+
+		int j = 0;
+
+		// ricerca dell'index in Prng
+		if (prng != null) {
+
+			for (int i = 0; i < choicePrng.length; i++) {
+
+				if (choicePrng[i].compareTo(prng) == 0) {
 
 					break;
 				}

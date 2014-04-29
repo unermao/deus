@@ -8,8 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Random;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -169,7 +167,8 @@ public class AutomatorParser {
 		}
 
 		// Parse all the events in order to initialize Event objects
-		Random simulationRandom = new Random(automator.getEngine().getSeed());
+		//Random simulationRandom = new Random(automator.getEngine().getSeed());
+		DeusRandom simulationRandom = new DeusRandom(automator.getEngine().getPrng(),automator.getEngine().getSeed());
 		for (Iterator<it.unipr.ce.dsg.deus.schema.Event> it = automator
 				.getEvent().iterator(); it.hasNext();) {
 			it.unipr.ce.dsg.deus.schema.Event event = it.next();
@@ -186,7 +185,8 @@ public class AutomatorParser {
 									Process.class }).newInstance(
 							new Object[] { event.getId(), params, null });
 			
-			configEvent.setEventSeed(simulationRandom.nextInt(1000000000));
+			//configEvent.setEventSeed(simulationRandom.nextInt(1000000000));
+			configEvent.setEventSeed(simulationRandom.nextInt(Integer.MAX_VALUE), automator.getEngine().getPrng());
 			
 			if (event.isOneShot() != null)
 				configEvent.setOneShot(event.isOneShot().booleanValue());
@@ -260,7 +260,7 @@ public class AutomatorParser {
 			}
 			processes.add(configProcess);
 
-			// TODO try to avoid scrolling the event list twice
+			// FIXME try to avoid scrolling the event list twice
 			for (Iterator<it.unipr.ce.dsg.deus.schema.Reference> it2 = process
 					.getEvents().getReference().iterator(); it2.hasNext();) {
 				Event e = getEventById(it2.next().getId());
@@ -281,10 +281,15 @@ public class AutomatorParser {
 			referencedProcesses.add(getProcessById(it.next().getId()));
 		}
 
+//		engine = new Engine(automator.getEngine().getMaxvt(), automator
+//				.getEngine().getSeed(),
+//				automator.getEngine().getKeyspacesize(), nodes, events,
+//				processes, referencedProcesses);
+		
 		engine = new Engine(automator.getEngine().getMaxvt(), automator
 				.getEngine().getSeed(),
 				automator.getEngine().getKeyspacesize(), nodes, events,
-				processes, referencedProcesses);
+				processes, referencedProcesses, automator.getEngine().getPrng());
 
 		if (automator.getEngine().getLogger() != null) {
 			engine.setLoggerLevel(automator.getEngine().getLogger().getLevel());

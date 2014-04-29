@@ -37,7 +37,7 @@ public class Distributions {
 		do {
 			k++;
 			p *= random.nextDouble();
-		} while (p >= L);
+		} while (p > L);
 		return k-1;
 	}
 	

@@ -69,9 +69,12 @@ public final class Engine extends SimulationObject {
 	
 	private PriorityQueue<Event> eventsList = null;
 
-	private Random simulationRandom = null;
+	//private Random simulationRandom = null;
+	private DeusRandom simulationRandom = null;
+	private String randomGenerator = null;
 
-	private Random keyRandom = null;
+	//private Random keyRandom = null;
+	private DeusRandom keyRandom = null;
 
 	private static Engine engine = null;
 
@@ -109,6 +112,34 @@ public final class Engine extends SimulationObject {
 	public Engine(float maxVirtualTime, int seed, Integer keySpaceSize, ArrayList<Node> configNodes,
 			ArrayList<Event> configEvents, ArrayList<Process> configProcesses,
 			ArrayList<Process> referencedProcesses) {
+//		engine = this;
+//		this.maxVirtualTime = maxVirtualTime;
+//		if(keySpaceSize == null)
+//			this.keySpaceSize = Integer.MAX_VALUE;
+//		else
+//			this.keySpaceSize = keySpaceSize;
+//		this.seed = seed;
+//		this.simulationRandom = new Random(seed);
+//		this.keyRandom = new Random(seed);
+//		this.configNodes = configNodes;
+//		this.configEvents = configEvents;
+//		this.configProcesses = configProcesses;
+//		this.referencedProcesses = referencedProcesses;
+//		this.rc = new RandomComparator(this.simulationRandom);
+//		this.eventsList = new PriorityQueue<Event>(1,rc);
+//		this.nodes = new ArrayList<Node>();
+//		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();
+//		//this.generatedKeys = new ArrayList<Integer>();
+//		this.generatedKeys = new HashSet<Integer>();
+//		//this.generatedResourcesKeys = new ArrayList<Integer>();
+//		this.generatedResourcesKeys = new HashSet<Integer>();
+//		parseReferencedProcesses();
+		this(maxVirtualTime, seed, keySpaceSize, configNodes, configEvents, configProcesses, referencedProcesses, null);
+	}
+	
+	public Engine(float maxVirtualTime, int seed, Integer keySpaceSize, ArrayList<Node> configNodes,
+			ArrayList<Event> configEvents, ArrayList<Process> configProcesses,
+			ArrayList<Process> referencedProcesses, String randomGenerator) {
 		engine = this;
 		this.maxVirtualTime = maxVirtualTime;
 		if(keySpaceSize == null)
@@ -116,8 +147,11 @@ public final class Engine extends SimulationObject {
 		else
 			this.keySpaceSize = keySpaceSize;
 		this.seed = seed;
-		this.simulationRandom = new Random(seed);
-		this.keyRandom = new Random(seed);
+		//this.simulationRandom = new Random(seed);
+		this.simulationRandom = new DeusRandom(randomGenerator, seed);
+		this.randomGenerator = randomGenerator;
+		//this.keyRandom = new Random(seed);
+		this.keyRandom = new DeusRandom(randomGenerator, seed);
 		this.configNodes = configNodes;
 		this.configEvents = configEvents;
 		this.configProcesses = configProcesses;
@@ -135,10 +169,12 @@ public final class Engine extends SimulationObject {
 
 	public void startNewSimulator(int seed) {
 		this.seed = seed;
-		this.simulationRandom = new Random(seed);
+		//this.simulationRandom = new Random(seed);
+		this.simulationRandom = new DeusRandom(this.randomGenerator, seed);
 		this.rc = new RandomComparator(this.simulationRandom);
 		this.eventsList = new PriorityQueue<Event>(1, rc);
-		this.keyRandom = new Random(seed);
+		//this.keyRandom = new Random(seed);
+		this.keyRandom = new DeusRandom(this.randomGenerator, seed);
 		this.virtualTime = 0;
 		this.nodes = new ArrayList<Node>();
 		this.nodeHashMap = new HashMap<String, ArrayList<Integer>>();

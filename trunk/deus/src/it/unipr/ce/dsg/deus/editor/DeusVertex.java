@@ -9,6 +9,8 @@ import java.util.ArrayList;
  * @author Fabrizio Caramia (caramia@ce.unipr.it)
  * @author Mario Sabbatelli (smario@ce.unipr.it)
  * 
+ * @author Stefano Sebastio (stefano.sebastio@imtlucca.it)
+ * 
  */
 public class DeusVertex implements Serializable {
 
@@ -21,6 +23,7 @@ public class DeusVertex implements Serializable {
 	private String disLevel;
 
 	private String levelLog;
+	private String prng;
 	private String pathPLog;
 	private ArrayList<String> nameParam;
 	private ArrayList<String> valueParam;
@@ -30,6 +33,7 @@ public class DeusVertex implements Serializable {
 	private boolean selectSL;
 	private boolean selectDisLevel;
 	private boolean selectKSS;
+	private boolean selectPrng;
 	private boolean selectLog;
 	private boolean selectParam;
 	private boolean selectResParam;
@@ -49,6 +53,7 @@ public class DeusVertex implements Serializable {
 		setSeed(0);
 		setKeySS(0, false);
 		setLogger(null, null, false);
+		setPrng(null, false);
 		setParam(null, null, false);
 		setResource(null, false);
 	}
@@ -108,9 +113,17 @@ public class DeusVertex implements Serializable {
 	public boolean getSelectKSS() {
 		return this.selectKSS;
 	}
+	
+	public boolean getSelectPrng() {
+		return this.selectPrng;
+	}
 
 	public String getLogLevel() {
 		return this.levelLog;
+	}
+	
+	public String getPrng() {
+		return this.prng;
 	}
 
 	public String getLogPathPrefix() {
@@ -145,6 +158,12 @@ public class DeusVertex implements Serializable {
 		this.levelLog = level;
 		this.pathPLog = pathPrefix;
 		this.selectLog = infoLog;
+	}
+	
+	public void setPrng(String prng, boolean selectPrng) {
+		this.prng = prng;
+		this.selectPrng = selectPrng;
+		//System.out.println("prng selected is " + this.prng);
 	}
 
 	public void setParam(ArrayList<String> name, ArrayList<String> value,
