@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="maxvt" use="required" type="{http://www.w3.org/2001/XMLSchema}float" />
  *       &lt;attribute name="seed" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="keyspacesize" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="prng" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -54,6 +55,8 @@ public class Engine {
     protected int seed;
     @XmlAttribute
     protected Integer keyspacesize;
+    @XmlAttribute
+    protected String prng;
 
     /**
      * Gets the value of the logger property.
@@ -157,6 +160,30 @@ public class Engine {
      */
     public void setKeyspacesize(Integer value) {
         this.keyspacesize = value;
+    }
+    
+    /**
+     * Gets the value of the PRNG property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPrng() {
+        return prng;
+    }
+
+    /**
+     * Sets the value of the PRNG property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPrng(String value) {
+        this.prng = value;
     }
 
 }
