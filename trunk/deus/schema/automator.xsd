@@ -93,6 +93,7 @@
 		<attribute name="maxvt" type="float" use="required"></attribute>
 		<attribute name="seed" type="int" use="required"></attribute>
 		<attribute name="keyspacesize" type="int" use="optional"></attribute>
+		<attribute name="prng" type="string" use="optional"/>
 	</complexType>
 
 	<complexType name="params">
