@@ -55,6 +55,8 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  */
 public class Marshalling {
 
+	private static final String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";
+	
 	private String packageName = "it.unipr.ce.dsg.deus.schema";
 	private File filename;
 	private JAXBContext jaxbContext;
@@ -444,7 +446,7 @@ public class Marshalling {
 			// ******** validation before marshalling
 			if (this.doValidation) {
 				SchemaFactory sf = SchemaFactory
-						.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+						.newInstance(W3C_XML_SCHEMA_NS_URI);
 				// SchemaFactory sf =
 				// SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 				// //For Mac Os X with old java version

@@ -15,7 +15,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
+//import java.util.Properties;
 
 import javax.swing.JProgressBar;
 import javax.xml.bind.JAXBContext;
@@ -65,7 +65,7 @@ public class Runner implements Runnable {
 	private ArrayList<String> files = null;
 	private int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
-	private Deus deus = null;
+	//private Deus deus = null;
 
 	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
@@ -74,10 +74,10 @@ public class Runner implements Runnable {
 
 	private static boolean DelDir2(File dir) {
 		if (dir.isDirectory()) {
-			String[] contenuto = dir.list();
-			for (int i = 0; i < contenuto.length; i++) {
-				if (new File(dir + "/" + contenuto[i]).exists())
-					new File(dir + "/" + contenuto[i]).delete();
+			String[] content = dir.list();
+			for (int i = 0; i < content.length; i++) {
+				if (new File(dir + "/" + content[i]).exists())
+					new File(dir + "/" + content[i]).delete();
 			}
 		}
 		return true;
@@ -96,6 +96,11 @@ public class Runner implements Runnable {
 			throws DeusAutomatorException, JAXBException, SAXException,
 			IOException, ParserConfigurationException {
 
+		// if these directories do not exist, create them
+		new File("./temp").mkdirs();
+		new File("./results").mkdirs();
+		new File("./results/gnuplot").mkdirs();
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		File f = new File(originalXml);
@@ -109,10 +114,10 @@ public class Runner implements Runnable {
 		FileInputStream fis = new FileInputStream(originalXML);
 		FileOutputStream fos = new FileOutputStream(originalXML + ".temp");
 
-		byte[] dati = new byte[fis.available()];
+		byte[] data = new byte[fis.available()];
 
-		fis.read(dati);
-		fos.write(dati);
+		fis.read(data);
+		fos.write(data);
 
 		fis.close();
 		fos.close();
@@ -123,6 +128,7 @@ public class Runner implements Runnable {
 		files = new ArrayList<String>();
 
 		// Read the XML automator file and retrieve the simulations to perform
+		//System.out.println("start: readXML");
 		simulations = readXML(automatorXml);
 
 		// Insert in the ArrayList the names of the XML files to run
@@ -160,6 +166,8 @@ public class Runner implements Runnable {
 			simulationProgressBar.setMinimum(0);
 		}
 
+		System.out.println("runSimulations()");
+		
 		simulationProgressBar.setValue(0);
 
 		// DelDir2(new File("./temp"));
@@ -174,14 +182,21 @@ public class Runner implements Runnable {
 
 		ArrayList<String> averageFileList = new ArrayList<String>();
 		
+		System.out.println("simulations.size() = " + simulations.size());
+		
 		// Run the n simulations with respective n files
 		for (int j = 0; j < simulations.size(); j++) {
 			for (int k = 0; k < simulations.get(j).getSimulationNumber(); k++) {
+				System.out.println("k = " + k);
+				
+				System.out.println("simulations.get(j).getSimulationNumberSeed() = " + simulations.get(j).getSimulationNumberSeed());
+				
 				for (int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++) {
-					deus = new Deus(files.get(numFile), simulations.get(j).getFileLog());
-
+					//deus = new Deus(files.get(numFile), simulations.get(j).getFileLog());
+					System.out.println("i = " + i);
 					File log = new File(simulations.get(j).getFileLog());
 
+					System.out.println("seed = " + simulations.get(j).getEngine().get(j).getSeed().get(i));
 					log.renameTo(new File("./temp/"
 							+ computerName
 							+ "-"
@@ -205,6 +220,8 @@ public class Runner implements Runnable {
 									.get(i));
 
 					numFile++;
+					
+					System.out.println("numFile = " + numFile);
 
 					simulationProgressBar.setValue(numFile);
 				}
@@ -293,6 +310,7 @@ public class Runner implements Runnable {
 	}
 
 	
+	
 	/**
 	 * 
 	 * Generate the supporting files for gnuPlot script
@@ -305,6 +323,7 @@ public class Runner implements Runnable {
 	 * @param yLabel
 	 * @param sim
 	 */
+	/*
 	@Deprecated
 	private void gnuPlotXY(ArrayList<String> sourceFiles, String destinationFile, String xLabel, String yLabel, MyObjectSimulation sim){
 		//test function
@@ -422,7 +441,7 @@ public class Runner implements Runnable {
 				e1.printStackTrace();
 			}
 	}
-	
+	*/
 	
 	private void gnuPlotArray(ArrayList<String> sourceFiles, String destinationFile, String xLabel, String yLabel, MyObjectSimulation sim){
 	
@@ -624,9 +643,9 @@ public class Runner implements Runnable {
 			
 		try {
 			fos = new FileOutputStream(dataFile+".plt");
-			PrintStream Output = new PrintStream(fos);
-			Output.println(gnuplot);
-			Output.close();
+			PrintStream outputStream = new PrintStream(fos);
+			outputStream.println(gnuplot);
+			outputStream.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -798,6 +817,7 @@ public class Runner implements Runnable {
 	 * @return
 	 */
 	public boolean checkGnuPlotIncompatibility(){
+		
 		try {
 			simulations = readXML(automatorXml);
 		} catch (DeusAutomatorException e) {
@@ -809,6 +829,7 @@ public class Runner implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		for (int j = 0; j < simulations.size(); j++) {
 			for (int z = 0; z < simulations.get(j).getGnuplot().size(); z++) {
 				String xLabel = simulations.get(j).getGnuplot().get(z).getAxisX();
@@ -852,6 +873,7 @@ public class Runner implements Runnable {
 	 * @param axisX
 	 * @param axisY
 	 */
+	/*
 	private void writeGnuPlot(String sourceFile, String destinationFile,
 			String axisX, String axisY) {
 
@@ -936,7 +958,8 @@ public class Runner implements Runnable {
 		}
 
 	}
-
+	 */
+	
 	/**
 	 * Method that computes the paramaters of the simulations
 	 * 
@@ -998,8 +1021,9 @@ public class Runner implements Runnable {
 
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		unmarshaller.setSchema(schema);
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
-
+		System.out.println("inside readXML");
+		unmarshaller.setEventHandler(new ValidationEventHandler() {	
+			
 			public boolean handleEvent(ValidationEvent ve) {
 				if (ve.getSeverity() == ValidationEvent.FATAL_ERROR
 						|| ve.getSeverity() == ValidationEvent.ERROR
@@ -1057,6 +1081,8 @@ public class Runner implements Runnable {
 
 				String simulationNumberSeed = fstSimulation.getAttributes()
 						.getNamedItem("simulationNumberSeed").getNodeValue();
+				
+				System.out.println(simulationNumberSeed);
 
 				String simulationName = fstSimulation.getAttributes()
 						.getNamedItem("simulationName").getNodeValue();
@@ -1204,7 +1230,7 @@ public class Runner implements Runnable {
 							if (initialValue == null || finalValue == null
 									|| stepValue == null) {
 								throw new DeusAutomatorException(
-										"Errore in initalValue , finalValue e stepValue in "
+										"Errore in initialValue , finalValue e stepValue in "
 												+ simulationName + " di Node"
 												+ messageType + " in "
 												+ paramName);
@@ -1463,8 +1489,10 @@ public class Runner implements Runnable {
 						Element fstElmnt = (Element) fstNode;
 						NodeList fstNmElmntLst = fstElmnt
 								.getElementsByTagName("seed");
+						
+						System.out.println("fstNmElmntLst.getLength() = " + fstNmElmntLst.getLength());
 
-						// Retrieva all seedValues in seed
+						// Retrieve all seedValues in seed
 						for (int j = 0; j < fstNmElmntLst.getLength(); j++) {
 
 							Element paramElement = (Element) fstNmElmntLst
@@ -1487,6 +1515,8 @@ public class Runner implements Runnable {
 												+ simulationName);
 							}
 
+							System.out.println("seedValue.getLength() = " + seedValue.getLength());
+							
 							for (int o = 0; o < seedValue.getLength(); o++) {
 								Node seedvalue = seedValue.item(o);
 								engine.getSeed()

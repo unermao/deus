@@ -48,16 +48,26 @@ public class DeusAutomatorCommandLine {
 	 */
 	public static void main(String[] args) {
 
-		if (args.length == 3) {
+		if (args.length == 2) {
 
 			DeusAutomatorCommandLine cmd = new DeusAutomatorCommandLine();
 
 			cmd.originalXmlPath = args[0];
 			cmd.outFileName = args[1];
+			
+			// Run saved file
+			RunnerCommandLine runner = new RunnerCommandLine(
+					cmd.originalXmlPath, cmd.outFileName);
 
+			Thread automatorRunner = new Thread(runner,
+					"Automator Thread Runner");
+			automatorRunner.setPriority(10);
+			automatorRunner.start();
+
+			/*
 			try {
 
-				cmd.readXML(args[2]);
+				cmd.readXML(args[1]);
 
 				cmd.writeAutomatorXML(cmd.outFileName);
 
@@ -79,9 +89,9 @@ public class DeusAutomatorCommandLine {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			*/
 		} else
-			System.err
-					.println("Error in DeusAutomatorCommandLine Parameters ...");
+			System.err.println("Error in DeusAutomatorCommandLine Parameters ...");
 	}
 
 	private DeusSimulationPanelCommandLine deusSimulationPanel;

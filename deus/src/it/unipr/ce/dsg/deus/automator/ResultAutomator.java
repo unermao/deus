@@ -46,6 +46,8 @@ public class ResultAutomator {
 	public void readFileResults(String fileName) throws IOException {
 
 		VTResults vtResultValue = null;
+		
+		System.out.println(fileName);
 
 		File f = new File(fileName);
 		FileInputStream fis = new FileInputStream(f);
