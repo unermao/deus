@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -29,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -482,6 +486,9 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 
 	private void runLabelMouseClicked(java.awt.event.MouseEvent evt)
 			throws IOException {// GEN-FIRST:event_runLabelMouseClicked
+		
+		
+		
 		writeAutomatorXML(this.outFileName);
 
 		// Run saved file
@@ -516,12 +523,51 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				+ " xsi:schemaLocation=\"http://dsg.ce.unipr.it/software/deus/schema/deusAutomator ../../schema/automator/deusAutomator.xsd\">"
 				+ "\n\n";
 
-		for (int i = 0; i < tabCount; i++)
+		for (int i = 0; i < tabCount; i++){
+			//@Stefano: check to allow to don't specify any seed from GUI if a seed is already specified in the xml
+			//System.out.println("check tab-pane");
+			//System.out.println(((DeusSimulationPanel) simulationTabbedPane.getComponent(i)).getEngineParameterList().size());
+			if ( ((DeusSimulationPanel) simulationTabbedPane.getComponent(i)).getEngineParameterList().size() == 0){
+				
+				//if no seed is specified from the gui check if there is a seed specified in the simulation xml
+				//System.out.println("scannerOf " + this.originalXmlPath);
+				System.out.println("NO seed has been specified from the AutomatorGUI. Looking in the configuration xml...");
+				this.originalXmlPath.replace("\\", File.separator);
+				//System.out.println("scannerOf2 " + this.originalXmlPath);
+				Scanner scanner = new Scanner(new File(this.originalXmlPath));
+				while (scanner.hasNextLine()) {
+				   final String lineFromFile = scanner.nextLine();
+				  // System.out.println("line " + lineFromFile);
+				   if(lineFromFile.contains("<aut:engine")) { 
+					   
+					   String[] seed = StringUtils.substringsBetween(lineFromFile , "seed=\"", "\"");
+					   if (seed.length > 0){
+						   System.out.println("seed from config xml is " + seed[0]);
+						   ((DeusSimulationPanel) simulationTabbedPane.getComponent(i)).getEngineParameterList().add(new EngineParameter(seed[0]));
+					   }
+//					   Pattern pattern = Pattern.compile(".*seed=\"(.*)\".*");
+//					   Matcher matcher = pattern.matcher(lineFromFile);
+//					   if (matcher.find())
+//					   {
+//						   System.out.println("seed from configuration xml is " + matcher.group(1));
+//						   ((DeusSimulationPanel) simulationTabbedPane.getComponent(i)).getEngineParameterList().add(new EngineParameter(matcher.group(1)));
+//					   }
+//
+				       break;
+				   }
+				
+				//this.originalXmlPath
+				}
+				scanner.close();
+			}
+			
 			xmlString = xmlString
 					+ ((DeusSimulationPanel) simulationTabbedPane
 							.getComponent(i)).createSimulationXML(
 							simulationTabbedPane.getTitleAt(i), i) + "\n";
-
+		}
+			
+			
 		xmlString = xmlString + "</deusAutomator>";
 
 		// System.out.println(xmlString);
