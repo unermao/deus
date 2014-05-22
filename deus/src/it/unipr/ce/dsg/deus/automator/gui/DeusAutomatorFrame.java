@@ -531,7 +531,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 				
 				//if no seed is specified from the gui check if there is a seed specified in the simulation xml
 				//System.out.println("scannerOf " + this.originalXmlPath);
-				System.out.println("NO seed has been specified from the AutomatorGUI. Looking in the configuration xml...");
+				//System.out.println("NO seed has been specified from the AutomatorGUI. Looking in the configuration xml...");
 				this.originalXmlPath.replace("\\", File.separator);
 				//System.out.println("scannerOf2 " + this.originalXmlPath);
 				Scanner scanner = new Scanner(new File(this.originalXmlPath));
@@ -542,7 +542,7 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 					   
 					   String[] seed = StringUtils.substringsBetween(lineFromFile , "seed=\"", "\"");
 					   if (seed.length > 0){
-						   System.out.println("seed from config xml is " + seed[0]);
+						  // System.out.println("seed from config xml is " + seed[0]);
 						   ((DeusSimulationPanel) simulationTabbedPane.getComponent(i)).getEngineParameterList().add(new EngineParameter(seed[0]));
 					   }
 //					   Pattern pattern = Pattern.compile(".*seed=\"(.*)\".*");
