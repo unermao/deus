@@ -287,7 +287,7 @@ public class AutomatorParser {
 //				processes, referencedProcesses);
 		
 		//System.out.println("automator.getEngine().getSeed() = " + automator.getEngine().getSeed());
-		
+		//System.out.println("nodes " + nodes.size());
 		engine = new Engine(automator.getEngine().getMaxvt(), automator
 				.getEngine().getSeed(),
 				automator.getEngine().getKeyspacesize(), nodes, events,

@@ -4,15 +4,21 @@ import it.unipr.ce.dsg.deus.automator.gui.SimulationSummaryFrame;
 import it.unipr.ce.dsg.deus.core.Deus;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 //import java.util.Properties;
@@ -65,7 +71,7 @@ public class Runner implements Runnable {
 	private ArrayList<String> files = null;
 	private int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
-	//private Deus deus = null;
+	private Deus deus = null;
 
 	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
@@ -129,7 +135,10 @@ public class Runner implements Runnable {
 
 		// Read the XML automator file and retrieve the simulations to perform
 		//System.out.println("start: readXML");
-		simulations = readXML(automatorXml);
+		//System.out.println("automatorXML" + automatorXml);
+
+		//22 May 2014: removed since, when the AutomatorGUI is called the Runner.checkGnuPlotIncompatibility() already load the 'simulations'
+		//simulations = readXML(automatorXml);
 
 		// Insert in the ArrayList the names of the XML files to run
 		files = writeXML(simulations, originalXml);
@@ -166,7 +175,7 @@ public class Runner implements Runnable {
 			simulationProgressBar.setMinimum(0);
 		}
 
-		System.out.println("runSimulations()");
+		//System.out.println("runSimulations()");
 		
 		simulationProgressBar.setValue(0);
 
@@ -182,46 +191,91 @@ public class Runner implements Runnable {
 
 		ArrayList<String> averageFileList = new ArrayList<String>();
 		
-		System.out.println("simulations.size() = " + simulations.size());
+		//System.out.println("simulations.size() = " + simulations.size());
 		
 		// Run the n simulations with respective n files
 		for (int j = 0; j < simulations.size(); j++) {
 			for (int k = 0; k < simulations.get(j).getSimulationNumber(); k++) {
-				System.out.println("k = " + k);
+				//System.out.println("k = " + k);
 				
-				System.out.println("simulations.get(j).getSimulationNumberSeed() = " + simulations.get(j).getSimulationNumberSeed());
+				//System.out.println("simulations.get(j).getSimulationNumberSeed() = " + simulations.get(j).getSimulationNumberSeed());
 				
 				for (int i = 0; i < new Integer(simulations.get(j).getSimulationNumberSeed()); i++) {
+					//System.out.println("file " + files.get(numFile));
+					//System.out.println("logFile " + simulations.get(j).getFileLog());
+					
+//					Path currentRelativePath = Paths.get("");
+//					System.out.println(currentRelativePath..toString());
+//					
+					String logFileName = "." + File.separator + "temp" + File.separator
+							+ computerName
+							+ "-"
+							+ simulations.get(j).getSimulationName()
+							+ "-"
+							+ k
+							+ "-"
+							+ simulations.get(j).getEngine().get(j).getSeed()
+									.get(i);
+					
+//					String logFileName = "./temp/"
+//							+ computerName
+//							+ "-"
+//							+ simulations.get(j).getSimulationName()
+//							+ "-"
+//							+ k
+//							+ "-"
+//							+ simulations.get(j).getEngine().get(j).getSeed()
+//									.get(i);
+					
+//					Writer writer = null;
+//
+//					try {
+//					    writer = new BufferedWriter(new OutputStreamWriter(
+//					          new FileOutputStream(logFileName), "utf-8"));
+//					    writer.write("Something");
+//					} catch (IOException ex) {
+//					  // report
+//					} finally {
+//					   try {writer.close();} catch (Exception ex) {}
+//					}
+
+					//System.out.println("the desired filename is " + logFileName);
 					//deus = new Deus(files.get(numFile), simulations.get(j).getFileLog());
-					System.out.println("i = " + i);
-					File log = new File(simulations.get(j).getFileLog());
+					deus = new Deus(files.get(numFile), logFileName);
+					//System.out.println("i = " + i);
+//					File log = new File(simulations.get(j).getFileLog());
 
-					System.out.println("seed = " + simulations.get(j).getEngine().get(j).getSeed().get(i));
-					log.renameTo(new File("./temp/"
-							+ computerName
-							+ "-"
-							+ simulations.get(j).getSimulationName()
-							+ "-"
-							+ k
-							+ "-"
-							+ simulations.get(j).getEngine().get(j).getSeed()
-									.get(i)));
-
-					log.delete();
-
-					logFile.add("./temp/"
-							+ computerName
-							+ "-"
-							+ simulations.get(j).getSimulationName()
-							+ "-"
-							+ k
-							+ "-"
-							+ simulations.get(j).getEngine().get(j).getSeed()
-									.get(i));
+					//System.out.println("seed = " + simulations.get(j).getEngine().get(j).getSeed().get(i));
+//					log.renameTo(new File("./temp/"
+//							+ computerName
+//							+ "-"
+//							+ simulations.get(j).getSimulationName()
+//							+ "-"
+//							+ k
+//							+ "-"
+//							+ simulations.get(j).getEngine().get(j).getSeed()
+//									.get(i)));
+//
+//					log.delete();
+					
+					//check if the simulation has logged something
+					File f = new File(logFileName);
+					if(f.exists() && !f.isDirectory()) {
+						logFile.add(logFileName);
+					}
+//					logFile.add("./temp/"
+//							+ computerName
+//							+ "-"
+//							+ simulations.get(j).getSimulationName()
+//							+ "-"
+//							+ k
+//							+ "-"
+//							+ simulations.get(j).getEngine().get(j).getSeed()
+//									.get(i));
 
 					numFile++;
 					
-					System.out.println("numFile = " + numFile);
+					//System.out.println("numFile = " + numFile);
 
 					simulationProgressBar.setValue(numFile);
 				}
@@ -1021,7 +1075,7 @@ public class Runner implements Runnable {
 
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
 		unmarshaller.setSchema(schema);
-		System.out.println("inside readXML");
+		//System.out.println("inside readXML");
 		unmarshaller.setEventHandler(new ValidationEventHandler() {	
 			
 			public boolean handleEvent(ValidationEvent ve) {
@@ -1082,7 +1136,9 @@ public class Runner implements Runnable {
 				String simulationNumberSeed = fstSimulation.getAttributes()
 						.getNamedItem("simulationNumberSeed").getNodeValue();
 				
-				System.out.println(simulationNumberSeed);
+				//System.out.println("simulationNumberSeed "  + simulationNumberSeed);
+				
+				//System.out.println(simulationNumberSeed);
 
 				String simulationName = fstSimulation.getAttributes()
 						.getNamedItem("simulationName").getNodeValue();
@@ -1490,7 +1546,7 @@ public class Runner implements Runnable {
 						NodeList fstNmElmntLst = fstElmnt
 								.getElementsByTagName("seed");
 						
-						System.out.println("fstNmElmntLst.getLength() = " + fstNmElmntLst.getLength());
+						//System.out.println("fstNmElmntLst.getLength() = " + fstNmElmntLst.getLength());
 
 						// Retrieve all seedValues in seed
 						for (int j = 0; j < fstNmElmntLst.getLength(); j++) {
@@ -1515,7 +1571,7 @@ public class Runner implements Runnable {
 												+ simulationName);
 							}
 
-							System.out.println("seedValue.getLength() = " + seedValue.getLength());
+							//System.out.println("seedValue.getLength() = " + seedValue.getLength());
 							
 							for (int o = 0; o < seedValue.getLength(); o++) {
 								Node seedvalue = seedValue.item(o);

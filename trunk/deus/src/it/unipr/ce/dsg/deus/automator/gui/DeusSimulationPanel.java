@@ -731,6 +731,7 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 
 		// <simulation simulationNumberSeed="6"
 		// simulationName="speedSimulation">
+		
 		xmlString = xmlString + "<simulation simulationNumberSeed=\""
 				+ this.engineParameterList.size() + "\" simulationName=\""
 				+ simulationTitle + "\">\n";
@@ -953,6 +954,12 @@ public class DeusSimulationPanel extends javax.swing.JPanel {
 		this.processParameterList.clear();
 		this.engineParameterList.clear();
 	}
+
+		
+	public ArrayList<EngineParameter> getEngineParameterList() {
+		return engineParameterList;
+	}
+
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JLabel addEngineLabel;
