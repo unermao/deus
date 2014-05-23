@@ -2,6 +2,7 @@ package it.unipr.ce.dsg.deus.automator.gui;
 
 import it.unipr.ce.dsg.deus.automator.DeusAutomatorException;
 import it.unipr.ce.dsg.deus.automator.Runner;
+import it.unipr.ce.dsg.deus.automator.RunnerGui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -492,7 +493,8 @@ public class DeusAutomatorFrame extends javax.swing.JFrame {
 		writeAutomatorXML(this.outFileName);
 
 		// Run saved file
-		Runner runner = new Runner(this.originalXmlPath, this.outFileName);
+		//Runner runner = new Runner(this.originalXmlPath, this.outFileName);
+		RunnerGui runner = new RunnerGui(this.originalXmlPath, this.outFileName);
 		
 		//check for gnuplot incompatibility
 		boolean gnuPlotCheck = runner.checkGnuPlotIncompatibility();
