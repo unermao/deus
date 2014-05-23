@@ -1,29 +1,21 @@
 package it.unipr.ce.dsg.deus.automator;
 
-import it.unipr.ce.dsg.deus.automator.gui.SimulationSummaryFrame;
 import it.unipr.ce.dsg.deus.core.Deus;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.net.InetAddress;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 //import java.util.Properties;
 
-import javax.swing.JProgressBar;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -57,21 +49,24 @@ import org.xml.sax.SAXException;
  * @author Marco Picone (picone.m@gmail.com)
  * @author Marco Pigoni
  * 
+ * @author Stefano Sebastio (stefano.sebastio@imtlucca.it) [only Runner refactoring]
+ * 
  */
 public class Runner implements Runnable {
 
 	private Document document;
 	private Document doc;
-	private JProgressBar simulationProgressBar = null;
 	private String originalXML = "";
 	private int numSim = 0;
 	private String originalXml = "";
 	private String automatorXml = "";
 	private ArrayList<String> logFile = null;
-	private ArrayList<String> files = null;
+	protected ArrayList<String> files = null;
 	private int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
 	private Deus deus = null;
+	
+	protected char[] cbuf;
 
 	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
@@ -133,12 +128,8 @@ public class Runner implements Runnable {
 		// Create n XML files for the n simulations with DEUS
 		files = new ArrayList<String>();
 
-		// Read the XML automator file and retrieve the simulations to perform
-		//System.out.println("start: readXML");
-		//System.out.println("automatorXML" + automatorXml);
-
-		//22 May 2014: removed since, when the AutomatorGUI is called the Runner.checkGnuPlotIncompatibility() already load the 'simulations'
-		//simulations = readXML(automatorXml);
+		// Insert in the ArrayList the names of the XML files to run
+		simulations = readXML(automatorXml);
 
 		// Insert in the ArrayList the names of the XML files to run
 		files = writeXML(simulations, originalXml);
@@ -153,16 +144,11 @@ public class Runner implements Runnable {
 		InputStreamReader isr = new InputStreamReader(simfileInputStream);
 		BufferedReader br = new BufferedReader(isr);
 
-		char[] cbuf = new char[simfileInputStream.available()];
+		cbuf = new char[simfileInputStream.available()];
 		br.read(cbuf);
-		String summary = new String(cbuf);
-
-		// Execute the GUI showing the summary of the simulation
-		SimulationSummaryFrame simulationsummary = new SimulationSummaryFrame(
-				this);
-		simulationsummary.getSimulationSummaryTextArea().setText(summary);
-		simulationsummary.setVisible(true);
-
+		
+		br.close();
+		
 		return 0;
 	}
 
@@ -170,16 +156,6 @@ public class Runner implements Runnable {
 	 * 
 	 */
 	public void runSimulations() {
-		if (simulationProgressBar != null) {
-			simulationProgressBar.setMaximum(files.size());
-			simulationProgressBar.setMinimum(0);
-		}
-
-		//System.out.println("runSimulations()");
-		
-		simulationProgressBar.setValue(0);
-
-		// DelDir2(new File("./temp"));
 
 		String computerName = "";
 		try {
@@ -241,7 +217,7 @@ public class Runner implements Runnable {
 
 					//System.out.println("the desired filename is " + logFileName);
 					//deus = new Deus(files.get(numFile), simulations.get(j).getFileLog());
-					deus = new Deus(files.get(numFile), logFileName);
+					this.deus = new Deus(files.get(numFile), logFileName);
 					//System.out.println("i = " + i);
 //					File log = new File(simulations.get(j).getFileLog());
 
@@ -277,7 +253,6 @@ public class Runner implements Runnable {
 					
 					//System.out.println("numFile = " + numFile);
 
-					simulationProgressBar.setValue(numFile);
 				}
 
 				ResultAutomator resultAutomator = new ResultAutomator(logFile);
@@ -1710,6 +1685,8 @@ public class Runner implements Runnable {
 		}
 
 		fos.write(writer.toString().getBytes());
+		
+		fos.close();
 	}
 
 	private void writeXmlProcess(MyObjectProcess processToWrite)
@@ -1779,6 +1756,8 @@ public class Runner implements Runnable {
 		}
 
 		fos.write(writer.toString().getBytes());
+		
+		fos.close();
 
 	}
 
@@ -1886,6 +1865,8 @@ public class Runner implements Runnable {
 		}
 
 		fos.write(writer.toString().getBytes());
+		
+		fos.close();
 
 	}
 
@@ -2423,6 +2404,8 @@ public class Runner implements Runnable {
 
 						file.write(writer.toString().getBytes());
 						xmlFile.add(filename);
+						
+						file.close();
 					}
 
 			}
@@ -2443,14 +2426,6 @@ public class Runner implements Runnable {
 			new File(path + ".temp").delete();
 
 		return null;
-	}
-
-	public JProgressBar getSimulationProgressBar() {
-		return simulationProgressBar;
-	}
-
-	public void setSimulationProgressBar(JProgressBar simulationProgressBar) {
-		this.simulationProgressBar = simulationProgressBar;
 	}
 
 	public void run() {
