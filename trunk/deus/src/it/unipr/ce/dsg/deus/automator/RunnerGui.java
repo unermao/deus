@@ -3,8 +3,9 @@ package it.unipr.ce.dsg.deus.automator;
 import it.unipr.ce.dsg.deus.automator.gui.SimulationSummaryFrame;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-
 import javax.swing.JProgressBar;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,8 +25,10 @@ public class RunnerGui extends Runner {
 
 	private JProgressBar simulationProgressBar = null;
 	
+	
 	public RunnerGui(String originalXml, String automatorXml) {
 		super(originalXml, automatorXml);
+
 	}
 
 	/**
@@ -63,10 +66,12 @@ public class RunnerGui extends Runner {
 			simulationProgressBar.setMinimum(0);
 		}
 
-		//System.out.println("runSimulations()");
 		
 		simulationProgressBar.setValue(0);
-
+		
+		NumFileListener listener = new NumFileListener();
+		addPropertyChangeListener(listener);
+		
 		super.runSimulations();
 
 	}
@@ -79,4 +84,16 @@ public class RunnerGui extends Runner {
 		this.simulationProgressBar = simulationProgressBar;
 	}
 
+	private class NumFileListener implements PropertyChangeListener {
+	    @Override
+	    public void propertyChange(PropertyChangeEvent event) {
+	    	//System.out.println("property has changed");
+	        if (event.getPropertyName().equals("NumFileProperty")) {
+	        	//System.err.println("AAA !" );
+	            //System.out.println(event.getNewValue().toString());
+	            simulationProgressBar.setValue(numFile);
+	        }
+	    }
+	}
+	
 }

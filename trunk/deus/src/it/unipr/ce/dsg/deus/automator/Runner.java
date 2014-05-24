@@ -2,6 +2,8 @@ package it.unipr.ce.dsg.deus.automator;
 
 import it.unipr.ce.dsg.deus.core.Deus;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,17 +64,33 @@ public class Runner implements Runnable {
 	private String automatorXml = "";
 	private ArrayList<String> logFile = null;
 	protected ArrayList<String> files = null;
-	private int numFile;
+	protected int numFile;
 	private ArrayList<MyObjectSimulation> simulations = null;
 	private Deus deus = null;
 	
+	protected PropertyChangeSupport propertyChangeSupportNumSim = null;
+	
 	protected char[] cbuf;
-
+	
 	public Runner(String originalXml, String automatorXml) {
 		this.originalXml = originalXml;
 		this.automatorXml = automatorXml;
+		
+		propertyChangeSupportNumSim = new PropertyChangeSupport(this);
+		
 	}
-
+	
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    	propertyChangeSupportNumSim.addPropertyChangeListener(listener);
+    }
+	
+    //To notify the simulation progress. Used (i.e., listened) by the RunnerGui
+	private void incNumFile(){
+		numFile++;
+		propertyChangeSupportNumSim.firePropertyChange("NumFileProperty" , (numFile-1), numFile);
+		System.out.println("incNumFile");
+	}
+	
 	private static boolean DelDir2(File dir) {
 		if (dir.isDirectory()) {
 			String[] content = dir.list();
@@ -249,7 +267,8 @@ public class Runner implements Runnable {
 //							+ simulations.get(j).getEngine().get(j).getSeed()
 //									.get(i));
 
-					numFile++;
+					incNumFile();
+					//numFile++;
 					
 					//System.out.println("numFile = " + numFile);
 
