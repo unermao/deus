@@ -1,14 +1,14 @@
-#summary This is a brief tutorial on DEUS (v0.5.x).
+#summary This is a brief tutorial on DEUS (v0.6.x).
 
 
-= DEUS v0.5.x =
+= DEUS v0.6.x =
 
-In the home page of the project, you may find the release of DEUS v0.5.x (deus-0.5.x.zip).
+In the home page of the project, you may find the release of DEUS v0.5.x (deus-0.6.x.zip).
 
-To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.5.x folder; the project will be automatically called "deus".
+To quickly start using DEUS, download the full release, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.6.x folder; the project will be automatically called "deus".
 
 
-Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.5.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
+Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.6.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
 
 
 = DEUS API =
@@ -129,11 +129,11 @@ In DEUS v.0.5.0 we have added three new processes, which allow to schedule event
 
 Each process may refer to one or more node type, and to one or more events. Important note: the node associated to an event (if the event is a {{{NodeEvent}}}, thus having the associatedEvent variable) must be decided by the event itself! If a process referes to N node types, the events scheduled according to that process can be associated to one of the node types, according to a specific behavior implemented in the event's code. See for example {{{BirthEvent.java}}} - such event selects (with uniformly random probability) one of the node types. 
 
-A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g. "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
+A declared event cannot be associated to more than one declared process. Of course you can declare more events of the same type (e.g., "birth1" and "birth2" both handled by the same Java class) and associate them to the same process or to two different processes (which means differently declared processes, i.e. two processes with different id).
 
 Finally, you have to declare which processes to run:
 {{{
-<aut:engine maxvt="2000000" seed="123456789"> 
+<aut:engine maxvt="2000000" seed="123456789" prng="ISAAC"> 
   <aut:logger level="INFO" />
   <aut:processes>
     <aut:reference id="rectpulseperiodic" /> 
@@ -141,6 +141,8 @@ Finally, you have to declare which processes to run:
   </aut:processes>
 </aut:engine>
 }}}
+
+Introduced with v0.6.0, the {{{prng}}} parameter allows you to set the random number generator. Possible choices are: "ISAAC", "WELL1024a", "WELL19937a", "WELL19937c", "WELL44497a", "WELL44497b", "WELL512a". If you do not put the {{{prng}}} parameter in the engine tag, the default Java random number generator is used.
 
 NOTE 1: 
 
