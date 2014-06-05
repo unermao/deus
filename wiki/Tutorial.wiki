@@ -146,7 +146,7 @@ Introduced with v0.6.0, the {{{prng}}} parameter allows you to set the random nu
 
 NOTE 1: 
 
-The engine does not refer to the poisson2 process, define above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
+The engine does not refer to the poisson2 process, defined above. This means that "connection" events are not directly scheduled by the engine. The latter schedules "birth" events, according to the "rectpulseperiodic" process. Each "birth" triggers the scheduling of a "connection", whose timestamp is automatically computed using the "poisson2" process. 
 
 NOTE 2: 
 
