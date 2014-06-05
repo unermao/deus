@@ -3,10 +3,9 @@
 
 = DEUS v0.6.x =
 
-To quickly start using DEUS, download the full release from the *[http://dsg.ce.unipr.it/?q=node/86 DOWNLOADS section]*, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.6.x folder; the project will be automatically called "deus".
+To quickly start using DEUS, download the full release from the *[http://dsg.ce.unipr.it/?q=node/86 DOWNLOADS section]*, unzip it, run Eclipse, go to the workbench, right-click in the left column ({{{PackageExplorer}}} or {{{Navigator}}}), select Import ---> Existing projects into workspace. Then press Next and select, as root directory, the unzipped deus-0.6.x folder; the project will be automatically imported in your workspace.
 
-
-Get one of the examples (e.g. basic.zip) and unzip it in the examples/ folder, in deus-0.6.x/. Remember to add the src/ folder of the example to the source path of the deus project. 
+The examples/ folder contains a basic example which comes without source code, as everything it needs is included in the DEUS API. In general, we suggest to put any deus-based simulator in examples/, remembering to add the examples/yoursimulator/src/ folder to the source path of the deus project. 
 
 
 = DEUS API =
