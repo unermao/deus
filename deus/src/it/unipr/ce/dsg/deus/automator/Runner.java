@@ -88,7 +88,7 @@ public class Runner implements Runnable {
 	private void incNumFile(){
 		numFile++;
 		propertyChangeSupportNumSim.firePropertyChange("NumFileProperty" , (numFile-1), numFile);
-		System.out.println("incNumFile");
+		//System.out.println("incNumFile");
 	}
 	
 	private static boolean DelDir2(File dir) {
